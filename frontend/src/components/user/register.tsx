@@ -1,18 +1,23 @@
-function Login() {
+
+function Register() {
     return (
-        <div className="flex justify-between font-poppins h-screen bg-gameBg items-center overflow-hidden">
+        <div className="flex justify-between font-poppins h-screen bg-gameBg overflow-hidden items-center">
             <div className="py-[260px] px-[360px] mt-32">
                 <div>
-                    <h1 className="text-white text-9xl font-bold">
-                        WELCOME
+                    <h1 className="text-white text-center text-9xl font-bold">
+                        SIGNUP
                     </h1>
                     <p className="text-white text-center text-xl py-2 font-light">
-                        We are glad to see you back with us
+                        Join and have fun with your friends
                     </p>
                 </div>
                 <div className="my-24 space-y-12">
                     <div>
-                        <label className="flex text-gray-300">Email or username</label>
+                        <label className="flex text-gray-300">Username</label>
+                        <input className="text-white bg-transparent border-b border-white py-4 mt-5 w-full" id="username" type="text" placeholder="Email or username" />
+                    </div>
+                    <div>
+                        <label className="flex text-gray-300">Email</label>
                         <input className="text-white bg-transparent border-b border-white py-4 mt-5 w-full" id="email" type="text" placeholder="Email or username" />
                     </div>
                     {/* this is the password input */}
@@ -24,13 +29,13 @@ function Login() {
                         </div>
                     </div>
                     {/* login button */}
-                    <div className="flex justify-between items-center">
+                    <div className="flex justify-between items-center space-x-52">
                         <div className="flex space-x-3">
                             <input type="checkbox" />
-                            <p className="text-white text-md whitespace-nowrap">Remember me</p>
+                            <p className="text-white text-md whitespace-nowrap">I accept the terms and conditions</p>
                         </div>
                         <button className="px-12 py-4 rounded-xl text-white bg-neon font-bold shadow-neon shadow-[0_10px_40px_rgba(0,0,0,0.1)]">
-                            Login
+                            REGISTER
                         </button>
                     </div>
 
@@ -44,7 +49,7 @@ function Login() {
                         <img className="w-[52px] h-[52px]" src="/42-icon.png" alt="42 icon" />
                     </div>
                     <div className="flex justify-center">
-                        <h1 className="text-white font-light">Don't have an account? <span className="font-bold"><a href="/register" className="href">Signup</a></span></h1>
+                        <h1 className="text-white font-light">Already have an account? <span className="font-bold"><a href="/login" className="href">Login</a></span></h1>
                     </div>
                 </div>
                 
@@ -53,7 +58,7 @@ function Login() {
                 <img src="/login-page.jpg" alt="" />
             </div>
         </div>
-    );
+    )
 }
 
-export default Login;
+export default Register;
