@@ -5,6 +5,7 @@ import './App.css'
 import { Routes, Route } from 'react-router-dom';
 import Game from './components/game/game'
 import Login from "./components/user/login"
+import Chat from './components/chat/chat';
 
 export default function App() {
   return (
@@ -12,6 +13,7 @@ export default function App() {
       <Routes>
         <Route path='/game' element={<Game />}/>
         <Route path='/login' element={<Login />}/>
+        <Route path='/chat' element={<Chat />}/>
       </Routes>
     </div>
   )
