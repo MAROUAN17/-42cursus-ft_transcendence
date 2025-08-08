@@ -1,5 +1,5 @@
 import fastify from "fastify";
-const server = fastify();
+const server = fastify({ logger: true });
 const PORT = 5000;
 
 server.get("/ping", async(req, res) => {
