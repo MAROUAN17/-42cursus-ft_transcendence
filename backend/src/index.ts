@@ -1,9 +1,13 @@
 import fastify from "fastify";
-const server = fastify({ logger: true });
+import dbConnection from "./auth/login.js";
+export const server = fastify({ logger: true });
 const PORT = 5000;
 
-server.get("/ping", async(req, res) => {
-    res.send({test:'hello'});
+server.register(dbConnection);
+
+server.get("/users", async(req, res) => {
+    const rows = server.db.prepare('SELECT * FROM users').all();
+    return rows;
 })
 
 server.listen({ port: PORT }, (err, address) => {
