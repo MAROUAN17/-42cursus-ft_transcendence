@@ -3,7 +3,7 @@ import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
 import { Routes, Route } from 'react-router-dom';
-import Game from './components/game/game'
+import Game from './components/game/Game'
 import Login from "./components/user/login"
 
 export default function App() {
