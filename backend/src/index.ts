@@ -7,7 +7,7 @@ server.register(dbConnection);
 
 server.get("/users", async(req, res) => {
     const rows = server.db.prepare('SELECT * FROM users').all();
-    return rows;
+    res.code(200).send({rows});
 })
 
 server.listen({ port: PORT }, (err, address) => {

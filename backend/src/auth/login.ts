@@ -1,12 +1,14 @@
 import { server } from "../index.js";
 import fp from "fastify-plugin";
-import Database from "better-sqlite3";
-import os from "os";
-import path from "path";
+import Database, { type Database as DatabaseType } from "better-sqlite3";
+import os, { homedir } from "os";
+import fs from "fs";
 
 async function dbConnection () {
     const homeDir = os.homedir();
-    const dbFile = homeDir + '/goinfre' + '/db_data' + '/app.db';
+    const goinfrePath = homeDir + '/goinfre' + '/db_data' + '/app.db';
+    const dbFile = fs.existsSync(homeDir + '/goinfre' + '/db_data' + '/app.db') ? goinfrePath : homedir + '/app.db';
+    
     const db = new Database(dbFile);
 
     server.decorate("db", db);
@@ -15,13 +17,11 @@ async function dbConnection () {
         db.close();
         done();
     })
-
-    console.log("db connected successfully!!");
 }
 
 declare module 'fastify' {
   interface FastifyInstance {
-    db: any;
+    db: DatabaseType;
   }
 }
 
