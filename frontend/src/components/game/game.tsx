@@ -1,6 +1,6 @@
 import  { useEffect, useRef, useState } from "react";
 import Bat from "./Bat";
-import Ball from "./ball";
+import Ball from "./Ball";
 
 export default function Game() {
   const containerRef = useRef<HTMLDivElement | null>(null);
