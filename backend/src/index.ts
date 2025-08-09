@@ -1,19 +1,24 @@
-import fastify from "fastify";
-import dbConnection from "./auth/login.js";
-export const server = fastify({ logger: true });
+import Fastify from "fastify";
+import App from "./app.js";
 const PORT = 5000;
 
-server.register(dbConnection);
-
-server.get("/users", async(req, res) => {
-    const rows = server.db.prepare('SELECT * FROM users').all();
-    res.code(200).send({rows});
+const app = Fastify({
+    logger: true
 })
 
-server.listen({ port: PORT }, (err, address) => {
-    if (err) {
-      console.error(err);
-      process.exit(1);
-    }
-    console.log(`Server listening at ${address}`)
+async function start(): Promise<void> {
+  await app.register(App);
+
+  await app.listen({
+    host: 'localhost',
+    port: PORT
+  });
+}
+
+start().catch(err => {
+  console.log(err);
+  process.exit(1);
 })
+
+export default app;
+

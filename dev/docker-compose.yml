@@ -6,5 +6,5 @@ services:
     ports:
       - "8191:8191"
     volumes:
-      - ./sqlite:/db
+      - ~/goinfre/db_data:/db
     command: ["tail", "-f", "/dev/null"]
