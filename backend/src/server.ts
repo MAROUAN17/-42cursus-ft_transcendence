@@ -1,3 +1,4 @@
+//this is the file where we start the server
 import Fastify from "fastify";
 import App from "./app.js";
 const PORT = 5000;
