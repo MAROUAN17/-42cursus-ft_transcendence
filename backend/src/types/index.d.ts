@@ -5,10 +5,6 @@ declare const app: Fastify.FastifyInstance<import("http").Server<typeof import("
 export default app;
 
 declare module 'fastify' {
-    type findUserSource = {
-        findUser: (email: string) => Promise<User[]>
-    }
-
     export interface FastifyInstance {
         db: DatabaseType;
     }
