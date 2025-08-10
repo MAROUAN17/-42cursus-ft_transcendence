@@ -11,7 +11,7 @@ export const registerUser = async (req: FastifyRequest<{Body: LoginBody}>, res: 
             .prepare('SELECT * from players WHERE username = ? AND email = ?')
             .get(username, email) as User | undefined;
     if (user) {
-        res.status(500).send({ error: "User already exist!" });
+        return res.status(500).send({ error: "User already exist!" });
     }
 
     //register if not exists
