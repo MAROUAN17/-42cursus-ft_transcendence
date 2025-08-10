@@ -5,7 +5,7 @@ const PORT = 5000;
 
 const app = Fastify({
     logger: true
-})
+});
 
 async function start(): Promise<void> {
   await app.register(App);
