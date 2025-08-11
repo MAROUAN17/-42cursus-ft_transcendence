@@ -20,9 +20,11 @@ export const loginUser = async (req: FastifyRequest<{Body: LoginBody}>, res: Fas
                 .prepare('SELECT * from players WHERE email = ?')
                 .get(email) as User | undefined;
         }
-
+        
+        
         if (!user) {
-            res.status(404).send({ error: "User not found. "});
+            console.log(user);
+            res.status(404).send({ error: "User not found"});
         }
 
         //verify JWT token

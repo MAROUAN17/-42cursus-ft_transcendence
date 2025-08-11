@@ -1,6 +1,7 @@
 import app from "../server.js";
 import { type User, type LoginBody  } from "../models/user.js"
 import type { FastifyReply, FastifyRequest } from "fastify";
+import bcrypt from "bcrypt";
 
 
 export const registerUser = async (req: FastifyRequest<{Body: LoginBody}>, res: FastifyReply) => {
@@ -10,6 +11,8 @@ export const registerUser = async (req: FastifyRequest<{Body: LoginBody}>, res: 
     const user = app.db
             .prepare('SELECT * from players WHERE username = ? AND email = ?')
             .get(username, email) as User | undefined;
+
+    //hashing the password
     if (user) {
         return res.status(500).send({ error: "User already exist!" });
     }
