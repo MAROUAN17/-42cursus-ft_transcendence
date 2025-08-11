@@ -45,7 +45,7 @@ export default function Ball({ ballPos, setBallPos, ballVel, setBallVel, paddleL
         const intersectY = (ny - (paddleLeft!.y + paddleLeft!.height / 2)) / (paddleLeft!.height / 2);
         const speed = Math.hypot(ballVel.x, ballVel.y);
         const newAngle = intersectY * (Math.PI / 3);
-        const newSpeed = Math.min(900, speed * 1.05);
+        const newSpeed = Math.min(900, speed * 1.1);
         setBallVel({ x: Math.cos(newAngle) * newSpeed, y: Math.sin(newAngle) * newSpeed });
         nx = paddleLeft!.x + paddleLeft!.width + 10;
       }
@@ -54,7 +54,7 @@ export default function Ball({ ballPos, setBallPos, ballVel, setBallVel, paddleL
         const intersectY = (ny - (paddleRight!.y + paddleRight!.height / 2)) / (paddleRight!.height / 2);
         const speed = Math.hypot(ballVel.x, ballVel.y);
         const newAngle = Math.PI - intersectY * (Math.PI / 3);
-        const newSpeed = Math.min(900, speed * 1.05);
+        const newSpeed = Math.min(900, speed * 1.1);
         setBallVel({ x: Math.cos(newAngle) * newSpeed, y: -Math.sin(newAngle) * newSpeed });
         nx = paddleRight!.x - 10;
       }

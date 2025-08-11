@@ -1,6 +1,7 @@
 import  { useEffect, useRef, useState } from "react";
 import Bat from "./Bat";
 import Ball from "./Ball";
+import Header from "./Header";
 
 export default function Game() {
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -82,11 +83,12 @@ export default function Game() {
 
   return (
     <div className="h-screen bg-gameBg flex items-center justify-center">
-      <div className="absolute top-6 left-6 bg-black bg-opacity-70 rounded p-3 text-green-400 font-mono text-xs shadow-md z-50">
-        <div>ArrowUp/ArrowDown — Left Paddle</div>
-        <div>W/S — Right Paddle</div>
-        <div>Left: {scoreLeft}  —  Right: {scoreRight}</div>
-      </div>
+      <Header
+        scoreLeft={scoreLeft}
+        scoreRight={scoreRight}
+        leftAvatar="/path/to/player1.png"
+        rightAvatar="/path/to/player2.png"
+      />
 
       <div
         ref={containerRef}
