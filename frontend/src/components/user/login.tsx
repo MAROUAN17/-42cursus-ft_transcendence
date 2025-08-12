@@ -1,7 +1,36 @@
+import { useState } from "react";
+
 function Login() {
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const requestOptions = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email, password: password })
+    }
+
+    const handleForm = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        fetch('http://localhost:8088/login', requestOptions)
+            .then(res => res.json())
+            .then(data => console.log(data))
+            .catch(error => console.log(error))
+    }
+    
+    const emailInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+        e.preventDefault();
+        setEmail(e.target.value);
+    }
+
+    const passInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+        e.preventDefault();
+        setPassword(e.target.value)
+    }
+
     return (
         <div className="flex justify-between font-poppins h-screen bg-gameBg items-center overflow-hidden">
             <div className="xl:py-[260px] xl:px-[360px] xl:mt-32 lg:mt-24 lg:w-1/2 lg:px-[220px]">
+                <form onSubmit={handleForm}>
                 <div>
                     <h1 className="text-white xl:text-9xl lg:text-8xl font-bold">
                         WELCOME
@@ -13,23 +42,23 @@ function Login() {
                 <div className="my-24 space-y-12">
                     <div>
                         <label className="flex text-gray-300">Email or username</label>
-                        <input className="text-white bg-transparent border-b border-white py-4 mt-5 w-full" id="email" type="text" placeholder="Email or username" />
+                        <input value={email} onChange={emailInput} className="text-white bg-transparent border-b border-white py-4 mt-5 w-full" id="email" type="text" placeholder="Email or username" />
                     </div>
                     {/* this is the password input */}
                     <div className="">
                         <label className="flex text-gray-300">Password</label>
                         <div className="flex items-center mt-5">
-                            <input className="text-white bg-transparent border-b border-white py-4 w-full" id="password" type="password" placeholder="Password" />
+                            <input value={password} onChange={passInput} className="text-white bg-transparent border-b border-white py-4 w-full" id="password" type="password" placeholder="Password" />
                             {/* <a href=""><img className="w-[18px] h-[18px]" src="/eye.png" alt="hide icon" /></a> */}
                         </div>
                     </div>
                     {/* login button */}
                     <div className="flex justify-between items-center">
                         <div className="flex space-x-3">
-                            <input type="checkbox" />
-                            <p className="text-white text-md whitespace-nowrap rounded-full ">Remember me</p>
-                        </div>
-                        <button className="px-12 py-4 rounded-xl text-white bg-neon font-bold shadow-neon shadow-[0_10px_40px_rgba(0,0,0,0.1)]">
+                            <input type="checkbox" id="remember" />
+                            <p className="text-white text-md rounded-full ">Remember me</p>
+                        </div>c
+                        <button type="submit" className="px-12 py-4 rounded-xl text-white bg-neon font-bold shadow-neon shadow-[0_10px_40px_rgba(0,0,0,0.1)]">
                             Login
                         </button>
                     </div>
@@ -47,7 +76,7 @@ function Login() {
                         <h1 className="text-white font-light">Don't have an account? <span className="font-bold"><a href="/register" className="href">Signup</a></span></h1>
                     </div>
                 </div>
-                
+                </form>
             </div>
             <div className="">
                 <img src="/login-page.png" alt="" />
