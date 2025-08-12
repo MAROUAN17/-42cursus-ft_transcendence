@@ -9,7 +9,7 @@ export const loginUser = async (req: FastifyRequest<{Body: LoginBody}>, res: Fas
         let userPass = {} as userPass;
         const { username, email, password } = req.body;
 
-
+        console.log(password);
         //check username
         if (username) {
             user = app.db
@@ -31,10 +31,15 @@ export const loginUser = async (req: FastifyRequest<{Body: LoginBody}>, res: Fas
                 .get(email);
         }
 
+        console.log(`user password ==> ${userPass.password}`)
+        if (!userPass) {
+            return res.status(401).send({ error: "Wrong credentials"});
+        }
+
         const isMatch = await bcrypt.compare(password, userPass.password);
 
-        if (!user || !isMatch) {
-            return res.status(500).send({ error: "Wrong credentials"});
+        if (!isMatch) {
+            return res.status(401).send({ error: "Wrong credentials"});
         }
 
         //verify JWT token
