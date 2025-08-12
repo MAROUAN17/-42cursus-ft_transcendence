@@ -8,8 +8,7 @@ export const loginUser = async (req: FastifyRequest<{Body: LoginBody}>, res: Fas
         let user = {} as User | undefined;
         let userPass = {} as userPass;
         const { username, email, password } = req.body;
-
-        console.log(password);
+    
         //check username
         if (username) {
             user = app.db
@@ -31,7 +30,6 @@ export const loginUser = async (req: FastifyRequest<{Body: LoginBody}>, res: Fas
                 .get(email);
         }
 
-        console.log(`user password ==> ${userPass.password}`)
         if (!userPass) {
             return res.status(401).send({ error: "Wrong credentials"});
         }
