@@ -31,7 +31,7 @@ function Login() {
 
     return (
         <div className="flex justify-between font-poppins h-screen bg-gameBg items-center overflow-hidden">
-            <div className="xl:py-[260px] xl:px-[360px] xl:mt-32 lg:mt-24 lg:w-1/2 lg:px-[220px]">
+            <div className="xl:py-[260px] xl:px-[300px] xl:mt-32 lg:mt-24 lg:w-1/2 lg:px-[220px]">
                 <form onSubmit={handleForm}>
                 <div>
                     <h1 className="text-white xl:text-9xl lg:text-8xl font-bold">

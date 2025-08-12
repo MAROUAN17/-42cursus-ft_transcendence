@@ -34,7 +34,7 @@ function Register() {
 
     return (
         <div className="flex justify-between font-poppins h-screen bg-gameBg overflow-hidden items-center">
-            <div className="xl:py-[260px] xl:px-[360px] xl:mt-12 lg:mt-24 lg:w-1/2 lg:px-[220px]">
+            <div className="xl:py-[260px] xl:px-[300px] xl:mt-12 lg:mt-24 w-1/2 lg:px-[220px]">
                 <div className="">
                     <h1 className="text-white text-center xl:text-9xl lg:text-8xl font-bold">
                         SIGNUP
@@ -44,7 +44,7 @@ function Register() {
                     </p>
                 </div>
                 <form onSubmit={handleForm}>
-                    <div className="xl:my-24 xl:my-12 lg:my-14 space-y-12">
+                    <div className="xl:my-20 lg:my-14 space-y-10">
                         <div>
                             <label className="flex text-gray-300">Username</label>
                             <input value={username} onChange={usernameInput} className="text-white bg-transparent border-b border-white py-4 mt-5 w-full" id="username" type="text" placeholder="username" />
@@ -62,8 +62,8 @@ function Register() {
                             </div>
                         </div>
                         {/* login button */}
-                        <div className="flex justify-between items-center xl:space-x-52 lg:space-x-4">
-                            <div className="flex space-x-3">
+                        <div className="flex flex-nowrap justify-between items-center xl:space-x-52 lg:space-x-4">
+                            <div className="flex space-x-3 w-full">
                                 <input type="checkbox" />
                                 <p className="text-white xl:text-base lg:text-sm whitespace-nowrap">I accept the terms and conditions</p>
                             </div>
