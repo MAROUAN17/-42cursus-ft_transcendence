@@ -1,9 +1,9 @@
 function Login() {
     return (
         <div className="flex justify-between font-poppins h-screen bg-gameBg items-center overflow-hidden">
-            <div className="py-[260px] px-[360px] mt-32">
+            <div className="xl:py-[260px] xl:px-[360px] xl:mt-32 lg:mt-24 lg:w-1/2 lg:px-[220px]">
                 <div>
-                    <h1 className="text-white text-9xl font-bold">
+                    <h1 className="text-white xl:text-9xl lg:text-8xl font-bold">
                         WELCOME
                     </h1>
                     <p className="text-white text-center text-xl py-2 font-light">
@@ -27,7 +27,7 @@ function Login() {
                     <div className="flex justify-between items-center">
                         <div className="flex space-x-3">
                             <input type="checkbox" />
-                            <p className="text-white text-md whitespace-nowrap">Remember me</p>
+                            <p className="text-white text-md whitespace-nowrap rounded-full ">Remember me</p>
                         </div>
                         <button className="px-12 py-4 rounded-xl text-white bg-neon font-bold shadow-neon shadow-[0_10px_40px_rgba(0,0,0,0.1)]">
                             Login
@@ -36,12 +36,12 @@ function Login() {
 
                     {/* login with others section */}
                     <div className="flex justify-between items-center">
-                        <hr className="w-[35%]"></hr>
+                        <hr className="xl:w-[35%] lg:w-[30%]"></hr>
                         <h1 className="text-white">Login with others</h1>
-                        <hr className="w-[35%]"></hr>
+                        <hr className="xl:w-[35%] lg:w-[30%]"></hr>
                     </div>
                     <div className="flex justify-center">
-                        <img className="w-[52px] h-[52px]" src="/42-icon.png" alt="42 icon" />
+                        <img className="w-[32px] h-[32px]" src="/42-icon.png" alt="42 icon" />
                     </div>
                     <div className="flex justify-center">
                         <h1 className="text-white font-light">Don't have an account? <span className="font-bold"><a href="/register" className="href">Signup</a></span></h1>
@@ -49,8 +49,8 @@ function Login() {
                 </div>
                 
             </div>
-            <div className="w-[50%] overflow-hidden">
-                <img src="/login-page.jpg" alt="" />
+            <div className="">
+                <img src="/login-page.png" alt="" />
             </div>
         </div>
     );

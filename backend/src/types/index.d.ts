@@ -7,5 +7,6 @@ export default app;
 declare module 'fastify' {
     export interface FastifyInstance {
         db: DatabaseType;
+        jwtAuth: any;
     }
 }

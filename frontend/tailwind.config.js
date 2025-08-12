@@ -12,6 +12,13 @@ module.exports = {
         'darkBg' : '#14121C',
         'compBg' : '#471396'
       },
+      fontFamily: {
+        'poppins': ['poppins', 'sans-serif']
+      },
+      screens: {
+        'lg': '1200px',
+        'xl': '2000px'
+      }
     },
   },
   plugins: [

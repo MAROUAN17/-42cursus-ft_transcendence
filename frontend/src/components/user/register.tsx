@@ -2,23 +2,23 @@
 function Register() {
     return (
         <div className="flex justify-between font-poppins h-screen bg-gameBg overflow-hidden items-center">
-            <div className="py-[260px] px-[360px] mt-32">
-                <div>
-                    <h1 className="text-white text-center text-9xl font-bold">
+            <div className="xl:py-[260px] xl:px-[360px] xl:mt-12 lg:mt-24 lg:w-1/2 lg:px-[220px]">
+                <div className="">
+                    <h1 className="text-white text-center xl:text-9xl lg:text-8xl font-bold">
                         SIGNUP
                     </h1>
                     <p className="text-white text-center text-xl py-2 font-light">
                         Join and have fun with your friends
                     </p>
                 </div>
-                <div className="my-24 space-y-12">
+                <div className="xl:my-24 xl:my-12 lg:my-14 space-y-12">
                     <div>
                         <label className="flex text-gray-300">Username</label>
-                        <input className="text-white bg-transparent border-b border-white py-4 mt-5 w-full" id="username" type="text" placeholder="Email or username" />
+                        <input className="text-white bg-transparent border-b border-white py-4 mt-5 w-full" id="username" type="text" placeholder="username" />
                     </div>
                     <div>
                         <label className="flex text-gray-300">Email</label>
-                        <input className="text-white bg-transparent border-b border-white py-4 mt-5 w-full" id="email" type="text" placeholder="Email or username" />
+                        <input className="text-white bg-transparent border-b border-white py-4 mt-5 w-full" id="email" type="text" placeholder="Email" />
                     </div>
                     {/* this is the password input */}
                     <div className="">
@@ -29,10 +29,10 @@ function Register() {
                         </div>
                     </div>
                     {/* login button */}
-                    <div className="flex justify-between items-center space-x-52">
+                    <div className="flex justify-between items-center xl:space-x-52 lg:space-x-4">
                         <div className="flex space-x-3">
                             <input type="checkbox" />
-                            <p className="text-white text-md whitespace-nowrap">I accept the terms and conditions</p>
+                            <p className="text-white xl:text-base lg:text-sm whitespace-nowrap">I accept the terms and conditions</p>
                         </div>
                         <button className="px-12 py-4 rounded-xl text-white bg-neon font-bold shadow-neon shadow-[0_10px_40px_rgba(0,0,0,0.1)]">
                             REGISTER
@@ -41,12 +41,12 @@ function Register() {
 
                     {/* login with others section */}
                     <div className="flex justify-between items-center">
-                        <hr className="w-[35%]"></hr>
+                        <hr className="xl:w-[35%] lg:w-[30%]"></hr>
                         <h1 className="text-white">Login with others</h1>
-                        <hr className="w-[35%]"></hr>
+                        <hr className="xl:w-[35%] lg:w-[30%]"></hr>
                     </div>
                     <div className="flex justify-center">
-                        <img className="w-[52px] h-[52px]" src="/42-icon.png" alt="42 icon" />
+                        <img className="w-[32px] h-[32px]" src="/42-icon.png" alt="42 icon" />
                     </div>
                     <div className="flex justify-center">
                         <h1 className="text-white font-light">Already have an account? <span className="font-bold"><a href="/login" className="href">Login</a></span></h1>
@@ -54,8 +54,8 @@ function Register() {
                 </div>
                 
             </div>
-            <div className="w-[50%] overflow-hidden">
-                <img src="/login-page.jpg" alt="" />
+            <div className="xl:w-[50%] overflow-hidden lg:w-1/2">
+                <img src="/login-page.png" alt="" />
             </div>
         </div>
     )

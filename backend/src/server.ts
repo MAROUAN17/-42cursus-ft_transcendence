@@ -11,12 +11,12 @@ const app = Fastify({
 
 async function start(): Promise<void> {
   await app.register(fastifyEnv, options)
-  await app.register(fastifyJwt, { secret: process.env.JWT_SIGNING_KEY });
+  await app.register(fastifyJwt, { secret: process.env.JWT_SIGNING_KEY! });
   await app.register(App);
 
   await app.listen({
     host: '0.0.0.0',
-    port: process.env.PORT
+    port: Number(process.env.PORT) | 8080
   });
 }
 

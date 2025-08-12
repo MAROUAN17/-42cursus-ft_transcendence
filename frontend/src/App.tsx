@@ -5,6 +5,7 @@ import './App.css'
 import { Routes, Route } from 'react-router-dom';
 import Game from './components/game/game'
 import Login from "./components/user/login"
+import Register from "./components/user/register"
 import Chat from './components/chat/chat';
 
 export default function App() {
@@ -13,6 +14,7 @@ export default function App() {
       <Routes>
         <Route path='/game' element={<Game />}/>
         <Route path='/login' element={<Login />}/>
+        <Route path='/register' element={<Register />}/>
         <Route path='/chat' element={<Chat />}/>
       </Routes>
     </div>

@@ -1,23 +1,40 @@
 import app from "../server.js";
 import { type User, type LoginBody  } from "../models/user.js"
 import type { FastifyReply, FastifyRequest } from "fastify";
+import bcrypt from "bcrypt";
 
 
 export const registerUser = async (req: FastifyRequest<{Body: LoginBody}>, res: FastifyReply) => {
-    const { username, email, password } = req.body;
+    try {
+        let user = {} as User | undefined;
+        const { username, email, password } = req.body;
 
-    //check if user exists
-    const user = app.db
-            .prepare('SELECT * from players WHERE username = ? AND email = ?')
-            .get(username, email) as User | undefined;
-    if (user) {
-        return res.status(500).send({ error: "User already exist!" });
+        //check if username user exists
+        user = app.db
+                .prepare('SELECT * from players WHERE username = ?')
+                .get(username) as User | undefined;
+        if (user)
+            res.status(500).send({ error: "Username already exists" });
+
+        //check if user email already exists
+        user = app.db
+            .prepare('SELECT * from players WHERE email = ?')
+            .get(email) as User | undefined;
+        if (user) {
+            return res.status(500).send({ error: "Email already exist!" });
+        }
+
+        //hashing the password
+        const hash: string = await bcrypt.hash(password, 10);
+
+        app.db
+            .prepare('INSERT INTO players(username, email, password) VALUES (?, ?, ?)')
+            .run(username, email, hash);
+
+        res.status(200).send({ message: "Registered successfully" });
     }
-
-    //register if not exists
-    const info = app.db
-        .prepare('INSERT INTO players(username, email, password) VALUES (?, ?, ?)')
-        .run(username, email, password);
-
-    return res.status(200).send({ message: info.changes });
+    catch (error) {
+        console.log(error);
+        res.status(500).send({ error });
+    }
 }
