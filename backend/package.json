@@ -6,7 +6,7 @@
   "main": "dist/server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "tsx watch src/server.ts",
+    "dev": "tsx watch src/index.ts",
     "build": "tsc -p tsconfig.json",
     "start": "node dist/server.js"
   },
@@ -17,8 +17,8 @@
     "@fastify/env": "^5.0.2",
     "@fastify/formbody": "^8.0.2",
     "@fastify/jwt": "^9.1.0",
-    "@fastify/websocket": "^11.2.0",
     "@fastify/sensible": "^6.0.3",
+    "@fastify/websocket": "^11.2.0",
     "better-sqlite3": "^12.2.0",
     "dotenv": "^17.2.1",
     "fastify": "^5.4.0",
@@ -27,7 +27,9 @@
     "fastify-sqlite": "^1.1.0",
     "fastify-websocket": "^4.3.0",
     "nodemon": "^3.1.10",
-    "tsx": "^4.20.3"
+    "ts-node": "^10.9.2",
+    "tsx": "^4.20.3",
+    "uuid": "^11.1.0"
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.13",
