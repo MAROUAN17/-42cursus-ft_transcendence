@@ -1,22 +1,20 @@
 import { useState } from "react";
+import axios from "axios";
 
 function Register() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [username, setUsername] = useState("");
 
-    const requestOptions = {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username:username, email: email, password: password })
-    }
-
     const handleForm = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        fetch('http://localhost:8088/register', requestOptions)
-            .then(res => res.json())
-            .then(data => console.log(data))
-            .catch(error => console.log(error))
+        axios.post('http://localhost:8088/register', { username:username, email: email, password: password })
+            .then(function(res) {
+                console.log(res.data);
+            })
+            .catch(function(err) {
+                console.log(err.response.data);
+            })
     }
     
     const emailInput = (e: React.ChangeEvent<HTMLInputElement>) => {
