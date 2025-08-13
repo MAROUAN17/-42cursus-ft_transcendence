@@ -1,9 +1,10 @@
 //this is the file where we start the server
 import Fastify from "fastify";
 import App from "./app.js";
+import { options } from "./plugins/env.js"
 import fastifyEnv from "@fastify/env";
 import fastifyJwt from "@fastify/jwt";
-import { options } from "./plugins/env.js"
+import fastifyCookie from "@fastify/cookie";
 import cors from '@fastify/cors'
 
 const app = Fastify({
@@ -18,8 +19,15 @@ async function start(): Promise<void> {
     credentials: true,
     maxAge: 600
   })
+  await app.register(fastifyCookie);
   await app.register(fastifyEnv, options)
-  await app.register(fastifyJwt, { secret: process.env.JWT_SIGNING_KEY! });
+  await app.register(fastifyJwt, { 
+    secret: process.env.JWT_SIGNING_KEY!,
+    cookie: {
+      cookieName: 'token',
+      signed: false
+    }
+  });
   await app.register(App);
 
   await app.listen({

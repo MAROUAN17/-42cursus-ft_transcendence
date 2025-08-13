@@ -9,13 +9,11 @@ function Login() {
 
     const handleForm = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        axios.post('http://localhost:8088/login', { email: email, password: password })
+        axios.post('http://localhost:8088/login', { email: email, password: password },
+            { withCredentials: true }
+        )
             .then(function(res) {
-                console.log(res.data);
-                localStorage.setItem('jwtToken', res.data.token);
-
-                console.log(localStorage.getItem('jwtToken'));
-                navigate('/game');
+                navigate("/");
             })
             .catch(function (err) {
                 console.log(err.response.data);
