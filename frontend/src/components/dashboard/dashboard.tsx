@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { userInfos } from "../user/login";
 
 
 export default function Dashboard() {
@@ -19,7 +20,7 @@ export default function Dashboard() {
     }
     return (
         <div>
-            <h1>Logged in</h1>
+            <h1>Welcome {userInfos.username}</h1>
             <button className="px-12 py-4 bg-neon text-white" onClick={handleClick}>click</button>
         </div>
     )

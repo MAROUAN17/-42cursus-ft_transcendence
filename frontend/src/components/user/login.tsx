@@ -2,7 +2,12 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-export let userInfos = {};
+export interface Infos {
+    username: string, 
+    email: string
+}
+
+export let userInfos = {} as Infos;
 
 function Login() {
     const navigate = useNavigate();
