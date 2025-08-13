@@ -2,6 +2,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
+export let userInfos = {};
+
 function Login() {
     const navigate = useNavigate();
     const [email, setEmail] = useState("");
@@ -13,6 +15,7 @@ function Login() {
             { withCredentials: true }
         )
             .then(function(res) {
+                userInfos = { email: res.data.data.email, username: res.data.data.username };
                 navigate("/");
             })
             .catch(function (err) {
