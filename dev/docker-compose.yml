@@ -1,0 +1,10 @@
+services:
+  sqlite:
+    image: hibitdev/sqlite:latest
+    container_name: sqlite
+    hostname: sqlite.hibit
+    ports:
+      - "8191:8191"
+    volumes:
+      - ~/goinfre/db_data:/db
+    command: ["tail", "-f", "/dev/null"]

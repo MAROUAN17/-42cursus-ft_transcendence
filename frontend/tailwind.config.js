@@ -1,3 +1,4 @@
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
@@ -8,9 +9,13 @@ module.exports = {
       colors: {
         'gameBg' : '#090040',
         'neon' : '#B13BFF',
-        'bat2Color': '#FFCC00'
+        'bat2Color': '#FFCC00',
+        'darkBg' : '#14121C',
+        'compBg' : '#471396'
       },
     },
   },
-  plugins: [],
+  plugins: [
+    require('tailwind-scrollbar'),
+  ],
 }

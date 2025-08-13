@@ -1,6 +1,6 @@
 import  { useEffect, useRef, useState } from "react";
 import Bat from "./Bat";
-import Ball from "./Ball";
+import Ball from "./ball";
 import Header from "./Header";
 
 export default function Game() {
