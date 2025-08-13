@@ -12,6 +12,9 @@ function Login() {
         axios.post('http://localhost:8088/login', { email: email, password: password })
             .then(function(res) {
                 console.log(res.data);
+                localStorage.setItem('jwtToken', res.data.token);
+
+                console.log(localStorage.getItem('jwtToken'));
                 navigate('/game');
             })
             .catch(function (err) {
