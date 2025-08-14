@@ -7,8 +7,6 @@ export interface Infos {
     email: string
 }
 
-export let userInfos = {} as Infos;
-
 function Login() {
     const navigate = useNavigate();
     const [email, setEmail] = useState("");
@@ -20,11 +18,11 @@ function Login() {
             { withCredentials: true }
         )
             .then(function(res) {
-                userInfos = { email: res.data.data.email, username: res.data.data.username };
+                localStorage.setItem('user', JSON.stringify(res.data.data));
                 navigate("/");
             })
             .catch(function (err) {
-                console.log(err.response.data);
+                console.log(err.response.data.error);
             })
     }
     
