@@ -1,4 +1,6 @@
 import Fastify from "fastify";
+import { OAuth2Namespace } from "@fastify/oauth2";
+
 declare const app: Fastify.FastifyInstance<import("http").Server<typeof import("http").IncomingMessage, typeof import("http").ServerResponse>, import("http").IncomingMessage, import("http").ServerResponse<import("http").IncomingMessage>, Fastify.FastifyBaseLogger, Fastify.FastifyTypeProviderDefault> & PromiseLike<Fastify.FastifyInstance<import("http").Server<typeof import("http").IncomingMessage, typeof import("http").ServerResponse>, import("http").IncomingMessage, import("http").ServerResponse<import("http").IncomingMessage>, Fastify.FastifyBaseLogger, Fastify.FastifyTypeProviderDefault>> & {
     __linterBrands: "SafePromiseLike";
 };
@@ -8,5 +10,6 @@ declare module 'fastify' {
     export interface FastifyInstance {
         db: DatabaseType;
         jwtAuth: any;
+        intra42Oauth: OAuth2Namespace;
     }
-}
+};

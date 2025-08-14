@@ -1,6 +1,7 @@
 //this file for where we create the fastify instance and register all the plugins
 import Sensible from "@fastify/sensible";
 import fastifyFormbody from "@fastify/formbody";
+import { fastifyOauth2 } from "@fastify/oauth2";
 import app from "./server.js";
 import { type FastifyInstance, type FastifyPluginOptions } from "fastify"
 import { dbConnection } from "./plugins/db.js"
@@ -12,6 +13,16 @@ export default async function App(fastify: FastifyInstance, opts: FastifyPluginO
     await app.register(Sensible);
     await app.register(dbConnection);
     await app.register(fastifyFormbody);
+    // await app.register(fastifyOauth2, {
+    //     name: '42intraOauth',
+    //     credentials: {
+    //         client: {
+    //             id: process.env.AUTH_UID! as string,
+    //             secret: process.env.AUTH_SECRET! as string
+    //         },
+    //         auth: fastifyOauth2.
+    //     },
+    // })
     await app.register(jwtPlugin);
 
     //routes of auth

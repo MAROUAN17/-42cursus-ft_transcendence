@@ -22,17 +22,17 @@ export const loginUser = async (req: FastifyRequest<{Body: LoginBody}>, res: Fas
         }
 
         if (!user) {
-            return res.status(401).send({ error: "Wrong credentials"});
+            return res.status(401).send({ error: "Wrong credentials" });
         }
 
         const isMatch = await bcrypt.compare(password, user?.password);
 
         if (!isMatch) {
-            return res.status(401).send({ error: "Wrong credentials"});
+            return res.status(401).send({ error: "Wrong credentials" });
         }
 
         //verify JWT token
-        const token = app.jwt.sign({ email, username }, { expiresIn: '10s' });
+        const token = app.jwt.sign({ email:user.email, username:user.username }, { expiresIn: '10s' });
     
         //set JWT token as cookie
         return res.setCookie('token', token, {

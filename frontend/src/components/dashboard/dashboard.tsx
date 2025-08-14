@@ -14,15 +14,19 @@ export default function Dashboard() {
                 console.log("Authorized!!");
             })
             .catch(function (err) {
-                console.log(err.response.data)
-                localStorage.clear();
                 navigate("/login");
             })
     }
 
     useEffect(() => {
-        const userInfos = JSON.parse(localStorage.getItem('user')!);
-        setUser(userInfos);
+        axios.get('http://localhost:8088/user', { withCredentials: true })
+            .then(function(res) {
+                setUser(res.data.infos);
+            })
+            .catch(function(err) {
+                console.log(err.response.data);
+                navigate('/login');
+            })
     }, []);
 
     return (
