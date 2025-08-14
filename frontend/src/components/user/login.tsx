@@ -13,7 +13,6 @@ function Login() {
             .then(function(res) {
                 console.log(res.data);
                 localStorage.setItem('jwtToken', res.data.token);
-
                 console.log(localStorage.getItem('jwtToken'));
                 navigate('/game');
             })

@@ -6,5 +6,5 @@ services:
     ports:
       - "8191:8191"
     volumes:
-      - ~/goinfre/db_data:/db
+      - /goinfre/oait-laa/db_data:/db
     command: ["tail", "-f", "/dev/null"]
