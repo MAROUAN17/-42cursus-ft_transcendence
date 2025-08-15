@@ -7,7 +7,7 @@ mkdir -p $DB_PATH
 touch $DB_NAME
 
 sqlite3 "$DB_NAME" <<EOF 
-    CREATE TABLE IF NOT EXISTS PLAYERS (
+    CREATE TABLE IF NOT EXISTS players (
         id INTEGER PRIMARY KEY,
         username TEXT NOT NULL, 
         email TEXT NOT NULL,

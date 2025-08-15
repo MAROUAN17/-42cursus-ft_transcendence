@@ -1,16 +1,19 @@
 import { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 function Register() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [username, setUsername] = useState("");
+    const navigate = useNavigate();
 
     const handleForm = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         axios.post('http://localhost:8088/register', { username:username, email: email, password: password })
             .then(function(res) {
                 console.log(res.data);
+                navigate("/login");
             })
             .catch(function(err) {
                 console.log(err.response.data);
