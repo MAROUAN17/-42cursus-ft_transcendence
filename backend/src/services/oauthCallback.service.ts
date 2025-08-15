@@ -19,12 +19,23 @@ export const oauthCallback = async (req: FastifyRequest, res: FastifyReply) => {
         const resData = await fetch('https://api.intra.42.fr/v2/me', {
             headers: { Authorization: `Bearer ${token.access_token}` }
         })
+        const userData = await resData.json();
 
-        const userInfo = await resData.json();
-
-        console.log(userInfo.length);
-
-        res.status(200).send({ data: userInfo });
+        const email = userData.email, username = userData.login;
+        app.db
+            .prepare('INSERT INTO players(email, username) VALUES (?, ?)')
+            .run(email, username);
+        
+        const tokenJWT = app.jwt.sign({ email:email, username:username }, { expiresIn: '10s' });
+    
+        //set JWT token as cookie
+        return res.setCookie('token', tokenJWT, {
+            path: '/',
+            secure: false,
+            httpOnly: true, 
+            sameSite: 'lax',
+            maxAge: 300
+        }).redirect("http://localhost:5173/");
     } catch (error) {
         console.log(error);
         res.status(401).send({ error: error });

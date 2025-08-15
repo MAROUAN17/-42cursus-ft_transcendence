@@ -11,6 +11,6 @@ sqlite3 "$DB_NAME" <<EOF
         id INTEGER PRIMARY KEY,
         username TEXT NOT NULL, 
         email TEXT NOT NULL,
-        password TEXT NOT NULL
+        password TEXT
     );
 EOF

@@ -16,7 +16,7 @@ function Register() {
                 navigate("/login");
             })
             .catch(function(err) {
-                console.log(err.response.data);
+                console.log(err.response.data.error);
             })
     }
     
