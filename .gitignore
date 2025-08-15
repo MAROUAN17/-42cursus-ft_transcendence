@@ -2,8 +2,10 @@
 **/node_modules
 /.pnp
 .pnp.js
+.vscode
 
 /backend/dist
+/backend/.env
 
 # testing
 /coverage

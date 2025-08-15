@@ -1,7 +1,9 @@
 FROM alpine:latest
  
-RUN apk update && apk add sqlite
+COPY ./tools/entry.sh /usr/local/bin/entry.sh
+RUN chmod +x /usr/local/bin/entry.sh
+RUN apk update && apk add sqlite && apk add bash
  
 WORKDIR /db
- 
-CMD ["sqlite3"]
+
+ENTRYPOINT /usr/local/bin/entry.sh

@@ -15,9 +15,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@fastify/cookie": "^11.0.2",
+    "@fastify/cors": "^11.1.0",
     "@fastify/env": "^5.0.2",
     "@fastify/formbody": "^8.0.2",
     "@fastify/jwt": "^9.1.0",
+    "@fastify/oauth2": "^8.1.2",
     "@fastify/sensible": "^6.0.3",
     "@fastify/websocket": "^11.2.0",
     "bcrypt": "^6.0.0",
@@ -29,7 +32,9 @@
     "fastify-sqlite": "^1.1.0",
     "fastify-websocket": "^4.3.0",
     "nodemon": "^3.1.10",
-    "tsx": "^4.20.3"
+    "ts-node": "^10.9.2",
+    "tsx": "^4.20.3",
+    "uuid": "^11.1.0"
   },
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",
