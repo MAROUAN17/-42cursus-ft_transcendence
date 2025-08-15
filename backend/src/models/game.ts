@@ -1,29 +1,28 @@
-export interface Player {
-	id: string;              
-	name: string;            
-	score: number;           
-	positionY: number;       
-	velocityY: number;       
-  }
-  
-  export interface Ball {
-	x: number;               
-	y: number;               
-	velocityX: number;       
-	velocityY: number;       
-	radius: number;          
-  }
-  
-  export interface GameBounds {
-	width: number;           
-	height: number;          
-  }
-  
-  export interface GameState {
-	id: string;              
-	players: [Player, Player];
-	ball: Ball;               
-	bounds: GameBounds;       
-	isRunning: boolean;       
-	winner?: string;          
-  }
+export interface Position {
+    x: number;
+    y: number;
+}
+
+export interface Paddle {
+    y: number;
+}
+
+export interface GameState {
+    bounds: { width: number; height: number };
+    leftPaddle: Paddle;
+    rightPaddle: Paddle;
+    ballPos: Position;
+    ballVel: Position;
+    scoreLeft: number;
+    scoreRight: number;
+}
+
+export const gameState: GameState = {
+    bounds: { width: 800, height: 400 },
+    leftPaddle: { y: 140 },
+    rightPaddle: { y: 140 },
+    ballPos: { x: 400, y: 200 },
+    ballVel: { x: 300, y: 120 },
+    scoreLeft: 0,
+    scoreRight: 0
+};
