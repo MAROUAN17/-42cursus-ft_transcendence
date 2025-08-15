@@ -7,6 +7,7 @@ import { type FastifyInstance, type FastifyPluginOptions } from "fastify"
 import { dbConnection } from "./plugins/db.js"
 import { authRoutes } from "./routes/auth.routes.js";
 import { jwtPlugin } from "./plugins/jwt.js";
+import { gameRoutes } from "./routes/game.route.js";
 
 
 export default async function App(fastify: FastifyInstance, opts: FastifyPluginOptions): Promise<void> {
@@ -27,4 +28,5 @@ export default async function App(fastify: FastifyInstance, opts: FastifyPluginO
 
     //routes of auth
     await app.register(authRoutes);
+    app.register(gameRoutes);
 }

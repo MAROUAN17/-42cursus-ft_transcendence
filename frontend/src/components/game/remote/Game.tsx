@@ -22,6 +22,29 @@ export default function RGame() {
   const [scoreRight, setScoreRight] = useState(0);
 
 
+
+	useEffect(() => {
+		const fetchGameInfo = async () => {
+		try {
+			const res = await fetch("http://localhost:8088/game");
+			if (!res.ok) {
+			throw new Error(`HTTP error! status: ${res.status}`);
+			}
+			const data = await res.json();
+			console.log("Game Info from backend:", data);
+		} catch (err) {
+			console.error("Failed to fetch game info:", err);
+		}
+		};
+
+		fetchGameInfo();
+	}, []);
+
+
+  const paddleLeft = { x: 24, y: leftY, width: PADDLE_WIDTH, height: PADDLE_HEIGHT };
+  const paddleRight = { x: bounds.width - 24 - PADDLE_WIDTH, y: rightY, width: PADDLE_WIDTH, height: PADDLE_HEIGHT };
+
+
   return (
 	<div className="h-screen bg-gameBg flex items-center justify-center">
 	  <RHeader
@@ -47,7 +70,6 @@ export default function RGame() {
 		  paddleLeft={paddleLeft}
 		  paddleRight={paddleRight}
 		  bounds={bounds}
-		  onScore={handleScore}
 		/>
 
 		<div className="absolute top-0 left-1/2 transform -translate-x-1/2 h-full flex flex-col justify-center items-center">

@@ -1,28 +1,56 @@
-export interface Position {
+// src/game/game.server.ts
+export interface Paddle {
     x: number;
     y: number;
-}
-
-export interface Paddle {
+    width: number;
+    height: number;
+  }
+  
+  export interface Ball {
+    x: number;
     y: number;
-}
-
-export interface GameState {
+    velX: number;
+    velY: number;
+  }
+  
+  export interface GameInfo {
+    ball: Ball;
+    paddleLeft: Paddle;
+    paddleRight: Paddle;
     bounds: { width: number; height: number };
-    leftPaddle: Paddle;
-    rightPaddle: Paddle;
-    ballPos: Position;
-    ballVel: Position;
     scoreLeft: number;
     scoreRight: number;
-}
-
-export const gameState: GameState = {
-    bounds: { width: 800, height: 400 },
-    leftPaddle: { y: 140 },
-    rightPaddle: { y: 140 },
-    ballPos: { x: 400, y: 200 },
-    ballVel: { x: 300, y: 120 },
+  }
+  
+  const GAME_WIDTH = 800;
+  const GAME_HEIGHT = 400;
+  const PADDLE_WIDTH = 18;
+  const PADDLE_HEIGHT = 120;
+  
+  export const GameInfo: GameInfo = {
+    ball: {
+      x: GAME_WIDTH / 2,
+      y: GAME_HEIGHT / 2,
+      velX: 300, 
+      velY: 120
+    },
+    paddleLeft: {
+      x: 24,
+      y: (GAME_HEIGHT - PADDLE_HEIGHT) / 2,
+      width: PADDLE_WIDTH,
+      height: PADDLE_HEIGHT
+    },
+    paddleRight: {
+      x: GAME_WIDTH - 24 - PADDLE_WIDTH,
+      y: (GAME_HEIGHT - PADDLE_HEIGHT) / 2,
+      width: PADDLE_WIDTH,
+      height: PADDLE_HEIGHT
+    },
+    bounds: {
+      width: GAME_WIDTH,
+      height: GAME_HEIGHT
+    },
     scoreLeft: 0,
     scoreRight: 0
-};
+  };
+  
