@@ -6,6 +6,7 @@ import fastifyEnv from "@fastify/env";
 import fastifyJwt from "@fastify/jwt";
 import fastifyCookie from "@fastify/cookie";
 import cors from '@fastify/cors'
+import { oauthPlugin } from "./plugins/oauth.js";
 
 const app = Fastify({
     logger: true
@@ -28,7 +29,9 @@ async function start(): Promise<void> {
       signed: false
     }
   });
+  await app.register(oauthPlugin);
   await app.register(App);
+
 
   await app.listen({
     host: '0.0.0.0',

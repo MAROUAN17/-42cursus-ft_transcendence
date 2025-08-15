@@ -18,7 +18,6 @@ function Login() {
             { withCredentials: true }
         )
             .then(function(res) {
-                localStorage.setItem('user', JSON.stringify(res.data.data));
                 navigate("/");
             })
             .catch(function (err) {
@@ -33,7 +32,7 @@ function Login() {
 
     const passInput = (e: React.ChangeEvent<HTMLInputElement>) => {
         e.preventDefault();
-        setPassword(e.target.value)
+        setPassword(e.target.value);
     }
 
     return (
@@ -79,7 +78,7 @@ function Login() {
                         <hr className="xl:w-[35%] lg:w-[30%]"></hr>
                     </div>
                     <div className="flex justify-center">
-                        <img className="w-[32px] h-[32px]" src="/42-icon.png" alt="42 icon" />
+                        <a href="http://localhost:8088/intra42/login"><img className="w-[32px] h-[32px]" src="/42-icon.png" alt="42 icon" /></a>
                     </div>
                     <div className="flex justify-center">
                         <h1 className="text-white font-light">Don't have an account? <span className="font-bold"><a href="/register" className="href">Signup</a></span></h1>

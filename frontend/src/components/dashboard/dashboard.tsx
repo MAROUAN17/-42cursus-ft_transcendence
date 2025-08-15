@@ -21,6 +21,7 @@ export default function Dashboard() {
     useEffect(() => {
         axios.get('http://localhost:8088/user', { withCredentials: true })
             .then(function(res) {
+                console.log(res.data.infos);
                 setUser(res.data.infos);
             })
             .catch(function(err) {
