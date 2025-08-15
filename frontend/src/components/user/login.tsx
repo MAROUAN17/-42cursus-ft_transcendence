@@ -2,6 +2,13 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
+export interface Infos {
+    username: string, 
+    email: string
+}
+
+export let userInfos = {} as Infos;
+
 function Login() {
     const navigate = useNavigate();
     const [email, setEmail] = useState("");
@@ -9,12 +16,12 @@ function Login() {
 
     const handleForm = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        axios.post('http://localhost:8088/login', { email: email, password: password })
+        axios.post('http://localhost:8088/login', { email: email, password: password },
+            { withCredentials: true }
+        )
             .then(function(res) {
-                console.log(res.data);
-                localStorage.setItem('jwtToken', res.data.token);
-                console.log(localStorage.getItem('jwtToken'));
-                navigate('/game');
+                userInfos = { email: res.data.data.email, username: res.data.data.username };
+                navigate("/");
             })
             .catch(function (err) {
                 console.log(err.response.data);

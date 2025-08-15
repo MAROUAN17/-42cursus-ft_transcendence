@@ -7,44 +7,45 @@ import ChatBubble from "./chatBubble";
 import { dbConnection } from "../../../../backend/src/plugins/db";
 import type { User } from "../../../../backend/src/models/user";
 import { useState, useEffect } from "react";
+import axios from "axios";
+import type { messagePacket } from "../../../../backend/src/models/chat";
+import { userInfos } from "../user/login";
 
 const Chat = () => {
   interface props {
     source: "sender" | "receiver";
     content: string;
   }
-  interface messagePacket {
-    to: string;
-    message: string;
-  }
-  const [messages, setMessages] = useState<props[]>([]);
+  const [messages, setMessages] = useState<messagePacket[]>([]);
   const [websocket, setWebsocket] = useState<WebSocket | null>(null);
   const [users, setUsers] = useState<User[]>([]);
   const [currUser, setCurrUser] = useState<User | null>();
   useEffect(() => {
-    console.log("Users updated:", users);
-  }, [users]);
+    if (!currUser) return;
+    axios("http://localhost:8088/messages/" + currUser.email, { withCredentials: true })
+      .then((res) => {
+        setMessages(res.data.data);
+      })
+      .catch((error) => console.error("Error fetching messages:", error));
+  }, [currUser]);
+
   useEffect(() => {
-    fetch("http://localhost:8088/users")
-      .then((res) => res.json())
-      .then((data) => {
-        setUsers(data.data);
-        console.log(data.data);
+    axios("http://localhost:8088/users", { withCredentials: true })
+      .then((res) => {
+        setUsers(res.data.data);
+        console.log(res.data.data);
       })
       .catch((error) => console.error("Error fetching users:", error));
 
-    const ws = new WebSocket(
-      "ws://localhost:8088/send-message?token=" +
-        localStorage.getItem("jwtToken")
-    );
+    const ws = new WebSocket("ws://localhost:8088/send-message");
     ws.onopen = () => {
       console.log("Websocket Connected!");
-      console.log(localStorage.getItem("jwtToken"));
       setWebsocket(ws);
     };
     ws.onmessage = (event) => {
+      const newMsg : messagePacket = JSON.parse(event.data.toString())
       setMessages((prev) => [
-        { source: "receiver", content: event.data },
+        newMsg,
         ...prev,
       ]);
     };
@@ -59,11 +60,12 @@ const Chat = () => {
       if (input && input.value != "" && currUser) {
         const message: string = input.value;
         const msgPacket: messagePacket = {
+          from: "",
           to: currUser.email,
           message: message,
         };
         setMessages((prev) => [
-          { source: "sender", content: message },
+          msgPacket,
           ...prev,
         ]);
         if (websocket && websocket.readyState == WebSocket.OPEN)
@@ -72,7 +74,7 @@ const Chat = () => {
       }
     }
   }
-  console.log(users);
+  console.log("User info -> ",userInfos);
 
   return (
     <div className="flex  flex-row h-screen bg-darkBg p-5 gap-x-4 font-poppins">
@@ -128,31 +130,31 @@ const Chat = () => {
             </div>
             <div className=" overflow-y-auto flex flex-col-reverse p-6 gap-1 h-screen space-y-reverse scrollbar-thin scrollbar scrollbar-thumb-neon/80 scrollbar-track-white/10 ">
               {messages.map((message, i, arr) =>
-                message.source == "sender" ? (
-                  i == 0 || arr[i - 1].source == "receiver" ? (
+                message.to == currUser.email ? (
+                  i == 0 || arr[i - 1].to != currUser.email ? (
                     <div className="self-start bg-neon/[55%] text-white px-4 py-2 rounded-2xl rounded-tl-sm max-w-xs">
-                      {message.content}
+                      {message.message}
                     </div>
-                  ) : i + 1 < arr.length && arr[i + 1].source != "receiver" ? (
+                  ) : i + 1 < arr.length && arr[i + 1].to == currUser.email ? (
                     <div className="self-start bg-neon/[55%] text-white px-4 py-2 rounded-2xl rounded-tl-sm rounded-bl-sm max-w-xs">
-                      {message.content}
+                      {message.message}
                     </div>
                   ) : (
                     <div className="self-start bg-neon/[55%] text-white px-4 py-2 rounded-2xl rounded-bl-sm max-w-xs">
-                      {message.content}
+                      {message.message}
                     </div>
                   )
-                ) : i == 0 || arr[i - 1].source == "sender" ? (
+                ) : i == 0 || arr[i - 1].to == currUser.email ? (
                   <div className="bg-neon/[22%] max-w-xs self-end text-white px-4 py-2 rounded-2xl rounded-tr-sm">
-                    {message.content}
+                    {message.message}
                   </div>
-                ) : arr[i + 1].source != "sender" ? (
+                ) : i + 1 < arr.length && arr[i + 1].to != currUser.email ? (
                   <div className="self-end bg-neon/[22%] text-white px-4 py-2 rounded-2xl rounded-tr-sm rounded-br-sm max-w-xs">
-                    {message.content}
+                    {message.message}
                   </div>
                 ) : (
                   <div className="bg-neon/[22%] self-end text-white px-4 py-2 rounded-2xl rounded-br-sm max-w-xs">
-                    {message.content}
+                    {message.message}
                   </div>
                 )
               )}

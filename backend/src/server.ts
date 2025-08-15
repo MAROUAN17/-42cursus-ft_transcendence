@@ -3,9 +3,10 @@ import websocketPlugin from "@fastify/websocket";
 import { v4 as uuidv4 } from "uuid";
 import Fastify, { type RequestQuerystringDefault } from "fastify";
 import App from "./app.js";
+import { options } from "./plugins/env.js"
 import fastifyEnv from "@fastify/env";
 import fastifyJwt from "@fastify/jwt";
-import { options } from "./plugins/env.js";
+import fastifyCookie from "@fastify/cookie";;
 import cors from "@fastify/cors";
 import { chatService } from "./services/chat.service.js";
 import { getUsers } from "./services/getUsers.service.js";
@@ -22,13 +23,19 @@ async function start(): Promise<void> {
     credentials: true,
     maxAge: 600,
   });
+  await app.register(fastifyCookie);
   await app.register(fastifyEnv, options);
-  await app.register(fastifyJwt, { secret: process.env.JWT_SIGNING_KEY! });
+  await app.register(fastifyJwt, { 
+    secret: process.env.JWT_SIGNING_KEY!,
+    cookie: {
+      cookieName: 'token',
+      signed: false
+    }
+  });
   await app.register(App);
   await app.register(websocketPlugin);
 
-  app.get("/send-message", { websocket: true }, chatService.handler);
-  app.get("/users", getUsers);
+  // app.get("/send-message", { websocket: true }, chatService.handler);
   await app.listen({
     host: "0.0.0.0",
     port: Number(process.env.PORT) | 8080,

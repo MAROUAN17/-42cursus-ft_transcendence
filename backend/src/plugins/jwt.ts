@@ -8,8 +8,8 @@ export const jwtPlugin = fp(async function(fastify, opts) {
     app.decorate('jwtAuth', async function(req: FastifyRequest, res: FastifyReply): Promise<any> {
         try {
             await req.jwtVerify();
-        } catch (error) {
-            res.status(401).send({ message: "Unauthorized resource" });
+        } catch (error: any) {
+            res.code(401).send({ error: error.message });
         }
     })
 });
