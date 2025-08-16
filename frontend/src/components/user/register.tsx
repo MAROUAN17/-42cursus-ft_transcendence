@@ -81,9 +81,8 @@ function Register() {
                 <form onSubmit={handleForm}>
                     <div className="xl:my-20 lg:my-14 space-y-10">
                         <div>
-                            {}
                             <label className="flex text-gray-300">Username</label>
-                            <input value={username} onChange={usernameInput} required className={`text-white bg-transparent ${usernameErrorFlag ? "border-b border-red-700" : "border-b border-white"} py-4 mt-5 w-full`} id="username" type="text" placeholder="username" />
+                            <input value={username} onChange={usernameInput} required className={`text-white bg-transparent ${usernameErrorFlag ? "border-b border-red-700" : "border-b border-white"} py-4 mt-5 w-full`} id="username" type="text" placeholder="Username" />
                             {usernameErrorFlag && (
                                 <p className="mt-3 text-red-500">{usernameErrorMssg}</p>
                             )}

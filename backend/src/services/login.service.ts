@@ -22,13 +22,13 @@ export const loginUser = async (req: FastifyRequest<{Body: LoginBody}>, res: Fas
         }
 
         if (!user) {
-            return res.status(401).send({ error: "Wrong credentials" });
+            return res.status(401).send({ error: "Incorrect username or password." });
         }
 
         const isMatch = await bcrypt.compare(password, user?.password);
 
         if (!isMatch) {
-            return res.status(401).send({ error: "Wrong credentials" });
+            return res.status(401).send({ error: "Incorrect username or password." });
         }
 
         //verify JWT token

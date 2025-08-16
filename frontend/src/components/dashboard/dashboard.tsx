@@ -11,6 +11,7 @@ export default function Dashboard() {
         e.preventDefault();
         axios.get('http://localhost:8088/', { withCredentials: true })
             .then(function (res) {
+                console.log(res.data);
                 console.log("Authorized!!");
             })
             .catch(function (err) {
