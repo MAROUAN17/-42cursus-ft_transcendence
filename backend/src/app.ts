@@ -5,6 +5,8 @@ import { type FastifyInstance, type FastifyPluginOptions } from "fastify"
 import { dbConnection } from "./plugins/db.plugin.js"
 import { authRoutes } from "./routes/auth.routes.js";
 import { jwtPlugin } from "./plugins/jwt.plugin.js";
+import websocketPlugin from "@fastify/websocket";
+import { chatRoutes } from "./routes/chat.routes.js";
 
 
 export default async function App(fastify: FastifyInstance, opts: FastifyPluginOptions): Promise<void> {
@@ -14,7 +16,11 @@ export default async function App(fastify: FastifyInstance, opts: FastifyPluginO
     await fastify.register(jwtPlugin);
     
 
+    await fastify.register(websocketPlugin);
 
     //routes of auth
     await fastify.register(authRoutes);
+
+    //routes of chat
+    await fastify.register(chatRoutes);
 }

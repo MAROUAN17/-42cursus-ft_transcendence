@@ -6,7 +6,6 @@ export const fetchUser = async (req: FastifyRequest, res: FastifyReply) => {
         const jwtToken = req.cookies.token;
         const infos = app.jwt.decode(jwtToken!) as string | null;
         res.status(200).send({ infos: infos });
-
     } catch (error) {
         res.status(401).send({error: "Unauthorized"});
     }

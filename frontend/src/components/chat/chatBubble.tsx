@@ -1,27 +1,30 @@
-import { IoCheckmarkDoneOutline } from "react-icons/io5";
+import { IoCheckmark, IoCheckmarkDoneOutline } from "react-icons/io5";
 
 interface props {
+  type: "sender" | "recipient";
   msg: string;
-  name: string;
+  isRead: boolean;
+  isDelivered?: boolean;
 }
 
-const ChatBubble = ({ msg, name }: props) => {
+const ChatBubble = ({ msg, isRead, type, isDelivered }: props) => {
   return (
-    <div className="transform h-[85px] hover:scale-105 transition duration-300 flex flex-row p-5 gap-3 hover:bg-neon/[35%] items-center bg-compBg/[25%] rounded-xl">
-      <img src="src/assets/photo.png" className="h-[44px] w-[44px]" />
-      <div className="w-full">
-        <div className="flex flex-row justify-between items-center">
-          <h3 className="text-white font-medium">{name}</h3>
-          <p className="text-[#76767C] text-[13px]">5m ago</p>
-        </div>
-        <div className="flex flex-row justify-between items-center">
-          <p className="text-[#76767C] text-[13px] truncate text-ellipsis w-40">
-            {msg}
-          </p>
-          <IoCheckmarkDoneOutline className="text-[#3469F9] w-[15px] h-[15px]" />
-        </div>
-      </div>
-    </div>
+    <>
+      <p className="max-w-xs">{msg}</p>
+      <p className="text-[#fff]/[40%] text-[12px] self-end">11:06 pm</p>
+
+      {type == "sender" ? (
+        isDelivered ? (
+          <IoCheckmarkDoneOutline
+            className={`${
+              isRead ? "text-[#3469F9]" : "text-[#fff]/[40%]"
+            } self-end w-[16px] h-[16px]`}
+          />
+        ) : (
+          <IoCheckmark className="text-[#fff]/[40%] self-end w-[16px] h-[16px" />
+        )
+      ) : null}
+    </>
   );
 };
 

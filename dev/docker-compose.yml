@@ -7,3 +7,4 @@ services:
       - "8191:8191"
     volumes:
       - ~/goinfre/db_data:/db
+    command: ["tail", "-f", "/dev/null"]
