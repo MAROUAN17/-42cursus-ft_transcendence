@@ -14,14 +14,14 @@ export const registerUser = async (req: FastifyRequest<{Body: LoginBody}>, res: 
                 .prepare('SELECT * from players WHERE username = ?')
                 .get(username) as User | undefined;
         if (user)
-            res.status(500).send({ error: "Username already exists" });
+            return res.status(401).send({ error: "Username already exists" });
 
         //check if user email already exists
         user = app.db
             .prepare('SELECT * from players WHERE email = ?')
             .get(email) as User | undefined;
         if (user) {
-            return res.status(500).send({ error: "Email already exist!" });
+            return res.status(401).send({ error: "Email already exist!" });
         }
 
         //hashing the password
@@ -35,6 +35,6 @@ export const registerUser = async (req: FastifyRequest<{Body: LoginBody}>, res: 
     }
     catch (error) {
         console.log(error);
-        res.status(500).send({ error });
+        res.status(401).send({ error });
     }
 }

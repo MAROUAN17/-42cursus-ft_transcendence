@@ -11,6 +11,8 @@ function Login() {
     const navigate = useNavigate();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [errorMssg, setErrorMssg] = useState("");
+    const [errorFlag, setErrorFlag] = useState(false);
 
     const handleForm = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -18,22 +20,25 @@ function Login() {
             { withCredentials: true }
         )
             .then(function(res) {
-                localStorage.setItem('user', JSON.stringify(res.data.data));
                 navigate("/");
             })
             .catch(function (err) {
                 console.log(err.response.data.error);
+                setErrorFlag(true);
+                setErrorMssg(err.response.data.error);
             })
     }
     
     const emailInput = (e: React.ChangeEvent<HTMLInputElement>) => {
         e.preventDefault();
+        setErrorFlag(false);
         setEmail(e.target.value);
     }
 
     const passInput = (e: React.ChangeEvent<HTMLInputElement>) => {
         e.preventDefault();
-        setPassword(e.target.value)
+        setErrorFlag(false);
+        setPassword(e.target.value);
     }
 
     return (
@@ -51,15 +56,20 @@ function Login() {
                 <div className="my-24 space-y-12">
                     <div>
                         <label className="flex text-gray-300">Email or username</label>
-                        <input value={email} onChange={emailInput} className="text-white bg-transparent border-b border-white py-4 mt-5 w-full" id="email" type="text" placeholder="Email or username" />
+                        <input value={email} onChange={emailInput} required className={`text-white bg-transparent ${errorFlag ? "border-b border-red-700" : "border-b border-white"} py-4 mt-5 w-full`} id="email" type="text" placeholder="Email or username" />
+                        {errorFlag && (
+                            <p className="mt-3 text-red-500">{errorMssg}</p>
+                        )}
                     </div>
                     {/* this is the password input */}
                     <div className="">
                         <label className="flex text-gray-300">Password</label>
                         <div className="flex items-center mt-5">
-                            <input value={password} onChange={passInput} className="text-white bg-transparent border-b border-white py-4 w-full" id="password" type="password" placeholder="Password" />
-                            {/* <a href=""><img className="w-[18px] h-[18px]" src="/eye.png" alt="hide icon" /></a> */}
+                            <input value={password} onChange={passInput} required className={`text-white bg-transparent ${errorFlag ? "border-b border-red-700" : "border-b border-white"} py-4 w-full`} id="password" type="password" placeholder="Password" />
                         </div>
+                        {errorFlag && (
+                            <p className="mt-3 text-red-500">{errorMssg}</p>
+                        )}
                     </div>
                     {/* login button */}
                     <div className="flex justify-between items-center">
@@ -79,7 +89,7 @@ function Login() {
                         <hr className="xl:w-[35%] lg:w-[30%]"></hr>
                     </div>
                     <div className="flex justify-center">
-                        <img className="w-[32px] h-[32px]" src="/42-icon.png" alt="42 icon" />
+                        <a href="http://localhost:8088/intra42/login"><img className="w-[32px] h-[32px]" src="/42-icon.png" alt="42 icon" /></a>
                     </div>
                     <div className="flex justify-center">
                         <h1 className="text-white font-light">Don't have an account? <span className="font-bold"><a href="/register" className="href">Signup</a></span></h1>

@@ -10,6 +10,7 @@ import fastifyCookie from "@fastify/cookie";;
 import cors from "@fastify/cors";
 import { chatService } from "./services/chat.service.js";
 import { getUsers } from "./services/getUsers.service.js";
+import { oauthPlugin } from "./plugins/oauth.js";
 
 const app = Fastify({
   logger: false,
@@ -32,6 +33,7 @@ async function start(): Promise<void> {
       signed: false
     }
   });
+  await app.register(oauthPlugin);
   await app.register(App);
   await app.register(websocketPlugin);
 
