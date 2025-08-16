@@ -1,13 +1,21 @@
 export interface messagePacket {
-  from: string;
+  id?: number;
+  tempId?: string;
+  type: "message" | "markSeen" | "markDelivered";
+  isDelivered: boolean;
+  from?: string;
   to: string;
   message: string;
+  createdAt?: string;
+  isRead: boolean;
 }
 export interface messagePacketDB {
-  id: number
+  id: number;
   sender: string;
   recipient: string;
   message: string;
+  createdAt: string;
+  isRead: boolean;
 }
 export interface RequestQuery {
   token: string;

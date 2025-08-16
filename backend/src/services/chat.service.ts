@@ -5,24 +5,51 @@ import type { FastifyRequest } from "fastify";
 import type { RequestQuery, Payload, messagePacket } from "../models/chat.js";
 
 const clients = new Map<string, WebSocket>();
-const messageQueue: messagePacket[] = [];
+const messageQueue = new Map<string, messagePacket>();
+// const messageQueue: messagePacket[] = [];
 let isProcessingQueue: boolean = false;
 
 async function processMessages() {
-  if (isProcessingQueue || messageQueue.length == 0) return;
+  if (isProcessingQueue || messageQueue.size == 0) return;
   isProcessingQueue = true;
-  while (messageQueue.length > 0) {
-    const currMsg: messagePacket | undefined = messageQueue.shift();
+  for (const [recipient, packet] of messageQueue) {
+    const currMsg: messagePacket | undefined = packet;
     if (!currMsg) return;
+    console.log("Now andling message => ", currMsg.message);
     try {
-      app.db
-        .prepare(
-          "INSERT INTO messages(sender, recipient, message) VALUES (?, ?, ?)"
-        )
-        .run(currMsg.from, currMsg.to, currMsg.message);
+      if (currMsg.type == "message") {
+        const savedMessage = app.db
+          .prepare(
+            "INSERT INTO messages(sender, recipient, message) VALUES (?, ?, ?)"
+          )
+          .run(currMsg.from, currMsg.to, currMsg.message);
+        if (savedMessage.lastInsertRowid) {
+          currMsg.id = savedMessage.lastInsertRowid;
+          currMsg.isDelivered = true;
+          currMsg.type = "message";
+          let client = clients.get(recipient);
+          if (client) client.send(JSON.stringify(currMsg));
+          if (currMsg.from) {
+            client = clients.get(currMsg.from);
+            currMsg.type = "markDelivered";
+            if (client) client.send(JSON.stringify(currMsg));
+          }
+          console.log("done sending!");
+        }
+      } else if (currMsg.type == "markSeen") {
+        console.log("updating isRead for =>", currMsg.message);
+        app.db
+          .prepare(
+            "UPDATE messages SET isRead = true WHERE id = ? AND sender = ? AND recipient = ?"
+          )
+          .run(currMsg.id, currMsg.from, currMsg.to);
+        let client = clients.get(recipient);
+        if (client) client.send(JSON.stringify(currMsg));
+      }
     } catch (error) {
       console.error("error writing in db -> ", error);
     }
+    messageQueue.delete(recipient);
   }
   isProcessingQueue = false;
 }
@@ -32,9 +59,7 @@ export const chatService = {
   handler: (connection: WebSocket, req: FastifyRequest) => {
     let payload;
     const token = req.cookies.token;
-    // console.log("jwtToken => ", req.cookies.token);
     if (token) {
-      // console.log('pre verified');
       try {
         payload = app.jwt.verify(token) as Payload;
       } catch (error) {
@@ -42,36 +67,51 @@ export const chatService = {
         connection.close();
         return;
       }
-      // console.log('after verified => ', payload.username);
     } else {
       console.log("closed no token");
       connection.close();
       return;
     }
-    const email = payload.email;
+    const username = payload.username;
 
-    clients.set(email, connection);
-    console.log("Connection Done with => " + email);
+    clients.set(username, connection);
+    console.log("Connection Done with => " + username);
 
     connection.on("message", (message: Buffer) => {
-      console.log("received : " + message.toString() + " from : " + email);
       try {
         const msgPacket: messagePacket = JSON.parse(message.toString());
-        msgPacket.from = email;
-        messageQueue.push(msgPacket);
+        if (msgPacket.type == "message") msgPacket.from = username;
+        else msgPacket.to = username;
         setImmediate(processMessages);
-        const client = clients.get(msgPacket.to);
-        if (client) {
-          client.send(JSON.stringify(msgPacket));
+        let client;
+        client = clients.get(msgPacket.to);
+        if (msgPacket.type == "message") {
+          messageQueue.set(msgPacket.to, msgPacket);
+          client = clients.get(msgPacket.to);
+        } else if (msgPacket.from) {
+          console.log(
+            "sending markSeen to => ",
+            msgPacket,
+            " to => ",
+            msgPacket.from
+          );
+          // client = clients.get(msgPacket.to);
+          messageQueue.set(msgPacket.to, msgPacket);
+          // client = clients.get(msgPacket.from);
+          messageQueue.set(msgPacket.from, msgPacket);
         }
+        // if (msgPacket.from) messageQueue.set(msgPacket.from, msgPacket);
+        // if (client) {
+        //   client.send(JSON.stringify(msgPacket));
+        // }
       } catch {
         console.error("Invalid message");
       }
     });
 
     connection.on("close", () => {
-      console.log("Client disconnected -> " + email);
-      clients.delete(email);
+      console.log("Client disconnected -> " + username);
+      clients.delete(username);
     });
   },
 };
