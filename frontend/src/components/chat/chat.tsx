@@ -9,7 +9,7 @@ import type { User } from "../../../../backend/src/models/user";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import type { messagePacket } from "../../../../backend/src/models/chat";
-import ChatBubble from "./ChatBubble";
+import ChatBubble from "./chatBubble";
 import { v4 as uuidv4 } from "uuid";
 
 const Chat = () => {
