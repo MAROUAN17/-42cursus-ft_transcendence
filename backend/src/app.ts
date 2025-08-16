@@ -2,9 +2,9 @@
 import Sensible from "@fastify/sensible";
 import fastifyFormbody from "@fastify/formbody";
 import { type FastifyInstance, type FastifyPluginOptions } from "fastify"
-import { dbConnection } from "./plugins/db.js"
+import { dbConnection } from "./plugins/db.plugin.js"
 import { authRoutes } from "./routes/auth.routes.js";
-import { jwtPlugin } from "./plugins/jwt.js";
+import { jwtPlugin } from "./plugins/jwt.plugin.js";
 
 
 export default async function App(fastify: FastifyInstance, opts: FastifyPluginOptions): Promise<void> {

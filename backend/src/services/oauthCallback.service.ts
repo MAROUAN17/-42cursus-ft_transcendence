@@ -1,6 +1,6 @@
 import type { FastifyRequest, FastifyReply } from "fastify";
 import app from "../server.js"
-import type { User } from "../models/user.js";
+import type { User } from "../models/user.model.js";
 
 export const redirectPath = async (req: FastifyRequest, res: FastifyReply) => {
     app.intra42Oauth.generateAuthorizationUri(

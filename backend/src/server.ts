@@ -1,12 +1,12 @@
 //this is the file where we start the server
 import Fastify from "fastify";
 import App from "./app.js";
-import { options } from "./plugins/env.js"
+import { options } from "./plugins/env.plugin.js"
 import fastifyEnv from "@fastify/env";
 import fastifyJwt from "@fastify/jwt";
 import fastifyCookie from "@fastify/cookie";
 import cors from '@fastify/cors'
-import { oauthPlugin } from "./plugins/oauth.js";
+import { oauthPlugin } from "./plugins/oauth.plugin.js";
 
 const app = Fastify({
     logger: true

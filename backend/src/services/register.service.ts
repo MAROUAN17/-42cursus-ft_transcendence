@@ -1,5 +1,5 @@
 import app from "../server.js";
-import { type User, type LoginBody  } from "../models/user.js"
+import { type User, type LoginBody  } from "../models/user.model.js"
 import type { FastifyReply, FastifyRequest } from "fastify";
 import bcrypt from "bcrypt";
 
