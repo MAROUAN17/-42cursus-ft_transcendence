@@ -21,24 +21,45 @@ export default function RGame() {
   const [scoreLeft, setScoreLeft] = useState(0);
   const [scoreRight, setScoreRight] = useState(0);
 
+  const [websocket, setWebsocket] = useState<WebSocket | null>(null);
 
+	//useEffect(() => {
+	//	const fetchGameInfo = async () => {
+	//	try {
+	//		const res = await fetch("http://localhost:8088/game");
+	//		if (!res.ok) {
+	//		throw new Error(`HTTP error! status: ${res.status}`);
+	//		}
+	//		const data = await res.json();
+	//		console.log("Game Info from backend:", data);
+	//	} catch (err) {
+	//		console.error("Failed to fetch game info:", err);
+	//	}
+	//	};
+
+	//	fetchGameInfo();
+	//}, []);
 
 	useEffect(() => {
-		const fetchGameInfo = async () => {
-		try {
-			const res = await fetch("http://localhost:8088/game");
-			if (!res.ok) {
-			throw new Error(`HTTP error! status: ${res.status}`);
-			}
-			const data = await res.json();
-			console.log("Game Info from backend:", data);
-		} catch (err) {
-			console.error("Failed to fetch game info:", err);
-		}
+		const ws = new WebSocket("ws://localhost:8088/game");
+	  
+		ws.onopen = () => {
+		  console.log("WebSocket Connected!");
+		  setWebsocket(ws);
 		};
-
-		fetchGameInfo();
-	}, []);
+	  
+		ws.onmessage = (event) => {
+		  const message = event.data;
+		  console.log("Received message:", message);
+	  
+		};
+	  
+		return () => {
+		  console.log("Closing WebSocket...");
+		  ws.close();
+		};
+	  }, []);
+	  
 
 
   const paddleLeft = { x: 24, y: leftY, width: PADDLE_WIDTH, height: PADDLE_HEIGHT };
