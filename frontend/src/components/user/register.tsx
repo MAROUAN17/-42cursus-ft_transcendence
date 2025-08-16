@@ -6,10 +6,27 @@ function Register() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [username, setUsername] = useState("");
+    const [usernameErrorMssg, setUsernameErrorMssg] = useState("");
+    const [usernameErrorFlag, setUsernameErrorFlag] = useState(false);
+    const [passErrorMssg, setPassErrorMssg] = useState("");
+    const [passErrorFlag, setPassErrorFlag] = useState(false);
+    const [emailErrorMssg, setEmailErrorMssg] = useState("");
+    const [emailErrorFlag, setEmailErrorFlag] = useState(false);
     const navigate = useNavigate();
+    let passwordPattern = new RegExp('^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).+$');
 
     const handleForm = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        if (username.length < 3 || username.length > 16) {
+            setUsernameErrorFlag(true);
+            setUsernameErrorMssg("Username must be between 3 and 16 characters");
+            return ;
+        }
+        if (password.length < 8 || password.length > 30 || !passwordPattern.test(password)) {
+            setPassErrorFlag(true);
+            setPassErrorMssg("Password should be at least 8 characters including a lowercaser letter and a number");
+            return ;
+        }
         axios.post('http://localhost:8088/register', { username:username, email: email, password: password })
             .then(function(res) {
                 console.log(res.data);
@@ -17,21 +34,36 @@ function Register() {
             })
             .catch(function(err) {
                 console.log(err.response.data.error);
+                if (err.response.data.error.includes("Username")) {
+                    setUsernameErrorFlag(true);
+                    setUsernameErrorMssg(err.response.data.error);
+                }
+                if (err.response.data.error.includes("Email")) {
+                    setEmailErrorFlag(true);
+                    setEmailErrorMssg(err.response.data.error);
+                }
+                if (err.response.data.error.includes("Password")) {
+                    setPassErrorFlag(true);
+                    setPassErrorMssg(err.response.data.error);
+                }
             })
     }
     
     const emailInput = (e: React.ChangeEvent<HTMLInputElement>) => {
         e.preventDefault();
+        setEmailErrorFlag(false);
         setEmail(e.target.value);
     }
 
     const passInput = (e: React.ChangeEvent<HTMLInputElement>) => {
         e.preventDefault();
+        setPassErrorFlag(false);
         setPassword(e.target.value)
     }
     
     const usernameInput = (e: React.ChangeEvent<HTMLInputElement>) => {
         e.preventDefault();
+        setUsernameErrorFlag(false);
         setUsername(e.target.value)
     }
 
@@ -49,20 +81,29 @@ function Register() {
                 <form onSubmit={handleForm}>
                     <div className="xl:my-20 lg:my-14 space-y-10">
                         <div>
+                            {}
                             <label className="flex text-gray-300">Username</label>
-                            <input value={username} onChange={usernameInput} className="text-white bg-transparent border-b border-white py-4 mt-5 w-full" id="username" type="text" placeholder="username" />
+                            <input value={username} onChange={usernameInput} required className={`text-white bg-transparent ${usernameErrorFlag ? "border-b border-red-700" : "border-b border-white"} py-4 mt-5 w-full`} id="username" type="text" placeholder="username" />
+                            {usernameErrorFlag && (
+                                <p className="mt-3 text-red-500">{usernameErrorMssg}</p>
+                            )}
                         </div>
                         <div>
                             <label className="flex text-gray-300">Email</label>
-                            <input value={email} onChange={emailInput} className="text-white bg-transparent border-b border-white py-4 mt-5 w-full" id="email" type="text" placeholder="Email" />
+                            <input value={email} onChange={emailInput} required className={`text-white bg-transparent ${emailErrorFlag ? "border-b border-red-700" : "border-b border-white"}  py-4 mt-5 w-full`} id="email" type="email" placeholder="Email" />
+                            {emailErrorFlag && (
+                                <p className="mt-3 text-red-500">{emailErrorMssg}</p>
+                            )}
                         </div>
                         {/* this is the password input */}
                         <div className="">
                             <label className="flex text-gray-300">Password</label>
                             <div className="flex items-center mt-5">
-                                <input value={password} onChange={passInput} className="text-white bg-transparent border-b border-white py-4 w-full" id="password" type="password" placeholder="Password" />
-                                {/* <a href=""><img className="w-[18px] h-[18px]" src="/eye.png" alt="hide icon" /></a> */}
+                                <input value={password} onChange={passInput} required className={`text-white bg-transparent ${passErrorFlag ? "border-b border-red-700" : "border-b border-white"}  py-4 w-full`} id="password" type="password" placeholder="Password" />
                             </div>
+                            {passErrorFlag && (
+                                <p className="mt-3 text-red-500">{passErrorMssg}</p>
+                            )}
                         </div>
                         {/* login button */}
                         <div className="flex flex-nowrap justify-between items-center xl:space-x-52 lg:space-x-4">

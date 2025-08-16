@@ -21,7 +21,7 @@ async function start(): Promise<void> {
     maxAge: 600
   })
   await app.register(fastifyCookie);
-  await app.register(fastifyEnv, options)
+  await app.register(fastifyEnv, options);
   await app.register(fastifyJwt, { 
     secret: process.env.JWT_SIGNING_KEY!,
     cookie: {
@@ -31,7 +31,6 @@ async function start(): Promise<void> {
   });
   await app.register(oauthPlugin);
   await app.register(App);
-
 
   await app.listen({
     host: '0.0.0.0',
