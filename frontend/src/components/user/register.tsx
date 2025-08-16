@@ -13,11 +13,12 @@ function Register() {
     const [emailErrorMssg, setEmailErrorMssg] = useState("");
     const [emailErrorFlag, setEmailErrorFlag] = useState(false);
     const navigate = useNavigate();
+    let usernamePattern = new RegExp('^[a-zA-Z0-9]+$');
     let passwordPattern = new RegExp('^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).+$');
 
     const handleForm = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        if (username.length < 3 || username.length > 16) {
+        if (username.length < 3 || username.length > 16 || !usernamePattern.test(username)) {
             setUsernameErrorFlag(true);
             setUsernameErrorMssg("Username must be between 3 and 16 characters");
             return ;

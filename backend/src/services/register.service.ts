@@ -7,7 +7,9 @@ import bcrypt from "bcrypt";
 export const registerUser = async (req: FastifyRequest<{Body: LoginBody}>, res: FastifyReply) => {
     try {
         let user = {} as User | undefined;
-        const { username, email, password } = req.body;
+        let { username, email, password } = req.body;
+
+        email = email.toLowerCase();
 
         //check if username user exists
         user = app.db
