@@ -25,14 +25,12 @@ export const oauthCallback = async (req: FastifyRequest, res: FastifyReply) => {
 
         const email = userData.email, username = userData.login;
         
-        //check username
+        //check if user already exists
         if (username) {
             user = app.db
                 .prepare('SELECT * from players WHERE username = ?')
                 .get(username) as User | undefined;
         }
-
-        //check if user already exists
         if (!user) {
             app.db
                 .prepare('INSERT INTO players(email, username) VALUES (?, ?)')

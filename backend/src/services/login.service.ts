@@ -6,19 +6,20 @@ import bcrypt from "bcrypt";
 export const loginUser = async (req: FastifyRequest<{Body: LoginBody}>, res: FastifyReply) => {
     try {
         let user = {} as User | undefined;
-        const { username, email, password } = req.body;
+        let { email, password } = req.body;
     
+        
         //check username
-        if (username) {
+        if (email.includes("@")) {
+            email = email.toLowerCase();
+            console.log(`email => ${email}`);
             user = app.db
-                .prepare('SELECT * from players WHERE username = ?')
-                .get(username) as User | undefined;
-        }
-        //check email
-        if (email) {
+            .prepare('SELECT * from players WHERE email = ?')
+            .get(email) as User | undefined;
+        } else {
             user = app.db
-                .prepare('SELECT * from players WHERE email = ?')
-                .get(email) as User | undefined;
+            .prepare('SELECT * from players WHERE username = ?')
+            .get(email) as User | undefined;
         }
 
         if (!user) {
@@ -32,7 +33,7 @@ export const loginUser = async (req: FastifyRequest<{Body: LoginBody}>, res: Fas
         }
 
         //verify JWT token
-        const token = app.jwt.sign({ email:user.email, username:user.username }, { expiresIn: '10s' });
+        const token = app.jwt.sign({ email: user.email, username: user.username }, { expiresIn: '10s' });
     
         //set JWT token as cookie
         return res.setCookie('token', token, {
