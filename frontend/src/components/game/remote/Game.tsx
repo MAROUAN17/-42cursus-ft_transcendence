@@ -15,31 +15,31 @@ export default function RGame() {
   const [rightY, setRightY] = useState(140);
 
   
-  const [ballPos, setBallPos] = useState({ x: 400, y: 200 }); //Ball position
   const [ballVel, setBallVel] = useState({ x: 300, y: 120 }); //Ball velocity
-
+  
   const [scoreLeft, setScoreLeft] = useState(0);
   const [scoreRight, setScoreRight] = useState(0);
-
+  
   const [websocket, setWebsocket] = useState<WebSocket | null>(null);
-
-	//useEffect(() => {
-	//	const fetchGameInfo = async () => {
-	//	try {
-	//		const res = await fetch("http://localhost:8088/game");
-	//		if (!res.ok) {
-	//		throw new Error(`HTTP error! status: ${res.status}`);
-	//		}
-	//		const data = await res.json();
-	//		console.log("Game Info from backend:", data);
-	//	} catch (err) {
-	//		console.error("Failed to fetch game info:", err);
-	//	}
-	//	};
-
-	//	fetchGameInfo();
-	//}, []);
-
+  
+  //useEffect(() => {
+	  //	const fetchGameInfo = async () => {
+		  //	try {
+			  //		const res = await fetch("http://localhost:8088/game");
+			  //		if (!res.ok) {
+				  //		throw new Error(`HTTP error! status: ${res.status}`);
+				  //		}
+				  //		const data = await res.json();
+				  //		console.log("Game Info from backend:", data);
+				  //	} catch (err) {
+					  //		console.error("Failed to fetch game info:", err);
+					  //	}
+					  //	};
+					  
+					  //	fetchGameInfo();
+					  //}, []);
+					  
+	const [ballPos, setBallPos] = useState({ x: 400, y: 200 }); //Ball position
 	useEffect(() => {
 		const ws = new WebSocket("ws://localhost:8088/game");
 	  
@@ -49,8 +49,15 @@ export default function RGame() {
 		};
 	  
 		ws.onmessage = (event) => {
-		  const message = event.data;
-		  console.log("Received message:", message);
+			try {
+				const message = JSON.parse(event.data);
+				if (message?.game_info?.ball) {
+				  const { x, y } = message.game_info.ball;
+				  setBallPos({ x, y }); 
+				}
+			  } catch (err) {
+				console.error("Invalid message from server:", event.data);
+			  }
 	  
 		};
 	  

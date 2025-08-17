@@ -1,10 +1,9 @@
-// src/game/game.server.ts
 export interface Paddle {
     x: number;
     y: number;
     width: number;
     height: number;
-  }
+}
   
   export interface Ball {
     x: number;
@@ -27,12 +26,12 @@ export interface Paddle {
   const PADDLE_WIDTH = 18;
   const PADDLE_HEIGHT = 120;
   
-  export const GameInfo: GameInfo = {
+  export const DefaultGame: GameInfo = {
     ball: {
       x: GAME_WIDTH / 2,
       y: GAME_HEIGHT / 2,
-      velX: 300, 
-      velY: 120
+      velX: 5, 
+      velY: 0
     },
     paddleLeft: {
       x: 24,
