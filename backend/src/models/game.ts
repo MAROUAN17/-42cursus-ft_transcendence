@@ -35,7 +35,7 @@ export interface Paddle {
     },
     paddleLeft: {
       x: 24,
-      y: 400,
+      y: (GAME_HEIGHT - PADDLE_HEIGHT) / 2,
       width: PADDLE_WIDTH,
       height: PADDLE_HEIGHT
     },

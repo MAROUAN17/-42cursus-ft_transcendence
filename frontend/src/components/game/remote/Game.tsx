@@ -13,6 +13,10 @@ export default function RGame() {
   const [rightY, setRightY] = useState(140);
 
   const [websocket, setWebsocket] = useState<WebSocket | null>(null);
+  const PADDLE_WIDTH = 18;
+  const PADDLE_HEIGHT = 120;
+  const paddleLeft = { x: 24, y: leftY, width: PADDLE_WIDTH, height: PADDLE_HEIGHT };
+  const paddleRight = { x:  800 - 24 - PADDLE_WIDTH, y: rightY, width: PADDLE_WIDTH, height: PADDLE_HEIGHT };
   var x = 0;
   useEffect(() => {
     const down = new Set<string>();
@@ -100,8 +104,10 @@ export default function RGame() {
 		  dir={dir}
 		  setDir={setDir}
 		  ball={gameInfo?.ball ?? {x:0,y:0}}
-		  paddleLeft={gameInfo?.paddleLeft ?? null}
-		  paddleRight={gameInfo?.paddleRight ?? null}
+		//  paddleLeft={gameInfo?.paddleLeft ?? null}
+		//  paddleRight={gameInfo?.paddleRight ?? null}
+		paddleLeft={paddleLeft}
+		paddleRight={paddleRight}
 		  bounds={gameInfo?.bounds ?? {width:800, height:400}}
 		/>
 
