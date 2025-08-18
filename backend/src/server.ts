@@ -1,9 +1,10 @@
 //this is the file where we start the server
-import websocketPlugin from "@fastify/websocket";
+import fs from "fs"
 import { v4 as uuidv4 } from "uuid";
 import Fastify, { type RequestQuerystringDefault } from "fastify";
 import App from "./app.js";
 import { options } from "./plugins/env.plugin.js"
+import websocketPlugin from "@fastify/websocket";
 import fastifyEnv from "@fastify/env";
 import fastifyJwt from "@fastify/jwt";
 import fastifyCookie from "@fastify/cookie";;
@@ -12,8 +13,14 @@ import { chatService } from "./services/chat.service.js";
 import { getUsers } from "./services/getUsers.service.js";
 import { oauthPlugin } from "./plugins/oauth.plugin.js";
 
+const httpsOptions = {
+  key: fs.readFileSync("./ssl/server.key"),
+  cert: fs.readFileSync("./ssl/server.crt")
+};
+
 const app = Fastify({
   logger: false,
+  https: httpsOptions
 });
 
 async function start(): Promise<void> {
