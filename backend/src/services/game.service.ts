@@ -15,19 +15,19 @@ function gameLoop () {
     msgPacket.game_info.ball.x += msgPacket.game_info.ball.velX;
     msgPacket.game_info.ball.y += msgPacket.game_info.ball.velY;
   
-    if (
-      msgPacket.game_info.ball.y <= 0 ||
-      msgPacket.game_info.ball.y >= DefaultGame.bounds.height
-    ) {
-      msgPacket.game_info.ball.velY *= -1;
-    }
+    //if (
+    //  msgPacket.game_info.ball.y <= 0 ||
+    //  msgPacket.game_info.ball.y >= DefaultGame.bounds.height
+    //) {
+    //  msgPacket.game_info.ball.velY *= -1;
+    //}
   
-    if (
-      msgPacket.game_info.ball.x <= 0 ||
-      msgPacket.game_info.ball.x >= DefaultGame.bounds.width
-    ) {
-      msgPacket.game_info.ball.velX *= -1;
-    }
+    //if (
+    //  msgPacket.game_info.ball.x <= 0 ||
+    //  msgPacket.game_info.ball.x >= DefaultGame.bounds.width
+    //) {
+    //  msgPacket.game_info.ball.velX *= -1;
+    //}
   
     broadcast(msgPacket);
   }, 1000 / 60);
@@ -40,11 +40,15 @@ export function handleGameConnection(connection: any, req: any) {
   
   gameLoop();
   
-  connection.on("game_info", (message: any) => {
+  connection.on("message", (message: any) => {
     console.log(`Received from ${id}:`, message.toString());
     try {
+      const msg = JSON.parse(message.toString());
+      updateInfo(msg)
       const clientConn = clients.get(msgPacket.to);
-      if (clientConn) clientConn.send(msgPacket.game_info);
+      if (clientConn) {
+        clientConn.send(JSON.stringify(msgPacket.game_info));
+      }
     } catch (err) {
       console.error("Invalid game info packet:", err);
     }
@@ -56,6 +60,13 @@ export function handleGameConnection(connection: any, req: any) {
   });
 }
 
+function updateInfo(msg:any) {
+  if (msg.type == "dirUpdate")
+    msgPacket.game_info.ball.velX *= msg.dir.x;
+    msgPacket.game_info.ball.velY *= msg.dir.y;
+    if (msgPacket.game_info.ball.velX < 0 && msg.dir.x == 1)
+      msgPacket.game_info.ball.velX *= -1;
+}
 
 export const getGameState = () => {
   return DefaultGame;

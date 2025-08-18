@@ -29,7 +29,7 @@ export default function Ball({ ballPos, setBallPos, ballVel, setBallVel, paddleL
         ny = 10;
         setBallVel({ x: ballVel.x, y: -ballVel.y });
       } else if (ny + 10 >= bounds.height) {
-        ny = bounds.height - 10;
+        
         setBallVel({ x: ballVel.x, y: -ballVel.y });
       }
 

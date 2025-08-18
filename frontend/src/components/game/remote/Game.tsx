@@ -2,63 +2,68 @@ import  { useEffect, useRef, useState } from "react";
 import RBall from "./RBall";
 import RBat from "./Bat";
 import RHeader from "./RHeader";
-
+import { type GameInfo } from "./Types";
 
 export default function RGame() {
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const [bounds, setBounds] = useState({ width: 800, height: 400 });
-
-  const PADDLE_WIDTH = 18;
-  const PADDLE_HEIGHT = 120;
+  const [dir, setDir] = useState({x:1, y:1});
+  const [gameInfo, setGameInfo] = useState<GameInfo>()
 
   const [leftY, setLeftY] = useState(140);
   const [rightY, setRightY] = useState(140);
 
-  
-  const [ballVel, setBallVel] = useState({ x: 300, y: 120 }); //Ball velocity
-  
-  const [scoreLeft, setScoreLeft] = useState(0);
-  const [scoreRight, setScoreRight] = useState(0);
-  
   const [websocket, setWebsocket] = useState<WebSocket | null>(null);
-  
-  //useEffect(() => {
-	  //	const fetchGameInfo = async () => {
-		  //	try {
-			  //		const res = await fetch("http://localhost:8088/game");
-			  //		if (!res.ok) {
-				  //		throw new Error(`HTTP error! status: ${res.status}`);
-				  //		}
-				  //		const data = await res.json();
-				  //		console.log("Game Info from backend:", data);
-				  //	} catch (err) {
-					  //		console.error("Failed to fetch game info:", err);
-					  //	}
-					  //	};
-					  
-					  //	fetchGameInfo();
-					  //}, []);
-					  
-	const [ballPos, setBallPos] = useState({ x: 400, y: 200 }); //Ball position
+  var x = 0;
+  useEffect(() => {
+    const down = new Set<string>();
+    const onKeyDown = (e: KeyboardEvent) => {
+      down.add(e.key);
+    };
+    const onKeyUp = (e: KeyboardEvent) => {
+      down.delete(e.key);
+    };
+
+    let raf = 0;
+    const step = () => {
+      if (down.has("ArrowUp")) setRightY((y) => Math.max(0, y - 8));
+      if (down.has("ArrowDown")) setRightY((y) => Math.min(gameInfo?.bounds.height ?? 0 - 120, y + 8));
+      if (down.has("w") || down.has("W")) setLeftY((y) => Math.max(0, y - 8));
+      if (down.has("s") || down.has("S")) setLeftY((y) => Math.min(gameInfo?.bounds.height ?? 0 - 120, y + 8));
+
+      raf = requestAnimationFrame(step);
+    };
+
+    window.addEventListener("keydown", onKeyDown);
+    window.addEventListener("keyup", onKeyUp);
+    raf = requestAnimationFrame(step);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("keydown", onKeyDown);
+      window.removeEventListener("keyup", onKeyUp);
+    };
+  }, [gameInfo?.bounds.height]);
+
 	useEffect(() => {
 		const ws = new WebSocket("ws://localhost:8088/game");
-	  
+		setWebsocket(ws);
 		ws.onopen = () => {
 		  console.log("WebSocket Connected!");
-		  setWebsocket(ws);
 		};
 	  
 		ws.onmessage = (event) => {
 			try {
 				const message = JSON.parse(event.data);
-				if (message?.game_info?.ball) {
-				  const { x, y } = message.game_info.ball;
-				  setBallPos({ x, y }); 
+				setGameInfo(message.game_info);
+				if (!x) {
+					setDir({
+						x: (gameInfo?.ball?.velX ?? 0) >= 0 ? 1 : -1,
+						y: (gameInfo?.ball?.velY ?? 0) >= 0 ? 1 : -1,
+					});
+					x =1;
 				}
-			  } catch (err) {
+			} catch (err) {
 				console.error("Invalid message from server:", event.data);
-			  }
-	  
+			}
 		};
 	  
 		return () => {
@@ -66,18 +71,19 @@ export default function RGame() {
 		  ws.close();
 		};
 	  }, []);
-	  
-
-
-  const paddleLeft = { x: 24, y: leftY, width: PADDLE_WIDTH, height: PADDLE_HEIGHT };
-  const paddleRight = { x: bounds.width - 24 - PADDLE_WIDTH, y: rightY, width: PADDLE_WIDTH, height: PADDLE_HEIGHT };
-
+	  useEffect(() => {
+		if (websocket && websocket.readyState == WebSocket.OPEN)
+		  	websocket.send(JSON.stringify({ type: "dirUpdate", dir }));
+		else
+			console.log("there is a proble in socket:", websocket);
+		console.log("message sent: ", dir);
+	  }, [dir]);
 
   return (
 	<div className="h-screen bg-gameBg flex items-center justify-center">
 	  <RHeader
-		scoreLeft={scoreLeft}
-		scoreRight={scoreRight}
+		scoreLeft={0}
+		scoreRight={5}
 		leftAvatar="/path/to/player1.png"
 		rightAvatar="/path/to/player2.png"
 	  />
@@ -87,17 +93,16 @@ export default function RGame() {
 		className="relative w-[70%] h-[70%] border-2 border-neon rounded-2xl shadow-neon bg-black"
 		style={{ minWidth: 600, minHeight: 360 }}
 	  >
-		<RBat y={leftY} setY={setLeftY} side="left" height={PADDLE_HEIGHT} containerTop={0} containerHeight={bounds.height} />
-		<RBat y={rightY} setY={setRightY} side="right" height={PADDLE_HEIGHT} containerTop={0} containerHeight={bounds.height} />
+		<RBat y={leftY} setY={setLeftY} side="left" height={gameInfo?.paddleLeft.height ?? 0} containerTop={0} containerHeight={gameInfo?.bounds.height ?? 400} />
+		<RBat y={rightY} setY={setRightY} side="right" height={gameInfo?.paddleLeft.height ?? 0} containerTop={0} containerHeight={gameInfo?.bounds.height ?? 400} />
 
 		<RBall
-		  ballPos={ballPos}
-		  setBallPos={setBallPos}
-		  ballVel={ballVel}
-		  setBallVel={setBallVel}
-		  paddleLeft={paddleLeft}
-		  paddleRight={paddleRight}
-		  bounds={bounds}
+		  dir={dir}
+		  setDir={setDir}
+		  ball={gameInfo?.ball ?? {x:0,y:0}}
+		  paddleLeft={gameInfo?.paddleLeft ?? null}
+		  paddleRight={gameInfo?.paddleRight ?? null}
+		  bounds={gameInfo?.bounds ?? {width:800, height:400}}
 		/>
 
 		<div className="absolute top-0 left-1/2 transform -translate-x-1/2 h-full flex flex-col justify-center items-center">
