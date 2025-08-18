@@ -37,7 +37,7 @@ export const oauthCallback = async (req: FastifyRequest, res: FastifyReply) => {
                 .run(email, username);
         }
 
-        const tokenJWT = app.jwt.sign({ email: email, username: username }, { expiresIn: '10s' });
+        const tokenJWT = app.jwt.sign({ email: email, username: username }, { expiresIn: '1d' });
 
         //set JWT token as cookie
         return res.setCookie('token', tokenJWT, {

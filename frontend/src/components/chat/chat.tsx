@@ -5,17 +5,20 @@ import { IoIosMore } from "react-icons/io";
 import { RiSendPlaneFill } from "react-icons/ri";
 import UserBubble from "./UserBubble";
 import { IoCheckmark } from "react-icons/io5";
-import type { User } from "../../../../backend/src/models/user";
+import type { User } from "../../../../backend/src/models/user.model";
 import { useState, useEffect } from "react";
 import axios from "axios";
-import type { messagePacket } from "../../../../backend/src/models/chat";
-import ChatBubble from "./chatBubble";
+import type {
+  UsersLastMessage,
+  messagePacket,
+} from "../../../../backend/src/models/chat";
+import ChatBubble from "./ChatBubble";
 import { v4 as uuidv4 } from "uuid";
 
 const Chat = () => {
   const [messages, setMessages] = useState<messagePacket[]>([]);
   const [websocket, setWebsocket] = useState<WebSocket | null>(null);
-  const [users, setUsers] = useState<User[]>([]);
+  const [users, setUsers] = useState<UsersLastMessage[]>([]);
   const [targetUser, setTargetUser] = useState<User | null>();
   const [currUser, setCurrUser] = useState<User>();
   useEffect(() => {
@@ -25,21 +28,28 @@ const Chat = () => {
     })
       .then((res) => {
         setMessages(res.data.data);
+        console.log(messages);
       })
       .catch((error) => console.error("Error fetching messages:", error));
   }, [targetUser]);
 
   useEffect(() => {
+    axios("http://localhost:8088/users", { withCredentials: true })
+      .then((res) => {
+        res.data.data.sort(function (a: UsersLastMessage, b: UsersLastMessage) {
+          const x: string = a.lastMessage ? a.lastMessage.createdAt : "";
+          const y: string = b.lastMessage ? b.lastMessage.createdAt : "";
+          if (x > y) return -1;
+          return 1;
+        });
+        setUsers(res.data.data);
+      })
+      .catch((error) => console.error("Error fetching users:", error));
     axios("http://localhost:8088/user", { withCredentials: true })
       .then((res) => {
         setCurrUser(res.data.infos);
       })
       .catch((error) => console.error("Error fetching user:", error));
-    axios("http://localhost:8088/users", { withCredentials: true })
-      .then((res) => {
-        setUsers(res.data.data);
-      })
-      .catch((error) => console.error("Error fetching users:", error));
 
     const ws = new WebSocket("ws://localhost:8088/send-message");
     ws.onopen = () => {
@@ -48,10 +58,28 @@ const Chat = () => {
     };
     ws.onmessage = (event) => {
       const newMsg: messagePacket = JSON.parse(event.data.toString());
-      if (newMsg.type === "message") setMessages((prev) => [newMsg, ...prev]);
-      else if (newMsg.type == "markSeen") {
-        console.log("got message seen ->", newMsg);
-        console.log("got message seen id ->", newMsg.id);
+      if (newMsg.type === "message") {
+        if (newMsg.to == currUser?.username)
+          setMessages((prev) => [newMsg, ...prev]);
+        else {
+          setUsers((prev: UsersLastMessage[]) => {
+            const index = prev.findIndex(
+              (u) => u.user.username === newMsg.from
+            );
+            if (index == -1) return prev;
+            console.log("found -> ", index);
+            const updatedUser = {
+              ...prev[index],
+              lastMessage: newMsg,
+              unreadCount: prev[index].unreadCount + 1,
+            };
+            const copy = [...prev];
+            copy.splice(index, 1);
+            copy.unshift(updatedUser);
+            return copy;
+          });
+        }
+      } else if (newMsg.type == "markSeen") {
         setMessages((prev) => {
           return prev.map((msg: messagePacket) => {
             return msg.id && msg.id == newMsg.id
@@ -109,6 +137,7 @@ const Chat = () => {
           to: targetUser.username,
           message: message,
           isRead: false,
+          createdAt: new Date().toISOString().replace("T", " ").split(".")[0],
         };
         setMessages((prev) => [msgPacket, ...prev]);
         if (websocket && websocket.readyState == WebSocket.OPEN)
@@ -133,19 +162,39 @@ const Chat = () => {
           <input
             type="text"
             placeholder="Search in messages..."
-            className="w-full pl-3 h-[45px] focus:outline-none rounded-full bg-transparent text-white"
+            className="w-full pl-3 h-[45px] placeholder-[#fff]/[40%] focus:outline-none rounded-full bg-transparent text-white"
           />
         </div>
         <div className="overflow-y-auto pr-4 p-3 scrollbar-thin scrollbar scrollbar-thumb-neon/80 scrollbar-track-white/10 ">
           {users.map((user, i, arr) =>
-            user.username != currUser?.username ? (
-              <div key={user.id}>
+            user.user.username != currUser?.username ? (
+              <div key={user.user.id}>
                 <UserBubble
-                  onclick={() => setTargetUser(user)}
-                  msg="You : Sure! let me start the 1v1!"
-                  name={user.username}
+                  createdAt={user.lastMessage?.createdAt}
+                  unreadCount={user.unreadCount}
+                  isRead={user.lastMessage?.isRead}
+                  isDelivered={true}
+                  type={
+                    user.lastMessage
+                      ? user.lastMessage.from == currUser?.username
+                        ? "sender"
+                        : "recipient"
+                      : "recipient"
+                  }
+                  onclick={() => {
+                    setTargetUser(user.user);
+                    user.unreadCount = 0;
+                  }}
+                  msg={
+                    user.lastMessage
+                      ? user.lastMessage.from == currUser?.username
+                        ? "You : " + user.lastMessage.message
+                        : user.lastMessage.message
+                      : "Start a Conversation now!"
+                  }
+                  name={user.user.username}
                   style={`transform h-[85px] ${
-                    user != targetUser
+                    user.user != targetUser
                       ? "hover:scale-105 hover:bg-neon/[35%]"
                       : "scale-105 bg-neon/[35%]"
                   } transition duration-300 flex flex-row p-5 gap-3 items-center bg-compBg/[25%] rounded-xl`}
@@ -187,12 +236,7 @@ const Chat = () => {
                       key={message.id ?? message.tempId}
                       className="self-start gap-1 break-all wrap-anywhere text-wrap bg-neon/[55%] flex flex-row text-white px-4 py-2 rounded-2xl rounded-tl-sm "
                     >
-                      <ChatBubble
-                        isDelivered={message.isDelivered}
-                        type="sender"
-                        msg={message.message}
-                        isRead={message.isRead}
-                      />
+                      <ChatBubble type="sender" message={message} />
                     </div>
                   ) : i + 1 < arr.length &&
                     arr[i + 1].to == targetUser.username ? (
@@ -200,24 +244,14 @@ const Chat = () => {
                       key={message.id ?? message.tempId}
                       className="self-start gap-1  break-all wrap-anywhere text-wrap flex flex-row bg-neon/[55%] text-white px-4 py-2 rounded-2xl rounded-tl-sm rounded-bl-sm"
                     >
-                      <ChatBubble
-                        isDelivered={message.isDelivered}
-                        type="sender"
-                        msg={message.message}
-                        isRead={message.isRead}
-                      />
+                      <ChatBubble type="sender" message={message} />
                     </div>
                   ) : (
                     <div
                       key={message.id ?? message.tempId}
                       className="self-start gap-1  break-all wrap-anywhere text-wrap flex flex-row bg-neon/[55%] text-white px-4 py-2 rounded-2xl rounded-bl-sm"
                     >
-                      <ChatBubble
-                        isDelivered={message.isDelivered}
-                        type="sender"
-                        msg={message.message}
-                        isRead={message.isRead}
-                      />
+                      <ChatBubble type="sender" message={message} />
                     </div>
                   )
                 ) : i == 0 || arr[i - 1].to == targetUser.username ? (
@@ -227,11 +261,7 @@ const Chat = () => {
                     data-message={JSON.stringify(message)}
                     className="bg-neon/[22%] gap-1 self-end break-all wrap-anywhere text-wrap flex flex-row text-white px-4 py-2 rounded-2xl rounded-tr-sm"
                   >
-                    <ChatBubble
-                      type="recipient"
-                      msg={message.message}
-                      isRead={message.isRead}
-                    />
+                    <ChatBubble type="recipient" message={message} />
                   </div>
                 ) : i + 1 < arr.length &&
                   arr[i + 1].to != targetUser.username ? (
@@ -241,11 +271,7 @@ const Chat = () => {
                     data-message={JSON.stringify(message)}
                     className="self-end break-all wrap-anywhere text-wrap flex flex-row bg-neon/[22%] gap-1 text-white px-4 py-2 rounded-2xl rounded-tr-sm rounded-br-sm"
                   >
-                    <ChatBubble
-                      type="recipient"
-                      msg={message.message}
-                      isRead={message.isRead}
-                    />
+                    <ChatBubble type="recipient" message={message} />
                   </div>
                 ) : (
                   <div
@@ -254,24 +280,10 @@ const Chat = () => {
                     data-message={JSON.stringify(message)}
                     className="bg-neon/[22%] gap-1 self-end break-all wrap-anywhere text-wrap flex flex-row text-white px-4 py-2 rounded-2xl rounded-br-sm"
                   >
-                    <ChatBubble
-                      type="recipient"
-                      msg={message.message}
-                      isRead={message.isRead}
-                    />
+                    <ChatBubble type="recipient" message={message} />
                   </div>
                 )
               )}
-              {/* Sender */}
-              {/* <div className="flex flex-col gap-1 items-start">
-                <p className="bg-neon/[55%]  text-white px-4 py-2 rounded-2xl rounded-bl-none max-w-xs">
-                  Hey! How arebfssbvgvghfgh;sghs yougfhfj;ghfj;hglslhf?
-                </p>
-                <div className="self-start bg-neon/[55%] text-white px-4 py-2 rounded-2xl rounded-tl-sm rounded-bl-sm max-w-xs">
-                  Did you see the news?
-                </div>
-                <p className="text-[#757575]">Today 11:55</p>
-              </div> */}
             </div>
             <div className="bg-compBg/20 h-[95px] items-center flex px-5 justify-between">
               <div className="flex p-1 flex-row bg-neon/[35%] items-center pr-4 w-full rounded-full">
@@ -280,7 +292,7 @@ const Chat = () => {
                   id="msg"
                   onKeyDown={sendMsg}
                   placeholder="Type your message..."
-                  className="w-full p-4 pr-2 h-[45px] focus:outline-none rounded-full bg-transparent text-white"
+                  className="w-full p-4 pr-2 h-[45px] focus:outline-none rounded-full bg-transparent text-white placeholder-[#fff]/[40%]"
                 />
                 <RiSendPlaneFill className="text-white w-[20px] h-[20px]" />
               </div>

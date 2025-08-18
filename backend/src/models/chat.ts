@@ -1,3 +1,5 @@
+import type { User } from "./user.model.js";
+
 export interface messagePacket {
   id?: number;
   tempId?: string;
@@ -6,8 +8,13 @@ export interface messagePacket {
   from?: string;
   to: string;
   message: string;
-  createdAt?: string;
+  createdAt: string;
   isRead: boolean;
+}
+export interface UsersLastMessage {
+  user: User;
+  unreadCount: number;
+  lastMessage: messagePacket | undefined;
 }
 export interface messagePacketDB {
   id: number;

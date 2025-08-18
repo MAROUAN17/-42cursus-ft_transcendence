@@ -26,7 +26,7 @@ export const getMessages = async (
       console.log("Token not found!");
       return;
     }
-    const user = payload.email;
+    const user = payload.username;
     const query: messagePacketDB[] = app.db
       .prepare(
         "SELECT * FROM messages WHERE (sender = ? AND recipient = ?) OR (sender = ? AND recipient = ?) ORDER BY createdAt DESC"
