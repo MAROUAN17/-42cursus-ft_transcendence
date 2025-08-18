@@ -8,6 +8,8 @@
 
 /backend/dist
 /backend/.env
+/backend/ssl
+
 
 # testing
 /coverage
