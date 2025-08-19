@@ -13,20 +13,20 @@ import { chatService } from "./services/chat.service.js";
 import { getUsers } from "./services/getUsers.service.js";
 import { oauthPlugin } from "./plugins/oauth.plugin.js";
 
-// const httpsOptions = {
-//   key: fs.readFileSync("./ssl/server.key"),
-//   cert: fs.readFileSync("./ssl/server.crt")
-// };
+const httpsOptions = {
+  key: fs.readFileSync("../ssl/server.key"),
+  cert: fs.readFileSync("../ssl/server.crt")
+};
 
 const app = Fastify({
-  logger: false,
-  // https: httpsOptions
+  logger: true,
+  https: httpsOptions
 });
 
 async function start(): Promise<void> {
   await app.register(cors, {
-    origin: "http://localhost:5173",
-    methods: ["GET", "POST"],
+    origin: "https://localhost:3000",
+    methods: ["GET", "POST", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
     maxAge: 600,
@@ -47,7 +47,7 @@ async function start(): Promise<void> {
   // app.get("/send-message", { websocket: true }, chatService.handler);
   await app.listen({
     host: "0.0.0.0",
-    port: Number(process.env.PORT) | 8080,
+    port: Number(process.env.PORT) || 8080,
   });
 }
 

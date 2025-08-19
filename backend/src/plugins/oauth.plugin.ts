@@ -18,6 +18,6 @@ export const oauthPlugin = fp(async function(fastify, opts) {
             }
         },
         startRedirectPath: '/intra42/login',
-        callbackUri: 'http://localhost:8088/intra42/login/callback'
+        callbackUri: 'https://localhost:5000/intra42/login/callback'
     });
 });

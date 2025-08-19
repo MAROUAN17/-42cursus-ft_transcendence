@@ -28,7 +28,7 @@ function Register() {
             setPassErrorMssg("Password should be at least 8 characters including a lowercaser letter and a number");
             return ;
         }
-        axios.post('http://localhost:8088/register', { username:username, email: email, password: password })
+        axios.post('https://localhost:5000/register', { username:username, email: email, password: password })
             .then(function(res) {
                 console.log(res.data);
                 navigate("/login");

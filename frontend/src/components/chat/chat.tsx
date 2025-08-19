@@ -26,7 +26,7 @@ const Chat = () => {
   const targetUserRef = useRef(targetUser);
   useEffect(() => {
     if (!targetUser) return;
-    axios("http://localhost:8088/messages/" + targetUser.username, {
+    axios("https://localhost:5000/messages/" + targetUser.username, {
       withCredentials: true,
     })
       .then((res) => {
@@ -36,7 +36,7 @@ const Chat = () => {
   }, [targetUser]);
 
   useEffect(() => {
-    axios("http://localhost:8088/users", { withCredentials: true })
+    axios("https://localhost:5000/users", { withCredentials: true })
       .then((res) => {
         res.data.data.sort(function (a: UsersLastMessage, b: UsersLastMessage) {
           const x: string = a.lastMessage ? a.lastMessage.createdAt : "";
@@ -47,7 +47,7 @@ const Chat = () => {
         setUsers(res.data.data);
       })
       .catch((error) => console.error("Error fetching users:", error));
-    axios("http://localhost:8088/user", { withCredentials: true })
+    axios("https://localhost:5000/user", { withCredentials: true })
       .then((res) => {
         console.log("curUser -> ", res.data.infos);
         setCurrUser(res.data.infos);
@@ -55,7 +55,7 @@ const Chat = () => {
       })
       .catch((error) => console.error("Error fetching user:", error));
 
-    const ws = new WebSocket("ws://localhost:8088/send-message");
+    const ws = new WebSocket("wss://localhost:5000/send-message");
     ws.onopen = () => {
       console.log("Websocket Connected!");
       setWebsocket(ws);

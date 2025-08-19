@@ -9,7 +9,7 @@ export default function Dashboard() {
     const [user, setUser] = useState<Infos>({ username: "", email: "" });
     function handleClick(e: React.MouseEvent<HTMLButtonElement>) {
         e.preventDefault();
-        axios.get('http://localhost:8088/', { withCredentials: true })
+        axios.get('https://localhost:5000/', { withCredentials: true })
             .then(function (res) {
                 console.log(res.data);
                 console.log("Authorized!!");
@@ -20,7 +20,7 @@ export default function Dashboard() {
     }
 
     useEffect(() => {
-        axios.get('http://localhost:8088/user', { withCredentials: true })
+        axios.get('https://localhost:5000/user', { withCredentials: true })
             .then(function(res) {
                 console.log(res.data.infos);
                 setUser(res.data.infos);
