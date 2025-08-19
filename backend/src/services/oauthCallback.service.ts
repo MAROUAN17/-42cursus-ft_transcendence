@@ -46,7 +46,7 @@ export const oauthCallback = async (req: FastifyRequest, res: FastifyReply) => {
             httpOnly: true, 
             sameSite: 'lax',
             maxAge: 10
-        }).redirect("http://localhost:5173/");
+        }).redirect("https://localhost:3000/");
     } catch (error) {
         console.log(error);
         res.status(401).send({ error: error });

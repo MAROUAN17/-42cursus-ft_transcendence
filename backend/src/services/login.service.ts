@@ -40,7 +40,8 @@ export const loginUser = async (req: FastifyRequest<{Body: LoginBody}>, res: Fas
             path: '/',
             secure: false,
             httpOnly: true, 
-            sameSite: 'lax'
+            sameSite: 'lax',
+            maxAge: 10
         }).status(200).send({ message: "Logged in", data: {username: user?.username, email: user?.email } })
     } catch (err) {
         console.log(err);

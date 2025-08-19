@@ -1,5 +1,5 @@
-mkdir -p ~/goinfre/ft_transcendence/backend/ssl
-cd ~/goinfre/ft_transcendence/backend/ssl
+mkdir -p ~/goinfre/ft_transcendence/ssl
+cd ~/goinfre/ft_transcendence/ssl
 
 # Generate a private key
 openssl genrsa -out server.key 2048

@@ -8,7 +8,9 @@
 
 /backend/dist
 /backend/.env
-/backend/ssl
+
+
+/ssl
 
 
 # testing

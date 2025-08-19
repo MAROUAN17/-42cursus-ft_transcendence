@@ -16,7 +16,7 @@ function Login() {
 
     const handleForm = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        axios.post('http://localhost:8088/login', { email: email, password: password },
+        axios.post('https://localhost:5000/login', { email: email, password: password },
             { withCredentials: true }
         )
             .then(function(res) {
@@ -89,7 +89,7 @@ function Login() {
                         <hr className="xl:w-[35%] lg:w-[30%]"></hr>
                     </div>
                     <div className="flex justify-center">
-                        <a href="http://localhost:8088/intra42/login"><img className="w-[32px] h-[32px]" src="/42-icon.png" alt="42 icon" /></a>
+                        <a href="https://localhost:5000/intra42/login"><img className="w-[32px] h-[32px]" src="/42-icon.png" alt="42 icon" /></a>
                     </div>
                     <div className="flex justify-center">
                         <h1 className="text-white font-light">Don't have an account? <span className="font-bold"><a href="/register" className="href">Signup</a></span></h1>
