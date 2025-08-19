@@ -13,14 +13,14 @@ import { chatService } from "./services/chat.service.js";
 import { getUsers } from "./services/getUsers.service.js";
 import { oauthPlugin } from "./plugins/oauth.plugin.js";
 
-const httpsOptions = {
-  key: fs.readFileSync("./ssl/server.key"),
-  cert: fs.readFileSync("./ssl/server.crt")
-};
+// const httpsOptions = {
+//   key: fs.readFileSync("./ssl/server.key"),
+//   cert: fs.readFileSync("./ssl/server.crt")
+// };
 
 const app = Fastify({
   logger: false,
-  https: httpsOptions
+  // https: httpsOptions
 });
 
 async function start(): Promise<void> {
