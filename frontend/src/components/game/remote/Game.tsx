@@ -75,7 +75,7 @@ export default function RGame() {
 		  console.log("Closing WebSocket...");
 		  ws.close();
 		};
-	  }, []);
+	  }, [60/1000]);
 	//  useEffect(() => {
 	//	setI(i + 1)
 	//	if (websocket && websocket.readyState == WebSocket.OPEN)

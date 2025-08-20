@@ -52,7 +52,7 @@ function updateInfo(msg:any) {
     //  msgPacket.game_info.ball.y = 10;
     //else
     //  msgPacket.game_info.ball.y = 990;
-    msgPacket.game_info.ball.y *=-1
+    msgPacket.game_info.ball.velY *=-1
   }
   else 
     msgPacket.game_info.ball.velX *= -1;

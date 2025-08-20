@@ -21,8 +21,8 @@ export interface Paddle {
     scoreRight: number;
   }
   
-  const GAME_WIDTH = 1000;
-  const GAME_HEIGHT = 600;
+  const GAME_WIDTH = 600;
+  const GAME_HEIGHT = 400;
   const PADDLE_WIDTH = 18;
   const PADDLE_HEIGHT = 120;
   
