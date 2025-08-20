@@ -21,8 +21,8 @@ export interface Paddle {
     scoreRight: number;
   }
   
-  const GAME_WIDTH = 800;
-  const GAME_HEIGHT = 400;
+  const GAME_WIDTH = 1000;
+  const GAME_HEIGHT = 600;
   const PADDLE_WIDTH = 18;
   const PADDLE_HEIGHT = 120;
   
@@ -30,7 +30,7 @@ export interface Paddle {
     ball: {
       x: GAME_WIDTH / 2,
       y: GAME_HEIGHT / 2,
-      velX: 5, 
+      velX: 4, 
       velY: 0
     },
     paddleLeft: {
@@ -52,4 +52,3 @@ export interface Paddle {
     scoreLeft: 0,
     scoreRight: 0
   };
-  

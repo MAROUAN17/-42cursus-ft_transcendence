@@ -15,20 +15,6 @@ function gameLoop () {
     msgPacket.game_info.ball.x += msgPacket.game_info.ball.velX;
     msgPacket.game_info.ball.y += msgPacket.game_info.ball.velY;
   
-    //if (
-    //  msgPacket.game_info.ball.y <= 0 ||
-    //  msgPacket.game_info.ball.y >= DefaultGame.bounds.height
-    //) {
-    //  msgPacket.game_info.ball.velY *= -1;
-    //}
-  
-    //if (
-    //  msgPacket.game_info.ball.x <= 0 ||
-    //  msgPacket.game_info.ball.x >= DefaultGame.bounds.width
-    //) {
-    //  msgPacket.game_info.ball.velX *= -1;
-    //}
-  
     broadcast(msgPacket);
   }, 1000 / 60);
 }
@@ -61,11 +47,33 @@ export function handleGameConnection(connection: any, req: any) {
 }
 
 function updateInfo(msg:any) {
-  if (msg.type == "dirUpdate")
-    msgPacket.game_info.ball.velX *= msg.dir.x;
-    msgPacket.game_info.ball.velY *= msg.dir.y;
-    if (msgPacket.game_info.ball.velX < 0 && msg.dir.x == 1)
-      msgPacket.game_info.ball.velX *= -1;
+  if (msg.type == "vely"){
+    //if (msgPacket.game_info.ball.y  < 0 )
+    //  msgPacket.game_info.ball.y = 10;
+    //else
+    //  msgPacket.game_info.ball.y = 990;
+    msgPacket.game_info.ball.y *=-1
+  }
+  else 
+    msgPacket.game_info.ball.velX *= -1;
+
+  if (msg.type == "score")
+  {
+    console.log("WHO received:",msg.who);
+    if (msg.who == "right")
+      msgPacket.game_info.scoreRight++
+    else
+      msgPacket.game_info.scoreLeft++
+    const ballx = msgPacket.game_info.bounds.width / 2;
+    const bally = msgPacket.game_info.bounds.height / 2;
+    const angle = (Math.random() * Math.PI / 3) - Math.PI / 6;
+    const dir = Math.random() > 0.5 ? 1 : -1;
+    const velX = dir  * Math.cos(angle) * 2 ;
+    const velY =  Math.sin(angle) * 4;
+
+    msgPacket.game_info.ball = {x: ballx, y:bally, velX:velX, velY:velY}
+    console.log("new Ball info: ", msgPacket.game_info.ball)
+  }
 }
 
 export const getGameState = () => {
