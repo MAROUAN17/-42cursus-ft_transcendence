@@ -47,13 +47,8 @@ export function handleGameConnection(connection: any, req: any) {
 }
 
 function updateInfo(msg:any) {
-  if (msg.type == "vely"){
-    //if (msgPacket.game_info.ball.y  < 0 )
-    //  msgPacket.game_info.ball.y = 10;
-    //else
-    //  msgPacket.game_info.ball.y = 990;
+  if (msg.type == "vely")
     msgPacket.game_info.ball.velY *=-1
-  }
   else 
     msgPacket.game_info.ball.velX *= -1;
 
@@ -67,9 +62,10 @@ function updateInfo(msg:any) {
     const ballx = msgPacket.game_info.bounds.width / 2;
     const bally = msgPacket.game_info.bounds.height / 2;
     const angle = (Math.random() * Math.PI / 3) - Math.PI / 6;
-    const dir = Math.random() > 0.5 ? 1 : -1;
+    //const dir = Math.random() > 0.5 ? 1 : -1;
+    const dir = -1;
     const velX = dir  * Math.cos(angle) * 2 ;
-    const velY =  Math.sin(angle) * 4;
+    const velY =  Math.sin(angle) * 2;
 
     msgPacket.game_info.ball = {x: ballx, y:bally, velX:velX, velY:velY}
     console.log("new Ball info: ", msgPacket.game_info.ball)

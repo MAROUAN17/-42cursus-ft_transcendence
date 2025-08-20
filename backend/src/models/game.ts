@@ -24,14 +24,14 @@ export interface Paddle {
   const GAME_WIDTH = 600;
   const GAME_HEIGHT = 400;
   const PADDLE_WIDTH = 18;
-  const PADDLE_HEIGHT = 120;
+  const PADDLE_HEIGHT = 200;
   
   export const DefaultGame: GameInfo = {
     ball: {
       x: GAME_WIDTH / 2,
       y: GAME_HEIGHT / 2,
-      velX: 4, 
-      velY: 0
+      velX: 5, 
+      velY: 5
     },
     paddleLeft: {
       x: 24,

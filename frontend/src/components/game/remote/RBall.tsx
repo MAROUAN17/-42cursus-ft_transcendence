@@ -45,7 +45,7 @@ export default function RBall({
         updateVel("vely");
         localDir.current.y = -1; 
         hasBounced.current.top = true;
-        setDir({ x: localDir.current.x, y: localDir.current.y }); 
+        //setDir({ x: localDir.current.x, y: localDir.current.y }); 
       }
     } else {
       hasBounced.current.top = false;
@@ -57,7 +57,7 @@ export default function RBall({
         updateVel("vely");
         localDir.current.y = -1;
         hasBounced.current.bottom = true;
-        setDir({ x: localDir.current.x, y: localDir.current.y });
+        //setDir({ x: localDir.current.x, y: localDir.current.y });
       }
     } else {
       hasBounced.current.bottom = false;
@@ -78,6 +78,13 @@ export default function RBall({
         top: paddle.y,
         bottom: paddle.y + paddle.height,
       };
+      if (paddle.x > 100 && ballRect.right > 600)
+        {
+          console.log("ballRect.right < paddleRect.left: ", ballRect.right , paddleRect.left)
+          console.log("ballRect.left > paddleRect.right: ", ballRect.left , paddleRect.right)
+          console.log("ballRect.bottom < paddleRect.top: ", ballRect.bottom , paddleRect.top)
+          console.log("ballRect.top > paddleRect.bottom: ", ballRect.top , paddleRect.bottom)
+        }
       return !(
         ballRect.right < paddleRect.left ||
         ballRect.left > paddleRect.right ||
@@ -85,16 +92,20 @@ export default function RBall({
         ballRect.top > paddleRect.bottom
       );
     };
+    
 
-    if (localDir.current.x < 0 && checkPaddleCollision(paddleLeft)) {
+    if (ball.velX < 0 && checkPaddleCollision(paddleLeft)) {
+      console.log("entered left");
+      
       updateVel("velx");
       localDir.current.x = -localDir.current.x;
-      setDir({ x: localDir.current.x, y: localDir.current.y });
+      //setDir({ x: localDir.current.x, y: localDir.current.y });
     }
-    if (localDir.current.x > 0 && checkPaddleCollision(paddleRight)) {
+    if (ball.velX > 0 && checkPaddleCollision(paddleRight)) {
+      console.log("entered right");
       updateVel("velx");
       localDir.current.x = -localDir.current.x;
-      setDir({ x: localDir.current.x, y: localDir.current.y });
+      //setDir({ x: localDir.current.x, y: localDir.current.y });
     }
 
     if (nx < -10) {

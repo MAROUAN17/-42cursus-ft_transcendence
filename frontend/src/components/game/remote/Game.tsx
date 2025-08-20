@@ -75,7 +75,7 @@ export default function RGame() {
 		  console.log("Closing WebSocket...");
 		  ws.close();
 		};
-	  }, [60/1000]);
+	  }, [16]);
 	//  useEffect(() => {
 	//	setI(i + 1)
 	//	if (websocket && websocket.readyState == WebSocket.OPEN)
@@ -92,8 +92,8 @@ export default function RGame() {
 			if (type == "vely")
 				websocket.send(JSON.stringify({ type: "vely"}));
 			if (type == "velx")
-				websocket.send(JSON.stringify({ type: "vely"}));
-			console.log("message sent [DIR]: ", type);
+				websocket.send(JSON.stringify({ type: "velx"}));
+			//console.log("message sent [DIR]: ", type);
 		} else {
 			console.log("there is a proble in socket:", websocket);
 		}
@@ -124,7 +124,7 @@ export default function RGame() {
 		style={{ minWidth: 600, minHeight: 360, height:gameInfo?.bounds.height, width:gameInfo?.bounds.width }}
 	  >
 		<RBat y={leftY} setY={setLeftY} side="left" height={gameInfo?.paddleLeft.height ?? 0} containerTop={0} containerHeight={gameInfo?.bounds.height ?? 400} />
-		<RBat y={rightY} setY={setRightY} side="right" height={gameInfo?.paddleLeft.height ?? 0} containerTop={0} containerHeight={gameInfo?.bounds.height ?? 400} />
+		<RBat y={rightY} setY={setRightY} side="right" height={gameInfo?.paddleRight.height ?? 0} containerTop={0} containerHeight={gameInfo?.bounds.height ?? 400} />
 
 		<RBall
 		  dir={dir}
