@@ -45,7 +45,6 @@ export const getUsersMessages = async (
           "SELECT COUNT(*) AS count FROM messages WHERE (sender = ? AND recipient = ?) AND isRead = false"
         )
         .get(user.username, currUser).count;
-      console.log("count -> ", unreadCount);
       usersAndMessages.push({ user, unreadCount, lastMessage });
     });
     res.status(200).send({ data: usersAndMessages });

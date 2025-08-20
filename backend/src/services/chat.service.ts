@@ -28,15 +28,14 @@ async function processMessages() {
           currMsg.isDelivered = true;
           currMsg.type = "message";
           let client = clients.get(currMsg.to);
-          console.log('sending to =>', currMsg.to);
+          console.log('sending msg to =>', currMsg.to);
           if (client) client.send(JSON.stringify(currMsg));
           if (currMsg.from) {
             client = clients.get(currMsg.from);
             currMsg.type = "markDelivered";
             if (client) client.send(JSON.stringify(currMsg));
-            console.log('sending to =>', currMsg.from);
+            console.log('sending delivered to =>', currMsg.from);
           }
-          console.log("done sending!");
         }
       } else if (currMsg.type == "markSeen") {
         // console.log("updating isRead for =>", currMsg);

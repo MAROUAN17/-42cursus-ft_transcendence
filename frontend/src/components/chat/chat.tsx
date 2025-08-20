@@ -6,7 +6,7 @@ import { RiSendPlaneFill } from "react-icons/ri";
 import UserBubble from "./UserBubble";
 import { IoCheckmark } from "react-icons/io5";
 import type { User } from "../../../../backend/src/models/user.model";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import type {
   UsersLastMessage,
@@ -21,6 +21,9 @@ const Chat = () => {
   const [users, setUsers] = useState<UsersLastMessage[]>([]);
   const [targetUser, setTargetUser] = useState<User | null>();
   const [currUser, setCurrUser] = useState<User>();
+  const [searchInput, setSearchInput] = useState<string>("");
+  const currUserRef = useRef(currUser);
+  const targetUserRef = useRef(targetUser);
   useEffect(() => {
     if (!targetUser) return;
     axios("https://localhost:5000/messages/" + targetUser.username, {
@@ -28,7 +31,6 @@ const Chat = () => {
     })
       .then((res) => {
         setMessages(res.data.data);
-        console.log(messages);
       })
       .catch((error) => console.error("Error fetching messages:", error));
   }, [targetUser]);
@@ -47,11 +49,13 @@ const Chat = () => {
       .catch((error) => console.error("Error fetching users:", error));
     axios("https://localhost:5000/user", { withCredentials: true })
       .then((res) => {
+        console.log("curUser -> ", res.data.infos);
         setCurrUser(res.data.infos);
+        currUserRef.current = res.data.infos;
       })
       .catch((error) => console.error("Error fetching user:", error));
 
-    const ws = new WebSocket("ws://localhost:8088/send-message");
+    const ws = new WebSocket("wss://localhost:5000/send-message");
     ws.onopen = () => {
       console.log("Websocket Connected!");
       setWebsocket(ws);
@@ -59,15 +63,18 @@ const Chat = () => {
     ws.onmessage = (event) => {
       const newMsg: messagePacket = JSON.parse(event.data.toString());
       if (newMsg.type === "message") {
-        if (newMsg.to == currUser?.username)
+        if (
+          newMsg.to == currUserRef.current?.username &&
+          newMsg.from == targetUserRef.current?.username
+        ) {
+          console.log("got message insside -> ", newMsg);
           setMessages((prev) => [newMsg, ...prev]);
-        else {
+        } else {
           setUsers((prev: UsersLastMessage[]) => {
             const index = prev.findIndex(
               (u) => u.user.username === newMsg.from
             );
             if (index == -1) return prev;
-            console.log("found -> ", index);
             const updatedUser = {
               ...prev[index],
               lastMessage: newMsg,
@@ -103,7 +110,6 @@ const Chat = () => {
     };
   }, []);
   useEffect(() => {
-    console.log("mesages => ", messages);
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
@@ -111,12 +117,16 @@ const Chat = () => {
             entry.target.getAttribute("data-message");
           if (!messageObj) return;
           const msgPacket: messagePacket = JSON.parse(messageObj);
-          console.log("before id msg id -> ", msgPacket.id);
           if (!msgPacket.id) return;
           console.log("after id msg id -> ", msgPacket.id);
           msgPacket.type = "markSeen";
           if (websocket && websocket.readyState == WebSocket.OPEN)
             websocket.send(JSON.stringify(msgPacket));
+          setMessages((prev) =>
+            prev.filter((msg) =>
+              msg.id === msgPacket.id ? (msg.isRead = true) : msg
+            )
+          );
           observer.unobserve(entry.target);
         }
       });
@@ -146,7 +156,6 @@ const Chat = () => {
       }
     }
   }
-
   return (
     <div className="flex  flex-row h-screen bg-darkBg p-5 gap-x-4 font-poppins">
       <div className="h-full flex flex-col bg-compBg/20 basis-1/3 rounded-xl p-3 gap-5">
@@ -161,13 +170,15 @@ const Chat = () => {
           <FaSearch className="text-white w-[15px] h-[15px]" />
           <input
             type="text"
-            placeholder="Search in messages..."
+            onChange={(e) => setSearchInput(e.target.value)}
+            placeholder="Search for users..."
             className="w-full pl-3 h-[45px] placeholder-[#fff]/[40%] focus:outline-none rounded-full bg-transparent text-white"
           />
         </div>
         <div className="overflow-y-auto pr-4 p-3 scrollbar-thin scrollbar scrollbar-thumb-neon/80 scrollbar-track-white/10 ">
-          {users.map((user, i, arr) =>
-            user.user.username != currUser?.username ? (
+          {users
+            .filter((user) => user.user.username.includes(searchInput))
+            .map((user, i, arr) => (
               <div key={user.user.id}>
                 <UserBubble
                   createdAt={user.lastMessage?.createdAt}
@@ -183,6 +194,7 @@ const Chat = () => {
                   }
                   onclick={() => {
                     setTargetUser(user.user);
+                    targetUserRef.current = user.user;
                     user.unreadCount = 0;
                   }}
                   msg={
@@ -203,8 +215,7 @@ const Chat = () => {
                   <hr className="border-t border-[0.5px] border-[#76767C] my-[6px] mx-6 rounded-full" />
                 ) : null}
               </div>
-            ) : null
-          )}
+            ))}
         </div>
       </div>
       <div className="h-full bg-compBg/20 basis-2/3 rounded-xl flex flex-col justify-between">
@@ -298,7 +309,14 @@ const Chat = () => {
               </div>
             </div>
           </>
-        ) : null}
+        ) : (
+          <div className="flex gap-3 flex-col justify-center w-full h-full items-center">
+            <img src="src/assets/chat_bg.png" className="w-2/3" />
+            <h2 className="text-white text-[30px] text-center font-semibold">
+              Select a conversation to start chatting ✨
+            </h2>
+          </div>
+        )}
       </div>
     </div>
   );

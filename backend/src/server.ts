@@ -26,7 +26,7 @@ const app = Fastify({
 async function start(): Promise<void> {
   await app.register(cors, {
     origin: "https://localhost:3000",
-    methods: ["GET", "POST"],
+    methods: ["GET", "POST", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
     maxAge: 600,
