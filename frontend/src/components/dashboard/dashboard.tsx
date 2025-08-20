@@ -12,7 +12,7 @@ export default function Dashboard() {
         e.preventDefault();
         axios.get('https://localhost:5000/', { withCredentials: true })
             .then(function (res) {
-                console.log(res.data.data.message);
+                console.log(res.data.data);
                 console.log("Authorized!!");
             })
             .catch(function (err) {

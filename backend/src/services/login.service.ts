@@ -12,7 +12,6 @@ export const loginUser = async (req: FastifyRequest<{Body: LoginBody}>, res: Fas
         //check username
         if (email.includes("@")) {
             email = email.toLowerCase();
-            console.log(`email => ${email}`);
             user = app.db
             .prepare('SELECT * from players WHERE email = ?')
             .get(email) as User | undefined;
@@ -41,8 +40,8 @@ export const loginUser = async (req: FastifyRequest<{Body: LoginBody}>, res: Fas
             secure: true,
             httpOnly: true, 
             sameSite: 'lax',
-            maxAge: 10
-        }).status(200).send({ message: "Logged in", data: { username: user?.username, email: user?.email } })
+            maxAge: 100
+        }).status(200).send({ message: "Logged in", data: { username: user?.username, email: user?.email } }).redirect("https://localhost:3000/verify")
     } catch (err) {
         console.log(err);
         return res.status(500).send({ err });

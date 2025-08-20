@@ -12,7 +12,8 @@ sqlite3 "$DB_NAME" <<EOF
         id INTEGER PRIMARY KEY,
         username TEXT NOT NULL,
         email TEXT NOT NULL,
-        password TEXT
+        password TEXT,
+        secret_otp TEXT
     );
     CREATE TABLE IF NOT EXISTS MESSAGES (
         id INTEGER PRIMARY KEY,
@@ -23,3 +24,5 @@ sqlite3 "$DB_NAME" <<EOF
         createdAt TEXT DEFAULT (datetime('now'))
     );
 EOF
+
+tail -f /dev/null;
