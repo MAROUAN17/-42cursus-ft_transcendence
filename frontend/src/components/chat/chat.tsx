@@ -12,7 +12,7 @@ import type {
   UsersLastMessage,
   messagePacket,
 } from "../../../../backend/src/models/chat";
-import ChatBubble from "./chatBubble";
+import ChatBubble from "./ChatBubble";
 import { v4 as uuidv4 } from "uuid";
 
 const Chat = () => {
