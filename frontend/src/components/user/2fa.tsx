@@ -50,7 +50,7 @@ function Page2FA() {
                 </div>
             </div>
             <form onSubmit={formHandler}>
-            <div className="flex justify-center space-x-18 text-center mt-20">
+            <div className="flex justify-center space-x-16 text-center mt-20">
                     <input maxLength={1} onChange={handleFirstNbr} id="otp" name="otp" value={firstNbr} className="text-white text-4xl text-center w-[139px] h-[139px] bg-gameBg border border-white rounded-lg" required type="text" />
                     <input maxLength={1} onChange={handleSecondNbr} id="otp" name="otp" value={secondNbr} className="text-white text-4xl text-center w-[139px] h-[139px] bg-gameBg border border-white rounded-lg" required type="text" />
                     <input maxLength={1} onChange={handleThirdNbr} id="otp" name="otp" value={thirdNbr} className="text-white text-4xl text-center w-[139px] h-[139px] bg-gameBg border border-white rounded-lg" required type="text" />

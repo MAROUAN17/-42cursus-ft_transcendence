@@ -38,10 +38,11 @@ export const loginUser = async (req: FastifyRequest<{Body: LoginBody}>, res: Fas
         //set JWT token as cookie
         return res.setCookie('token', token, {
             path: '/',
-            secure: false,
+            secure: true,
             httpOnly: true, 
             sameSite: 'lax',
-        }).status(200).send({ message: "Logged in", data: {username: user?.username, email: user?.email } })
+            maxAge: 10
+        }).status(200).send({ message: "Logged in", data: { username: user?.username, email: user?.email } })
     } catch (err) {
         console.log(err);
         return res.status(500).send({ err });
