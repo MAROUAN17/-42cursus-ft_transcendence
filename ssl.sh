@@ -1,5 +1,5 @@
-mkdir -p ./backend/ssl
-cd ./backend/ssl
+mkdir -p ./ssl
+cd ./ssl
 
 # Generate a private key
 openssl genrsa -out server.key 2048

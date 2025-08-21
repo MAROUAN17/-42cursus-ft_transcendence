@@ -11,7 +11,6 @@ export const verify2FA = async (req: FastifyRequest<{Body: LoginBody}>, res: Fas
     const secret = authenticator.generateSecret();
 
     //insert secret into the db
-    console.log(`secret before => ${secret}`);
     app.db
         .prepare('UPDATE players SET secret_otp = ? WHERE email = ?')
         .run(secret, email);
@@ -19,7 +18,6 @@ export const verify2FA = async (req: FastifyRequest<{Body: LoginBody}>, res: Fas
     const user = app.db
         .prepare('SELECT * FROM PLAYERS WHERE email = ?')
         .get(email) as User;
-    console.log(`secret after => ${user.secret_otp}`);
 
     const otpath = authenticator.keyuri(email, "OTP APP", user.secret_otp);
     const qrCode = await qrcode.toDataURL(otpath);
@@ -41,15 +39,11 @@ export const verify2FAToken = async (req: FastifyRequest<{Body: LoginBody}>, res
             .get(infos?.email) as User;
 
         const secret = user.secret_otp;
-        const checkOtp = authenticator.check(token, secret);
-        if (checkOtp)
-            console.log("VALID OTP");
         const isValid = authenticator.verify({ token: token, secret:secret });
-        console.log(isValid);
         if (isValid) {
-            return res.status(200).send({ message: "valid!!" });
+            return res.status(200).send({ message: "Valid OTP code" });
         }
-        return res.status(401).send({ error: "invalid otp code" });  
+        return res.status(401).send({ error: "Invalid otp code" });  
     } catch (error) {
         res.status(500).send({ error: error });
     }

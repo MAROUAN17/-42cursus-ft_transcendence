@@ -13,30 +13,34 @@ function Page2FA() {
     const [fifthNbr, setFifthNbr] = useState<string>('');
     const [sixthNbr, setSixthNbr] = useState<string>('');
     const navigate = useNavigate();
-    const [user, setUser] = useState<Infos>({ username: "", email: "" });
     const handleFirstNbr = (e: React.ChangeEvent<HTMLInputElement>) => {
         e.preventDefault();
         setFirstNbr(e.target.value);
+        document.getElementById('otpn2')?.focus();
         console.log(firstNbr);
     }
     const handleSecondNbr = (e: React.ChangeEvent<HTMLInputElement>) => {
         e.preventDefault();
         setSecondNbr(e.target.value);
+        document.getElementById('otpn3')?.focus();
         console.log(secondNbr);
     }
     const handleThirdNbr = (e: React.ChangeEvent<HTMLInputElement>) => {
         e.preventDefault();
         setThirdNbr(e.target.value);
+        document.getElementById('otpn4')?.focus();
         console.log(thirdNbr);
     }
     const handleFourthNbr = (e: React.ChangeEvent<HTMLInputElement>) => {
         e.preventDefault();
         setFourthNbr(e.target.value);
+        document.getElementById('otpn5')?.focus();
         console.log(fourthNbr);
     }
     const handleFifthNbr = (e: React.ChangeEvent<HTMLInputElement>) => {
         e.preventDefault();
         setFifthNbr(e.target.value);
+        document.getElementById('otpn6')?.focus();
         console.log(fourthNbr);
     }
     const handleSixthNbr = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -79,6 +83,7 @@ function Page2FA() {
 
     useEffect(() => {
         renderQRcode();
+        document.getElementById('otpn1')?.focus();
     }, []);
     return (
         <div className="bg-gameBg h-screen font-poppins">
@@ -102,14 +107,14 @@ function Page2FA() {
             <form onSubmit={formHandler}>
             <div className="flex justify-center space-x-12">
                 <div className="flex justify-center space-x-3 text-center mt-20">
-                    <input maxLength={1} onChange={handleFirstNbr} id="otp" name="otp" value={firstNbr} className=" text-white text-4xl text-center w-[80px] h-[139px] bg-gameBg border border-white rounded-lg" required type="text" />
-                    <input maxLength={1} onChange={handleSecondNbr} id="otp" name="otp" value={secondNbr} className=" text-white text-4xl text-center w-[90px] h-[139px] bg-gameBg border border-white rounded-lg" required type="text" />
-                    <input maxLength={1} onChange={handleThirdNbr} id="otp" name="otp" value={thirdNbr} className=" text-white text-4xl text-center w-[90px] h-[139px] bg-gameBg border border-white rounded-lg" required type="text" />
+                    <input maxLength={1} onChange={handleFirstNbr} id="otpn1" value={firstNbr} className=" text-white text-4xl text-center w-[80px] h-[139px] bg-gameBg border border-white rounded-lg" required type="text" />
+                    <input maxLength={1} onChange={handleSecondNbr} id="otpn2" value={secondNbr} className=" text-white text-4xl text-center w-[90px] h-[139px] bg-gameBg border border-white rounded-lg" required type="text" />
+                    <input maxLength={1} onChange={handleThirdNbr} id="otpn3" value={thirdNbr} className=" text-white text-4xl text-center w-[90px] h-[139px] bg-gameBg border border-white rounded-lg" required type="text" />
                 </div>
                 <div className="flex justify-center space-x-3 text-center mt-20">
-                    <input maxLength={1} onChange={handleFourthNbr} id="otp" name="otp" value={fourthNbr} className=" text-white text-4xl text-center w-[90px] h-[139px] bg-gameBg border border-white rounded-lg" required type="text" />
-                    <input maxLength={1} onChange={handleFifthNbr} id="otp" name="otp" value={fifthNbr} className=" text-white text-4xl text-center w-[90px] h-[139px] bg-gameBg border border-white rounded-lg" required type="text" />
-                    <input maxLength={1} onChange={handleSixthNbr} id="otp" name="otp" value={sixthNbr} className=" text-white text-4xl text-center w-[90px] h-[139px] bg-gameBg border border-white rounded-lg" required type="text" />
+                    <input maxLength={1} onChange={handleFourthNbr} id="otpn4" value={fourthNbr} className=" text-white text-4xl text-center w-[90px] h-[139px] bg-gameBg border border-white rounded-lg" required type="text" />
+                    <input maxLength={1} onChange={handleFifthNbr} id="otpn5" value={fifthNbr} className=" text-white text-4xl text-center w-[90px] h-[139px] bg-gameBg border border-white rounded-lg" required type="text" />
+                    <input maxLength={1} onChange={handleSixthNbr} id="otpn6" value={sixthNbr} className=" text-white text-4xl text-center w-[90px] h-[139px] bg-gameBg border border-white rounded-lg" required type="text" />
                 </div>
             </div>
             <div className="mt-12 text-center">
