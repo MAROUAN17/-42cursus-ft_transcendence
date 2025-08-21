@@ -24,7 +24,7 @@ export interface Paddle {
   const GAME_WIDTH = 600;
   const GAME_HEIGHT = 400;
   const PADDLE_WIDTH = 18;
-  const PADDLE_HEIGHT = 200;
+  const PADDLE_HEIGHT = 120;
   
   export const DefaultGame: GameInfo = {
     ball: {

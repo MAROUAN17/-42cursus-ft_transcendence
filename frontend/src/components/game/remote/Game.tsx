@@ -86,7 +86,7 @@ export default function RGame() {
 	//	else
 	//		console.log("there is a proble in socket:", websocket);
 	//  }, [dir]);
-	  const updateVel= ( type:string) =>
+	  const updateVel = ( type:string) =>
 	  {
 		if (websocket && websocket.readyState == WebSocket.OPEN){
 			if (type == "vely")

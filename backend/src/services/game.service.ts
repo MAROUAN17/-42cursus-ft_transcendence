@@ -15,6 +15,8 @@ function gameLoop () {
     msgPacket.game_info.ball.x += msgPacket.game_info.ball.velX;
     msgPacket.game_info.ball.y += msgPacket.game_info.ball.velY;
   
+    if (msgPacket.game_info.ball.x > 600)
+          console.log("yeeeesh", msgPacket.game_info.ball.x);
     broadcast(msgPacket);
   }, 1000 / 60);
 }
@@ -54,21 +56,21 @@ function updateInfo(msg:any) {
 
   if (msg.type == "score")
   {
-    console.log("WHO received:",msg.who);
-    if (msg.who == "right")
-      msgPacket.game_info.scoreRight++
-    else
-      msgPacket.game_info.scoreLeft++
-    const ballx = msgPacket.game_info.bounds.width / 2;
-    const bally = msgPacket.game_info.bounds.height / 2;
-    const angle = (Math.random() * Math.PI / 3) - Math.PI / 6;
-    //const dir = Math.random() > 0.5 ? 1 : -1;
-    const dir = -1;
-    const velX = dir  * Math.cos(angle) * 2 ;
-    const velY =  Math.sin(angle) * 2;
-
-    msgPacket.game_info.ball = {x: ballx, y:bally, velX:velX, velY:velY}
-    console.log("new Ball info: ", msgPacket.game_info.ball)
+    if (msg.type == "score") {
+      console.log("WHO received:", msg.who);
+      if (msg.who == "right") msgPacket.game_info.scoreRight++;
+      else msgPacket.game_info.scoreLeft++;
+    
+      const ballx = msgPacket.game_info.bounds.width / 2;
+      const bally = msgPacket.game_info.bounds.height / 2;
+      const angle = (Math.random() * Math.PI / 3) - Math.PI / 6;
+      const dir = Math.random() > 0.5 ? 1 : -1; 
+      const velX = dir * Math.cos(angle) * 2;
+      const velY = Math.sin(angle) * 2;
+    
+      msgPacket.game_info.ball = { x: ballx, y: bally, velX, velY };
+      console.log("new Ball info: ", msgPacket.game_info.ball);
+    }
   }
 }
 

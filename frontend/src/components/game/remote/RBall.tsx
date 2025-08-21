@@ -45,7 +45,6 @@ export default function RBall({
         updateVel("vely");
         localDir.current.y = -1; 
         hasBounced.current.top = true;
-        //setDir({ x: localDir.current.x, y: localDir.current.y }); 
       }
     } else {
       hasBounced.current.top = false;
@@ -57,12 +56,11 @@ export default function RBall({
         updateVel("vely");
         localDir.current.y = -1;
         hasBounced.current.bottom = true;
-        //setDir({ x: localDir.current.x, y: localDir.current.y });
       }
     } else {
       hasBounced.current.bottom = false;
     }
-
+    const rect = ref?.current?.getBoundingClientRect();
     const ballRect = {
       left: nx - 10,
       right: nx + 10,
@@ -80,10 +78,9 @@ export default function RBall({
       };
       if (paddle.x > 100 && ballRect.right > 600)
         {
-          console.log("ballRect.right < paddleRect.left: ", ballRect.right , paddleRect.left)
-          console.log("ballRect.left > paddleRect.right: ", ballRect.left , paddleRect.right)
-          console.log("ballRect.bottom < paddleRect.top: ", ballRect.bottom , paddleRect.top)
-          console.log("ballRect.top > paddleRect.bottom: ", ballRect.top , paddleRect.bottom)
+          
+          console.log("Ball position:", rect?.left, rect?.top);
+          console.log("ballRect.right < paddleRect.left: ", ballRect.right , ball.x)
         }
       return !(
         ballRect.right < paddleRect.left ||
