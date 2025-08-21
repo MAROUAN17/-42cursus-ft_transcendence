@@ -4,7 +4,6 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 function Page2FA() {
-    // const [email, setEmail] = useState("clarion.agl@gmail.com");
     const [qrCode, setQrCode] = useState<string>('');
     const [firstNbr, setFirstNbr] = useState<string>('');
     const [secondNbr, setSecondNbr] = useState<string>('');
@@ -13,29 +12,26 @@ function Page2FA() {
     const [fifthNbr, setFifthNbr] = useState<string>('');
     const [sixthNbr, setSixthNbr] = useState<string>('');
     const navigate = useNavigate();
+
     const handleFirstNbr = (e: React.ChangeEvent<HTMLInputElement>) => {
         e.preventDefault();
         setFirstNbr(e.target.value);
         document.getElementById('otpn2')?.focus();
-        console.log(firstNbr);
     }
     const handleSecondNbr = (e: React.ChangeEvent<HTMLInputElement>) => {
         e.preventDefault();
         setSecondNbr(e.target.value);
         document.getElementById('otpn3')?.focus();
-        console.log(secondNbr);
     }
     const handleThirdNbr = (e: React.ChangeEvent<HTMLInputElement>) => {
         e.preventDefault();
         setThirdNbr(e.target.value);
         document.getElementById('otpn4')?.focus();
-        console.log(thirdNbr);
     }
     const handleFourthNbr = (e: React.ChangeEvent<HTMLInputElement>) => {
         e.preventDefault();
         setFourthNbr(e.target.value);
         document.getElementById('otpn5')?.focus();
-        console.log(fourthNbr);
     }
     const handleFifthNbr = (e: React.ChangeEvent<HTMLInputElement>) => {
         e.preventDefault();
@@ -46,12 +42,10 @@ function Page2FA() {
     const handleSixthNbr = (e: React.ChangeEvent<HTMLInputElement>) => {
         e.preventDefault();
         setSixthNbr(e.target.value);
-        console.log(fourthNbr);
     }
     const formHandler = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const otpNbr = firstNbr + secondNbr + thirdNbr + fourthNbr + fifthNbr + sixthNbr;
-        console.log(otpNbr);
         axios.post('https://localhost:5000/2fa/verify-token', { token: otpNbr }, { withCredentials: true })
             .then(function(res) {
                 console.log(res);

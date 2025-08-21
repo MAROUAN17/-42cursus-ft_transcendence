@@ -7,9 +7,7 @@ import { authenticator } from "otplib";
 export const verify2FA = async (req: FastifyRequest<{Body: LoginBody}>, res: FastifyReply) => {
     const { email } = req.body;
 
-
     const secret = authenticator.generateSecret();
-
     //insert secret into the db
     app.db
         .prepare('UPDATE players SET secret_otp = ? WHERE email = ?')
@@ -21,7 +19,6 @@ export const verify2FA = async (req: FastifyRequest<{Body: LoginBody}>, res: Fas
 
     const otpath = authenticator.keyuri(email, "OTP APP", user.secret_otp);
     const qrCode = await qrcode.toDataURL(otpath);
-
 
     return qrCode;
 }
@@ -40,6 +37,7 @@ export const verify2FAToken = async (req: FastifyRequest<{Body: LoginBody}>, res
 
         const secret = user.secret_otp;
         const isValid = authenticator.verify({ token: token, secret:secret });
+
         if (isValid) {
             return res.status(200).send({ message: "Valid OTP code" });
         }
