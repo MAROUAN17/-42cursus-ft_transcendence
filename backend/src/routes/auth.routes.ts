@@ -9,10 +9,10 @@ import { oauthCallback } from "../services/oauthCallback.service.js";
 import { verify2FA, verify2FAToken } from "../services/2fa.service.js"
 
 export const authRoutes: FastifyPluginAsync = async() => {
-    app.get("/", { onRequest: [ app.jwtAuth ] }, getUsers);
-    app.get("/user", { onRequest: [ app.jwtAuth ] }, fetchUser);
     app.post('/login', loginUser);
     app.post('/register', registerUser);
+    app.get("/", { onRequest: [ app.jwtAuth ] }, getUsers);
+    app.get("/user", { onRequest: [ app.jwtAuth ] }, fetchUser);
     app.post('/logout', { onRequest: [ app.jwtAuth ] }, logoutUser);
     app.post('/2fa/verify', { onRequest: [ app.jwtAuth ] }, verify2FA);
     app.post('/2fa/verify-token', { onRequest: [ app.jwtAuth ] }, verify2FAToken);

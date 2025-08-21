@@ -20,7 +20,7 @@ function Login() {
             { withCredentials: true }
         )
             .then(function(res) {
-                navigate("/verify", { state: { email: email } });
+                navigate("/verify");
             })
             .catch(function (err) {
                 console.log(err.response.data.error);

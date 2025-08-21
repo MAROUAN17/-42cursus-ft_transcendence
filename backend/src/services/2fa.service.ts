@@ -27,7 +27,7 @@ export const verify2FAToken = async (req: FastifyRequest<{Body: LoginBody}>, res
     try {
         const { token } = req.body;
 
-        const jwtToken = req.cookies.token;
+        const jwtToken = req.cookies.refreshToken;
         const infos = app.jwt.decode(jwtToken!) as userInfos | null;
     
         //find user

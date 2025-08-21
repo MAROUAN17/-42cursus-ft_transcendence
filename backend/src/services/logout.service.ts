@@ -2,7 +2,7 @@ import type { FastifyRequest, FastifyReply } from "fastify"
 
 export const logoutUser =  async (req: FastifyRequest, res: FastifyReply) => {
     try {
-        res.clearCookie('token', { 
+        res.clearCookie('refreshToken', { 
             path: '/',
             secure: true,
             httpOnly: true, 

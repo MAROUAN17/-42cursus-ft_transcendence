@@ -34,11 +34,20 @@ async function start(): Promise<void> {
   await app.register(fastifyCookie);
   await app.register(fastifyEnv, options);
   await app.register(fastifyJwt, { 
-    secret: process.env.JWT_SIGNING_KEY!,
+    secret: process.env.JWT_ACCESS_TOKEN!,
     cookie: {
-      cookieName: 'token',
+      cookieName: 'accessToken',
       signed: false
-    }
+    },
+    namespace: 'jwt1'
+  });
+  await app.register(fastifyJwt, { 
+    secret: process.env.JWT_REFRESH_TOKEN!,
+    cookie: {
+      cookieName: 'refreshToken',
+      signed: false
+    },
+    namespace: 'jwt2'
   });
   await app.register(oauthPlugin);
   await app.register(App);

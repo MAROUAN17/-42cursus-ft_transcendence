@@ -1,7 +1,7 @@
-import app from "../server.js";
 import { type User, type LoginBody, type userPass  } from "../models/user.model.js"
 import type { FastifyReply, FastifyRequest } from "fastify";
 import bcrypt from "bcrypt";
+import app from "../server.js"
 
 export const loginUser = async (req: FastifyRequest<{Body: LoginBody}>, res: FastifyReply) => {
     try {
@@ -32,15 +32,24 @@ export const loginUser = async (req: FastifyRequest<{Body: LoginBody}>, res: Fas
         }
 
         //verify JWT token
-        const token = app.jwt.sign({ email:user.email, username:user.username }, { expiresIn: '1d' });
+        const accessToken = app.jwt.jwt1.sign({ email:user.email, username:user.username }, { expiresIn: '10s' });
+        const refreshToken = app.jwt.jwt2.sign({ email:user.email, username:user.username }, { expiresIn: '30s' });
     
         //set JWT token as cookie
-        return res.setCookie('token', token, {
+        res.setCookie('accessToken', accessToken, {
             path: '/',
             secure: true,
             httpOnly: true, 
             sameSite: 'lax',
-            maxAge: 100
+            maxAge: 10
+        });
+
+        return res.setCookie('refreshToken', refreshToken, {
+            path: '/',
+            secure: true,
+            httpOnly: true, 
+            sameSite: 'lax',
+            maxAge: 30
         }).status(200).send({ message: "Logged in", data: { username: user?.username, email: user?.email } }).redirect("https://localhost:3000/verify")
     } catch (err) {
         console.log(err);
