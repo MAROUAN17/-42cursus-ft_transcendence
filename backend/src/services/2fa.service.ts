@@ -26,9 +26,10 @@ export const verify2FA = async (req: FastifyRequest<{Body: LoginBody}>, res: Fas
 export const verify2FAToken = async (req: FastifyRequest<{Body: LoginBody}>, res: FastifyReply) => {
     try {
         const { token } = req.body;
+        console.log(`OTP -> ${token}`);
 
-        const jwtToken = req.cookies.refreshToken;
-        const infos = app.jwt.decode(jwtToken!) as userInfos | null;
+        const accessToken = req.cookies.accessToken;
+        const infos = app.jwt.jwt1.decode(accessToken!) as userInfos | null;
     
         //find user
         const user = app.db
@@ -42,8 +43,8 @@ export const verify2FAToken = async (req: FastifyRequest<{Body: LoginBody}>, res
             return res.status(200).send({ message: "Valid OTP code" });
         }
         return res.status(401).send({ error: "Invalid otp code" });  
-    } catch (error) {
-        res.status(500).send({ error: error });
+    } catch (error: any) {
+        res.status(500).send({ error: error.message });
     }
    
 

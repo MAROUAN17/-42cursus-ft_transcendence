@@ -13,7 +13,7 @@ export const authRoutes: FastifyPluginAsync = async() => {
     app.post('/register', registerUser);
     app.get("/", { onRequest: [ app.jwtAuth ] }, getUsers);
     app.get("/user", { onRequest: [ app.jwtAuth ] }, fetchUser);
-    app.post('/logout', { onRequest: [ app.jwtAuth ] }, logoutUser);
+    app.post('/logout', logoutUser);
     app.post('/2fa/verify', { onRequest: [ app.jwtAuth ] }, verify2FA);
     app.post('/2fa/verify-token', { onRequest: [ app.jwtAuth ] }, verify2FAToken);
 

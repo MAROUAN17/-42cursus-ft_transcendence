@@ -12,18 +12,17 @@ export const jwtPlugin = fp(async function(fastify, opts) {
         } catch (err) {
             try {
                 const refreshToken = req.cookies.refreshToken;
-                await app.jwt.jwt2.verify(refreshToken);
-                const infos = app.jwt.jwt2.decode(refreshToken!) as userInfos | undefined;
+                const infos = await app.jwt.jwt2.verify(refreshToken) as userInfos | undefined;
                 const newAccessToken = app.jwt.jwt1.sign({ email: infos?.email, username: infos?.username }, { expiresIn: '10s' });
-                res.status(200).setCookie('accessToken', newAccessToken, {
+                res.setCookie('accessToken', newAccessToken, {
                     path: '/',
                     secure: true,
                     httpOnly: true, 
                     sameSite: 'lax',
                     maxAge: 10
-                }).send({ message: "another access token generated!" });
+                });
             } catch (err: any) {
-                res.code(401).send({ error: err.message });
+                res.code(401).send({ error: "Unauthorized" });
             }
         }
     })

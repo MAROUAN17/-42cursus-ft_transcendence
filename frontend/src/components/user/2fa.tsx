@@ -4,7 +4,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 function Page2FA() {
-    const [qrCode, setQrCode] = useState<string>('');
+    const [qrCode, setQrCode] = useState<string>("");
     const [firstNbr, setFirstNbr] = useState<string>('');
     const [secondNbr, setSecondNbr] = useState<string>('');
     const [thirdNbr, setThirdNbr] = useState<string>('');
@@ -48,7 +48,6 @@ function Page2FA() {
         const otpNbr = firstNbr + secondNbr + thirdNbr + fourthNbr + fifthNbr + sixthNbr;
         axios.post('https://localhost:5000/2fa/verify-token', { token: otpNbr }, { withCredentials: true })
             .then(function(res) {
-                console.log(res);
                 navigate('/');
             })
             .catch(function(err) {
