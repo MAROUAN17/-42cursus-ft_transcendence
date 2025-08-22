@@ -5,14 +5,6 @@ import app from "../server.js"
 
 export const loginUser = async (req: FastifyRequest<{Body: LoginBody}>, res: FastifyReply) => {
     try {
-        const oldAccessToken = req.cookies.accessToken;
-        if (oldAccessToken) {
-            const decodedUsr = app.jwt.jwt1.verify(oldAccessToken);
-            if (decodedUsr) {
-                return res.code(302).redirect("https://localhost:3000/");
-            }
-        }
-
         let user = {} as User | undefined;
         let { email, password } = req.body;
     
@@ -49,7 +41,7 @@ export const loginUser = async (req: FastifyRequest<{Body: LoginBody}>, res: Fas
             secure: true,
             httpOnly: true, 
             sameSite: 'lax',
-            maxAge: 10
+            maxAge: 20
         });
 
         return res.setCookie('refreshToken', refreshToken, {

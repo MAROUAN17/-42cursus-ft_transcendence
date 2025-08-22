@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { redirect, Navigate, useNavigate } from "react-router";
 import axios from "axios";
 
 export interface Infos {
@@ -41,6 +41,23 @@ function Login() {
         setPassword(e.target.value);
     }
 
+    // useEffect(() => {
+    //     axios.post('https://localhost:5000/login/verify', {}, { withCredentials: true })
+    //         .then(function(res) {
+    //             console.log(res);     
+    //         })
+    //         .catch(function(err) {
+    //             console.log(err.response.data);
+    //             if (err.status == 401 && err.response.data.message == "Already logged in") {
+    //                 const response  = redirect('/');
+    //                 Object.defineProperty(response, 'body', { value: true })
+    //                 throw response;
+    //             } else {
+    //                 navigate('/login', { replace: true });
+    //             }
+                
+    //         })
+    // }, [])
     return (
         <div className="flex justify-between font-poppins h-screen bg-gameBg items-center overflow-hidden">
             <div className="xl:py-[260px] xl:px-[300px] xl:mt-32 lg:mt-24 lg:w-1/2 lg:px-[220px]">

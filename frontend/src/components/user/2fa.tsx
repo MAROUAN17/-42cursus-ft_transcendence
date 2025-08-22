@@ -1,7 +1,7 @@
 import { useEffect, useState, type FormEvent } from "react";
 import type { Infos } from "../user/login";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 
 function Page2FA() {
     const [qrCode, setQrCode] = useState<string>("");

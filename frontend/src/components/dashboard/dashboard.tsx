@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import type { Infos } from "../user/login";
 import { TbNavigationEast } from "react-icons/tb";
 
