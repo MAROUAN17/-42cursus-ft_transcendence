@@ -10,6 +10,7 @@ import Chat from './components/chat/chat';
 import RGame from './components/game/remote/Game';
 
 import Dashboard from './components/dashboard/dashboard';
+import Tournament from './components/tournament/Tournament';
 
 export default function App() {
   return (
@@ -20,6 +21,7 @@ export default function App() {
         <Route path='/login' element={<Login />}/>
         <Route path='/register' element={<Register />}/>
         <Route path='/chat' element={<Chat />}/>
+        <Route path='/tournament' element={<Tournament />}/>
         <Route path="/" element={<Dashboard />}></Route>
       </Routes>
     </div>
