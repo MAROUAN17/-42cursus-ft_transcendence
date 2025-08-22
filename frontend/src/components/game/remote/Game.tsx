@@ -17,8 +17,16 @@ export default function RGame() {
   const PADDLE_WIDTH = 18;
   const PADDLE_HEIGHT = 120;
   const paddleLeft = { x: 24, y: leftY, width: PADDLE_WIDTH, height: PADDLE_HEIGHT };
-  const paddleRight = { x:  800 - 24 - PADDLE_WIDTH, y: rightY, width: PADDLE_WIDTH, height: PADDLE_HEIGHT };
+  const paddleRight = { x:  600 - 24 - PADDLE_WIDTH, y: rightY, width: PADDLE_WIDTH, height: PADDLE_HEIGHT };
   var x = 0;
+
+  useEffect(() => {
+	if (i < 3)
+		{
+			console.log("game info", gameInfo)
+			setI(i + 1);
+		}
+  }, [gameInfo])
   useEffect(() => {
     const down = new Set<string>();
     const onKeyDown = (e: KeyboardEvent) => {
@@ -59,6 +67,7 @@ export default function RGame() {
 			try {
 				const message = JSON.parse(event.data);
 				setGameInfo(message.game_info);
+				
 				if (!x) {
 					setDir({
 						x: (gameInfo?.ball?.velX ?? 0) >= 0 ? 1 : -1,
@@ -123,18 +132,20 @@ export default function RGame() {
 		className="relative  border-2 border-neon rounded-2xl shadow-neon bg-black"
 		style={{ minWidth: 600, minHeight: 360, height:gameInfo?.bounds.height, width:gameInfo?.bounds.width }}
 	  >
-		<RBat y={leftY} setY={setLeftY} side="left" height={gameInfo?.paddleLeft.height ?? 0} containerTop={0} containerHeight={gameInfo?.bounds.height ?? 400} />
-		<RBat y={rightY} setY={setRightY} side="right" height={gameInfo?.paddleRight.height ?? 0} containerTop={0} containerHeight={gameInfo?.bounds.height ?? 400} />
+		<RBat  x={gameInfo?.paddleLeft.x ?? 24} y={leftY} side="left" height={gameInfo?.paddleLeft.height ?? 0} containerTop={0} containerHeight={gameInfo?.bounds.height ?? 400} />
+		<RBat x={gameInfo?.paddleLeft.x ?? 600 - 24 - 18} y={rightY} side="right" height={gameInfo?.paddleRight.height ?? 0} containerTop={0} containerHeight={gameInfo?.bounds.height ?? 400} />
 
 		<RBall
 		  dir={dir}
 		  setDir={setDir}
 		  ball={gameInfo?.ball ?? {x:0,y:0}}
-		  paddleLeft={paddleLeft}
-		  paddleRight={paddleRight}
-		  bounds={gameInfo?.bounds ?? {width:800, height:400}}
+		  paddleLeft={gameInfo?.paddleLeft ?? paddleLeft}
+		  paddleRight={gameInfo?.paddleRight ?? paddleRight}
+		  bounds={gameInfo?.bounds ?? {width:600, height:400}}
 		  onScore={handleScore}
 		  updateVel={updateVel}
+		  lefty={leftY}
+		  rightY={rightY}
 		/>
 
 		<div className="absolute top-0 left-1/2 transform -translate-x-1/2 h-full flex flex-col justify-center items-center">

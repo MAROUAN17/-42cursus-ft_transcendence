@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import type { Ball } from "./Types";
 
 interface BallProps {
@@ -13,6 +13,8 @@ interface BallProps {
   bounds: { width: number; height: number };
   onScore: (who: "left" | "right") => void;
   updateVel: (type: string) => void;
+  leftY: number;
+  rightY:number;
 }
 
 export default function RBall({
@@ -24,8 +26,11 @@ export default function RBall({
   bounds,
   onScore,
   updateVel,
+  leftY,
+  rightY,
 }: BallProps) {
   const ref = useRef<HTMLDivElement | null>(null);
+  const [i, setI] = useState(0);
 
   const localDir = useRef(dir);
   const hasBounced = useRef({ top: false, bottom: false });
@@ -60,7 +65,6 @@ export default function RBall({
     } else {
       hasBounced.current.bottom = false;
     }
-    const rect = ref?.current?.getBoundingClientRect();
     const ballRect = {
       left: nx - 10,
       right: nx + 10,
@@ -68,20 +72,28 @@ export default function RBall({
       bottom: ny + 10,
     };
 
-    const checkPaddleCollision = (paddle: any) => {
+    const checkPaddleCollision = (paddle: any, y:number) => {
       if (!paddle) return false;
       const paddleRect = {
         left: paddle.x,
         right: paddle.x + paddle.width,
-        top: paddle.y,
-        bottom: paddle.y + paddle.height,
+        top: y,
+        bottom: y + paddle.height,
       };
-      if (paddle.x > 100 && ballRect.right > 600)
+      if (i < 10)
         {
-          
-          console.log("Ball position:", rect?.left, rect?.top);
-          console.log("ballRect.right < paddleRect.left: ", ballRect.right , ball.x)
+          setI(i + 1);
+          //console.log("left ", paddle.x)
+          //console.log("right ", paddleRect.right)
+          //console.log("top ", paddleRect.top)
+          //console.log("bottom ", paddleRect.bottom)
         }
+      //if (paddle.x > 100 && ballRect.right > 600)
+      //  {
+          
+      //    console.log("Ball position:", rect?.x);
+      //    console.log("ballRect.right < paddleRect.left: ", ballRect.right , ball.x)
+      //  }
       return !(
         ballRect.right < paddleRect.left ||
         ballRect.left > paddleRect.right ||
@@ -91,14 +103,14 @@ export default function RBall({
     };
     
 
-    if (ball.velX < 0 && checkPaddleCollision(paddleLeft)) {
-      console.log("entered left");
+    if (ball.velX < 0 && checkPaddleCollision(paddleLeft, leftY)) {
+      //console.log("entered left");
       
       updateVel("velx");
       localDir.current.x = -localDir.current.x;
       //setDir({ x: localDir.current.x, y: localDir.current.y });
     }
-    if (ball.velX > 0 && checkPaddleCollision(paddleRight)) {
+    if (ball.velX > 0 && checkPaddleCollision(paddleRight, rightY)) {
       console.log("entered right");
       updateVel("velx");
       localDir.current.x = -localDir.current.x;

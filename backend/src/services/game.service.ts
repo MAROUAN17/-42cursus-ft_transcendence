@@ -15,8 +15,7 @@ function gameLoop () {
     msgPacket.game_info.ball.x += msgPacket.game_info.ball.velX;
     msgPacket.game_info.ball.y += msgPacket.game_info.ball.velY;
   
-    if (msgPacket.game_info.ball.x > 600)
-          console.log("yeeeesh", msgPacket.game_info.ball.x);
+    //console.log(msgPacket.game_info.paddleRight.x);
     broadcast(msgPacket);
   }, 1000 / 60);
 }
@@ -69,7 +68,7 @@ function updateInfo(msg:any) {
       const velY = Math.sin(angle) * 2;
     
       msgPacket.game_info.ball = { x: ballx, y: bally, velX, velY };
-      console.log("new Ball info: ", msgPacket.game_info.ball);
+      //console.log("new Ball info: ", msgPacket.game_info.ball);
     }
   }
 }

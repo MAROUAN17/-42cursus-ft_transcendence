@@ -1,17 +1,15 @@
 import React, { MouseEvent, useRef } from "react";
 
 interface BatProps {
+  x: number;
   y: number;
-  setY: (y: number) => void;
   side: "left" | "right";
   height: number;
-  containerTop: number;
-  containerHeight: number;
 }
 
-export default function RBat({ y, setY, side, height, containerTop, containerHeight }: BatProps) {
+export default function RBat({ x, y, side, height}: BatProps) {
   const ref = useRef<HTMLDivElement | null>(null);
-  const sideStyle = side === "left" ? { left: "1.5rem" } : { right: "1.5rem" };
+  const sideStyle = side === "left" ? { left:  x + "px"} : { right: x + "px" };
 
   return (
 	<div
