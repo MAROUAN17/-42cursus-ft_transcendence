@@ -6,6 +6,8 @@ DB_NAME="app.db"
 #mkdir -p $DB_PATH
 # cd $DB_PATH
 touch $DB_NAME
+chmod 777 $DB_PATH
+chmod 777 $DB_PATH$DB_NAME
 
 sqlite3 "$DB_NAME" <<EOF 
     CREATE TABLE IF NOT EXISTS players (
@@ -13,7 +15,7 @@ sqlite3 "$DB_NAME" <<EOF
         username TEXT NOT NULL,
         email TEXT NOT NULL,
         password TEXT,
-        secret_otp TEXT
+        secret_otp TEXT,
     );
     CREATE TABLE IF NOT EXISTS MESSAGES (
         id INTEGER PRIMARY KEY,

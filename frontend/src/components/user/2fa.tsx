@@ -48,6 +48,7 @@ function Page2FA() {
         const otpNbr = firstNbr + secondNbr + thirdNbr + fourthNbr + fifthNbr + sixthNbr;
         axios.post('https://localhost:5000/2fa/verify-token', { token: otpNbr }, { withCredentials: true })
             .then(function(res) {
+                console.log(res);
                 navigate('/');
             })
             .catch(function(err) {
@@ -56,22 +57,16 @@ function Page2FA() {
     }
 
     async function renderQRcode() {
-        axios.get('https://localhost:5000/user', { withCredentials: true })
-        .then(function(res) {
-            axios.post('https://localhost:5000/2fa/verify', 
-                { email: res.data.infos.email }, 
-                { withCredentials: true })
+        axios.post('https://localhost:5000/2fa/verify', 
+            {}, 
+            { withCredentials: true })
             .then(function(res) {
                 setQrCode(res.data);
             })
             .catch(function(err) {
-                console.log(err.response.data);
+                console.log(err);
+                navigate('/');
             })
-        })
-        .catch(function(err) {
-            console.log(err.response.data);
-            navigate('/login');
-        })
     }
 
     useEffect(() => {

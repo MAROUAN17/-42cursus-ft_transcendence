@@ -9,6 +9,7 @@ import { oauthCallback } from "../services/oauthCallback.service.js";
 import { verify2FA, verify2FAToken } from "../services/2fa.service.js"
 import { checkAuth } from "../services/checkAuth.service.js"
 
+
 export const authRoutes: FastifyPluginAsync = async() => {
     app.post('/login', loginUser);
     app.post('/login/verify', checkAuth);
@@ -17,8 +18,8 @@ export const authRoutes: FastifyPluginAsync = async() => {
     app.get("/", { onRequest: [ app.jwtAuth ] }, getUsers);
     app.get("/user", { onRequest: [ app.jwtAuth ] }, fetchUser);
     app.post('/logout', logoutUser);
-    app.post('/2fa/verify', { onRequest: [ app.jwtAuth ] }, verify2FA);
-    app.post('/2fa/verify-token', { onRequest: [ app.jwtAuth ] }, verify2FAToken);
+    app.post('/2fa/verify', { onRequest: [ app.jwtLoginCheck ] }, verify2FA);
+    app.post('/2fa/verify-token', { onRequest: [ app.jwtLoginCheck ] }, verify2FAToken);
 
     //remote auth with intra42
     app.get('/intra42/login/callback', oauthCallback);

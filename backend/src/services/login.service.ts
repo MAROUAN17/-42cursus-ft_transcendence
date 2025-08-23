@@ -31,20 +31,9 @@ export const loginUser = async (req: FastifyRequest<{Body: LoginBody}>, res: Fas
             return res.status(401).send({ error: "Incorrect username or password." });
         }
 
-        //verify JWT token
-        const accessToken = app.jwt.jwt1.sign({ email:user.email, username:user.username }, { expiresIn: '10s' });
-        const refreshToken = app.jwt.jwt2.sign({ email:user.email, username:user.username }, { expiresIn: '30s' });
+        const loginToken = app.jwt.jwt0.sign({ email: user.email }, { expiresIn: '30s' });
     
-        //set JWT token as cookie
-        res.setCookie('accessToken', accessToken, {
-            path: '/',
-            secure: true,
-            httpOnly: true, 
-            sameSite: 'lax',
-            maxAge: 20
-        });
-
-        return res.setCookie('refreshToken', refreshToken, {
+        res.setCookie('loginToken', loginToken, {
             path: '/',
             secure: true,
             httpOnly: true, 

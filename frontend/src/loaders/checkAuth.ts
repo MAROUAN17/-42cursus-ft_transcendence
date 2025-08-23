@@ -3,7 +3,7 @@ import { redirect } from "react-router";
 
 export default async function checkAuthLoader() {
     try {
-      const res = await axios.post('https://localhost:5000/login/verify', 
+      const res = await axios.post('https://localhost:5000/login/verify',
         {}, 
         { withCredentials: true }
       )

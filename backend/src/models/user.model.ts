@@ -4,7 +4,7 @@ export interface User {
     username: string,
     email: string,
     password: string,
-    secret_otp: string
+    secret_otp: string,
 };
 
 export interface LoginBody {

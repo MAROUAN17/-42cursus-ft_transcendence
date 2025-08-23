@@ -12,9 +12,16 @@ declare module 'fastify' {
     export interface FastifyInstance {
         db: DatabaseType;
         jwtAuth: any;
+        jwtLoginCheck: any
         intra42Oauth: OAuth2Namespace;
         jwt: fastifyJwt.JWT
         jwt: {
+            jwt0: {
+              sign: typeof import('@fastify/jwt')['sign'];
+              verify: typeof import('@fastify/jwt')['verify'];
+              decode: typeof import('@fastify/jwt')['decode'];
+              cookie: { cookieName: string; signed: boolean };
+            },
             jwt1: {
               sign: typeof import('@fastify/jwt')['sign'];
               verify: typeof import('@fastify/jwt')['verify'];

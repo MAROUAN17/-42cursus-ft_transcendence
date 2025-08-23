@@ -13,7 +13,7 @@ export const jwtPlugin = fp(async function(fastify, opts) {
             try {
                 const refreshToken = req.cookies.refreshToken;
                 const infos = await app.jwt.jwt2.verify(refreshToken) as userInfos | undefined;
-                const newAccessToken = app.jwt.jwt1.sign({ email: infos?.email, username: infos?.username }, { expiresIn: '10s' });
+                const newAccessToken = app.jwt.jwt1.sign({ email: infos?.email, username: infos?.username, otp_verified: false }, { expiresIn: '10s' });
                 res.setCookie('accessToken', newAccessToken, {
                     path: '/',
                     secure: true,
@@ -24,6 +24,19 @@ export const jwtPlugin = fp(async function(fastify, opts) {
             } catch (err: any) {
                 res.code(401).send({ error: "Unauthorized" });
             }
+        }
+    })
+
+    app.decorate('jwtLoginCheck', async function(req: FastifyRequest, res: FastifyReply): Promise<any> {
+        try {
+            //verify if user already logged in
+            if (req.cookies.accessToken)
+                return res.code(401).send({ error: "Unauthorized" }); 
+        
+            const loginToken = req.cookies.loginToken;
+            await app.jwt.jwt0.verify(loginToken);
+        } catch (err) {
+            res.code(401).send({ error: "Unauthorized" });
         }
     })
 });

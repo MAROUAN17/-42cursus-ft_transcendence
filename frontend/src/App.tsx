@@ -7,7 +7,6 @@ import { Routes,
          BrowserRouter,
          createBrowserRouter,
          RouterProvider,
-         redirect
 } from 'react-router';
 import Game from './components/game/game'
 import Login from "./components/user/login"
@@ -43,6 +42,7 @@ export default function App() {
     {
       path: '/verify',
       Component: Page2FA,
+      loader: checkAuthLoader
     },
   ])
   return (

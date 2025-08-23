@@ -34,6 +34,14 @@ async function start(): Promise<void> {
   await app.register(fastifyCookie);
   await app.register(fastifyEnv, options);
   await app.register(fastifyJwt, { 
+    secret: process.env.JWT_TMP_LOGIN!,
+    cookie: {
+      cookieName: 'loginToken',
+      signed: false
+    },
+    namespace: 'jwt0'
+  });
+  await app.register(fastifyJwt, { 
     secret: process.env.JWT_ACCESS_TOKEN!,
     cookie: {
       cookieName: 'accessToken',
