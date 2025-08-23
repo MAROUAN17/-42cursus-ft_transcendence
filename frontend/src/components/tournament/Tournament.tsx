@@ -3,6 +3,7 @@ import CartLeft from "./CartLeft";
 import CartRight from "./CartRight";
 import CartConnectorLeft from "./CartConnectorLeft";
 import CartConnectorRight from "./CartConnectorRight";
+import ConnectorLeft from "./CartConnectorLeft";
 
 const users = [
   { username: "User1", avatarUrl: "https://via.placeholder.com/150" },
@@ -15,7 +16,9 @@ export default function Tournament() {
   return (
     <div className="bg-[#0a0035] relative">
       <div className="absolute top-[90px] left-[400px]">
-        <h1 className="font-poppins font-bold text-[70px] leading-[20px] tracking-[0.02em] uppercase text-white">test tournament</h1>
+        <h1 className="font-poppins font-bold text-[70px] leading-[20px] tracking-[0.02em] uppercase text-white">
+          test tournament
+        </h1>
       </div>
       <div className=" min-h-screen flex items-center justify-between px-12">
         <div className="flex items-center justify-between">
@@ -28,7 +31,9 @@ export default function Tournament() {
               />
             ))}
           </div>
-          <CartConnectorLeft />
+          <div className="flex justify-center items-center min-h-screen bg-[#0a0035]">
+            <ConnectorLeft width={100} height={90} color="white" strokeWidth={3} />
+          </div>
           <CartLeft
             key={"wain"}
             username={"wain"}
