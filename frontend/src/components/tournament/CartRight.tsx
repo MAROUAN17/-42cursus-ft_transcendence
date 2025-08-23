@@ -20,6 +20,7 @@ const CardRight: React.FC<UserMatchCardProps> = ({ username, avatarUrl, score = 
           className="w-10 h-10 rounded-full border-2 border-white"
         />
       </div>
+      {/* <CartConnector /> */}
     </div>
   );
 };
