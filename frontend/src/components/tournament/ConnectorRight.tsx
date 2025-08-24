@@ -24,9 +24,9 @@ const ConnectorRight: React.FC<ConnectorProps> = ({
     >
 
       <line
-        x1={strokeWidth / 2}
+        x1={width / 2}
         y1={0}
-        x2={width / 2}
+        x2={width}
         y2={0}
         stroke={color}
         strokeWidth={strokeWidth}
@@ -41,18 +41,18 @@ const ConnectorRight: React.FC<ConnectorProps> = ({
         strokeWidth={strokeWidth}
       />
        <line
-        x1={strokeWidth / 2}
+        x1={width / 2}
         y1={height}
-        x2={width / 2}
+        x2={width}
         y2={height}
         stroke={color}
         strokeWidth={strokeWidth}
       />
         {/* Middle horizontal */}
         <line
-          x1={width / 2}
+          x1={0}
           y1={midY}
-          x2={width}
+          x2={width / 2}
           y2={midY}
           stroke={color}
           strokeWidth={strokeWidth}

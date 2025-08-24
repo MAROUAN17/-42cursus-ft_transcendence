@@ -1,8 +1,8 @@
 import React from "react";
 import CartLeft from "./CartLeft";
 import CartRight from "./CartRight";
-import ConnectorRight from "./CartConnectorRight";
-import ConnectorLeft from "./CartConnectorLeft";
+import ConnectorRight from "./ConnectorRight";
+import ConnectorLeft from "./ConnectorLeft";
 
 const users = [
   { username: "User1", avatarUrl: "https://via.placeholder.com/150" },

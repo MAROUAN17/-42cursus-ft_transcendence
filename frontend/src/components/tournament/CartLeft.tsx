@@ -1,6 +1,6 @@
 import React from "react";
 // import CartConnector from "./CartConnector";
-
+import ScoreBox from "./ScoreBox";
 type UserMatchCardProps = {
   username: string;
   avatarUrl: string;
@@ -19,9 +19,7 @@ const CardLeft: React.FC<UserMatchCardProps> = ({ username, avatarUrl, score = "
         />
       </div>
 
-      <div className="w-10 h-10 flex items-center justify-center bg-white text-black font-bold rounded-sm shadow-md">
-        {score}
-      </div>
+      <ScoreBox score={score} />
       {/* <CartConnector /> */}
     </div>
   );
