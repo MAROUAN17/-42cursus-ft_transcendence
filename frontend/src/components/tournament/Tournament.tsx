@@ -1,16 +1,18 @@
-import React from "react";
-import CartLeft from "./CartLeft";
-import CartRight from "./CartRight";
-import ConnectorRight from "./ConnectorRight";
-import ConnectorLeft from "./ConnectorLeft";
+import LeftBracket from "./LeftBracket";
+import RightBracket from "./RightBracket";
+// import ConnectorLeft from "./ConnectorLeft";;
+// import ConnectorRight from "./ConnectorRight";
 
 const users = [
   { username: "User1", avatarUrl: "https://via.placeholder.com/150" },
   { username: "User2", avatarUrl: "https://via.placeholder.com/150" },
-  // { username: "User3", avatarUrl: "https://via.placeholder.com/150" },
-  // { username: "User4", avatarUrl: "https://via.placeholder.com/150" }
+  { username: "User3", avatarUrl: "https://via.placeholder.com/150" },
+  { username: "User4", avatarUrl: "https://via.placeholder.com/150" },
+  { username: "User5", avatarUrl: "https://via.placeholder.com/150" },
+  { username: "User6", avatarUrl: "https://via.placeholder.com/150" },
+  { username: "User7", avatarUrl: "https://via.placeholder.com/150" },
+  { username: "User8", avatarUrl: "https://via.placeholder.com/150" },
 ];
-
 export default function Tournament() {
   return (
     <div className="bg-[#0a0035] relative">
@@ -19,44 +21,20 @@ export default function Tournament() {
           test tournament
         </h1>
       </div>
-      <div className=" min-h-screen flex items-center justify-between px-12">
-        <div className="flex items-center justify-between">
-          <div className="flex flex-col gap-6 items-start">
-            {users.map((user) => (
-              <CartLeft
-                key={user.username}
-                username={user.username}
-                avatarUrl={user.avatarUrl}
-              />
-            ))}
-          </div>
-          <div className="flex justify-center items-center min-h-screen bg-[#0a0035]">
-            <ConnectorLeft width={100} height={90} color="white" strokeWidth={2} />
-          </div>
-          <CartLeft
-            key={"wain"}
-            username={"wain"}
-            avatarUrl={"https://via.placeholder.com/150"}
-          />
+      <div className="min-h-screen flex items-center justify-between px-12">
+        <div >
+          <LeftBracket users={users.slice(0, 2)} />
+          <LeftBracket users={users.slice(2, 4)} />
+          {/* <LeftBracket users={users.slice(0, 2)} />
+          <LeftBracket users={users.slice(2, 4)} /> */}
+          {/* <ConnectorLeft width={100} height={90} color="white" strokeWidth={2} /> */}
         </div>
-        <div className="flex items-center justify-between">
-          <CartRight
-            key={"wain"}
-            username={"wain"}
-            avatarUrl={"https://via.placeholder.com/150"}
-          />
-          <div className="flex justify-center items-center min-h-screen bg-[#0a0035]">
-            <ConnectorRight width={100} height={90} color="white" strokeWidth={2} />
-          </div>
-          <div className="flex flex-col gap-6 items-end">
-            {users.map((user) => (
-              <CartRight
-                key={user.username}
-                username={user.username}
-                avatarUrl={user.avatarUrl}
-              />
-            ))}
-          </div>
+        <div>
+          <RightBracket users={users.slice(4, 6)} />
+          <RightBracket users={users.slice(6, 8)} />
+          {/* <RightBracket users={users.slice(4, 6)} />
+          <RightBracket users={users.slice(6, 8)} /> */}
+          {/* <ConnectorRight width={100} height={90} color="white" strokeWidth={2} /> */}
         </div>
       </div>
     </div>

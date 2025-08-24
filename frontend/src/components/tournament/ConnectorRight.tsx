@@ -1,12 +1,11 @@
 import React from "react";
 
 type ConnectorProps = {
-  width?: number;   // total width of connector
-  height?: number;  // total height (distance between top & bottom players)
+  width?: number;
+  height?: number;
   strokeWidth?: number;
   color?: string;
 };
-
 
 const ConnectorRight: React.FC<ConnectorProps> = ({
   width = 120,
@@ -22,7 +21,6 @@ const ConnectorRight: React.FC<ConnectorProps> = ({
       viewBox={`0 0 ${width} ${height}`}
       xmlns="http://www.w3.org/2000/svg"
     >
-
       <line
         x1={width / 2}
         y1={0}
@@ -31,7 +29,6 @@ const ConnectorRight: React.FC<ConnectorProps> = ({
         stroke={color}
         strokeWidth={strokeWidth}
       />
-      {/* Right vertical line */}
       <line
         x1={width / 2}
         y1={0}
@@ -40,7 +37,7 @@ const ConnectorRight: React.FC<ConnectorProps> = ({
         stroke={color}
         strokeWidth={strokeWidth}
       />
-       <line
+      <line
         x1={width / 2}
         y1={height}
         x2={width}
@@ -48,16 +45,14 @@ const ConnectorRight: React.FC<ConnectorProps> = ({
         stroke={color}
         strokeWidth={strokeWidth}
       />
-        {/* Middle horizontal */}
-        <line
-          x1={0}
-          y1={midY}
-          x2={width / 2}
-          y2={midY}
-          stroke={color}
-          strokeWidth={strokeWidth}
-        />
-      {/* Middle horizontal */}
+      <line
+        x1={0}
+        y1={midY}
+        x2={width / 2}
+        y2={midY}
+        stroke={color}
+        strokeWidth={strokeWidth}
+      />
     </svg>
   );
 };

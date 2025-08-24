@@ -1,27 +1,27 @@
 import React from "react";
-import ScoreBox from "./ScoreBox";
 
 type UserMatchCardProps = {
   username: string;
   avatarUrl: string;
-  score?: string | number; // default "-" if not provided
+  score?: string | number;
 };
 
-const CardRight: React.FC<UserMatchCardProps> = ({ username, avatarUrl, score = "-" }) => {
+const Card: React.FC<UserMatchCardProps> = ({ username, avatarUrl }) => {
   return (
     <div className="flex items-center bg-transparent gap-2">
-      <ScoreBox score={score} />
       <div className="flex items-center justify-between bg-purple-600 text-white px-4 py-3 rounded-md shadow-md w-[220px]">
         <span className="font-bold uppercase">{username}</span>
         <img
-        //   src={avatarUrl}
-        //   alt={username}
+          src={avatarUrl}
+          alt={username}
           className="w-10 h-10 rounded-full border-2 border-white"
+          onError={(e) => {
+            (e.target as HTMLImageElement).src = "https://randomuser.me/api/portraits/lego/2.jpg";
+          }}
         />
       </div>
-      {/* <CartConnector /> */}
     </div>
   );
 };
 
-export default CardRight;
+export default Card;
