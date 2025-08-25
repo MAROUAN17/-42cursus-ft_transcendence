@@ -39,9 +39,9 @@ export default function RGame() {
     let raf = 0;
     const step = () => {
       if (down.has("ArrowUp")) setRightY((y) => Math.max(0, y - 8));
-      if (down.has("ArrowDown")) setRightY((y) => Math.min(gameInfo?.bounds.height ?? 0 - 120, y + 8));
+      if (down.has("ArrowDown")) setRightY((y) => Math.min((gameInfo?.bounds.height ?? 0) - 120, y + 8));
       if (down.has("w") || down.has("W")) setLeftY((y) => Math.max(0, y - 8));
-      if (down.has("s") || down.has("S")) setLeftY((y) => Math.min(gameInfo?.bounds.height ?? 0 - 120, y + 8));
+      if (down.has("s") || down.has("S")) setLeftY((y) => Math.min((gameInfo?.bounds.height ?? 0) - 120, y + 8));
 
       raf = requestAnimationFrame(step);
     };
@@ -85,16 +85,6 @@ export default function RGame() {
 		  ws.close();
 		};
 	  }, [16]);
-	//  useEffect(() => {
-	//	setI(i + 1)
-	//	if (websocket && websocket.readyState == WebSocket.OPEN)
-	//	{
-	//		websocket.send(JSON.stringify({ type: "dirUpdate", dir }));
-	//		//console.log("message sent [DIR]: ", dir, i);
-	//	}
-	//	else
-	//		console.log("there is a proble in socket:", websocket);
-	//  }, [dir]);
 	  const updateVel = ( type:string) =>
 	  {
 		if (websocket && websocket.readyState == WebSocket.OPEN){
@@ -144,7 +134,7 @@ export default function RGame() {
 		  bounds={gameInfo?.bounds ?? {width:600, height:400}}
 		  onScore={handleScore}
 		  updateVel={updateVel}
-		  lefty={leftY}
+		  leftY={leftY}
 		  rightY={rightY}
 		/>
 

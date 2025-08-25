@@ -80,20 +80,16 @@ export default function RBall({
         top: y,
         bottom: y + paddle.height,
       };
-      if (i < 10)
+      if (i < 10 && paddle.x < 200)
         {
           setI(i + 1);
-          //console.log("left ", paddle.x)
-          //console.log("right ", paddleRect.right)
-          //console.log("top ", paddleRect.top)
-          //console.log("bottom ", paddleRect.bottom)
+          console.log("cords", leftY, rightY)
+          console.log("ball top ", ballRect.top)
+          console.log("top ", paddleRect.top)
+          console.log("ball bottom ", ballRect.bottom)
+          console.log("bottom ", paddleRect.bottom)
+          console.log("============================")
         }
-      //if (paddle.x > 100 && ballRect.right > 600)
-      //  {
-          
-      //    console.log("Ball position:", rect?.x);
-      //    console.log("ballRect.right < paddleRect.left: ", ballRect.right , ball.x)
-      //  }
       return !(
         ballRect.right < paddleRect.left ||
         ballRect.left > paddleRect.right ||
@@ -104,7 +100,7 @@ export default function RBall({
     
 
     if (ball.velX < 0 && checkPaddleCollision(paddleLeft, leftY)) {
-      //console.log("entered left");
+      console.log("entered left");
       
       updateVel("velx");
       localDir.current.x = -localDir.current.x;
