@@ -18,8 +18,8 @@ export const authRoutes: FastifyPluginAsync = async() => {
     app.get("/", { onRequest: [ app.jwtAuth ] }, getUsers);
     app.get("/user", { onRequest: [ app.jwtAuth ] }, fetchUser);
     app.post('/logout', logoutUser);
-    app.post('/2fa/verify', { onRequest: [ app.jwtLoginCheck ] }, verify2FA);
-    app.post('/2fa/verify-token', { onRequest: [ app.jwtLoginCheck ] }, verify2FAToken);
+    app.post('/2fa/verify', verify2FA);
+    app.post('/2fa/verify-token', verify2FAToken);
 
     //remote auth with intra42
     app.get('/intra42/login/callback', oauthCallback);

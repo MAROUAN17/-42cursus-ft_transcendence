@@ -15,6 +15,7 @@ import Chat from './components/chat/chat';
 import Dashboard from './components/dashboard/dashboard';
 import Page2FA from "./components/user/2fa";
 import checkAuthLoader from "../src/loaders/checkAuth";
+import PasswordReset from "./components/user/passwordReset";
 
 export default function App() {
   let router = createBrowserRouter([
@@ -44,17 +45,13 @@ export default function App() {
       Component: Page2FA,
       loader: checkAuthLoader
     },
+    {
+      path: '/password-reset',
+      Component: PasswordReset,
+    },
   ])
   return (
       <RouterProvider router={router} />
-      // <Routes>
-      //   <Route path="/" element={<Dashboard />} />
-      //   <Route path='/game' element={<Game />} />
-      //   <Route path='/login' element={<Login />}/>
-      //   <Route path='/register' element={<Register />} />
-      //   <Route path='/chat' element={<Chat />}/>
-      //   <Route path="/verify" element={<Page2FA />} />
-      // </Routes>
   )
 }
 

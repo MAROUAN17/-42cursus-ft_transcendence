@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, type ChangeEvent } from "react";
 import { redirect, Navigate, useNavigate } from "react-router";
 import axios from "axios";
 
@@ -13,6 +13,19 @@ function Login() {
     const [password, setPassword] = useState("");
     const [errorMssg, setErrorMssg] = useState("");
     const [errorFlag, setErrorFlag] = useState(false);
+    const [forgetFlag, setForgetFlag] = useState(false);
+    const [otp1Value, setOtp1Value] = useState<string>("");
+    const [otp2Value, setOtp2Value] = useState<string>("");
+    const [otp3Value, setOtp3Value] = useState<string>("");
+    const [otp4Value, setOtp4Value] = useState<string>("");
+    const [otp5Value, setOtp5Value] = useState<string>("");
+    const [otp6Value, setOtp6Value] = useState<string>("");
+    const inputOtp1Ref = useRef<HTMLInputElement>(null);
+    const inputOtp2Ref = useRef<HTMLInputElement>(null);
+    const inputOtp3Ref = useRef<HTMLInputElement>(null);
+    const inputOtp4Ref = useRef<HTMLInputElement>(null);
+    const inputOtp5Ref = useRef<HTMLInputElement>(null);
+    const inputOtp6Ref = useRef<HTMLInputElement>(null);
 
     const handleForm = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -41,25 +54,80 @@ function Login() {
         setPassword(e.target.value);
     }
 
-    // useEffect(() => {
-    //     axios.post('https://localhost:5000/login/verify', {}, { withCredentials: true })
-    //         .then(function(res) {
-    //             console.log(res);     
-    //         })
-    //         .catch(function(err) {
-    //             console.log(err.response.data);
-    //             if (err.status == 401 && err.response.data.message == "Already logged in") {
-    //                 const response  = redirect('/');
-    //                 Object.defineProperty(response, 'body', { value: true })
-    //                 throw response;
-    //             } else {
-    //                 navigate('/login', { replace: true });
-    //             }
-                
-    //         })
-    // }, [])
     return (
         <div className="flex justify-between font-poppins h-screen bg-gameBg items-center overflow-hidden">
+            {forgetFlag 
+            ? 
+            <div className="xl:py-[260px] xl:px-[300px] xl:mt-32 lg:mt-18 lg:w-1/2 lg:px-[220px] space-y-12">
+                <div className="space-y-6">
+                    <h1 className="text-white font-bold text-5xl text-center">Check your email</h1>
+                    <p className="text-white text-center font-light">We’ve sent you a passcode. Please check your inbox at m***************@g****.com.</p>
+                </div>
+                <div className="flex justify-center space-x-12">
+                    <div className="flex justify-center space-x-3 text-center mt-16">
+                        <input maxLength={1} ref={inputOtp1Ref} value={otp1Value} onChange={
+                            (e: React.ChangeEvent<HTMLInputElement>) => {
+                                e.preventDefault();
+                                const val = e.target.value;
+                                setOtp1Value(val);
+                                if (val.length == 1)
+                                    inputOtp2Ref.current?.focus();
+                            }} className="caret-transparent text-white text-4xl text-center w-[80px] h-[139px] bg-gameBg border border-white rounded-lg" required type="text" />
+                        <input maxLength={1} ref={inputOtp2Ref} value={otp2Value}
+                            onChange={
+                            (e: React.ChangeEvent<HTMLInputElement>) => {
+                                const val = e.target.value;
+                                setOtp2Value(val);
+                                if (val.length == 1) 
+                                    inputOtp3Ref.current?.focus();
+                            }}
+                            className="caret-transparent text-white text-4xl text-center w-[90px] h-[139px] bg-gameBg border border-white rounded-lg" required type="text" />
+                        <input maxLength={1} onChange={
+                            (e: React.ChangeEvent<HTMLInputElement>) => {
+                                const val = e.target.value;
+                                setOtp3Value(val);
+                                if (val.length == 1) 
+                                    inputOtp4Ref.current?.focus();
+                            }} ref={inputOtp3Ref} value={otp3Value} className="caret-transparent text-white text-4xl text-center w-[90px] h-[139px] bg-gameBg border border-white rounded-lg" required type="text" />
+                    </div>
+                    <div className="flex justify-center space-x-3 text-center mt-16">
+                        <input maxLength={1} onChange={
+                            (e: React.ChangeEvent<HTMLInputElement>) => {
+                                const val = e.target.value;
+                                setOtp4Value(val);
+                                if (val.length == 1) 
+                                    inputOtp5Ref.current?.focus();
+                            }} ref={inputOtp4Ref} className="caret-transparent text-white text-4xl text-center w-[90px] h-[139px] bg-gameBg border border-white rounded-lg" required type="text" />
+                        <input maxLength={1} onChange={
+                            (e: React.ChangeEvent<HTMLInputElement>) => {
+                                const val = e.target.value;
+                                setOtp5Value(val);
+                                if (val.length == 1) 
+                                    inputOtp6Ref.current?.focus();
+                            }} ref={inputOtp5Ref} className="caret-transparent text-white text-4xl text-center w-[90px] h-[139px] bg-gameBg border border-white rounded-lg" required type="text" />
+                        <input maxLength={1} onChange={
+                            (e: React.ChangeEvent<HTMLInputElement>) => {
+                                const val = e.target.value;
+                                setOtp6Value(val);
+                                if (val.length == 1) 
+                                    inputOtp6Ref.current?.focus();
+                            }} ref={inputOtp6Ref} className="caret-transparent text-white text-4xl text-center w-[90px] h-[139px] bg-gameBg border border-white rounded-lg" required type="text" />
+                    </div>
+                </div>
+                <div className="mt-12 flex justify-center">
+                    <button type="submit" className="px-[280px] py-4 rounded-xl text-white bg-neon font-bold shadow-neon shadow-[0_10px_40px_rgba(0,0,0,0.1)]">
+                        Continue
+                    </button>
+                </div>
+                <div>
+                    <h1 className="text-center font-light text-white">Didn't receive code? <span className="font-bold">Resend code</span></h1>
+                </div>
+                <div className="flex items-center justify-center mt-12">
+                    <img width={30} height={30} src="/arrow-icon.png" alt="arrow-back" />
+                    <button onClick={() => {setForgetFlag(false)}} className=""><p className="text-white font-bold">Back to login</p></button>
+                </div>
+            </div> 
+            :
             <div className="xl:py-[260px] xl:px-[300px] xl:mt-32 lg:mt-24 lg:w-1/2 lg:px-[220px]">
                 <form onSubmit={handleForm}>
                 <div>
@@ -93,8 +161,13 @@ function Login() {
                         <div className="flex space-x-3">
                             <input type="checkbox" id="remember" />
                             <p className="text-white text-md rounded-full ">Remember me</p>
-                        </div>c
-                        <button type="submit" className="px-12 py-4 rounded-xl text-white bg-neon font-bold shadow-neon shadow-[0_10px_40px_rgba(0,0,0,0.1)]">
+                        </div>
+                        <div className="">
+                            <button className="" onClick={() => {setForgetFlag(true)}}><p className="text-white font-bold">Forgot password?</p></button>
+                        </div>
+                    </div>
+                    <div>
+                        <button type="submit" className="px-56 py-4 rounded-xl text-white bg-neon font-bold shadow-neon shadow-[0_10px_40px_rgba(0,0,0,0.1)]">
                             Login
                         </button>
                     </div>
@@ -113,7 +186,7 @@ function Login() {
                     </div>
                 </div>
                 </form>
-            </div>
+            </div>}
             <div className="">
                 <img src="/login-page.png" alt="" />
             </div>

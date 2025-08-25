@@ -13,6 +13,14 @@ function Page2FA() {
     const [sixthNbr, setSixthNbr] = useState<string>('');
     const navigate = useNavigate();
 
+    // const handleType = (e: React.TouchEvent) => {
+    //     if (e.key == "Backspace") {
+    //         e.preventDefault();
+    //         setFirstNbr("");
+    //         document.getElementById('otpn1')?.focus();
+    //     }
+    // }
+
     const handleFirstNbr = (e: React.ChangeEvent<HTMLInputElement>) => {
         e.preventDefault();
         setFirstNbr(e.target.value);

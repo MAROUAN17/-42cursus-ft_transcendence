@@ -25,18 +25,5 @@ export const jwtPlugin = fp(async function(fastify, opts) {
                 res.code(401).send({ error: "Unauthorized" });
             }
         }
-    })
-
-    app.decorate('jwtLoginCheck', async function(req: FastifyRequest, res: FastifyReply): Promise<any> {
-        try {
-            //verify if user already logged in
-            if (req.cookies.accessToken)
-                return res.code(401).send({ error: "Unauthorized" }); 
-        
-            const loginToken = req.cookies.loginToken;
-            await app.jwt.jwt0.verify(loginToken);
-        } catch (err) {
-            res.code(401).send({ error: "Unauthorized" });
-        }
-    })
+    })     
 });
