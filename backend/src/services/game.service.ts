@@ -11,13 +11,19 @@ const msgPacket: MessagePacket = {
 };
 
 function gameLoop () {
-  setInterval(() => {
-    msgPacket.game_info.ball.x += msgPacket.game_info.ball.velX;
-    msgPacket.game_info.ball.y += msgPacket.game_info.ball.velY;
-  
-    //console.log(msgPacket.game_info.paddleRight.x);
-    broadcast(msgPacket);
-  }, 1000 / 60);
+  let last = Date.now();
+
+setInterval(() => {
+  const now = Date.now();
+  const dt = Math.min(32, now - last) / 1000; 
+  last = now;
+
+  msgPacket.game_info.ball.x += msgPacket.game_info.ball.velX * dt;
+  msgPacket.game_info.ball.y += msgPacket.game_info.ball.velY * dt;
+
+  broadcast(msgPacket);
+}, 1000 / 60);
+
 }
 
 export function handleGameConnection(connection: any, req: any) {
@@ -64,8 +70,8 @@ function updateInfo(msg:any) {
       const bally = msgPacket.game_info.bounds.height / 2;
       const angle = (Math.random() * Math.PI / 3) - Math.PI / 6;
       const dir = Math.random() > 0.5 ? 1 : -1; 
-      const velX = dir * Math.cos(angle) * 2;
-      const velY = Math.sin(angle) * 2;
+      const velX = dir * Math.cos(angle) * 200;
+      const velY = Math.sin(angle) * 200;
     
       msgPacket.game_info.ball = { x: ballx, y: bally, velX, velY };
       //console.log("new Ball info: ", msgPacket.game_info.ball);

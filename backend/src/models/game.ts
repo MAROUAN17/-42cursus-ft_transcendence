@@ -30,8 +30,8 @@ export interface Paddle {
     ball: {
       x: GAME_WIDTH / 2,
       y: GAME_HEIGHT / 2,
-      velX: 5, 
-      velY: 5
+      velX: 300, 
+      velY: 120
     },
     paddleLeft: {
       x: 24,

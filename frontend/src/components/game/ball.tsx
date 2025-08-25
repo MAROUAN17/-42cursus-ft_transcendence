@@ -20,6 +20,7 @@ export default function Ball({ ballPos, setBallPos, ballVel, setBallVel, paddleL
 
     const step = (t: number) => {
       const dt = Math.min(32, t - last) / 1000;
+      //console.log("hh", dt)
       last = t;
 
       let nx = ballPos.x + ballVel.x * dt;
