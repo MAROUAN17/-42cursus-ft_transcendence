@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, type ChangeEvent } from "react";
+import { useEffect, useState, useRef, type ChangeEvent, type FormEvent } from "react";
 import { redirect, Navigate, useNavigate } from "react-router";
 import axios from "axios";
 
@@ -53,6 +53,19 @@ function Login() {
         setErrorFlag(false);
         setPassword(e.target.value);
     }
+    
+    const handleForgotPass = () => {
+        axios.post('https://localhost:5000/reset-password', {email: email}, {})
+            .then(function(res) {
+                console.log(res.data.message);
+            })
+            .catch(function (err) {
+                setForgetFlag(false);
+                setErrorFlag(true);
+                setEmail("");
+                setErrorMssg(err.response.data.error);
+            })
+    }
 
     return (
         <div className="flex justify-between font-poppins h-screen bg-gameBg items-center overflow-hidden">
@@ -97,21 +110,21 @@ function Login() {
                                 setOtp4Value(val);
                                 if (val.length == 1) 
                                     inputOtp5Ref.current?.focus();
-                            }} ref={inputOtp4Ref} className="caret-transparent text-white text-4xl text-center w-[90px] h-[139px] bg-gameBg border border-white rounded-lg" required type="text" />
+                            }} ref={inputOtp4Ref} value={otp4Value} className="caret-transparent text-white text-4xl text-center w-[90px] h-[139px] bg-gameBg border border-white rounded-lg" required type="text" />
                         <input maxLength={1} onChange={
                             (e: React.ChangeEvent<HTMLInputElement>) => {
                                 const val = e.target.value;
                                 setOtp5Value(val);
                                 if (val.length == 1) 
                                     inputOtp6Ref.current?.focus();
-                            }} ref={inputOtp5Ref} className="caret-transparent text-white text-4xl text-center w-[90px] h-[139px] bg-gameBg border border-white rounded-lg" required type="text" />
+                            }} ref={inputOtp5Ref} value={otp5Value} className="caret-transparent text-white text-4xl text-center w-[90px] h-[139px] bg-gameBg border border-white rounded-lg" required type="text" />
                         <input maxLength={1} onChange={
                             (e: React.ChangeEvent<HTMLInputElement>) => {
                                 const val = e.target.value;
                                 setOtp6Value(val);
                                 if (val.length == 1) 
                                     inputOtp6Ref.current?.focus();
-                            }} ref={inputOtp6Ref} className="caret-transparent text-white text-4xl text-center w-[90px] h-[139px] bg-gameBg border border-white rounded-lg" required type="text" />
+                            }} ref={inputOtp6Ref} value={otp6Value} className="caret-transparent text-white text-4xl text-center w-[90px] h-[139px] bg-gameBg border border-white rounded-lg" required type="text" />
                     </div>
                 </div>
                 <div className="mt-12 flex justify-center">
@@ -129,7 +142,6 @@ function Login() {
             </div> 
             :
             <div className="xl:py-[260px] xl:px-[300px] xl:mt-32 lg:mt-24 lg:w-1/2 lg:px-[220px]">
-                <form onSubmit={handleForm}>
                 <div>
                     <h1 className="text-white xl:text-9xl lg:text-8xl font-bold">
                         WELCOME
@@ -138,6 +150,7 @@ function Login() {
                         We are glad to see you back with us
                     </p>
                 </div>
+                <form onSubmit={handleForm}>
                 <div className="my-24 space-y-12">
                     <div>
                         <label className="flex text-gray-300">Email or username</label>
@@ -163,7 +176,7 @@ function Login() {
                             <p className="text-white text-md rounded-full ">Remember me</p>
                         </div>
                         <div className="">
-                            <button className="" onClick={() => {setForgetFlag(true)}}><p className="text-white font-bold">Forgot password?</p></button>
+                            <button className="" onClick={() => {setForgetFlag(true); handleForgotPass()}}><p className="text-white font-bold">Forgot password?</p></button>
                         </div>
                     </div>
                     <div>

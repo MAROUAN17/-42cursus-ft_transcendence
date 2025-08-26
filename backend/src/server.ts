@@ -12,6 +12,8 @@ import cors from "@fastify/cors";
 import { chatService } from "./services/chat.service.js";
 import { getUsers } from "./services/getUsers.service.js";
 import { oauthPlugin } from "./plugins/oauth.plugin.js";
+import nodemailer from "nodemailer";
+import {mailTransporter} from "./plugins/nodemailer.plugin.js";
 
 const httpsOptions = {
   key: fs.readFileSync("../ssl/server.key"),
@@ -31,8 +33,8 @@ async function start(): Promise<void> {
     credentials: true,
     maxAge: 600,
   });
-  await app.register(fastifyCookie);
   await app.register(fastifyEnv, options);
+  await app.register(fastifyCookie);
   await app.register(fastifyJwt, { 
     secret: process.env.JWT_TMP_LOGIN!,
     cookie: {
@@ -60,6 +62,7 @@ async function start(): Promise<void> {
   await app.register(oauthPlugin);
   await app.register(App);
   await app.register(websocketPlugin);
+  await app.register(mailTransporter);
 
   // app.get("/send-message", { websocket: true }, chatService.handler);
   await app.listen({
