@@ -5,8 +5,8 @@ export interface messagePacket {
   tempId?: string;
   type: "message" | "markSeen" | "markDelivered";
   isDelivered: boolean;
-  from?: string;
-  to: string;
+  sender_id: number;
+  recipient_id: number;
   message: string;
   createdAt: string;
   isRead: boolean;
@@ -18,8 +18,8 @@ export interface UsersLastMessage {
 }
 export interface messagePacketDB {
   id: number;
-  sender: string;
-  recipient: string;
+  sender_id: number;
+  recipient_id: number;
   message: string;
   createdAt: string;
   isRead: boolean;
@@ -28,6 +28,7 @@ export interface RequestQuery {
   token: string;
 }
 export interface Payload {
+  id: number;
   email: string;
   username: string;
 }

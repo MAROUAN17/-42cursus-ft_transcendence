@@ -7,6 +7,7 @@ import { authRoutes } from "./routes/auth.routes.js";
 import { jwtPlugin } from "./plugins/jwt.plugin.js";
 import websocketPlugin from "@fastify/websocket";
 import { chatRoutes } from "./routes/chat.routes.js";
+import { homeRoutes } from "./routes/home.routes.js";
 
 
 export default async function App(fastify: FastifyInstance, opts: FastifyPluginOptions): Promise<void> {
@@ -23,4 +24,7 @@ export default async function App(fastify: FastifyInstance, opts: FastifyPluginO
 
     //routes of chat
     await fastify.register(chatRoutes);
+
+    //routes of home page
+    await fastify.register(homeRoutes);
 }

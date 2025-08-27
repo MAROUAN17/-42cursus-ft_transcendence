@@ -33,7 +33,7 @@ export const loginUser = async (req: FastifyRequest<{Body: LoginBody}>, res: Fas
         }
 
         //verify JWT token
-        const token = app.jwt.sign({ email:user.email, username:user.username }, { expiresIn: '1d' });
+        const token = app.jwt.sign({ id:user.id, email:user.email, username:user.username }, { expiresIn: '1d' });
     
         //set JWT token as cookie
         return res.setCookie('token', token, {

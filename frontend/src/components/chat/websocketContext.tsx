@@ -1,0 +1,68 @@
+import { createContext, useContext, useEffect, useRef } from "react";
+import {
+  type notificationPacket,
+  type websocketContextType,
+  type websocketPacket,
+} from "../../../../backend/src/models/webSocket.model";
+import type { messagePacket } from "../../../../backend/src/models/chat";
+
+const WebsocketContext = createContext<websocketContextType | undefined>(
+  undefined
+);
+
+export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
+  const socketRef = useRef<WebSocket | null>(null);
+  const handlersRef = useRef<Map<string, (msg: websocketPacket) => void>>(
+    new Map<string, (msg: websocketPacket) => void>()
+  );
+  useEffect(() => {
+    const ws = new WebSocket("wss://localhost:5000/send-message");
+
+    console.log("socketRef -> ", socketRef.current);
+    socketRef.current = ws;
+    socketRef.current.onopen = () => {
+      console.log("Socket Created!");
+    };
+
+    socketRef.current.onmessage = (event) => {
+      const data: websocketPacket = JSON.parse(event.data.toString());
+      const handler = handlersRef.current.get(data.type);
+      if (handler) handler(data);
+    };
+    return () => {
+      console.log("Closing WebSocket...");
+      socketRef.current?.close();
+    };
+  }, []);
+  function send(msg: string) {
+    console.log("sending packet!");
+    if (socketRef.current && socketRef.current.readyState == WebSocket.OPEN)
+      socketRef.current.send(msg);
+  }
+  function addHandler(
+    packetType: string,
+    handler: (data: websocketPacket) => void
+  ) {
+    if (!handlersRef.current.get(packetType))
+      handlersRef.current.set(packetType, handler);
+
+    return () => {
+      handlersRef.current.delete(packetType);
+    };
+  }
+  return (
+    <WebsocketContext.Provider value={{ send, addHandler }}>
+      {children}
+    </WebsocketContext.Provider>
+  );
+};
+
+export const useWebSocket = () => {
+  const context = useContext(WebsocketContext);
+  if (!context) {
+    throw new Error("useWebSocket must be used inside WebsocketProvider!!!!");
+  }
+  return context;
+};

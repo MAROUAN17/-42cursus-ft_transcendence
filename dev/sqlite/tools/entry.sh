@@ -14,12 +14,22 @@ sqlite3 "$DB_NAME" <<EOF
         email TEXT NOT NULL,
         password TEXT
     );
-    CREATE TABLE IF NOT EXISTS MESSAGES (
+    CREATE TABLE IF NOT EXISTS messages (
         id INTEGER PRIMARY KEY,
-        sender TEXT NOT NULL, 
-        recipient TEXT NOT NULL,
-        message TEXT NOT NULL,
+        sender_id INTEGER NOT NULL,
+        recipient_id INTEGER NOT NULL,
+        message text NOT NULL,
         isRead BOOLEAN DEFAULT FALSE,
         createdAt TEXT DEFAULT (datetime('now'))
+    );
+    CREATE TABLE IF NOT EXISTS notifications (
+        id INTEGER PRIMARY KEY,
+        type TEXT NOT NULL,
+        sender_id INTEGER NOT NULL,
+        recipient_id INTEGER NOT NULL,
+        message TEXT,
+        unreadCount INTEGER DEFAULT 0,
+        isRead BOOLEAN DEFAULT FALSE,
+        updatedAt TEXT DEFAULT (datetime('now'))
     );
 EOF

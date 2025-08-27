@@ -17,24 +17,24 @@ export const getUsersMessages = async (
     let payload;
     if (token) payload = app.jwt.verify(token) as Payload;
     else return;
-    const currUser = payload.username;
+    const currUserId = payload.id;
     let usersAndMessages: UsersLastMessage[] = [];
     const users: User[] = app.db
-      .prepare("SELECT * FROM players")
-      .all() as User[];
+      .prepare("SELECT * FROM players WHERE id != ?")
+      .all(currUserId) as User[];
     users.map((user) => {
       const query: messagePacketDB | undefined = app.db
         .prepare(
-          "SELECT * FROM messages WHERE (sender = ? AND recipient = ?) OR (sender = ? AND recipient = ?) ORDER BY createdAt DESC LIMIT 1"
+          "SELECT * FROM messages WHERE (sender_id = ? AND recipient_id = ?) OR (sender_id = ? AND recipient_id = ?) ORDER BY createdAt DESC LIMIT 1"
         )
-        .get(user.username, currUser, currUser, user.username);
+        .get(user.id, currUserId, currUserId, user.id);
       const lastMessage: messagePacket | undefined = query
         ? {
             id: query.id,
-            from: query.sender,
+            sender_id: query.sender_id,
             type: "message",
             isDelivered: true,
-            to: query.recipient,
+            recipient_id: query.recipient_id,
             message: query.message,
             isRead: query.isRead,
             createdAt: query.createdAt,
@@ -42,9 +42,9 @@ export const getUsersMessages = async (
         : undefined;
       const unreadCount: number = app.db
         .prepare(
-          "SELECT COUNT(*) AS count FROM messages WHERE (sender = ? AND recipient = ?) AND isRead = false"
+          "SELECT COUNT(*) AS count FROM messages WHERE (sender_id = ? AND recipient_id = ?) AND isRead = false"
         )
-        .get(user.username, currUser).count;
+        .get(user.id, currUserId).count;
       usersAndMessages.push({ user, unreadCount, lastMessage });
     });
     res.status(200).send({ data: usersAndMessages });
