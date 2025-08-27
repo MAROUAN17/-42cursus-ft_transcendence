@@ -1,27 +1,15 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
 import type { User } from "../models/user.model.js";
 import app from "../server.js";
-import type {
-  Payload,
-  UsersLastMessage,
-  messagePacket,
-  messagePacketDB,
-} from "../models/chat.js";
+import type { Payload, UsersLastMessage, messagePacket, messagePacketDB } from "../models/chat.js";
 
-export const getUsersMessages = async (
-  req: FastifyRequest,
-  res: FastifyReply
-) => {
+export const getUsersMessages = async (req: FastifyRequest, res: FastifyReply) => {
   try {
-    const token = req.cookies.token;
-    let payload;
-    if (token) payload = app.jwt.verify(token) as Payload;
-    else return;
+    const token: string = req.cookies.accessToken!;
+    let payload = app.jwt.jwt1.verify(token) as Payload;
     const currUserId = payload.id;
     let usersAndMessages: UsersLastMessage[] = [];
-    const users: User[] = app.db
-      .prepare("SELECT * FROM players WHERE id != ?")
-      .all(currUserId) as User[];
+    const users: User[] = app.db.prepare("SELECT * FROM players WHERE id != ?").all(currUserId) as User[];
     users.map((user) => {
       const query: messagePacketDB | undefined = app.db
         .prepare(
@@ -41,9 +29,7 @@ export const getUsersMessages = async (
           }
         : undefined;
       const unreadCount: number = app.db
-        .prepare(
-          "SELECT COUNT(*) AS count FROM messages WHERE (sender_id = ? AND recipient_id = ?) AND isRead = false"
-        )
+        .prepare("SELECT COUNT(*) AS count FROM messages WHERE (sender_id = ? AND recipient_id = ?) AND isRead = false")
         .get(user.id, currUserId).count;
       usersAndMessages.push({ user, unreadCount, lastMessage });
     });

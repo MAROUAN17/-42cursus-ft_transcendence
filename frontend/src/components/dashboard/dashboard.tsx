@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import type { Infos } from "../user/login";
 
 
@@ -11,11 +11,23 @@ export default function Dashboard() {
         e.preventDefault();
         axios.get('https://localhost:5000/', { withCredentials: true })
             .then(function (res) {
-                console.log(res.data);
+                console.log(res.data.data);
                 console.log("Authorized!!");
             })
             .catch(function (err) {
                 navigate("/login");
+            })
+    }
+
+    function handleLogout(e: React.MouseEvent<HTMLButtonElement>) {
+        e.preventDefault();
+        axios.post('https://localhost:5000/logout', {}, { withCredentials: true })
+            .then(function(res) {
+                console.log(res);
+                navigate("/login");
+            })
+            .catch(function(err) {
+                console.log(err.response.data.error);
             })
     }
 
@@ -35,6 +47,7 @@ export default function Dashboard() {
         <div>
             <h1>Welcome {user.username}</h1>
             <button className="px-12 py-4 bg-neon text-white" onClick={handleClick}>click</button>
+            <button className="px-12 py-4 bg-neon text-white" onClick={handleLogout}>logout</button>
         </div>
     )
 }

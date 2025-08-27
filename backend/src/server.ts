@@ -12,6 +12,8 @@ import cors from "@fastify/cors";
 import { chatService } from "./services/chat.service.js";
 import { getUsers } from "./services/getUsers.service.js";
 import { oauthPlugin } from "./plugins/oauth.plugin.js";
+import nodemailer from "nodemailer";
+import {mailTransporter} from "./plugins/nodemailer.plugin.js";
 
 const httpsOptions = {
   key: fs.readFileSync("../ssl/server.key"),
@@ -31,18 +33,36 @@ async function start(): Promise<void> {
     credentials: true,
     maxAge: 600,
   });
-  await app.register(fastifyCookie);
   await app.register(fastifyEnv, options);
+  await app.register(fastifyCookie);
   await app.register(fastifyJwt, { 
-    secret: process.env.JWT_SIGNING_KEY!,
+    secret: process.env.JWT_TMP_LOGIN!,
     cookie: {
-      cookieName: 'token',
+      cookieName: 'loginToken',
       signed: false
-    }
+    },
+    namespace: 'jwt0'
+  });
+  await app.register(fastifyJwt, { 
+    secret: process.env.JWT_ACCESS_TOKEN!,
+    cookie: {
+      cookieName: 'accessToken',
+      signed: false
+    },
+    namespace: 'jwt1'
+  });
+  await app.register(fastifyJwt, { 
+    secret: process.env.JWT_REFRESH_TOKEN!,
+    cookie: {
+      cookieName: 'refreshToken',
+      signed: false
+    },
+    namespace: 'jwt2'
   });
   await app.register(oauthPlugin);
-  await app.register(App);
   await app.register(websocketPlugin);
+  await app.register(App);
+  await app.register(mailTransporter);
 
   // app.get("/send-message", { websocket: true }, chatService.handler);
   await app.listen({

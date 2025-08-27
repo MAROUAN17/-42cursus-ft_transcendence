@@ -47,10 +47,10 @@ export const oauthCallback = async (req: FastifyRequest, res: FastifyReply) => {
         //set JWT token as cookie
         return res.setCookie('token', tokenJWT, {
             path: '/',
-            secure: false,
+            secure: true,
             httpOnly: true, 
             sameSite: 'lax'
-        }).redirect("https://localhost:3000/");
+        })
     } catch (error) {
         console.log(error);
         res.status(401).send({ error: error });

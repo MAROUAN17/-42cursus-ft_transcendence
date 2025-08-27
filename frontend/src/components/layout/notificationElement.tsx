@@ -1,6 +1,6 @@
 import { TiDelete } from "react-icons/ti";
 import type { notificationPacket } from "../../../../backend/src/models/webSocket.model";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { useState } from "react";
 
 interface props {

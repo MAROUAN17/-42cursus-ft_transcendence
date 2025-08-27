@@ -141,23 +141,9 @@ async function processMessages() {
 export const chatService = {
   websocket: true,
   handler: (connection: WebSocket, req: FastifyRequest) => {
-    let payload;
-    const token = req.cookies.token;
-    if (token) {
-      try {
-        payload = app.jwt.verify(token) as Payload;
-      } catch (error) {
-        console.log("closed connection bad jwt");
-        connection.close();
-        return;
-      }
-    } else {
-      console.log("closed no token");
-      connection.close();
-      return;
-    }
+    const token = req.cookies.accessToken!;
+    let payload = app.jwt.jwt1.verify(token) as Payload;
     const userId = payload.id;
-
     clients.set(userId, connection);
     console.log("Connection Done with => " + payload.username);
 

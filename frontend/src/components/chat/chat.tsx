@@ -13,7 +13,7 @@ import ChatBubble from "./ChatBubble";
 import { v4 as uuidv4 } from "uuid";
 import { useWebSocket } from "./websocketContext";
 import type { notificationPacket, websocketPacket } from "../../../../backend/src/models/webSocket.model";
-import { useParams } from "react-router-dom";
+import { useParams } from "react-router";
 
 const Chat = () => {
   const { username } = useParams<{ username?: string }>();
@@ -36,7 +36,9 @@ const Chat = () => {
         console.log("messages -> ", res.data.data);
         setMessages(res.data.data);
       })
-      .catch((error) => console.error("Error fetching messages:", error));
+      .catch((error) => {
+        console.error("Error fetching messages:", error);
+      });
   }, [targetUser]);
 
   useEffect(() => {
@@ -64,7 +66,9 @@ const Chat = () => {
             return user.user.username == username;
           });
           if (foundUser) {
-            res.data.data.map((user: UsersLastMessage) => user.user.id == foundUser.user.id ? user.unreadCount = 0 : null)
+            res.data.data.map((user: UsersLastMessage) =>
+              user.user.id == foundUser.user.id ? (user.unreadCount = 0) : null
+            );
             setTargetUser(foundUser.user);
           }
         }

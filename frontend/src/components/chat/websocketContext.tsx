@@ -18,19 +18,24 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({
     new Map<string, (msg: websocketPacket) => void>()
   );
   useEffect(() => {
-    const ws = new WebSocket("wss://localhost:5000/send-message");
+    try {
+      const ws = new WebSocket("wss://localhost:5000/send-message");
 
-    console.log("socketRef -> ", socketRef.current);
-    socketRef.current = ws;
-    socketRef.current.onopen = () => {
-      console.log("Socket Created!");
-    };
+      console.log("socketRef -> ", socketRef.current);
+      socketRef.current = ws;
+      socketRef.current.onopen = () => {
+        console.log("Socket Created!");
+      };
 
-    socketRef.current.onmessage = (event) => {
-      const data: websocketPacket = JSON.parse(event.data.toString());
-      const handler = handlersRef.current.get(data.type);
-      if (handler) handler(data);
-    };
+      socketRef.current.onmessage = (event) => {
+        const data: websocketPacket = JSON.parse(event.data.toString());
+        const handler = handlersRef.current.get(data.type);
+        if (handler) handler(data);
+      };
+    } catch (error) {
+      console.log(error)
+    }
+    
     return () => {
       console.log("Closing WebSocket...");
       socketRef.current?.close();

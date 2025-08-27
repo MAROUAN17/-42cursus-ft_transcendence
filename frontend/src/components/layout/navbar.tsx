@@ -9,8 +9,10 @@ import { TiDelete } from "react-icons/ti";
 import type { notificationPacket, websocketPacket } from "../../../../backend/src/models/webSocket.model";
 import { useWebSocket } from "../chat/websocketContext";
 import NotificationElement from "./notificationElement";
+import {useNavigate} from "react-router"
 
 const Navbar = () => {
+  const navigate = useNavigate();
   const [currUser, setCurrUser] = useState<User>();
   const [isNotificationOpen, setIsNotificationOpen] = useState<boolean>(false);
   const [hasUnread, setHasUnread] = useState<boolean>(false);
@@ -20,18 +22,20 @@ const Navbar = () => {
   const { send, addHandler } = useWebSocket();
 
   useEffect(() => {
-    axios("https://localhost:5000/notifications", { withCredentials: true })
+    axios.get("https://localhost:5000/notifications", { withCredentials: true })
       .then((res) => {
         console.log("notifications -> ", res.data.data);
         setNotifications(res.data.data);
       })
-      .catch((error) => console.error("Error fetching notifications:", error));
+      .catch((error) => {
+        console.error("Error fetching notifications:", error)
+      });
     const addedHandled = addHandler("notification", handleNotification);
     return addedHandled;
   }, []);
 
   useEffect(() => {
-    axios("https://localhost:5000/user", { withCredentials: true })
+    axios.get("https://localhost:5000/user", { withCredentials: true })
       .then((res) => {
         setCurrUser(res.data.infos);
       })
@@ -43,7 +47,7 @@ const Navbar = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
   useEffect(() => {
-    const res: notificationPacket | undefined = notifications.find((notif: notificationPacket) => {
+    const res: notificationPacket | undefined = notifications?.find((notif: notificationPacket) => {
       return notif.unreadCount ? notif.unreadCount > 0 : false;
     });
     // console.log("res -> ", res);
@@ -109,7 +113,7 @@ const Navbar = () => {
             {isNotificationOpen ? (
               <div className="absolute overflow-hidden right-0 mt-2 w-72  bg-[#28134d] rounded-lg shadow-lg">
                 <ul className="py-2">
-                  {notifications.length ? (
+                  {notifications?.length ? (
                     notifications.map((notification) => (
                       <NotificationElement
                         deleteFunc={deleteNotification}

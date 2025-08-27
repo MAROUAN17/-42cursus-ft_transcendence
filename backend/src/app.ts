@@ -8,23 +8,24 @@ import { jwtPlugin } from "./plugins/jwt.plugin.js";
 import websocketPlugin from "@fastify/websocket";
 import { chatRoutes } from "./routes/chat.routes.js";
 import { homeRoutes } from "./routes/home.routes.js";
+import app from "./server.js";
 
 
 export default async function App(fastify: FastifyInstance, opts: FastifyPluginOptions): Promise<void> {
-    await fastify.register(Sensible);
-    await fastify.register(dbConnection);
-    await fastify.register(fastifyFormbody);
-    await fastify.register(jwtPlugin);
+    await app.register(Sensible);
+    await app.register(dbConnection);
+    await app.register(fastifyFormbody);
+    await app.register(jwtPlugin);
     
 
-    await fastify.register(websocketPlugin);
+    // await app.register(websocketPlugin);
 
     //routes of auth
-    await fastify.register(authRoutes);
+    await app.register(authRoutes);
 
     //routes of chat
-    await fastify.register(chatRoutes);
+    await app.register(chatRoutes);
 
     //routes of home page
-    await fastify.register(homeRoutes);
+    await app.register(homeRoutes);
 }

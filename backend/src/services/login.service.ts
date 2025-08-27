@@ -1,7 +1,7 @@
-import app from "../server.js";
 import { type User, type LoginBody, type userPass  } from "../models/user.model.js"
 import type { FastifyReply, FastifyRequest } from "fastify";
 import bcrypt from "bcrypt";
+import app from "../server.js"
 
 export const loginUser = async (req: FastifyRequest<{Body: LoginBody}>, res: FastifyReply) => {
     try {
@@ -12,7 +12,6 @@ export const loginUser = async (req: FastifyRequest<{Body: LoginBody}>, res: Fas
         //check username
         if (email.includes("@")) {
             email = email.toLowerCase();
-            console.log(`email => ${email}`);
             user = app.db
             .prepare('SELECT * from players WHERE email = ?')
             .get(email) as User | undefined;
@@ -32,16 +31,15 @@ export const loginUser = async (req: FastifyRequest<{Body: LoginBody}>, res: Fas
             return res.status(401).send({ error: "Incorrect username or password." });
         }
 
-        //verify JWT token
-        const token = app.jwt.sign({ id:user.id, email:user.email, username:user.username }, { expiresIn: '1d' });
+        const loginToken = app.jwt.jwt0.sign({ email: user.email }, { expiresIn: '30s' });
     
-        //set JWT token as cookie
-        return res.setCookie('token', token, {
+        res.setCookie('loginToken', loginToken, {
             path: '/',
-            secure: false,
+            secure: true,
             httpOnly: true, 
             sameSite: 'lax',
-        }).status(200).send({ message: "Logged in", data: {username: user?.username, email: user?.email } })
+            maxAge: 30
+        }).status(200).send({ message: "Logged in", data: { username: user?.username, email: user?.email } })
     } catch (err) {
         console.log(err);
         return res.status(500).send({ err });

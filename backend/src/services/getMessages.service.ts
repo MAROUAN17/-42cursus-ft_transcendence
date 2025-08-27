@@ -1,31 +1,13 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
 // import type {User} from "../models/user.js"
 import app from "../server.js";
-import type {
-  Payload,
-  messagePacket,
-  messagePacketDB,
-} from "../models/chat.js";
+import type { Payload, messagePacket, messagePacketDB } from "../models/chat.js";
 
-export const getMessages = async (
-  req: FastifyRequest<{ Params: { user: number } }>,
-  res: FastifyReply
-) => {
+export const getMessages = async (req: FastifyRequest<{ Params: { user: number } }>, res: FastifyReply) => {
   try {
-    const targetUser : number = req.params.user;
-    const token = req.cookies.token;
-    let payload;
-    if (token) {
-      try {
-        payload = app.jwt.verify(token) as Payload;
-      } catch (error) {
-        console.error("Invalid Token!");
-        return;
-      }
-    } else {
-      console.log("Token not found!");
-      return;
-    }
+    const targetUser: number = req.params.user;
+    const token = req.cookies.accessToken!;
+    let payload = app.jwt.jwt1.verify(token) as Payload;
     const userId = payload.id;
     const query: messagePacketDB[] = app.db
       .prepare(

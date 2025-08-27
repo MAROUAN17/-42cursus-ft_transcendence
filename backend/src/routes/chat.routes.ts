@@ -6,11 +6,11 @@ import { getMessages } from "../services/getMessages.service.js";
 import { getUsersMessages } from "../services/getUsersMessages.service.js";
 
 export const chatRoutes: FastifyPluginAsync = async (fastify) => {
-  fastify.get(
+  app.get(
     "/send-message",
     { websocket: true, onRequest: [app.jwtAuth] },
     chatService.handler
   );
-  fastify.get("/users", { onRequest: [app.jwtAuth] }, getUsersMessages);
-  fastify.get("/messages/:user", { onRequest: [app.jwtAuth] }, getMessages);
+  app.get("/users", { onRequest: [app.jwtAuth] }, getUsersMessages);
+  app.get("/messages/:user", { onRequest: [app.jwtAuth] }, getMessages);
 };
