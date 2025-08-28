@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, type FormEvent, type InputHTMLAttributes } from "react";
+import { useEffect, useState, useRef, type FormEvent, type InputHTMLAttributes, type KeyboardEvent } from "react";
 import type { Infos } from "../user/login";
 import axios from "axios";
 import { useNavigate } from "react-router";

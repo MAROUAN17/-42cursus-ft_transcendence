@@ -79,7 +79,7 @@ function Login() {
                             <p className="text-white text-md rounded-full ">Remember me</p>
                         </div>
                         <div className="">
-                            <button className="" onClick={() => {navigate('/reset-password')}}><p className="text-white font-bold">Forgot password?</p></button>
+                            <button type="button" className="" onClick={() => {navigate('/reset-password')}}><p className="text-white font-bold">Forgot password?</p></button>
                         </div>
                     </div>
                     <div>
