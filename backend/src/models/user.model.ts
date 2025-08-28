@@ -16,6 +16,7 @@ export interface LoginBody {
 }
 
 export interface userInfos {
+    id: number,
     email: string,
     username: string
 }

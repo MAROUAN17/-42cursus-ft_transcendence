@@ -12,36 +12,47 @@ import Chat from './components/chat/chat';
 import Dashboard from './components/dashboard/dashboard';
 import Page2FA from "./components/user/2fa";
 import checkAuthLoader from "../src/loaders/checkAuth";
-import PasswordReset from "./components/user/newPassword";
+import NewPassword from "./components/user/newPassword";
 import ResetPasswordForm from "./components/user/passwordResetForm";
+import { WebSocketProvider } from "./components/chat/websocketContext";
+import Layout from "./components/layout/layout";
 
 export default function App() {
   let router = createBrowserRouter([
     {
-      path: '/',
-      Component: Dashboard,
+      Component: Layout,
+      children: [
+        {
+          path: "/",
+          Component: Dashboard,
+        },
+        {
+          path: "/chat",
+          Component: Chat,
+        },
+        {
+          path: "/chat/:username",
+          Component: Chat,
+        },
+      ],
     },
     {
-      path: '/game',
+      path: "/game",
       Component: Game,
     },
     {
-      path: '/login',
+      path: "/login",
       Component: Login,
-      loader: checkAuthLoader
+      loader: checkAuthLoader,
     },
     {
-      path: '/register',
+      path: "/register",
       Component: Register,
     },
     {
-      path: '/chat',
-      Component: Chat,
-    },
-    {
-      path: '/verify',
+      path: "/verify",
       Component: Page2FA,
-      loader: checkAuthLoader
+      loader: checkAuthLoader,
     },
     {
       path: '/reset-password',
@@ -49,11 +60,8 @@ export default function App() {
     },
     {
       path: '/reset-password/new',
-      Component: PasswordReset,
+      Component: NewPassword,
     },
-  ])
-  return (
-      <RouterProvider router={router} />
-  )
+  ]);
+  return <RouterProvider router={router} />;
 }
-

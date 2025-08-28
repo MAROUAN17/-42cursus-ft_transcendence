@@ -1,43 +1,25 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
 // import type {User} from "../models/user.js"
 import app from "../server.js";
-import type {
-  Payload,
-  messagePacket,
-  messagePacketDB,
-} from "../models/chat.js";
+import type { Payload, messagePacket, messagePacketDB } from "../models/chat.js";
 
-export const getMessages = async (
-  req: FastifyRequest<{ Params: { user: string } }>,
-  res: FastifyReply
-) => {
+export const getMessages = async (req: FastifyRequest<{ Params: { user: number } }>, res: FastifyReply) => {
   try {
-    const targetUser = req.params.user;
-    const token = req.cookies.token;
-    let payload;
-    if (token) {
-      try {
-        payload = app.jwt.verify(token) as Payload;
-      } catch (error) {
-        console.error("Invalid Token!");
-        return;
-      }
-    } else {
-      console.log("Token not found!");
-      return;
-    }
-    const user = payload.username;
+    const targetUser: number = req.params.user;
+    const token = req.cookies.accessToken!;
+    let payload = app.jwt.jwt1.verify(token) as Payload;
+    const userId = payload.id;
     const query: messagePacketDB[] = app.db
       .prepare(
-        "SELECT * FROM messages WHERE (sender = ? AND recipient = ?) OR (sender = ? AND recipient = ?) ORDER BY createdAt DESC"
+        "SELECT * FROM messages WHERE (sender_id = ? AND recipient_id = ?) OR (sender_id = ? AND recipient_id = ?) ORDER BY createdAt DESC"
       )
-      .all(user, targetUser, targetUser, user) as messagePacketDB[];
+      .all(userId, targetUser, targetUser, userId) as messagePacketDB[];
     const messages: messagePacket[] = query.map((row) => ({
       id: row.id,
-      from: row.sender,
+      sender_id: row.sender_id,
       type: "message",
       isDelivered: true,
-      to: row.recipient,
+      recipient_id: row.recipient_id,
       message: row.message,
       isRead: row.isRead,
       createdAt: row.createdAt,

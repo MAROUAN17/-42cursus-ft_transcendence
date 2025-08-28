@@ -14,7 +14,8 @@ declare module 'fastify' {
         db: DatabaseType;
         jwtAuth: any;
         resetCheck: any;
-        jwtLoginCheck: any
+        jwtLoginCheck: any;
+        jwtRefresh: any;
         intra42Oauth: OAuth2Namespace;
         jwt: fastifyJwt.JWT
         mailer: nodemailer.Transporter

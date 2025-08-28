@@ -27,7 +27,7 @@ const app = Fastify({
 async function start(): Promise<void> {
   await app.register(cors, {
     origin: "https://localhost:3000",
-    methods: ["GET", "POST", "OPTIONS"],
+    methods: ["GET", "POST", "OPTIONS", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
     maxAge: 600,
@@ -59,9 +59,9 @@ async function start(): Promise<void> {
     namespace: 'jwt2'
   });
   await app.register(oauthPlugin);
-  await app.register(App);
   await app.register(websocketPlugin);
   await app.register(mailTransporter);
+  await app.register(App);
 
   await app.listen({
     host: "0.0.0.0",

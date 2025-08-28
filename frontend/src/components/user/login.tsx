@@ -1,10 +1,11 @@
 import { useEffect, useState, useRef, type ChangeEvent, type FormEvent } from "react";
 import { redirect, Navigate, useNavigate } from "react-router";
 import axios from "axios";
+import type { messagePacket } from "../../../../backend/src/models/chat";
 
 export interface Infos {
-    username: string, 
-    email: string
+  username: string;
+  email: string;
 }
 
 function Login() {

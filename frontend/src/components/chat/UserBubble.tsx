@@ -44,7 +44,7 @@ const UserBubble = ({
 }: props) => {
   return (
     <div onClick={onclick} className={style}>
-      <img src="src/assets/photo.png" className="h-[44px] w-[44px]" />
+      <img src="/src/assets/photo.png" className="h-[44px] w-[44px]" />
       <div className="w-full">
         <div className="flex flex-row justify-between items-center">
           <h3 className="text-white font-medium">{name}</h3>
