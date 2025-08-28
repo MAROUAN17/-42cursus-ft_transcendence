@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useState, useRef, type FormEvent, type InputHTMLAttributes } from "react";
 import type { Infos } from "../user/login";
 import axios from "axios";
 import { useNavigate } from "react-router";
@@ -11,41 +11,40 @@ function Page2FA() {
     const [fourthNbr, setFourthNbr] = useState<string>('');
     const [fifthNbr, setFifthNbr] = useState<string>('');
     const [sixthNbr, setSixthNbr] = useState<string>('');
-    const navigate = useNavigate();
+    const input1Ref = useRef<HTMLInputElement>(null);
+    const input2Ref = useRef<HTMLInputElement>(null);
+    const input3Ref = useRef<HTMLInputElement>(null);
+    const input4Ref = useRef<HTMLInputElement>(null);
+    const input5Ref = useRef<HTMLInputElement>(null);
+    const input6Ref = useRef<HTMLInputElement>(null);
 
-    // const handleType = (e: React.TouchEvent) => {
-    //     if (e.key == "Backspace") {
-    //         e.preventDefault();
-    //         setFirstNbr("");
-    //         document.getElementById('otpn1')?.focus();
-    //     }
-    // }
+
+    const navigate = useNavigate();
 
     const handleFirstNbr = (e: React.ChangeEvent<HTMLInputElement>) => {
         e.preventDefault();
         setFirstNbr(e.target.value);
-        document.getElementById('otpn2')?.focus();
+        input2Ref.current!.focus();
     }
     const handleSecondNbr = (e: React.ChangeEvent<HTMLInputElement>) => {
         e.preventDefault();
         setSecondNbr(e.target.value);
-        document.getElementById('otpn3')?.focus();
+        input3Ref.current!.focus();
     }
     const handleThirdNbr = (e: React.ChangeEvent<HTMLInputElement>) => {
         e.preventDefault();
         setThirdNbr(e.target.value);
-        document.getElementById('otpn4')?.focus();
+        input4Ref.current!.focus();
     }
     const handleFourthNbr = (e: React.ChangeEvent<HTMLInputElement>) => {
         e.preventDefault();
         setFourthNbr(e.target.value);
-        document.getElementById('otpn5')?.focus();
+        input5Ref.current!.focus();
     }
     const handleFifthNbr = (e: React.ChangeEvent<HTMLInputElement>) => {
         e.preventDefault();
         setFifthNbr(e.target.value);
-        document.getElementById('otpn6')?.focus();
-        console.log(fourthNbr);
+        input6Ref.current!.focus();
     }
     const handleSixthNbr = (e: React.ChangeEvent<HTMLInputElement>) => {
         e.preventDefault();
@@ -61,6 +60,7 @@ function Page2FA() {
             })
             .catch(function(err) {
                 console.log(err.response.data);
+                navigate('/login');
             })
     }
 
@@ -103,14 +103,14 @@ function Page2FA() {
             <form onSubmit={formHandler}>
             <div className="flex justify-center space-x-12">
                 <div className="flex justify-center space-x-3 text-center mt-20">
-                    <input maxLength={1} onChange={handleFirstNbr} id="otpn1" value={firstNbr} className=" text-white text-4xl text-center w-[80px] h-[139px] bg-gameBg border border-white rounded-lg" required type="text" />
-                    <input maxLength={1} onChange={handleSecondNbr} id="otpn2" value={secondNbr} className=" text-white text-4xl text-center w-[90px] h-[139px] bg-gameBg border border-white rounded-lg" required type="text" />
-                    <input maxLength={1} onChange={handleThirdNbr} id="otpn3" value={thirdNbr} className=" text-white text-4xl text-center w-[90px] h-[139px] bg-gameBg border border-white rounded-lg" required type="text" />
+                    <input maxLength={1} onChange={handleFirstNbr} ref={input1Ref} value={firstNbr} className=" text-white text-4xl text-center w-[80px] h-[139px] bg-gameBg border border-white rounded-lg" required type="text" />
+                    <input maxLength={1} onChange={handleSecondNbr} ref={input2Ref} value={secondNbr} className=" text-white text-4xl text-center w-[90px] h-[139px] bg-gameBg border border-white rounded-lg" required type="text" />
+                    <input maxLength={1} onChange={handleThirdNbr} ref={input3Ref} value={thirdNbr} className=" text-white text-4xl text-center w-[90px] h-[139px] bg-gameBg border border-white rounded-lg" required type="text" />
                 </div>
                 <div className="flex justify-center space-x-3 text-center mt-20">
-                    <input maxLength={1} onChange={handleFourthNbr} id="otpn4" value={fourthNbr} className=" text-white text-4xl text-center w-[90px] h-[139px] bg-gameBg border border-white rounded-lg" required type="text" />
-                    <input maxLength={1} onChange={handleFifthNbr} id="otpn5" value={fifthNbr} className=" text-white text-4xl text-center w-[90px] h-[139px] bg-gameBg border border-white rounded-lg" required type="text" />
-                    <input maxLength={1} onChange={handleSixthNbr} id="otpn6" value={sixthNbr} className=" text-white text-4xl text-center w-[90px] h-[139px] bg-gameBg border border-white rounded-lg" required type="text" />
+                    <input maxLength={1} onChange={handleFourthNbr} ref={input4Ref} value={fourthNbr} className=" text-white text-4xl text-center w-[90px] h-[139px] bg-gameBg border border-white rounded-lg" required type="text" />
+                    <input maxLength={1} onChange={handleFifthNbr} ref={input5Ref} value={fifthNbr} className=" text-white text-4xl text-center w-[90px] h-[139px] bg-gameBg border border-white rounded-lg" required type="text" />
+                    <input maxLength={1} onChange={handleSixthNbr} ref={input6Ref} value={sixthNbr} className=" text-white text-4xl text-center w-[90px] h-[139px] bg-gameBg border border-white rounded-lg" required type="text" />
                 </div>
             </div>
             <div className="mt-12 text-center">

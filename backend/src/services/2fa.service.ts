@@ -13,7 +13,6 @@ export const verify2FA = async (req: FastifyRequest<{Body: LoginBody}>, res: Fas
 
     const userInfos = await app.jwt.jwt0.verify(loginToken) as userInfos | undefined;
 
-    console.log(`user email -> ${userInfos?.email}`);
     const secret = authenticator.generateSecret();
     //insert secret into the db
     app.db
@@ -24,7 +23,6 @@ export const verify2FA = async (req: FastifyRequest<{Body: LoginBody}>, res: Fas
         .prepare('SELECT * FROM PLAYERS WHERE email = ?')
         .get(userInfos?.email) as User;
 
-    console.log("secret otp -> ", user.secret_otp);
     const otpath = authenticator.keyuri(userInfos?.email!, "OTP APP", user.secret_otp);
     const qrCode = await qrcode.toDataURL(otpath);
 

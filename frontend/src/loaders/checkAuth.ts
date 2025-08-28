@@ -9,6 +9,7 @@ export default async function checkAuthLoader() {
       )
       console.log(res);     
     } catch (err: any) {
+      console.log(err);
       if (err.status == 401 && err.response.data.message == "Already logged in") {
           return redirect('/');
       }

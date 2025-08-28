@@ -27,7 +27,7 @@ export default function Dashboard() {
                 navigate("/login");
             })
             .catch(function(err) {
-                console.log(err.response.data.error);
+                console.log(err.response);
             })
     }
 

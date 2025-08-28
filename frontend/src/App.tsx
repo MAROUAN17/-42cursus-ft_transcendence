@@ -1,6 +1,3 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
 import { Routes, 
          Route, 
@@ -15,7 +12,8 @@ import Chat from './components/chat/chat';
 import Dashboard from './components/dashboard/dashboard';
 import Page2FA from "./components/user/2fa";
 import checkAuthLoader from "../src/loaders/checkAuth";
-import PasswordReset from "./components/user/passwordReset";
+import PasswordReset from "./components/user/newPassword";
+import ResetPasswordForm from "./components/user/passwordResetForm";
 
 export default function App() {
   let router = createBrowserRouter([
@@ -46,7 +44,11 @@ export default function App() {
       loader: checkAuthLoader
     },
     {
-      path: '/password-reset',
+      path: '/reset-password',
+      Component: ResetPasswordForm,
+    },
+    {
+      path: '/reset-password/new',
       Component: PasswordReset,
     },
   ])

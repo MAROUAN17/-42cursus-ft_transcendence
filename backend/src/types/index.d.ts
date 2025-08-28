@@ -13,6 +13,7 @@ declare module 'fastify' {
     export interface FastifyInstance {
         db: DatabaseType;
         jwtAuth: any;
+        resetCheck: any;
         jwtLoginCheck: any
         intra42Oauth: OAuth2Namespace;
         jwt: fastifyJwt.JWT

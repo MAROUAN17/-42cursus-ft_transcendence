@@ -8,7 +8,7 @@ import { fetchUser } from "../services/user.service.js"
 import { oauthCallback } from "../services/oauthCallback.service.js";
 import { verify2FA, verify2FAToken } from "../services/2fa.service.js"
 import { checkAuth } from "../services/checkAuth.service.js"
-import { resetPassword } from "../services/resetPassword.service.js"
+import { resetPassword, verifyResetPin, checkResetPass } from "../services/resetPassword.service.js"
 
 
 export const authRoutes: FastifyPluginAsync = async() => {
@@ -16,7 +16,11 @@ export const authRoutes: FastifyPluginAsync = async() => {
     app.post('/login/verify', checkAuth);
     app.post('/logout', logoutUser);
     app.post('/register', registerUser);
+
+    //reset password
     app.post('/reset-password', resetPassword);
+    app.post('/reset-password/verify', verifyResetPin);
+    app.post('/reset-password/check', checkResetPass);
 
     //get user data
     app.get("/", { onRequest: [ app.jwtAuth ] }, getUsers);
