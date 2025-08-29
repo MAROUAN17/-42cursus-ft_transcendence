@@ -6,7 +6,12 @@ import type { Payload, UsersLastMessage, messagePacket, messagePacketDB } from "
 export const getUsersMessages = async (req: FastifyRequest, res: FastifyReply) => {
   try {
     const token: string = req.cookies.accessToken!;
-    let payload = app.jwt.jwt1.verify(token) as Payload;
+    try {
+      var payload = app.jwt.jwt1.verify(token) as Payload;
+    } catch (error) {
+      res.status(401).send({ error: "JWT_EXPIRED" });
+      return;
+    }
     const currUserId = payload.id;
     let usersAndMessages: UsersLastMessage[] = [];
     const users: User[] = app.db.prepare("SELECT * FROM players WHERE id != ?").all(currUserId) as User[];

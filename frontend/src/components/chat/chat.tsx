@@ -211,7 +211,7 @@ const Chat = () => {
     }
   }
   return (
-    <div className="flex flex-row h-full bg-darkBg p-5 gap-x-4 font-poppins">
+    <div className="flex flex-row h-full w-full bg-darkBg p-5 gap-x-4 font-poppins">
       <div className="flex flex-col bg-compBg/20 basis-1/3 rounded-xl p-3 gap-5">
         <div className="flex flex-row justify-between items-center p-3">
           <div className="flex flex-row gap-1">
@@ -271,10 +271,10 @@ const Chat = () => {
             ))}
         </div>
       </div>
-      <div className="bg-compBg/20 basis-2/3 rounded-xl flex flex-col justify-between">
+      <div className="bg-compBg/20 rounded-xl  flex-1 flex flex-col justify-between min-w-0">
         {targetUser ? (
           <>
-            <div className="bg-compBg/20 h-[95px] items-center flex px-7 justify-between">
+            <div className="bg-compBg/20 h-[95px] items-center flex px-7 justify-between ">
               <div className="flex gap-3 items-center">
                 <img src="/src/assets/photo.png" className="h-[44px] w-[44px]" />
                 <div className="flex flex-col">

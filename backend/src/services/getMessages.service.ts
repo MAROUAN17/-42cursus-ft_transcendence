@@ -7,7 +7,12 @@ export const getMessages = async (req: FastifyRequest<{ Params: { user: number }
   try {
     const targetUser: number = req.params.user;
     const token = req.cookies.accessToken!;
-    let payload = app.jwt.jwt1.verify(token) as Payload;
+    try {
+      var payload = app.jwt.jwt1.verify(token) as Payload;
+    } catch (error) {
+      res.status(401).send({ error: "JWT_EXPIRED" });
+      return;
+    }
     const userId = payload.id;
     const query: messagePacketDB[] = app.db
       .prepare(
