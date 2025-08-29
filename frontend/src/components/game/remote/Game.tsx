@@ -4,6 +4,7 @@ import RBat from "./Bat";
 import RHeader from "./RHeader";
 import { type GameInfo } from "./Types";
 
+
 export default function RGame() {
    const [i, setI] = useState(0);
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -43,6 +44,7 @@ export default function RGame() {
       if (down.has("w") || down.has("W")) setLeftY((y) => Math.max(0, y - 8));
       if (down.has("s") || down.has("S")) setLeftY((y) => Math.min((gameInfo?.bounds.height ?? 0) - 120, y + 8));
 
+	  
       raf = requestAnimationFrame(step);
     };
 
@@ -55,6 +57,14 @@ export default function RGame() {
       window.removeEventListener("keyup", onKeyUp);
     };
   }, [gameInfo?.bounds.height]);
+
+	useEffect ( () => {
+		if (websocket && websocket.readyState == WebSocket.OPEN){
+			websocket.send(JSON.stringify({ type: "updateY", leftY, rightY}));
+			//console.log("message sent [DIR]: ", type);
+		} else
+			console.log("there is a proble in socket:", websocket);
+	}, [leftY, rightY]);
 
 	useEffect(() => {
 		const ws = new WebSocket("ws://localhost:8088/game");
@@ -122,8 +132,8 @@ export default function RGame() {
 		className="relative  border-2 border-neon rounded-2xl shadow-neon bg-black"
 		style={{ minWidth: 600, minHeight: 360, height:gameInfo?.bounds.height, width:gameInfo?.bounds.width }}
 	  >
-		<RBat  x={gameInfo?.paddleLeft.x ?? 24} y={leftY} side="left" height={gameInfo?.paddleLeft.height ?? 0} containerTop={0} containerHeight={gameInfo?.bounds.height ?? 400} />
-		<RBat x={gameInfo?.paddleLeft.x ?? 600 - 24 - 18} y={rightY} side="right" height={gameInfo?.paddleRight.height ?? 0} containerTop={0} containerHeight={gameInfo?.bounds.height ?? 400} />
+		<RBat  x={gameInfo?.paddleLeft.x ?? 24} y={gameInfo?.paddleLeft.y ?? 0} side="left" height={gameInfo?.paddleLeft.height ?? 0} containerTop={0} containerHeight={gameInfo?.bounds.height ?? 400} />
+		<RBat x={gameInfo?.paddleLeft.x ?? 600 - 24 - 18} y={gameInfo?.paddleRight.y ?? 0} side="right" height={gameInfo?.paddleRight.height ?? 0} containerTop={0} containerHeight={gameInfo?.bounds.height ?? 400} />
 
 		<RBall
 		  dir={dir}

@@ -34,7 +34,7 @@ export function handleGameConnection(connection: any, req: any) {
   gameLoop();
   
   connection.on("message", (message: any) => {
-    console.log(`Received from ${id}:`, message.toString());
+    //console.log(`Received from ${id}:`, message.toString());
     try {
       const msg = JSON.parse(message.toString());
       updateInfo(msg)
@@ -56,26 +56,27 @@ export function handleGameConnection(connection: any, req: any) {
 function updateInfo(msg:any) {
   if (msg.type == "vely")
     msgPacket.game_info.ball.velY *=-1
-  else 
+  else if (msg.type == "velx")
     msgPacket.game_info.ball.velX *= -1;
 
-  if (msg.type == "score")
-  {
-    if (msg.type == "score") {
-      console.log("WHO received:", msg.who);
-      if (msg.who == "right") msgPacket.game_info.scoreRight++;
-      else msgPacket.game_info.scoreLeft++;
-    
-      const ballx = msgPacket.game_info.bounds.width / 2;
-      const bally = msgPacket.game_info.bounds.height / 2;
-      const angle = (Math.random() * Math.PI / 3) - Math.PI / 6;
-      const dir = Math.random() > 0.5 ? 1 : -1; 
-      const velX = dir * Math.cos(angle) * 200;
-      const velY = Math.sin(angle) * 200;
-    
-      msgPacket.game_info.ball = { x: ballx, y: bally, velX, velY };
-      //console.log("new Ball info: ", msgPacket.game_info.ball);
-    }
+  else if (msg.type == "score") {
+    //console.log("WHO received:", msg.who);
+    if (msg.who == "right") msgPacket.game_info.scoreRight++;
+    else msgPacket.game_info.scoreLeft++;
+  
+    const ballx = msgPacket.game_info.bounds.width / 2;
+    const bally = msgPacket.game_info.bounds.height / 2;
+    const angle = (Math.random() * Math.PI / 3) - Math.PI / 6;
+    const dir = Math.random() > 0.5 ? 1 : -1; 
+    const velX = dir * Math.cos(angle) * 200;
+    const velY = Math.sin(angle) * 200;
+  
+    msgPacket.game_info.ball = { x: ballx, y: bally, velX, velY };
+    //console.log("new Ball info: ", msgPacket.game_info.ball);
+  }
+  else if (msg.type == "updateY"){
+    msgPacket.game_info.paddleLeft.y = msg.leftY;
+    msgPacket.game_info.paddleRight.y = msg.rightY;
   }
 }
 
