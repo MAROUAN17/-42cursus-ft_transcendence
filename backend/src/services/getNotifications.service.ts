@@ -7,7 +7,12 @@ import type { notificationPacket, notificationPacketDB } from "../models/webSock
 export const getNotifications = async (req: FastifyRequest, res: FastifyReply) => {
   try {
     const token = req.cookies.accessToken!;
-    let payload = app.jwt.jwt1.decode(token) as Payload;
+    try {
+      var payload = app.jwt.jwt1.verify(token) as Payload;
+    } catch (error) {
+      res.status(401).send({ error: "JWT_EXPIRED" });
+      return;
+    }
     const user = payload.username;
     const notifications: notificationPacket[] = app.db
       .prepare(
@@ -28,7 +33,7 @@ export const getNotifications = async (req: FastifyRequest, res: FastifyReply) =
     console.log("notifications -> ", notifications);
     res.status(200).send({ data: notifications });
   } catch (err) {
-    console.log("FAILED")
+    console.log("FAILED");
     res.status(500).send({ error: err });
   }
 };

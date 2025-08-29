@@ -1,7 +1,7 @@
 import fastify from "fastify";
 import app from "../server.js";
 import { WebSocket } from "ws";
-import type { FastifyRequest } from "fastify";
+import type { FastifyReply, FastifyRequest } from "fastify";
 import type { RequestQuery, Payload, messagePacket } from "../models/chat.js";
 import type {
   NotificationPacket,
@@ -140,13 +140,17 @@ async function processMessages() {
 
 export const chatService = {
   websocket: true,
-  handler: (connection: WebSocket, req: FastifyRequest) => {
+  handler: (connection: WebSocket, req: FastifyRequest, res: FastifyReply) => {
     const token = req.cookies.accessToken!;
-    let payload = app.jwt.jwt1.verify(token) as Payload;
+    try {
+      var payload = app.jwt.jwt1.verify(token) as Payload;
+    } catch (error) {
+      res.status(401).send({ error: "JWT_EXPIRED" });
+      return;
+    }
     const userId = payload.id;
     clients.set(userId, connection);
     console.log("Connection Done with => " + payload.username);
-
     connection.on("message", (message: Buffer) => {
       try {
         const msgPacket: websocketPacket = JSON.parse(message.toString());
