@@ -57,6 +57,7 @@ export default function Dashboard() {
                         return axios(originalReq);
                     } catch (error) {
                         console.log(error);
+                        navigate('/login');
                     }
                 }
                 return Promise.reject(error);

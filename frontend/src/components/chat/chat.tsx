@@ -13,7 +13,7 @@ import ChatBubble from "./chatBubble";
 import { v4 as uuidv4 } from "uuid";
 import { useWebSocket } from "./websocketContext";
 import type { notificationPacket, websocketPacket } from "../../../../backend/src/models/webSocket.model";
-import { useParams } from "react-router";
+import { useParams, useNavigate } from "react-router";
 
 const Chat = () => {
   const { username } = useParams<{ username?: string }>();
@@ -52,6 +52,8 @@ const Chat = () => {
                         return axios(originalReq);
                     } catch (error) {
                         console.log(error);
+                        const navigate = useNavigate();
+                        navigate('/login');
                     }
                 }
                 return Promise.reject(error);
@@ -78,6 +80,8 @@ const Chat = () => {
                         return axios(originalReq);
                     } catch (error) {
                         console.log(error);
+                        const navigate = useNavigate();
+                        navigate('/login');
                     }
                 }
                 return Promise.reject(error);
@@ -122,6 +126,8 @@ const Chat = () => {
                         return axios(originalReq);
                     } catch (error) {
                         console.log(error);
+                        const navigate = useNavigate();
+                        navigate('/login');
                     }
                 }
                 return Promise.reject(error);
@@ -162,6 +168,8 @@ const Chat = () => {
                         return axios(originalReq);
                     } catch (error) {
                         console.log(error);
+                        const navigate = useNavigate();
+                        navigate('/login');
                     }
                 }
                 return Promise.reject(error);
