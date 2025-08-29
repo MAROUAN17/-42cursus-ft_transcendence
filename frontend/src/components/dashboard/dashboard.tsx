@@ -20,18 +20,17 @@ export default function Dashboard() {
       });
   }
 
-  function handleLogout(e: React.MouseEvent<HTMLButtonElement>) {
-    e.preventDefault();
-    axios
-      .post("https://localhost:5000/logout", {}, { withCredentials: true })
-      .then(function (res) {
-        console.log(res);
-        navigate("/login");
-      })
-      .catch(function (err) {
-        console.log(err.response.data.error);
-      });
-  }
+    function handleLogout(e: React.MouseEvent<HTMLButtonElement>) {
+        e.preventDefault();
+        axios.post('https://localhost:5000/logout', {}, { withCredentials: true })
+            .then(function(res) {
+                console.log(res);
+                navigate("/login");
+            })
+            .catch(function(err) {
+                console.log(err.response);
+            })
+    }
 
   useEffect(() => {
     axios

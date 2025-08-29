@@ -7,9 +7,10 @@ export const jwtPlugin = fp(async function (fastify, opts) {
   app.decorate("jwtAuth", async function (req: FastifyRequest, res: FastifyReply): Promise<any> {
     try {
       const accessToken = req.cookies.accessToken;
-      await app.jwt.jwt1.verify(accessToken);
-    } catch (err) {
-      try {
+      const data = await app.jwt.jwt1.verify(accessToken);
+      const remainTime = data.exp - (Date.now() / 1000);
+
+      if (remainTime < 20) {
         const refreshToken = req.cookies.refreshToken;
         const infos = (await app.jwt.jwt2.verify(refreshToken)) as userInfos | undefined;
         const newAccessToken = app.jwt.jwt1.sign(
@@ -23,9 +24,9 @@ export const jwtPlugin = fp(async function (fastify, opts) {
           sameSite: "lax",
           maxAge: 5000000,
         });
-      } catch (err: any) {
-        res.code(401).send({ error: "Unauthorized" });
       }
+    } catch (err) {
+      res.code(401).send({ error: "Unauthorized" });
     }
   });
 });

@@ -12,7 +12,6 @@ import cors from "@fastify/cors";
 import { chatService } from "./services/chat.service.js";
 import { getUsers } from "./services/getUsers.service.js";
 import { oauthPlugin } from "./plugins/oauth.plugin.js";
-import nodemailer from "nodemailer";
 import {mailTransporter} from "./plugins/nodemailer.plugin.js";
 
 const httpsOptions = {
@@ -21,7 +20,7 @@ const httpsOptions = {
 };
 
 const app = Fastify({
-  logger: false,
+  logger: true,
   https: httpsOptions
 });
 
@@ -61,10 +60,9 @@ async function start(): Promise<void> {
   });
   await app.register(oauthPlugin);
   await app.register(websocketPlugin);
-  await app.register(App);
   await app.register(mailTransporter);
+  await app.register(App);
 
-  // app.get("/send-message", { websocket: true }, chatService.handler);
   await app.listen({
     host: "0.0.0.0",
     port: Number(process.env.PORT) || 8080,

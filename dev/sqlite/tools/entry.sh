@@ -15,7 +15,9 @@ sqlite3 "$DB_NAME" <<EOF
         username TEXT NOT NULL,
         email TEXT NOT NULL,
         password TEXT,
-        secret_otp TEXT
+        secret_otp TEXT,
+        reset_flag BOOLEAN,
+        reset_time INTEGER
     );
     CREATE TABLE IF NOT EXISTS messages (
         id INTEGER PRIMARY KEY,

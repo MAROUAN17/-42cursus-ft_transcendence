@@ -13,7 +13,6 @@ export const verify2FA = async (req: FastifyRequest<{Body: LoginBody}>, res: Fas
 
     const userInfos = await app.jwt.jwt0.verify(loginToken) as userInfos | undefined;
 
-    console.log(`user email -> ${userInfos?.email}`);
     const secret = authenticator.generateSecret();
     //insert secret into the db
     app.db
@@ -24,7 +23,6 @@ export const verify2FA = async (req: FastifyRequest<{Body: LoginBody}>, res: Fas
         .prepare('SELECT * FROM PLAYERS WHERE email = ?')
         .get(userInfos?.email) as User;
 
-    console.log("secret otp -> ", user.secret_otp);
     const otpath = authenticator.keyuri(userInfos?.email!, "OTP APP", user.secret_otp);
     const qrCode = await qrcode.toDataURL(otpath);
 
@@ -54,7 +52,7 @@ export const verify2FAToken = async (req: FastifyRequest<{Body: LoginBody}>, res
         if (isValid) {
             //sign new JWT tokens
             const accessToken = app.jwt.jwt1.sign({ id:user.id, email:user.email, username:user.username }, { expiresIn: '10s' });
-            const refreshToken = app.jwt.jwt2.sign({ id:user.id, email:user.email, username:user.username }, { expiresIn: '1d' });
+            const refreshToken = app.jwt.jwt2.sign({ id:user.id, email:user.email, username:user.username }, { expiresIn: '15m' });
         
             //set JWT token as cookie
             res.setCookie('accessToken', accessToken, {
@@ -62,7 +60,7 @@ export const verify2FAToken = async (req: FastifyRequest<{Body: LoginBody}>, res
                 secure: true,
                 httpOnly: true, 
                 sameSite: 'lax',
-                maxAge: 20
+                maxAge: 10
             });
 
             return res.setCookie('refreshToken', refreshToken, {
@@ -70,7 +68,7 @@ export const verify2FAToken = async (req: FastifyRequest<{Body: LoginBody}>, res
                 secure: true,
                 httpOnly: true, 
                 sameSite: 'lax',
-                maxAge: 10000000
+                maxAge: 900
             }).status(200).send({ message: "Valid OTP code" });
         }
         return res.status(401).send({ error: "Invalid otp code" });  
