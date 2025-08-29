@@ -39,6 +39,23 @@ const Chat = () => {
       .catch((error) => {
         console.error("Error fetching messages:", error);
       });
+    axios.interceptors.response.use(
+            (response) => {return response},
+            async(error) => {
+                const originalReq = error.config;
+
+                if (error.response.status == 401 && error.response.data.error == "JWT_EXPIRED") {
+                    originalReq._retry = false;
+                    try {
+                        const res  = await axios.post('https://localhost:5000/jwt/new', {}, { withCredentials: true });
+                        console.log(res);
+                        return axios(originalReq);
+                    } catch (error) {
+                        console.log(error);
+                    }
+                }
+                return Promise.reject(error);
+            })
   }, [targetUser]);
 
   useEffect(() => {
@@ -48,6 +65,23 @@ const Chat = () => {
         currUserRef.current = res.data.infos;
       })
       .catch((error) => console.error("Error fetching user:", error));
+      axios.interceptors.response.use(
+            (response) => {return response},
+            async(error) => {
+                const originalReq = error.config;
+
+                if (error.response.status == 401 && error.response.data.error == "JWT_EXPIRED") {
+                    originalReq._retry = false;
+                    try {
+                        const res  = await axios.post('https://localhost:5000/jwt/new', {}, { withCredentials: true });
+                        console.log(res);
+                        return axios(originalReq);
+                    } catch (error) {
+                        console.log(error);
+                    }
+                }
+                return Promise.reject(error);
+            })
     const addedHandled = addHandler("chat", handleChat);
     return addedHandled;
   }, []);
@@ -75,6 +109,23 @@ const Chat = () => {
         setUsers(res.data.data);
       })
       .catch((error) => console.error("Error fetching users:", error));
+      axios.interceptors.response.use(
+            (response) => {return response},
+            async(error) => {
+                const originalReq = error.config;
+
+                if (error.response.status == 401 && error.response.data.error == "JWT_EXPIRED") {
+                    originalReq._retry = false;
+                    try {
+                        const res  = await axios.post('https://localhost:5000/jwt/new', {}, { withCredentials: true });
+                        console.log(res);
+                        return axios(originalReq);
+                    } catch (error) {
+                        console.log(error);
+                    }
+                }
+                return Promise.reject(error);
+            })
   }, [username]);
   useEffect(() => {
     const observer = new IntersectionObserver((entries) => {
@@ -98,6 +149,23 @@ const Chat = () => {
     document.querySelectorAll("#message").forEach((msg) => {
       observer.observe(msg);
     });
+    axios.interceptors.response.use(
+            (response) => {return response},
+            async(error) => {
+                const originalReq = error.config;
+
+                if (error.response.status == 401 && error.response.data.error == "JWT_EXPIRED") {
+                    originalReq._retry = false;
+                    try {
+                        const res  = await axios.post('https://localhost:5000/jwt/new', {}, { withCredentials: true });
+                        console.log(res);
+                        return axios(originalReq);
+                    } catch (error) {
+                        console.log(error);
+                    }
+                }
+                return Promise.reject(error);
+            })
   }, [messages]);
   function handleChat(packet: websocketPacket) {
     if (packet.type != "chat") return;

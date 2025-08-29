@@ -7,6 +7,6 @@ export const fetchUser = async (req: FastifyRequest, res: FastifyReply) => {
         const infos = app.jwt.jwt1.decode(accessToken!) as string | null;
         res.status(200).send({ infos: infos });
     } catch (error) {
-        res.status(401).send({error: "Unauthorized"});
+        res.status(401).send({ error: "JWT_EXPIRED" });
     }
 }

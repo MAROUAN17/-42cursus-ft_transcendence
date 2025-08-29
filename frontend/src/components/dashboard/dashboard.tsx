@@ -39,7 +39,26 @@ export default function Dashboard() {
             })
             .catch(function(err) {
                 console.log(err.response.data);
-                navigate('/login');
+                if (err.response.status == 401 && err.response.data.error == "Unauthorized")
+                    navigate('/login');
+            })
+
+        axios.interceptors.response.use(
+            (response) => {return response},
+            async(error) => {
+                const originalReq = error.config;
+
+                if (error.response.status == 401 && error.response.data.error == "JWT_EXPIRED") {
+                    originalReq._retry = false;
+                    try {
+                        const res  = await axios.post('https://localhost:5000/jwt/new', {}, { withCredentials: true });
+                        console.log(res);
+                        return axios(originalReq);
+                    } catch (error) {
+                        console.log(error);
+                    }
+                }
+                return Promise.reject(error);
             })
     }, []);
 
