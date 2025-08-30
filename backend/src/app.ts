@@ -9,6 +9,7 @@ import websocketPlugin from "@fastify/websocket";
 import { chatRoutes } from "./routes/chat.routes.js";
 import { homeRoutes } from "./routes/home.routes.js";
 import app from "./server.js";
+import { gameRoutes } from "./routes/game.route.js";
 
 
 export default async function App(fastify: FastifyInstance, opts: FastifyPluginOptions): Promise<void> {
@@ -28,4 +29,5 @@ export default async function App(fastify: FastifyInstance, opts: FastifyPluginO
 
     //routes of home page
     await app.register(homeRoutes);
+    app.register(gameRoutes);
 }

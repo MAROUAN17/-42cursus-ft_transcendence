@@ -113,7 +113,7 @@ export default function Dashboard() {
           <img src="/src/assets/paddle.png" className="w-[400px] h-[400px]" />
         </div>
         <div className="bg-compBg overflow-hidden relative basis-2/5 grow rounded-[30px]">
-          <div className="flex flex-col justify-between p-10 relative gap-6 z-10">
+          <div className="flex flex-col justify-between p-10 relative gap-6 z-10 w-fit">
             <div className="">
               <h2 className="text-white font-bold text-[60px] h-fit">30</h2>
               <p className="text-white text-[30px] mt-[-15px]">Games Played</p>

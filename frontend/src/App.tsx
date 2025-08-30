@@ -9,6 +9,9 @@ import Game from './components/game/game'
 import Login from "./components/user/login"
 import Register from "./components/user/register"
 import Chat from './components/chat/chat';
+
+import RGame from './components/game/remote/Game';
+
 import Dashboard from './components/dashboard/dashboard';
 import Page2FA from "./components/user/2fa";
 import checkAuthLoader from "../src/loaders/checkAuth";
@@ -62,6 +65,10 @@ export default function App() {
       path: '/reset-password/new',
       Component: NewPassword,
     },
+    {
+      path: '/remote_game',
+      Component: RGame
+    }
   ]);
   return <RouterProvider router={router} />;
 }

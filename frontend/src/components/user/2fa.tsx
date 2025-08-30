@@ -4,6 +4,11 @@ import axios from "axios";
 import { useNavigate } from "react-router";
 
 function Page2FA() {
+    const [qrGenerated, setQrGenerated] = useState<boolean>(false);
+    const [errorMssg, setErrorMssg] = useState<string>('');
+    const [errorFlag, setErrorFlag] = useState<boolean>(false);
+    const [nbrQrcode, setNbrQrcode] = useState<number>(0);
+    const [timerVerify, setTimerVerify] = useState<number>(180);
     const [qrCode, setQrCode] = useState<string>("");
     const [firstNbr, setFirstNbr] = useState<string>('');
     const [secondNbr, setSecondNbr] = useState<string>('');
@@ -77,15 +82,45 @@ function Page2FA() {
             })
     }
 
+    const formatTime = (timerVerify: number) => {
+        const minutes = Math.floor(timerVerify / 60);
+        const seconds = timerVerify % 60;
+        return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    }
     useEffect(() => {
-        renderQRcode();
-        document.getElementById('otpn1')?.focus();
+        if (!qrGenerated) {
+            const intervId  = setInterval(() => {
+                setTimerVerify((prevTime) => {
+                    if (prevTime < 0) {
+                        clearInterval(intervId);
+                        return 0;
+                    }
+                    return (prevTime - 1);
+                });
+            }, 1000)
+            renderQRcode();
+            setNbrQrcode(nbrQrcode + 1);
+            input1Ref.current?.focus();
+            setQrGenerated(true);
+            return () => {clearInterval(intervId)}
+        } else {
+            setErrorFlag(true);
+            setErrorMssg('Qr code already generated');
+        }
+        console.log(`is qr generated -> `, qrGenerated);
     }, []);
     return (
         <div className="bg-gameBg h-screen font-poppins">
             <div className="">
                 <a href="/login"><img src="/arrow-icon.png" width="80px" height="80px" alt="" /></a>
             </div>
+            {errorFlag ? 
+                <div>
+                    <p className="text-red-900 font-bold text-xl">{errorMssg}</p>
+                </div>
+                :
+                <div></div>
+            }
             <div className="text-center align-center space-y-9 mt-36">
                 <div className="space-y-5">
                     <div className="flex justify-center">
@@ -117,6 +152,9 @@ function Page2FA() {
                 <button type="submit" className="bg-neon text-white text-xl px-[270px] py-3 rounded-lg font-semibold">Continue</button>
             </div>
             </form>
+            <div className="text-center mt-12">
+                <p className="text-white font-bold text-2xl">{formatTime(timerVerify)}</p>
+            </div>
         </div>
     )
 }

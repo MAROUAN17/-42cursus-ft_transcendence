@@ -52,7 +52,7 @@ export const oauthCallback = async (req: FastifyRequest, res: FastifyReply) => {
         maxAge: 10
     });
 
-    return res.status(200).setCookie('refreshToken', refreshToken, {
+    res.setCookie('refreshToken', refreshToken, {
         path: '/',
         secure: true,
         httpOnly: true, 
