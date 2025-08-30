@@ -17,7 +17,7 @@ const PADDLE_WIDTH = 18;
 const PADDLE_HEIGHT = 120;
 
 export const gameRoutes: FastifyPluginAsync = async (fastify) => {
-  await fastify.register(websocketPlugin);
+  // await fastify.register(websocketPlugin);
 
   fastify.get("/game", { websocket: true }, handleGameConnection)
 

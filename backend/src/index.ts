@@ -1,8 +1,6 @@
 import fastify from "fastify";
 import websocketPlugin from "@fastify/websocket";
 import { v4 as uuidv4 } from "uuid";
-import type { Socket } from "dgram";
-import { json } from "stream/consumers";
 
 const server = fastify({ logger: false });
 const PORT = 5000;
@@ -20,9 +18,6 @@ server.get("/send-message", { websocket: true }, (connection, req) => {
   clients.set(id, connection);
   console.log("Connection Done with => " + id);
   broadcast("hey!");
-  // for (let client of server.websocketServer.clients) {
-  //   console.log("I'm client");
-  // }
   connection.on("message", (message: any) => {
     console.log("received : " + message.toString() + " from : " + id);
     try {

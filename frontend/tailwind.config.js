@@ -11,6 +11,7 @@ module.exports = {
         'neon' : '#B13BFF',
         'bat2Color': '#FFCC00',
         'darkBg' : '#14121C',
+        'darkBg' : '#090040',
         'compBg' : '#471396'
       },
       fontFamily: {

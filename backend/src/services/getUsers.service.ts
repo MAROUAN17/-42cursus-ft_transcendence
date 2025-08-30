@@ -1,5 +1,5 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
-import type {User} from "../models/user.js"
+import type {User} from "../models/user.model.js"
 import app from "../server.js"
 
 export const getUsers = async (req: FastifyRequest, res: FastifyReply) => {

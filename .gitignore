@@ -7,6 +7,10 @@
 /backend/dist
 /backend/.env
 
+
+/ssl
+
+
 # testing
 /coverage
 
