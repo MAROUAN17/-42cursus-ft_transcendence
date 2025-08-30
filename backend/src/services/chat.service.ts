@@ -153,6 +153,7 @@ export const chatService = {
       return;
     }
     const userId = payload.id;
+    console.log(`user id -> `, userId);
     clients.set(userId, connection);
     console.log("Connection Done with => " + payload.username);
     connection.on("message", (message: Buffer) => {

@@ -9,7 +9,7 @@ import type { User } from "../../../../backend/src/models/user.model";
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import type { UsersLastMessage, messagePacket } from "../../../../backend/src/models/chat";
-import ChatBubble from "./ChatBubble";
+import ChatBubble from "./chatBubble";
 import { v4 as uuidv4 } from "uuid";
 import { useWebSocket } from "./websocketContext";
 import type { notificationPacket, websocketPacket } from "../../../../backend/src/models/webSocket.model";
@@ -25,6 +25,7 @@ const Chat = () => {
   const [searchInput, setSearchInput] = useState<string>("");
   const currUserRef = useRef(currUser);
   const targetUserRef = useRef(targetUser);
+  const navigate = useNavigate();
 
   const { send, addHandler } = useWebSocket();
   useEffect(() => {
@@ -39,6 +40,9 @@ const Chat = () => {
       .catch((error) => {
         console.error("Error fetching messages:", error);
       });
+  }, [targetUser]);
+
+  useEffect(() => {
     axios.interceptors.response.use(
       (response) => {
         return response;
@@ -46,21 +50,20 @@ const Chat = () => {
       async (error) => {
         const originalReq = error.config;
 
-                if (error.response.status == 401 && error.response.data.error == "JWT_EXPIRED") {
-                    originalReq._retry = false;
-                    try {
-                        const res  = await axios.post('https://localhost:5000/jwt/new', {}, { withCredentials: true });
-                        console.log(res);
-                        return axios(originalReq);
-                    } catch (error) {
-                        console.log(error);
-                        const navigate = useNavigate();
-                        navigate('/login');
-                    }
-                }
-                return Promise.reject(error);
-            })
-  }, [targetUser]);
+        if (error.response.status == 401 && error.response.data.error == "JWT_EXPIRED") {
+            originalReq._retry = false;
+            try {
+                const res  = await axios.post('https://localhost:5000/jwt/new', {}, { withCredentials: true });
+                console.log(res);
+                return axios(originalReq);
+            } catch (error) {
+                console.log(error);
+                navigate('/login');
+            }
+        }
+        return Promise.reject(error);
+      })
+  }, []);
 
   useEffect(() => {
     axios("https://localhost:5000/user", { withCredentials: true })

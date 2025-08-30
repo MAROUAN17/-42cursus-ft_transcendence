@@ -52,19 +52,19 @@ export default function Dashboard() {
       async (error) => {
         const originalReq = error.config;
 
-                if (error.response.status == 401 && error.response.data.error == "JWT_EXPIRED") {
-                    originalReq._retry = false;
-                    try {
-                        const res  = await axios.post('https://localhost:5000/jwt/new', {}, { withCredentials: true });
-                        console.log(res);
-                        return axios(originalReq);
-                    } catch (error) {
-                        console.log(error);
-                        navigate('/login');
-                    }
-                }
-                return Promise.reject(error);
-            })
+        if (error.response.status == 401 && error.response.data.error == "JWT_EXPIRED") {
+            originalReq._retry = false;
+            try {
+                const res  = await axios.post('https://localhost:5000/jwt/new', {}, { withCredentials: true });
+                console.log(res);
+                return axios(originalReq);
+            } catch (error) {
+                console.log(error);
+                navigate('/login');
+            }
+        }
+        return Promise.reject(error);
+      })
     }, []);
 
   return (
