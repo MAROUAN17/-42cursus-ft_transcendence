@@ -20,48 +20,52 @@ export default function Dashboard() {
       });
   }
 
-    function handleLogout(e: React.MouseEvent<HTMLButtonElement>) {
-        e.preventDefault();
-        axios.post('https://localhost:5000/logout', {}, { withCredentials: true })
-            .then(function(res) {
-                console.log(res);
-                navigate("/login");
-            })
-            .catch(function(err) {
-                console.log(err.response);
-            })
-    }
+  function handleLogout(e: React.MouseEvent<HTMLButtonElement>) {
+    e.preventDefault();
+    axios
+      .post("https://localhost:5000/logout", {}, { withCredentials: true })
+      .then(function (res) {
+        console.log(res);
+        navigate("/login");
+      })
+      .catch(function (err) {
+        console.log(err.response);
+      });
+  }
 
-    useEffect(() => {
-        axios.get('https://localhost:5000/user', { withCredentials: true })
-            .then(function(res) {
-                console.log(res.data.infos);
-                setUser(res.data.infos);
-            })
-            .catch(function(err) {
-                console.log(err.response.data);
-                if (err.response.status == 401 && err.response.data.error == "Unauthorized")
-                    navigate('/login');
-            })
+  useEffect(() => {
+    axios
+      .get("https://localhost:5000/user", { withCredentials: true })
+      .then(function (res) {
+        console.log(res.data.infos);
+        setUser(res.data.infos);
+      })
+      .catch(function (err) {
+        console.log(err.response.data);
+        if (err.response.status == 401 && err.response.data.error == "Unauthorized") navigate("/login");
+      });
 
-        axios.interceptors.response.use(
-            (response) => {return response},
-            async(error) => {
-                const originalReq = error.config;
+    axios.interceptors.response.use(
+      (response) => {
+        return response;
+      },
+      async (error) => {
+        const originalReq = error.config;
 
-                if (error.response.status == 401 && error.response.data.error == "JWT_EXPIRED") {
-                    originalReq._retry = false;
-                    try {
-                        const res  = await axios.post('https://localhost:5000/jwt/new', {}, { withCredentials: true });
-                        console.log(res);
-                        return axios(originalReq);
-                    } catch (error) {
-                        console.log(error);
-                    }
-                }
-                return Promise.reject(error);
-            })
-    }, []);
+        if (error.response.status == 401 && error.response.data.error == "JWT_EXPIRED") {
+          originalReq._retry = false;
+          try {
+            const res = await axios.post("https://localhost:5000/jwt/new", {}, { withCredentials: true });
+            console.log(res);
+            return axios(originalReq);
+          } catch (error) {
+            console.log(error);
+          }
+        }
+        return Promise.reject(error);
+      }
+    );
+  }, []);
 
   return (
     <div className="font-poppins pl-5 flex flex-col ">
@@ -69,8 +73,8 @@ export default function Dashboard() {
         Hi, <span className="text-neon">{user.username}</span>
       </h1>
       <div className="flex w-full gap-5">
-        <div className="bg-compBg flex flex-row w-auto basis-3/5 rounded-[30px]">
-          <div className="flex flex-col gap-5 p-10">
+        <div className="bg-compBg flex flex-row w-auto h-fit basis-3/5 rounded-[30px]">
+          <div className="flex flex-col gap-5 justify-between p-10">
             <h2 className="text-white font-bold text-[30px]">Find Your Next Opponent!</h2>
             <p className="text-[#fff]/[50%]">
               Jump into matchmaking and challenge players from around the world. Serve, smash, and score!

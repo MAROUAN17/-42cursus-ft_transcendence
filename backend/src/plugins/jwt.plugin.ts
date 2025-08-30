@@ -15,14 +15,14 @@ export const jwtPlugin = fp(async function (fastify, opts) {
         const infos = (await app.jwt.jwt2.verify(refreshToken)) as userInfos | undefined;
         const newAccessToken = app.jwt.jwt1.sign(
           { id: infos?.id, email: infos?.email, username: infos?.username, otp_verified: false },
-          { expiresIn: "1d" }
+          { expiresIn: "10s" }
         );
         res.setCookie("accessToken", newAccessToken, {
           path: "/",
           secure: true,
           httpOnly: true,
           sameSite: "lax",
-          maxAge: 5000000,
+          maxAge: 10,
         });
       } catch (error) {
         res.code(401).send({ error: "Unauthorized" });
