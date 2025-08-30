@@ -13,7 +13,7 @@ import ChatBubble from "./ChatBubble";
 import { v4 as uuidv4 } from "uuid";
 import { useWebSocket } from "./websocketContext";
 import type { notificationPacket, websocketPacket } from "../../../../backend/src/models/webSocket.model";
-import { useParams } from "react-router";
+import { useParams, useNavigate } from "react-router";
 
 const Chat = () => {
   const { username } = useParams<{ username?: string }>();
@@ -46,19 +46,20 @@ const Chat = () => {
       async (error) => {
         const originalReq = error.config;
 
-        if (error.response.status == 401 && error.response.data.error == "JWT_EXPIRED") {
-          originalReq._retry = false;
-          try {
-            const res = await axios.post("https://localhost:5000/jwt/new", {}, { withCredentials: true });
-            console.log(res);
-            return axios(originalReq);
-          } catch (error) {
-            console.log(error);
-          }
-        }
-        return Promise.reject(error);
-      }
-    );
+                if (error.response.status == 401 && error.response.data.error == "JWT_EXPIRED") {
+                    originalReq._retry = false;
+                    try {
+                        const res  = await axios.post('https://localhost:5000/jwt/new', {}, { withCredentials: true });
+                        console.log(res);
+                        return axios(originalReq);
+                    } catch (error) {
+                        console.log(error);
+                        const navigate = useNavigate();
+                        navigate('/login');
+                    }
+                }
+                return Promise.reject(error);
+            })
   }, [targetUser]);
 
   useEffect(() => {
@@ -75,19 +76,20 @@ const Chat = () => {
       async (error) => {
         const originalReq = error.config;
 
-        if (error.response.status == 401 && error.response.data.error == "JWT_EXPIRED") {
-          originalReq._retry = false;
-          try {
-            const res = await axios.post("https://localhost:5000/jwt/new", {}, { withCredentials: true });
-            console.log(res);
-            return axios(originalReq);
-          } catch (error) {
-            console.log(error);
-          }
-        }
-        return Promise.reject(error);
-      }
-    );
+                if (error.response.status == 401 && error.response.data.error == "JWT_EXPIRED") {
+                    originalReq._retry = false;
+                    try {
+                        const res  = await axios.post('https://localhost:5000/jwt/new', {}, { withCredentials: true });
+                        console.log(res);
+                        return axios(originalReq);
+                    } catch (error) {
+                        console.log(error);
+                        const navigate = useNavigate();
+                        navigate('/login');
+                    }
+                }
+                return Promise.reject(error);
+            })
     const addedHandled = addHandler("chat", handleChat);
     return addedHandled;
   }, []);
@@ -122,19 +124,20 @@ const Chat = () => {
       async (error) => {
         const originalReq = error.config;
 
-        if (error.response.status == 401 && error.response.data.error == "JWT_EXPIRED") {
-          originalReq._retry = false;
-          try {
-            const res = await axios.post("https://localhost:5000/jwt/new", {}, { withCredentials: true });
-            console.log(res);
-            return axios(originalReq);
-          } catch (error) {
-            console.log(error);
-          }
-        }
-        return Promise.reject(error);
-      }
-    );
+                if (error.response.status == 401 && error.response.data.error == "JWT_EXPIRED") {
+                    originalReq._retry = false;
+                    try {
+                        const res  = await axios.post('https://localhost:5000/jwt/new', {}, { withCredentials: true });
+                        console.log(res);
+                        return axios(originalReq);
+                    } catch (error) {
+                        console.log(error);
+                        const navigate = useNavigate();
+                        navigate('/login');
+                    }
+                }
+                return Promise.reject(error);
+            })
   }, [username]);
   useEffect(() => {
     const observer = new IntersectionObserver((entries) => {
@@ -165,19 +168,20 @@ const Chat = () => {
       async (error) => {
         const originalReq = error.config;
 
-        if (error.response.status == 401 && error.response.data.error == "JWT_EXPIRED") {
-          originalReq._retry = false;
-          try {
-            const res = await axios.post("https://localhost:5000/jwt/new", {}, { withCredentials: true });
-            console.log(res);
-            return axios(originalReq);
-          } catch (error) {
-            console.log(error);
-          }
-        }
-        return Promise.reject(error);
-      }
-    );
+                if (error.response.status == 401 && error.response.data.error == "JWT_EXPIRED") {
+                    originalReq._retry = false;
+                    try {
+                        const res  = await axios.post('https://localhost:5000/jwt/new', {}, { withCredentials: true });
+                        console.log(res);
+                        return axios(originalReq);
+                    } catch (error) {
+                        console.log(error);
+                        const navigate = useNavigate();
+                        navigate('/login');
+                    }
+                }
+                return Promise.reject(error);
+            })
   }, [messages]);
   function handleChat(packet: websocketPacket) {
     if (packet.type != "chat") return;
