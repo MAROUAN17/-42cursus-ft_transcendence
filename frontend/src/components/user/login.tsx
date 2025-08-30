@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, type ChangeEvent, type FormEvent } from "react";
+import { useEffect, useState, useRef, type ChangeEvent, type FormEvent, type ButtonHTMLAttributes } from "react";
 import { redirect, Navigate, useNavigate } from "react-router";
 import axios from "axios";
 import type { messagePacket } from "../../../../backend/src/models/chat";
@@ -15,6 +15,16 @@ function Login() {
     const [errorMssg, setErrorMssg] = useState("");
     const [errorFlag, setErrorFlag] = useState(false);
     const [forgetFlag, setForgetFlag] = useState(false);
+
+    const handle42Login = (e: React.MouseEvent<HTMLButtonElement>) => {
+        axios.get('https://localhost:5000/intra42/login', { withCredentials: true })
+            .then(function(res) {
+                console.log(res);
+            })
+            .catch(function(err) {
+                console.log(err);
+            })
+    }
 
     const handleForm = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
