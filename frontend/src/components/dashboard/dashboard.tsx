@@ -51,7 +51,6 @@ export default function Dashboard() {
       },
       async (error) => {
         const originalReq = error.config;
-
         if (error.response.status == 401 && error.response.data.error == "JWT_EXPIRED") {
             originalReq._retry = false;
             try {

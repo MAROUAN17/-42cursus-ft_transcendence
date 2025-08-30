@@ -49,7 +49,6 @@ const Chat = () => {
       },
       async (error) => {
         const originalReq = error.config;
-
         if (error.response.status == 401 && error.response.data.error == "JWT_EXPIRED") {
             originalReq._retry = false;
             try {
@@ -57,7 +56,6 @@ const Chat = () => {
                 console.log(res);
                 return axios(originalReq);
             } catch (error) {
-                console.log(error);
                 navigate('/login');
             }
         }
