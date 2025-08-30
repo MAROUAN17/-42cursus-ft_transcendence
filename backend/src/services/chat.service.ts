@@ -142,10 +142,14 @@ export const chatService = {
   websocket: true,
   handler: (connection: WebSocket, req: FastifyRequest, res: FastifyReply) => {
     const token = req.cookies.accessToken!;
+    console.log("token -> ", token);
     try {
       var payload = app.jwt.jwt1.verify(token) as Payload;
+      console.log('token verified');
     } catch (error) {
+      console.log("fail ws inside server")
       res.status(401).send({ error: "JWT_EXPIRED" });
+      connection.close();
       return;
     }
     const userId = payload.id;

@@ -9,7 +9,7 @@ import type { User } from "../../../../backend/src/models/user.model";
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import type { UsersLastMessage, messagePacket } from "../../../../backend/src/models/chat";
-import ChatBubble from "./chatBubble";
+import ChatBubble from "./ChatBubble";
 import { v4 as uuidv4 } from "uuid";
 import { useWebSocket } from "./websocketContext";
 import type { notificationPacket, websocketPacket } from "../../../../backend/src/models/webSocket.model";
@@ -40,9 +40,11 @@ const Chat = () => {
         console.error("Error fetching messages:", error);
       });
     axios.interceptors.response.use(
-            (response) => {return response},
-            async(error) => {
-                const originalReq = error.config;
+      (response) => {
+        return response;
+      },
+      async (error) => {
+        const originalReq = error.config;
 
                 if (error.response.status == 401 && error.response.data.error == "JWT_EXPIRED") {
                     originalReq._retry = false;
@@ -67,10 +69,12 @@ const Chat = () => {
         currUserRef.current = res.data.infos;
       })
       .catch((error) => console.error("Error fetching user:", error));
-      axios.interceptors.response.use(
-            (response) => {return response},
-            async(error) => {
-                const originalReq = error.config;
+    axios.interceptors.response.use(
+      (response) => {
+        return response;
+      },
+      async (error) => {
+        const originalReq = error.config;
 
                 if (error.response.status == 401 && error.response.data.error == "JWT_EXPIRED") {
                     originalReq._retry = false;
@@ -113,10 +117,12 @@ const Chat = () => {
         setUsers(res.data.data);
       })
       .catch((error) => console.error("Error fetching users:", error));
-      axios.interceptors.response.use(
-            (response) => {return response},
-            async(error) => {
-                const originalReq = error.config;
+    axios.interceptors.response.use(
+      (response) => {
+        return response;
+      },
+      async (error) => {
+        const originalReq = error.config;
 
                 if (error.response.status == 401 && error.response.data.error == "JWT_EXPIRED") {
                     originalReq._retry = false;
@@ -156,9 +162,11 @@ const Chat = () => {
       observer.observe(msg);
     });
     axios.interceptors.response.use(
-            (response) => {return response},
-            async(error) => {
-                const originalReq = error.config;
+      (response) => {
+        return response;
+      },
+      async (error) => {
+        const originalReq = error.config;
 
                 if (error.response.status == 401 && error.response.data.error == "JWT_EXPIRED") {
                     originalReq._retry = false;
