@@ -9,7 +9,9 @@ import Game from './components/game/game'
 import Login from "./components/user/login"
 import Register from "./components/user/register"
 import Chat from './components/chat/chat';
-import tournament from './components/tournament/Tournament';
+import tournament from './components/gametyping/tournament/Tournament';
+import listTournament from './components/gametyping/listTournament/listTournament';
+
 import RGame from './components/game/remote/Game';
 
 import Dashboard from './components/dashboard/dashboard';
@@ -19,7 +21,7 @@ import NewPassword from "./components/user/newPassword";
 import ResetPasswordForm from "./components/user/passwordResetForm";
 import { WebSocketProvider } from "./components/chat/websocketContext";
 import Layout from "./components/layout/layout";
-import type Tournament from './components/tournament/Tournament';
+import type Tournament from './components/gametyping/listTournament/listTournament';
 
 export default function App() {
   let router = createBrowserRouter([
@@ -73,6 +75,9 @@ export default function App() {
     {
       path: '/tournament',
       Component: tournament
+    },{
+      path:'/listtournament',
+      Component: listTournament
     }
   ]);
   return <RouterProvider router={router} />;
