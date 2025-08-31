@@ -19,6 +19,7 @@ import NewPassword from "./components/user/newPassword";
 import ResetPasswordForm from "./components/user/passwordResetForm";
 import { WebSocketProvider } from "./components/chat/websocketContext";
 import Layout from "./components/layout/layout";
+import Setup2FA from "./components/user/setup2FA";
 
 export default function App() {
   let router = createBrowserRouter([
@@ -56,6 +57,10 @@ export default function App() {
       path: "/verify",
       Component: Page2FA,
       loader: checkAuthLoader,
+    },
+    {
+      path: "/2fa/setup",
+      Component: Setup2FA,
     },
     {
       path: '/reset-password',

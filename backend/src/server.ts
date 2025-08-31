@@ -20,7 +20,7 @@ const httpsOptions = {
 };
 
 const app = Fastify({
-  logger: false,
+  logger: true,
   https: httpsOptions
 });
 

@@ -56,6 +56,15 @@ export default function Dashboard() {
         if (err.response.status == 401 && err.response.data.error == "Unauthorized") navigate("/login");
       });
 
+      axios
+      .get("https://localhost:5000/users", { withCredentials: true })
+      .then(function (res) {
+        console.log(res.data);
+      })
+      .catch(function (err) {
+        console.log(err);
+      });
+
     axios.interceptors.response.use(
       (response) => {
         return response;

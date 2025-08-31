@@ -5,6 +5,7 @@ export interface User {
     email: string,
     password: string,
     secret_otp: string,
+    twoFA_flag: boolean
 };
 
 export interface LoginBody {
