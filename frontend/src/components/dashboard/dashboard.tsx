@@ -128,8 +128,6 @@ export default function Dashboard() {
           <div className="absolute inset-0 opacity-40 z-0">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart
-                width={600}
-                height={300}
                 data={data}
                 margin={{
                   top: 10,
