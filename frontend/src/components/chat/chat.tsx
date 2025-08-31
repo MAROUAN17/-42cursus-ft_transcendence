@@ -10,7 +10,7 @@ import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import type { UsersLastMessage, messagePacket } from "../../../../backend/src/models/chat";
 import ChatBubble from "./chatBubble";
-import { v4 as uuidv4 } from "uuid";
+// import { v4 as uuidv4 } from "uuid";
 import { useWebSocket } from "./websocketContext";
 import type { notificationPacket, websocketPacket } from "../../../../backend/src/models/webSocket.model";
 import { useParams, useNavigate } from "react-router";
