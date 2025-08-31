@@ -1,10 +1,15 @@
-export default function Header() {
+interface HeaderProps {
+  search: string;
+  setSearch: (value: string) => void;
+}
+
+export default function Header({ search, setSearch }: HeaderProps) {
   return (
     <header className="bg-gradient-to-b from-[#1e0a4f] to-[#0a0035] text-white p-8 w-full">
       <div className="max-w-6xl mx-auto">
-    <div className="flex justify-center">
-      <h1 className="text-5xl font-bold mb-8">GLOBAL TOURNAMENTS</h1>
-    </div>
+        <div className="flex justify-center">
+          <h1 className="text-5xl font-bold mb-8">GLOBAL TOURNAMENTS</h1>
+        </div>
         <div className="flex items-center justify-between gap-4 mb-8">
           <div className="text-lg font-semibold">40 Available tournaments</div>
           <div className="flex items-center gap-4">
@@ -23,6 +28,8 @@ export default function Header() {
                 type="text"
                 placeholder="Search for tournament"
                 className="bg-transparent outline-none text-white placeholder-white w-full"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
               />
             </div>
             <button
