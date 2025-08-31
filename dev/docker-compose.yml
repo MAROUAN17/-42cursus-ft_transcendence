@@ -6,4 +6,4 @@ services:
     ports:
       - "8191:8191"
     volumes:
-      - ~/goinfre/db_data:/db
+      - /Users/b/goinfre/db_data:/db

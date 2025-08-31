@@ -13,10 +13,16 @@ const users = [
   { username: "User7", avatarUrl: "https://via.placeholder.com/150" },
   { username: "User8", avatarUrl: "https://via.placeholder.com/150" },
 ];
+
+const winners = [
+  { username: "Alice", avatarUrl: "https://randomuser.me/api/portraits/women/44.jpg", score: 5 },
+  { username: "Bob", avatarUrl: "https://randomuser.me/api/portraits/men/34.jpg", score: 4 },
+];
+
 export default function Tournament() {
   return (
     <div className="bg-[#0a0035] relative">
-      <div className="absolute top-[90px] left-[400px]">
+      <div className="absolute top-[40px] left-[600px]">
         <h1 className="font-poppins font-bold text-[70px] leading-[20px] tracking-[0.02em] uppercase text-white">
           test tournament
         </h1>
