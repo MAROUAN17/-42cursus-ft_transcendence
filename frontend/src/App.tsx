@@ -22,6 +22,7 @@ import ResetPasswordForm from "./components/user/passwordResetForm";
 import { WebSocketProvider } from "./components/chat/websocketContext";
 import Layout from "./components/layout/layout";
 import type Tournament from './components/gametyping/listTournament/listTournament';
+import Match from './components/match/Match';
 
 export default function App() {
   let router = createBrowserRouter([
@@ -71,6 +72,10 @@ export default function App() {
     {
       path: '/remote_game',
       Component: RGame
+    },
+    {
+      path: '/match',
+      Component: Match
     },
     {
       path: '/tournament',
