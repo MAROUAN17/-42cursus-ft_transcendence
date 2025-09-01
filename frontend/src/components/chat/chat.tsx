@@ -34,7 +34,6 @@ const Chat = () => {
       withCredentials: true,
     })
       .then((res) => {
-        console.log("messages -> ", res.data.data);
         setMessages(res.data.data);
       })
       .catch((error) => {
@@ -77,20 +76,21 @@ const Chat = () => {
       async (error) => {
         const originalReq = error.config;
 
-                if (error.response.status == 401 && error.response.data.error == "JWT_EXPIRED") {
-                    originalReq._retry = false;
-                    try {
-                        const res  = await axios.post('https://localhost:5000/jwt/new', {}, { withCredentials: true });
-                        console.log(res);
-                        return axios(originalReq);
-                    } catch (error) {
-                        console.log(error);
-                        const navigate = useNavigate();
-                        navigate('/login');
-                    }
-                }
-                return Promise.reject(error);
-            })
+        if (error.response.status == 401 && error.response.data.error == "JWT_EXPIRED") {
+          originalReq._retry = false;
+          try {
+            const res = await axios.post("https://localhost:5000/jwt/new", {}, { withCredentials: true });
+            console.log(res);
+            return axios(originalReq);
+          } catch (error) {
+            console.log(error);
+            const navigate = useNavigate();
+            navigate("/login");
+          }
+        }
+        return Promise.reject(error);
+      }
+    );
     const addedHandled = addHandler("chat", handleChat);
     return addedHandled;
   }, []);
@@ -113,6 +113,7 @@ const Chat = () => {
               user.user.id == foundUser.user.id ? (user.unreadCount = 0) : null
             );
             setTargetUser(foundUser.user);
+            targetUserRef.current = foundUser.user;
           }
         }
         setUsers(res.data.data);
@@ -125,20 +126,21 @@ const Chat = () => {
       async (error) => {
         const originalReq = error.config;
 
-                if (error.response.status == 401 && error.response.data.error == "JWT_EXPIRED") {
-                    originalReq._retry = false;
-                    try {
-                        const res  = await axios.post('https://localhost:5000/jwt/new', {}, { withCredentials: true });
-                        console.log(res);
-                        return axios(originalReq);
-                    } catch (error) {
-                        console.log(error);
-                        const navigate = useNavigate();
-                        navigate('/login');
-                    }
-                }
-                return Promise.reject(error);
-            })
+        if (error.response.status == 401 && error.response.data.error == "JWT_EXPIRED") {
+          originalReq._retry = false;
+          try {
+            const res = await axios.post("https://localhost:5000/jwt/new", {}, { withCredentials: true });
+            console.log(res);
+            return axios(originalReq);
+          } catch (error) {
+            console.log(error);
+            const navigate = useNavigate();
+            navigate("/login");
+          }
+        }
+        return Promise.reject(error);
+      }
+    );
   }, [username]);
   useEffect(() => {
     const observer = new IntersectionObserver((entries) => {
@@ -169,25 +171,33 @@ const Chat = () => {
       async (error) => {
         const originalReq = error.config;
 
-                if (error.response.status == 401 && error.response.data.error == "JWT_EXPIRED") {
-                    originalReq._retry = false;
-                    try {
-                        const res  = await axios.post('https://localhost:5000/jwt/new', {}, { withCredentials: true });
-                        console.log(res);
-                        return axios(originalReq);
-                    } catch (error) {
-                        console.log(error);
-                        const navigate = useNavigate();
-                        navigate('/login');
-                    }
-                }
-                return Promise.reject(error);
-            })
+        if (error.response.status == 401 && error.response.data.error == "JWT_EXPIRED") {
+          originalReq._retry = false;
+          try {
+            const res = await axios.post("https://localhost:5000/jwt/new", {}, { withCredentials: true });
+            console.log(res);
+            return axios(originalReq);
+          } catch (error) {
+            console.log(error);
+            const navigate = useNavigate();
+            navigate("/login");
+          }
+        }
+        return Promise.reject(error);
+      }
+    );
   }, [messages]);
   function handleChat(packet: websocketPacket) {
+    console.log("received msg -> ", packet);
     if (packet.type != "chat") return;
     const newMsg: messagePacket = packet.data;
     if (newMsg.type === "message") {
+      console.log("newMsg.recipient_id ", newMsg.recipient_id);
+      console.log("currUserRef.current?.id ", currUserRef.current?.id);
+      console.log("newMsg.sender_id ", newMsg.sender_id);
+      console.log("targetUserRef.current?.id ", targetUserRef.current?.id);
+      console.log("condition -> ", newMsg.recipient_id == currUserRef.current?.id);
+      console.log("condition 2 -> ", newMsg.sender_id == targetUserRef.current?.id);
       if (newMsg.recipient_id == currUserRef.current?.id && newMsg.sender_id == targetUserRef.current?.id) {
         setMessages((prev) => [newMsg, ...prev]);
       }
@@ -228,9 +238,7 @@ const Chat = () => {
         const index = prev.findIndex(
           (u) => u.user.id === newMsg.recipient_id && u.lastMessage?.tempId == newMsg.tempId
         );
-        console.log("not found in delivered");
         if (index == -1) return prev;
-        console.log("found in delivered");
         if (prev[index].lastMessage) {
           prev[index].lastMessage!.id = newMsg.id;
           prev[index].lastMessage!.isDelivered = true;

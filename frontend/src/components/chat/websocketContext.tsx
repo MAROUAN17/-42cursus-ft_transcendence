@@ -35,7 +35,6 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       if (handler) handler(data);
     };
     socketRef.current.onerror = function (err: any) {
-      console.log("Socket encountered error: ", err.message, "Closing socket");
       ws.close();
     };
   }
@@ -53,7 +52,6 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   }, []);
   function send(msg: string) {
     console.log("sending packet!");
-    console.log("socketRef.current.readyState -> ", socketRef.current?.readyState);
     if (socketRef.current && socketRef.current.readyState == WebSocket.OPEN) socketRef.current.send(msg);
   }
   function addHandler(packetType: string, handler: (data: websocketPacket) => void) {

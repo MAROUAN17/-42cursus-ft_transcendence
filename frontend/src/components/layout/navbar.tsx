@@ -9,7 +9,7 @@ import { TiDelete } from "react-icons/ti";
 import type { notificationPacket, websocketPacket } from "../../../../backend/src/models/webSocket.model";
 import { useWebSocket } from "../chat/websocketContext";
 import NotificationElement from "./notificationElement";
-import {useNavigate} from "react-router"
+import { useNavigate } from "react-router";
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -22,20 +22,22 @@ const Navbar = () => {
   const { send, addHandler } = useWebSocket();
 
   useEffect(() => {
-    axios.get("https://localhost:5000/notifications", { withCredentials: true })
+    axios
+      .get("https://localhost:5000/notifications", { withCredentials: true })
       .then((res) => {
         console.log("notifications -> ", res.data.data);
         setNotifications(res.data.data);
       })
       .catch((error) => {
-        console.error("Error fetching notifications:", error)
+        console.error("Error fetching notifications:", error);
       });
     const addedHandled = addHandler("notification", handleNotification);
     return addedHandled;
   }, []);
 
   useEffect(() => {
-    axios.get("https://localhost:5000/user", { withCredentials: true })
+    axios
+      .get("https://localhost:5000/user", { withCredentials: true })
       .then((res) => {
         setCurrUser(res.data.infos);
       })
@@ -111,7 +113,7 @@ const Navbar = () => {
               {hasUnread ? <div className="w-[5px] h-[5px] rounded-full bg-red-600 ml-[-4px] mt-[-2px]"></div> : null}
             </button>
             {isNotificationOpen ? (
-              <div className="absolute overflow-hidden right-0 mt-2 w-72  bg-[#28134d] rounded-lg shadow-lg">
+              <div className="absolute overflow-hidden right-0 mt-2 w-72 z-10  bg-[#28134d] rounded-lg shadow-lg">
                 <ul className="py-2">
                   {notifications?.length ? (
                     notifications.map((notification) => (

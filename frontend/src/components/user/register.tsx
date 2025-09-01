@@ -2,6 +2,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router";
+import Setup2FA from "./setup2FA";
 
 function Register() {
     const [email, setEmail] = useState("");
@@ -14,7 +15,9 @@ function Register() {
     const [emailErrorMssg, setEmailErrorMssg] = useState("");
     const [emailErrorFlag, setEmailErrorFlag] = useState(false);
     const [setup2FA, setSetup2FA] = useState<boolean>(false);
+    const [qrCode, setQrCode] = useState<string>("");
     const navigate = useNavigate();
+    
     let usernamePattern = new RegExp('^[a-zA-Z0-9]+$');
     let passwordPattern = new RegExp('^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).+$');
 
@@ -31,12 +34,12 @@ function Register() {
             return ;
         }
 
+        renderQRcode();
         setSetup2FA(true);
-
         // axios.post('https://localhost:5000/register', { username:username, email: email, password: password })
         //     .then(function(res) {
         //         console.log(res.data);
-        //         navigate("/login");
+        //         navigate(`/2fa/setup?email=${email}`);
         //     })
         //     .catch(function(err) {
         //         console.log(err.response.data.error);
@@ -73,6 +76,18 @@ function Register() {
         setUsername(e.target.value)
     }
 
+    async function renderQRcode() {
+        axios.post('https://localhost:5000/2fa/setup', 
+            { email: email })
+            .then(function(res) {
+                setQrCode(res.data);
+            })
+            .catch(function(err) {
+                console.log(err);
+                // navigate('/');
+            })
+    }
+
     return (
         <div className="flex justify-between font-poppins h-screen bg-gameBg overflow-hidden items-center">
             <div className="xl:py-[260px] xl:px-[300px] xl:mt-12 lg:mt-24 w-1/2 lg:px-[220px]">
@@ -84,7 +99,35 @@ function Register() {
                         Join and have fun with your friends
                     </p>
                 </div>
-                
+                {/* render QR code to setup 2FA */}
+                {setup2FA
+                   ?
+                //    <div className="absolute bg-gameBg flex left-[400px] justify-center px-48 py-48 rounded-lg">
+                //        <div className="text-center">
+                //             <div>
+                //                 <h1 className="text-white font-bold text-2xl">
+                //                     Setup 2FA with QR code
+                //                 </h1>
+                //                 <p className="text-white font-light">
+                //                     Scan this qr code to setup 2FA with your account
+                //                 </p>
+                //            </div>
+                //             <div className="flex justify-center mt-12">
+                //                 <img width="220px" height="220px" src={qrCode} alt="qrcode" />
+                //             </div>
+                //             <button className="px-24 py-4 rounded-xl text-white bg-neon font-bold shadow-neon shadow-[0_10px_40px_rgba(0,0,0,0.1)]">
+                //                 Verify
+                //             </button>
+                //        </div>
+                //    </div>
+                <Setup2FA />
+                   :
+                   <div>
+
+
+                   </div>
+               }
+
                 <form onSubmit={handleForm}>
                     <div className="xl:my-20 lg:my-14 space-y-10">
                         <div>

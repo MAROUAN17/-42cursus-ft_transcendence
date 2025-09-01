@@ -8,7 +8,7 @@ function Page2FA() {
     const [errorMssg, setErrorMssg] = useState<string>('');
     const [errorFlag, setErrorFlag] = useState<boolean>(false);
     const [nbrQrcode, setNbrQrcode] = useState<number>(0);
-    const [timerVerify, setTimerVerify] = useState<number>(180);
+    const [timerVerify, setTimerVerify] = useState<number>(60);
     const [qrCode, setQrCode] = useState<string>("");
     const [firstNbr, setFirstNbr] = useState<string>('');
     const [secondNbr, setSecondNbr] = useState<string>('');
@@ -25,34 +25,45 @@ function Page2FA() {
 
 
     const navigate = useNavigate();
-
     const handleFirstNbr = (e: React.ChangeEvent<HTMLInputElement>) => {
         e.preventDefault();
+        setErrorFlag(false);
+        setErrorMssg('');
         setFirstNbr(e.target.value);
         input2Ref.current!.focus();
     }
     const handleSecondNbr = (e: React.ChangeEvent<HTMLInputElement>) => {
         e.preventDefault();
         setSecondNbr(e.target.value);
+        setErrorFlag(false);
+        setErrorMssg('');
         input3Ref.current!.focus();
     }
     const handleThirdNbr = (e: React.ChangeEvent<HTMLInputElement>) => {
         e.preventDefault();
+        setErrorFlag(false);
+        setErrorMssg('');
         setThirdNbr(e.target.value);
         input4Ref.current!.focus();
     }
     const handleFourthNbr = (e: React.ChangeEvent<HTMLInputElement>) => {
         e.preventDefault();
+        setErrorFlag(false);
+        setErrorMssg('');
         setFourthNbr(e.target.value);
         input5Ref.current!.focus();
     }
     const handleFifthNbr = (e: React.ChangeEvent<HTMLInputElement>) => {
         e.preventDefault();
+        setErrorFlag(false);
+        setErrorMssg('');
         setFifthNbr(e.target.value);
         input6Ref.current!.focus();
     }
     const handleSixthNbr = (e: React.ChangeEvent<HTMLInputElement>) => {
         e.preventDefault();
+        setErrorFlag(false);
+        setErrorMssg('');
         setSixthNbr(e.target.value);
     }
     const formHandler = (e: React.FormEvent<HTMLFormElement>) => {
@@ -64,21 +75,14 @@ function Page2FA() {
                 navigate('/');
             })
             .catch(function(err) {
-                console.log(err.response.data);
-                navigate('/login');
-            })
-    }
+                if (err.response.data.error == "INVALID_OTP") {
+                    setErrorFlag(true);
+                    setErrorMssg("OTP code incorrect");
+                    return ;
+                }
 
-    async function renderQRcode() {
-        axios.post('https://localhost:5000/2fa/verify', 
-            {}, 
-            { withCredentials: true })
-            .then(function(res) {
-                setQrCode(res.data);
-            })
-            .catch(function(err) {
-                console.log(err);
-                navigate('/');
+                navigate('/login')
+                
             })
     }
 
@@ -87,41 +91,28 @@ function Page2FA() {
         const seconds = timerVerify % 60;
         return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
     }
+
     useEffect(() => {
-        if (!qrGenerated) {
-            const intervId  = setInterval(() => {
-                setTimerVerify((prevTime) => {
-                    if (prevTime < 0) {
-                        clearInterval(intervId);
-                        return 0;
-                    }
-                    return (prevTime - 1);
-                });
-            }, 1000)
-            renderQRcode();
-            setNbrQrcode(nbrQrcode + 1);
-            input1Ref.current?.focus();
-            setQrGenerated(true);
-            return () => {clearInterval(intervId)}
-        } else {
-            setErrorFlag(true);
-            setErrorMssg('Qr code already generated');
-        }
-        console.log(`is qr generated -> `, qrGenerated);
+        input1Ref.current?.focus();
+        const intervId  = setInterval(() => {
+            setTimerVerify((prevTime) => {
+                if (prevTime == 0) {
+                    clearInterval(intervId);
+                    navigate('/login');
+                    return 0;
+                } 
+                return (prevTime - 1);
+            });
+        }, 1000)
+        return () => { clearInterval(intervId); }
     }, []);
+
     return (
         <div className="bg-gameBg h-screen font-poppins">
             <div className="">
                 <a href="/login"><img src="/arrow-icon.png" width="80px" height="80px" alt="" /></a>
             </div>
-            {errorFlag ? 
-                <div>
-                    <p className="text-red-900 font-bold text-xl">{errorMssg}</p>
-                </div>
-                :
-                <div></div>
-            }
-            <div className="text-center align-center space-y-9 mt-36">
+            <div className="text-center align-center space-y-9 mt-44">
                 <div className="space-y-5">
                     <div className="flex justify-center">
                         <img src="/lock-icon.png" alt="email-icon" width="92px" height="86px" />
@@ -132,9 +123,15 @@ function Page2FA() {
                     <p className="text-white text-3xl font-light">Scan  this QR code in-app to verify the device</p>
                 </div>
             </div>
-            <div className="flex justify-center mt-12">
-                <img width="220px" height="220px" src={qrCode} alt="qrcode" />
-            </div>
+            {errorFlag ? 
+                <div className="flex justify-center mt-12">
+                    <div className="flex text-center rounded-xl bg-red-600 border border-white w-[420px] h-[120px] items-center justify-center">
+                        <p className="text-white font-bold text-2xl align-center">{errorMssg}</p>
+                    </div>
+                </div>
+                :
+                <div></div>
+            }
             <form onSubmit={formHandler}>
             <div className="flex justify-center space-x-12">
                 <div className="flex justify-center space-x-3 text-center mt-20">
@@ -148,7 +145,7 @@ function Page2FA() {
                     <input maxLength={1} onChange={handleSixthNbr} ref={input6Ref} value={sixthNbr} className=" text-white text-4xl text-center w-[90px] h-[139px] bg-gameBg border border-white rounded-lg" required type="text" />
                 </div>
             </div>
-            <div className="mt-12 text-center">
+            <div className="mt-28 text-center">
                 <button type="submit" className="bg-neon text-white text-xl px-[270px] py-3 rounded-lg font-semibold">Continue</button>
             </div>
             </form>
