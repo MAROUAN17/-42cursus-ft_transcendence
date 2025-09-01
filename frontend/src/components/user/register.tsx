@@ -13,6 +13,7 @@ function Register() {
     const [passErrorFlag, setPassErrorFlag] = useState(false);
     const [emailErrorMssg, setEmailErrorMssg] = useState("");
     const [emailErrorFlag, setEmailErrorFlag] = useState(false);
+    const [setup2FA, setSetup2FA] = useState<boolean>(false);
     const navigate = useNavigate();
     let usernamePattern = new RegExp('^[a-zA-Z0-9]+$');
     let passwordPattern = new RegExp('^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).+$');
@@ -29,26 +30,29 @@ function Register() {
             setPassErrorMssg("Password should be at least 8 characters including a lowercaser letter and a number");
             return ;
         }
-        axios.post('https://localhost:5000/register', { username:username, email: email, password: password })
-            .then(function(res) {
-                console.log(res.data);
-                navigate("/login");
-            })
-            .catch(function(err) {
-                console.log(err.response.data.error);
-                if (err.response.data.error.includes("Username")) {
-                    setUsernameErrorFlag(true);
-                    setUsernameErrorMssg(err.response.data.error);
-                }
-                if (err.response.data.error.includes("Email")) {
-                    setEmailErrorFlag(true);
-                    setEmailErrorMssg(err.response.data.error);
-                }
-                if (err.response.data.error.includes("Password")) {
-                    setPassErrorFlag(true);
-                    setPassErrorMssg(err.response.data.error);
-                }
-            })
+
+        setSetup2FA(true);
+
+        // axios.post('https://localhost:5000/register', { username:username, email: email, password: password })
+        //     .then(function(res) {
+        //         console.log(res.data);
+        //         navigate("/login");
+        //     })
+        //     .catch(function(err) {
+        //         console.log(err.response.data.error);
+        //         if (err.response.data.error.includes("Username")) {
+        //             setUsernameErrorFlag(true);
+        //             setUsernameErrorMssg(err.response.data.error);
+        //         }
+        //         if (err.response.data.error.includes("Email")) {
+        //             setEmailErrorFlag(true);
+        //             setEmailErrorMssg(err.response.data.error);
+        //         }
+        //         if (err.response.data.error.includes("Password")) {
+        //             setPassErrorFlag(true);
+        //             setPassErrorMssg(err.response.data.error);
+        //         }
+        //     })
     }
     
     const emailInput = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -80,6 +84,7 @@ function Register() {
                         Join and have fun with your friends
                     </p>
                 </div>
+                
                 <form onSubmit={handleForm}>
                     <div className="xl:my-20 lg:my-14 space-y-10">
                         <div>
