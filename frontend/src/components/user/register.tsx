@@ -32,7 +32,7 @@ function Register() {
         axios.post('https://localhost:5000/register', { username:username, email: email, password: password })
             .then(function(res) {
                 console.log(res.data);
-                navigate("/login");
+                navigate(`/2fa/setup?email=${email}`);
             })
             .catch(function(err) {
                 console.log(err.response.data.error);

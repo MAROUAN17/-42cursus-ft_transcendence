@@ -1,9 +1,11 @@
 import { useEffect, useState, useRef, type FormEvent, type InputHTMLAttributes, type KeyboardEvent } from "react";
 import type { Infos } from "../user/login";
 import axios from "axios";
-import { useNavigate } from "react-router";
+import { useNavigate, useSearchParams } from "react-router";
 
-function Page2FA() {
+export default function Setup2FA() {
+    const [searchParams, setSearchParams] = useSearchParams();
+    const userEmail = searchParams.get('email');
     const [qrGenerated, setQrGenerated] = useState<boolean>(false);
     const [errorMssg, setErrorMssg] = useState<string>('');
     const [errorFlag, setErrorFlag] = useState<boolean>(false);
@@ -25,64 +27,59 @@ function Page2FA() {
 
 
     const navigate = useNavigate();
+
     const handleFirstNbr = (e: React.ChangeEvent<HTMLInputElement>) => {
         e.preventDefault();
-        setErrorFlag(false);
-        setErrorMssg('');
         setFirstNbr(e.target.value);
         input2Ref.current!.focus();
     }
     const handleSecondNbr = (e: React.ChangeEvent<HTMLInputElement>) => {
         e.preventDefault();
         setSecondNbr(e.target.value);
-        setErrorFlag(false);
-        setErrorMssg('');
         input3Ref.current!.focus();
     }
     const handleThirdNbr = (e: React.ChangeEvent<HTMLInputElement>) => {
         e.preventDefault();
-        setErrorFlag(false);
-        setErrorMssg('');
         setThirdNbr(e.target.value);
         input4Ref.current!.focus();
     }
     const handleFourthNbr = (e: React.ChangeEvent<HTMLInputElement>) => {
         e.preventDefault();
-        setErrorFlag(false);
-        setErrorMssg('');
         setFourthNbr(e.target.value);
         input5Ref.current!.focus();
     }
     const handleFifthNbr = (e: React.ChangeEvent<HTMLInputElement>) => {
         e.preventDefault();
-        setErrorFlag(false);
-        setErrorMssg('');
         setFifthNbr(e.target.value);
         input6Ref.current!.focus();
     }
     const handleSixthNbr = (e: React.ChangeEvent<HTMLInputElement>) => {
         e.preventDefault();
-        setErrorFlag(false);
-        setErrorMssg('');
         setSixthNbr(e.target.value);
     }
     const formHandler = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const otpNbr = firstNbr + secondNbr + thirdNbr + fourthNbr + fifthNbr + sixthNbr;
-        axios.post('https://localhost:5000/2fa/verify-token', { token: otpNbr }, { withCredentials: true })
+        axios.post('https://localhost:5000/2fa/setup/verify', { token: otpNbr, email: userEmail })
             .then(function(res) {
                 console.log(res);
-                navigate('/');
+                navigate('/login');
             })
             .catch(function(err) {
-                if (err.response.data.error == "INVALID_OTP") {
-                    setErrorFlag(true);
-                    setErrorMssg("OTP code incorrect");
-                    return ;
-                }
+                console.log(err.response.data);
+                navigate('/login');
+            })
+    }
 
-                navigate('/login')
-                
+    async function renderQRcode() {
+        axios.post('https://localhost:5000/2fa/setup', 
+            { email: userEmail })
+            .then(function(res) {
+                setQrCode(res.data);
+            })
+            .catch(function(err) {
+                console.log(err);
+                navigate('/');
             })
     }
 
@@ -93,6 +90,8 @@ function Page2FA() {
     }
 
     useEffect(() => {
+        renderQRcode();
+        setNbrQrcode(nbrQrcode + 1);
         input1Ref.current?.focus();
         const intervId  = setInterval(() => {
             setTimerVerify((prevTime) => {
@@ -112,7 +111,14 @@ function Page2FA() {
             <div className="">
                 <a href="/login"><img src="/arrow-icon.png" width="80px" height="80px" alt="" /></a>
             </div>
-            <div className="text-center align-center space-y-9 mt-44">
+            {errorFlag ? 
+                <div>
+                    <p className="text-red-900 font-bold text-xl">{errorMssg}</p>
+                </div>
+                :
+                <div></div>
+            }
+            <div className="text-center align-center space-y-9 mt-36">
                 <div className="space-y-5">
                     <div className="flex justify-center">
                         <img src="/lock-icon.png" alt="email-icon" width="92px" height="86px" />
@@ -123,15 +129,9 @@ function Page2FA() {
                     <p className="text-white text-3xl font-light">Scan  this QR code in-app to verify the device</p>
                 </div>
             </div>
-            {errorFlag ? 
-                <div className="flex justify-center mt-12">
-                    <div className="flex text-center rounded-xl bg-red-600 border border-white w-[420px] h-[120px] items-center justify-center">
-                        <p className="text-white font-bold text-2xl align-center">{errorMssg}</p>
-                    </div>
-                </div>
-                :
-                <div></div>
-            }
+            <div className="flex justify-center mt-12">
+                <img width="220px" height="220px" src={qrCode} alt="qrcode" />
+            </div>
             <form onSubmit={formHandler}>
             <div className="flex justify-center space-x-12">
                 <div className="flex justify-center space-x-3 text-center mt-20">
@@ -145,7 +145,7 @@ function Page2FA() {
                     <input maxLength={1} onChange={handleSixthNbr} ref={input6Ref} value={sixthNbr} className=" text-white text-4xl text-center w-[90px] h-[139px] bg-gameBg border border-white rounded-lg" required type="text" />
                 </div>
             </div>
-            <div className="mt-28 text-center">
+            <div className="mt-12 text-center">
                 <button type="submit" className="bg-neon text-white text-xl px-[270px] py-3 rounded-lg font-semibold">Continue</button>
             </div>
             </form>
@@ -155,5 +155,3 @@ function Page2FA() {
         </div>
     )
 }
-
-export default Page2FA;
