@@ -23,6 +23,7 @@ import { WebSocketProvider } from "./components/chat/websocketContext";
 import Layout from "./components/layout/layout";
 import type Tournament from './components/gametyping/listTournament/listTournament';
 import Match from './components/match/Match';
+import MatchMaking from './components/match/Match';
 
 export default function App() {
   let router = createBrowserRouter([
@@ -75,7 +76,7 @@ export default function App() {
     },
     {
       path: '/match',
-      Component: Match
+      Component: MatchMaking
     },
     {
       path: '/tournament',
