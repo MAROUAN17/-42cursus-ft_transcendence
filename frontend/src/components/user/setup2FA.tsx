@@ -2,6 +2,7 @@ import { useEffect, useState, useRef, type FormEvent, type InputHTMLAttributes, 
 import axios from "axios";
 import { useNavigate } from "react-router";
 import type { UserInfo } from "../../types/user";
+import { DiVim } from "react-icons/di";
 
 
 const Setup2FA: React.FC<UserInfo> = (user) => {
@@ -27,21 +28,29 @@ const Setup2FA: React.FC<UserInfo> = (user) => {
 
     const handleFirstNbr = (e: React.ChangeEvent<HTMLInputElement>) => {
         e.preventDefault();
+        setErrorFlag(false);
+        setErrorMssg('');
         setFirstNbr(e.target.value);
         input2Ref.current!.focus();
     }
     const handleSecondNbr = (e: React.ChangeEvent<HTMLInputElement>) => {
         e.preventDefault();
+        setErrorFlag(false);
+        setErrorMssg('');
         setSecondNbr(e.target.value);
         input3Ref.current!.focus();
     }
     const handleThirdNbr = (e: React.ChangeEvent<HTMLInputElement>) => {
         e.preventDefault();
+        setErrorFlag(false);
+        setErrorMssg('');
         setThirdNbr(e.target.value);
         input4Ref.current!.focus();
     }
     const handleFourthNbr = (e: React.ChangeEvent<HTMLInputElement>) => {
         e.preventDefault();
+        setErrorFlag(false);
+        setErrorMssg('');
         setFourthNbr(e.target.value);
         input5Ref.current!.focus();
     }
@@ -52,6 +61,8 @@ const Setup2FA: React.FC<UserInfo> = (user) => {
     }
     const handleSixthNbr = (e: React.ChangeEvent<HTMLInputElement>) => {
         e.preventDefault();
+        setErrorFlag(false);
+        setErrorMssg('');
         setSixthNbr(e.target.value);
     }
     const formHandler = (e: React.FormEvent<HTMLFormElement>) => {
@@ -71,7 +82,9 @@ const Setup2FA: React.FC<UserInfo> = (user) => {
                     })
             })
             .catch(function(err) {
-                console.log(err.response.data);
+                console.log(err);
+                setErrorFlag(true);
+                setErrorMssg(err.response.data.error);
                 // navigate('/login');
             })
     }
@@ -98,13 +111,13 @@ const Setup2FA: React.FC<UserInfo> = (user) => {
     return (
         <div className="absolute bg-gameBg border border-white flex left-[300px] top-28 justify-center px-32 py-32 rounded-xl font-poppins">
             <div className="items-center">
-                {errorFlag ? 
+                {/* {errorFlag ? 
                     <div>
                         <p className="text-red-900 font-bold text-xl">{errorMssg}</p>
                     </div>
                     :
                     <div></div>
-                }
+                } */}
                 <div className="text-center align-center space-y-6">
                     <div className="space-y-5">
                         <div className="flex justify-center">
@@ -116,6 +129,15 @@ const Setup2FA: React.FC<UserInfo> = (user) => {
                         <p className="text-white text-xl font-light">Scan  this QR code in-app to verify the device</p>
                     </div>
                 </div>
+                {errorFlag ? 
+                <div className="flex justify-center mt-12">
+                    <div className="flex text-center rounded-xl bg-red-600 border border-white w-[420px] h-[120px] items-center justify-center">
+                        <p className="text-white font-bold text-2xl align-center">{errorMssg}</p>
+                    </div>
+                </div>
+                :
+                <div></div>
+                }
                 <div className="flex justify-center mt-12">
                     <img width="200px" height="200px" src={qrCode} alt="qrcode" />
                 </div>
@@ -136,9 +158,6 @@ const Setup2FA: React.FC<UserInfo> = (user) => {
                     <button type="submit" className="bg-neon text-white text-xl px-[190px] py-3 rounded-lg font-semibold">Continue</button>
                 </div>
                 </form>
-                {/* <div className="text-center mt-12">
-                    <p className="text-white font-bold text-2xl">{formatTime(timerVerify)}</p>
-                </div> */}
             </div>
         </div>
     )

@@ -16,9 +16,7 @@ function Register() {
     const [emailErrorMssg, setEmailErrorMssg] = useState("");
     const [emailErrorFlag, setEmailErrorFlag] = useState(false);
     const [setup2FA, setSetup2FA] = useState<boolean>(false);
-    const [qrCode, setQrCode] = useState<string>("");
     const navigate = useNavigate();
-    const user: UserInfo = { email, username, password };
     
     let usernamePattern = new RegExp('^[a-zA-Z0-9]+$');
     let passwordPattern = new RegExp('^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).+$');
