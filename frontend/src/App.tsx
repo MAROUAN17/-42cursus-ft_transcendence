@@ -14,7 +14,6 @@ import RGame from './components/game/remote/Game';
 
 import Dashboard from './components/dashboard/dashboard';
 import Page2FA from "./components/user/2fa";
-import checkAuthLoader from "../src/loaders/checkAuth";
 import NewPassword from "./components/user/newPassword";
 import ResetPasswordForm from "./components/user/passwordResetForm";
 import { WebSocketProvider } from "./components/chat/websocketContext";
@@ -47,7 +46,6 @@ export default function App() {
     {
       path: "/login",
       Component: Login,
-      loader: checkAuthLoader,
     },
     {
       path: "/register",
@@ -56,7 +54,6 @@ export default function App() {
     {
       path: "/verify",
       Component: Page2FA,
-      loader: checkAuthLoader,
     },
     {
       path: "/2fa/setup",

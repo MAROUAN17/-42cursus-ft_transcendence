@@ -1,8 +1,7 @@
-import { useEffect, useState, useRef, type FormEvent, type InputHTMLAttributes, type KeyboardEvent } from "react";
+import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router";
 import type { UserInfo } from "../../types/user";
-import { DiVim } from "react-icons/di";
 
 
 const Setup2FA: React.FC<UserInfo> = (user) => {
@@ -22,7 +21,6 @@ const Setup2FA: React.FC<UserInfo> = (user) => {
     const input4Ref = useRef<HTMLInputElement>(null);
     const input5Ref = useRef<HTMLInputElement>(null);
     const input6Ref = useRef<HTMLInputElement>(null);
-
 
     const navigate = useNavigate();
 
@@ -82,10 +80,8 @@ const Setup2FA: React.FC<UserInfo> = (user) => {
                     })
             })
             .catch(function(err) {
-                console.log(err);
                 setErrorFlag(true);
                 setErrorMssg(err.response.data.error);
-                // navigate('/login');
             })
     }
 
@@ -97,13 +93,11 @@ const Setup2FA: React.FC<UserInfo> = (user) => {
                 setQrCodeSecret(res.data[1]);
             })
             .catch(function(err) {
-                console.log(err);
-                // navigate('/');
+                navigate('/login');
             })
     }
 
     useEffect(() => {
-        console.log(user);
         renderQRcode();
         input1Ref.current?.focus();
     }, []);
@@ -111,13 +105,6 @@ const Setup2FA: React.FC<UserInfo> = (user) => {
     return (
         <div className="absolute bg-gameBg border border-white flex left-[300px] top-28 justify-center px-32 py-32 rounded-xl font-poppins">
             <div className="items-center">
-                {/* {errorFlag ? 
-                    <div>
-                        <p className="text-red-900 font-bold text-xl">{errorMssg}</p>
-                    </div>
-                    :
-                    <div></div>
-                } */}
                 <div className="text-center align-center space-y-6">
                     <div className="space-y-5">
                         <div className="flex justify-center">
@@ -129,6 +116,7 @@ const Setup2FA: React.FC<UserInfo> = (user) => {
                         <p className="text-white text-xl font-light">Scan  this QR code in-app to verify the device</p>
                     </div>
                 </div>
+
                 {errorFlag ? 
                 <div className="flex justify-center mt-12">
                     <div className="flex text-center rounded-xl bg-red-600 border border-white w-[420px] h-[120px] items-center justify-center">
@@ -138,6 +126,7 @@ const Setup2FA: React.FC<UserInfo> = (user) => {
                 :
                 <div></div>
                 }
+
                 <div className="flex justify-center mt-12">
                     <img width="200px" height="200px" src={qrCode} alt="qrcode" />
                 </div>

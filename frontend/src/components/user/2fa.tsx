@@ -93,6 +93,10 @@ function Page2FA() {
     }
 
     useEffect(() => {
+        axios.get('https://localhost:5000/login/verify', { withCredentials: true })
+            .catch(function() {
+                navigate('/');
+            })
         input1Ref.current?.focus();
         const intervId  = setInterval(() => {
             setTimerVerify((prevTime) => {

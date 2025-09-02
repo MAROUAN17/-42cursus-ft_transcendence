@@ -39,7 +39,6 @@ function Register() {
                 setSetup2FA(true);
             })
             .catch(function(err) {
-                console.log(err.response.data.error);
                 if (err.response.data.error.includes("Username")) {
                     setUsernameErrorFlag(true);
                     setUsernameErrorMssg(err.response.data.error);
@@ -95,7 +94,6 @@ function Register() {
                    :
                    <div></div>
                }
-
                 <form onSubmit={handleForm}>
                     <div className="xl:my-20 lg:my-14 space-y-10">
                         <div>
