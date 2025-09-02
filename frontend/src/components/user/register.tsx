@@ -3,6 +3,7 @@ import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router";
 import Setup2FA from "./setup2FA";
+import  type { UserInfo } from "../../types/user";
 
 function Register() {
     const [email, setEmail] = useState("");
@@ -17,6 +18,7 @@ function Register() {
     const [setup2FA, setSetup2FA] = useState<boolean>(false);
     const [qrCode, setQrCode] = useState<string>("");
     const navigate = useNavigate();
+    const user: UserInfo = { email, username, password };
     
     let usernamePattern = new RegExp('^[a-zA-Z0-9]+$');
     let passwordPattern = new RegExp('^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).+$');
@@ -120,7 +122,7 @@ function Register() {
                 //             </button>
                 //        </div>
                 //    </div>
-                <Setup2FA />
+                <Setup2FA username={username} email={email} password={password} />
                    :
                    <div>
 

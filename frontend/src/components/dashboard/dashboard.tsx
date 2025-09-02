@@ -52,8 +52,9 @@ export default function Dashboard() {
         setUser(res.data.infos);
       })
       .catch(function (err) {
-        console.log(err.response.data);
-        if (err.response.status == 401 && err.response.data.error == "Unauthorized") navigate("/login");
+        console.log(err);
+        if (err.response.status == 401 && err.response.data.error == "Unauthorized") 
+          navigate("/login");
       });
 
       axios
@@ -71,7 +72,6 @@ export default function Dashboard() {
       },
       async (error) => {
         const originalReq = error.config;
-
         if (error.response.status == 401 && error.response.data.error == "JWT_EXPIRED") {
           originalReq._retry = false;
           try {
