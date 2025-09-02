@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef, type FormEvent, type InputHTMLAttributes, type KeyboardEvent } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router";
-import type { UserInfo, UserProps } from "../../types/user";
+import type { UserInfo } from "../../types/user";
 
 
 const Setup2FA: React.FC<UserInfo> = (user) => {
@@ -68,19 +68,6 @@ const Setup2FA: React.FC<UserInfo> = (user) => {
                     })
                     .catch(function(err) {
                         console.log(err);
-                        
-                        // if (err.response.data.error.includes("Username")) {
-                        //     setUsernameErrorFlag(true);
-                        //     setUsernameErrorMssg(err.response.data.error);
-                        // }
-                        // if (err.response.data.error.includes("Email")) {
-                        //     setEmailErrorFlag(true);
-                        //     setEmailErrorMssg(err.response.data.error);
-                        // }
-                        // if (err.response.data.error.includes("Password")) {
-                        //     setPassErrorFlag(true);
-                        //     setPassErrorMssg(err.response.data.error);
-                        // }
                     })
             })
             .catch(function(err) {

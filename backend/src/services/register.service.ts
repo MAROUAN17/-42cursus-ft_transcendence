@@ -40,3 +40,33 @@ export const registerUser = async (req: FastifyRequest<{Body: LoginBody}>, res: 
         res.status(401).send({ error });
     }
 }
+
+export const verifyRegisterUser = async (req: FastifyRequest<{Body: LoginBody}>, res: FastifyReply) => {
+    try {
+        let user = {} as User | undefined;
+        let { username, email, password, secret } = req.body;
+
+        email = email.toLowerCase();
+
+        //check if username user exists
+        user = app.db
+                .prepare('SELECT * from players WHERE username = ?')
+                .get(username) as User | undefined;
+        if (user)
+            return res.status(401).send({ error: "Username already exists" });
+
+        //check if user email already exists
+        user = app.db
+            .prepare('SELECT * from players WHERE email = ?')
+            .get(email) as User | undefined;
+        if (user) {
+            return res.status(401).send({ error: "Email already exist!" });
+        }
+
+        res.status(200).send({ message: "Credentials correct!" });
+    }
+    catch (error) {
+        console.log(error);
+        res.status(401).send({ error });
+    }
+}
