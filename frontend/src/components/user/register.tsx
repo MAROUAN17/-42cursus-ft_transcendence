@@ -34,7 +34,7 @@ function Register() {
             return ;
         }
 
-        axios.post('https://localhost:5000/register/verify', { username:username, email: email, password: password })
+        axios.post('https://localhost:5000/register/verify', { username: username, email: email, password: password })
             .then(function() {
                 setSetup2FA(true);
             })
@@ -126,7 +126,7 @@ function Register() {
                                 <input type="checkbox" />
                                 <p className="text-white xl:text-base lg:text-sm whitespace-nowrap">I accept the terms and conditions</p>
                             </div>
-                            <button className="px-12 py-4 rounded-xl text-white bg-neon font-bold shadow-neon shadow-[0_10px_40px_rgba(0,0,0,0.1)]">
+                            <button className="px-12 py-4 rounded-xl text-white bg-neon font-bold shadow-neon">
                                 REGISTER
                             </button>
                         </div>

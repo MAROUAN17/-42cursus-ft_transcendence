@@ -81,11 +81,11 @@ function Login() {
                             <p className="text-white text-md rounded-full ">Remember me</p>
                         </div>
                         <div className="">
-                            <button type="button" className="" onClick={() => {navigate('/reset-password')}}><p className="text-white font-bold">Forgot password?</p></button>
+                            <button type="button" className="" onClick={() => { navigate('/reset-password') }}><p className="text-white font-bold">Forgot password?</p></button>
                         </div>
                     </div>
                     <div>
-                        <button type="submit" className="px-56 py-4 rounded-xl text-white bg-neon font-bold shadow-neon shadow-[0_10px_40px_rgba(0,0,0,0.1)]">
+                        <button type="submit" className="xl:px-80 lg:px-56 py-4 rounded-xl text-white bg-neon font-bold shadow-neon">
                             Login
                         </button>
                     </div>

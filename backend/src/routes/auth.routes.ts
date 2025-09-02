@@ -14,7 +14,7 @@ import { requestNewToken } from "../services/newAccessToken.service.js";
 
 export const authRoutes: FastifyPluginAsync = async() => {
     app.post('/login', loginUser);
-    app.post('/login/verify', checkAuth);
+    app.get('/login/verify', checkAuth);
     app.post('/logout', logoutUser);
     app.post('/register/verify', verifyRegisterUser);
     app.post('/register', registerUser);
