@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import type { Infos } from "../user/login";
+import type { PUserInfo } from "../../types/user";
 import { GrFormNextLink } from "react-icons/gr";
 import { LineChart, Line, AreaChart, Area, ResponsiveContainer, Tooltip } from "recharts";
 
@@ -17,7 +17,7 @@ export default function Dashboard() {
   ];
 
   const navigate = useNavigate();
-  const [user, setUser] = useState<Infos>({ username: "", email: "" });
+  const [user, setUser] = useState<PUserInfo>({ id: 0, username: "", email: "" });
   function handleClick(e: React.MouseEvent<HTMLButtonElement>) {
     e.preventDefault();
     axios
@@ -48,7 +48,6 @@ export default function Dashboard() {
     axios
       .get("https://localhost:5000/user", { withCredentials: true })
       .then(function (res) {
-        console.log(res.data.infos);
         setUser(res.data.infos);
       })
       .catch(function (err) {

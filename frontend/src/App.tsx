@@ -20,6 +20,7 @@ import { WebSocketProvider } from "./components/chat/websocketContext";
 import Layout from "./components/layout/layout";
 import Setup2FA from "./components/user/setup2FA";
 import type { UserInfo } from './types/user';
+import Profile from "./components/user/profile"
 
 export default function App() {
   let router = createBrowserRouter([
@@ -67,6 +68,10 @@ export default function App() {
     {
       path: '/remote_game',
       Component: RGame
+    },
+    {
+      path: '/profile',
+      Component: Profile
     }
   ]);
   return <RouterProvider router={router} />;
