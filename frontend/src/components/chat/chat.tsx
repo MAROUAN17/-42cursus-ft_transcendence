@@ -14,11 +14,13 @@ import { v4 as uuidv4 } from "uuid";
 import { useWebSocket } from "./websocketContext";
 import type { notificationPacket, websocketPacket } from "../../../../backend/src/models/webSocket.model";
 import { useParams, useNavigate } from "react-router";
+import { MdBlock } from "react-icons/md";
 
 const Chat = () => {
   const { username } = useParams<{ username?: string }>();
+  const [show, setShow] = useState<boolean>(false);
+  const [isOptionsOpen, setIsOptionsOpen] = useState<boolean>(false);
   const [messages, setMessages] = useState<messagePacket[]>([]);
-  const [websocket, setWebsocket] = useState<WebSocket | null>(null);
   const [users, setUsers] = useState<UsersLastMessage[]>([]);
   const [targetUser, setTargetUser] = useState<User | null>();
   const [currUser, setCurrUser] = useState<User>();
@@ -42,6 +44,9 @@ const Chat = () => {
   }, [targetUser]);
 
   useEffect(() => {
+    setTimeout(() => {
+      setShow(true);
+    }, 50);
     axios.interceptors.response.use(
       (response) => {
         return response;
@@ -49,17 +54,18 @@ const Chat = () => {
       async (error) => {
         const originalReq = error.config;
         if (error.response.status == 401 && error.response.data.error == "JWT_EXPIRED") {
-            originalReq._retry = false;
-            try {
-                const res  = await axios.post('https://localhost:5000/jwt/new', {}, { withCredentials: true });
-                console.log(res);
-                return axios(originalReq);
-            } catch (error) {
-                navigate('/login');
-            }
+          originalReq._retry = false;
+          try {
+            const res = await axios.post("https://localhost:5000/jwt/new", {}, { withCredentials: true });
+            console.log(res);
+            return axios(originalReq);
+          } catch (error) {
+            navigate("/login");
+          }
         }
         return Promise.reject(error);
-      })
+      }
+    );
   }, []);
 
   useEffect(() => {
@@ -304,7 +310,11 @@ const Chat = () => {
     }
   }
   return (
-    <div className="flex flex-row h-full w-full bg-darkBg p-5 gap-x-4 font-poppins">
+    <div
+      className={`flex flex-row h-full w-full bg-darkBg p-5 gap-x-4 font-poppins transition-all duration-700 ease-in-out ${
+        show ? "opacity-100" : "opacity-0"
+      }`}
+    >
       <div className="flex flex-col bg-compBg/20 basis-1/3 rounded-xl p-3 gap-5">
         <div className="flex flex-row justify-between items-center p-3">
           <div className="flex flex-row gap-1">
@@ -378,7 +388,20 @@ const Chat = () => {
                   </div>
                 </div>
               </div>
-              <IoIosMore className="text-white h-6 w-6" />
+              <div className="relative">
+                <IoIosMore onClick={() => setIsOptionsOpen(!isOptionsOpen)} className="text-white h-6 w-6" />
+                {isOptionsOpen ? (
+                  <div className="absolute overflow-hidden right-0 mt-2 w-32 z-10 bg-[#1f085f] border-2 border-neon/10 py-1 px-3 rounded-lg shadow-[0_0px_20px_rgba(0,0,0,0.25)]">
+                    <ul className="py-2">
+                      <li className="text-white">Profile</li>
+                      <li className="text-red-600">
+                        <MdBlock className="text-red-600" />
+                        Block
+                      </li>
+                    </ul>
+                  </div>
+                ) : null}
+              </div>
             </div>
             <div
               id="messages"
