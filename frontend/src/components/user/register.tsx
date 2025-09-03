@@ -2,6 +2,8 @@
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router";
+import Setup2FA from "./setup2FA";
+import  type { UserInfo } from "../../types/user";
 
 function Register() {
     const [email, setEmail] = useState("");
@@ -13,7 +15,9 @@ function Register() {
     const [passErrorFlag, setPassErrorFlag] = useState(false);
     const [emailErrorMssg, setEmailErrorMssg] = useState("");
     const [emailErrorFlag, setEmailErrorFlag] = useState(false);
+    const [setup2FA, setSetup2FA] = useState<boolean>(false);
     const navigate = useNavigate();
+    
     let usernamePattern = new RegExp('^[a-zA-Z0-9]+$');
     let passwordPattern = new RegExp('^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).+$');
 
@@ -29,13 +33,12 @@ function Register() {
             setPassErrorMssg("Password should be at least 8 characters including a lowercaser letter and a number");
             return ;
         }
-        axios.post('https://localhost:5000/register', { username:username, email: email, password: password })
-            .then(function(res) {
-                console.log(res.data);
-                navigate(`/2fa/setup?email=${email}`);
+
+        axios.post('https://localhost:5000/register/verify', { username: username, email: email, password: password })
+            .then(function() {
+                setSetup2FA(true);
             })
             .catch(function(err) {
-                console.log(err.response.data.error);
                 if (err.response.data.error.includes("Username")) {
                     setUsernameErrorFlag(true);
                     setUsernameErrorMssg(err.response.data.error);
@@ -80,6 +83,17 @@ function Register() {
                         Join and have fun with your friends
                     </p>
                 </div>
+                {/* render QR code to setup 2FA */}
+                {setup2FA
+                   ?
+                    <Setup2FA 
+                        username={username} 
+                        email={email} 
+                        password={password} 
+                    />
+                   :
+                   <div></div>
+               }
                 <form onSubmit={handleForm}>
                     <div className="xl:my-20 lg:my-14 space-y-10">
                         <div>
@@ -112,7 +126,7 @@ function Register() {
                                 <input type="checkbox" />
                                 <p className="text-white xl:text-base lg:text-sm whitespace-nowrap">I accept the terms and conditions</p>
                             </div>
-                            <button className="px-12 py-4 rounded-xl text-white bg-neon font-bold shadow-neon shadow-[0_10px_40px_rgba(0,0,0,0.1)]">
+                            <button className="px-12 py-4 rounded-xl text-white bg-neon font-bold shadow-neon">
                                 REGISTER
                             </button>
                         </div>

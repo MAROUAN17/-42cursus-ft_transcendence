@@ -93,6 +93,10 @@ function Page2FA() {
     }
 
     useEffect(() => {
+        axios.get('https://localhost:5000/login/verify', { withCredentials: true })
+            .catch(function() {
+                navigate('/');
+            })
         input1Ref.current?.focus();
         const intervId  = setInterval(() => {
             setTimerVerify((prevTime) => {
@@ -118,9 +122,9 @@ function Page2FA() {
                         <img src="/lock-icon.png" alt="email-icon" width="92px" height="86px" />
                     </div>
                     <h1 className="text-white font-bold text-6xl">
-                        Scan QR code
+                        OTP Code
                     </h1>
-                    <p className="text-white text-3xl font-light">Scan  this QR code in-app to verify the device</p>
+                    <p className="text-white text-3xl font-light">Type your secret otp code</p>
                 </div>
             </div>
             {errorFlag ? 

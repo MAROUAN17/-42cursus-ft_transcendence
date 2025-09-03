@@ -13,7 +13,8 @@ export interface LoginBody {
     username: string,
     email: string,
     password: string,
-    token: string
+    token: string,
+    secret: string
 }
 
 export interface userInfos {

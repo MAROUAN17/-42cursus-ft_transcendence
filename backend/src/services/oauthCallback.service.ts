@@ -15,6 +15,11 @@ export const redirectPath = async (req: FastifyRequest, res: FastifyReply) => {
 
 export const oauthCallback = async (req: FastifyRequest, res: FastifyReply) => {
   try {
+    const { access, refresh } = req.cookies;
+
+    if (refresh || access)
+        return res.status(401).send({ error: 'Unauthorized' })
+  
     let user = {} as User | undefined;
     const { token } = await app.intra42Oauth.getAccessTokenFromAuthorizationCodeFlow(req);
 

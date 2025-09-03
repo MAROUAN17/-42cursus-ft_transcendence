@@ -1,12 +1,6 @@
-import { useEffect, useState, useRef, type ChangeEvent, type FormEvent, type ButtonHTMLAttributes } from "react";
-import { redirect, Navigate, useNavigate } from "react-router";
+import { useEffect, useState, useRef } from "react";
+import { useNavigate } from "react-router";
 import axios from "axios";
-import type { messagePacket } from "../../../../backend/src/models/chat";
-
-export interface Infos {
-  username: string;
-  email: string;
-}
 
 function Login() {
     const navigate = useNavigate();
@@ -14,17 +8,7 @@ function Login() {
     const [password, setPassword] = useState("");
     const [errorMssg, setErrorMssg] = useState("");
     const [errorFlag, setErrorFlag] = useState(false);
-    const [forgetFlag, setForgetFlag] = useState(false);
 
-    const handle42Login = (e: React.MouseEvent<HTMLButtonElement>) => {
-        axios.get('https://localhost:5000/intra42/login', { withCredentials: true })
-            .then(function(res) {
-                console.log(res);
-            })
-            .catch(function(err) {
-                console.log(err);
-            })
-    }
 
     const handleForm = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -52,6 +36,13 @@ function Login() {
         setErrorFlag(false);
         setPassword(e.target.value);
     }
+
+    useEffect(() => {
+        axios.get('https://localhost:5000/login/verify', { withCredentials: true })
+            .catch(function() {
+                navigate('/');
+            })
+    }, [])
 
     return (
         <div className="flex justify-between font-poppins h-screen bg-gameBg items-center overflow-hidden">
@@ -90,11 +81,11 @@ function Login() {
                             <p className="text-white text-md rounded-full ">Remember me</p>
                         </div>
                         <div className="">
-                            <button type="button" className="" onClick={() => {navigate('/reset-password')}}><p className="text-white font-bold">Forgot password?</p></button>
+                            <button type="button" className="" onClick={() => { navigate('/reset-password') }}><p className="text-white font-bold">Forgot password?</p></button>
                         </div>
                     </div>
                     <div>
-                        <button type="submit" className="px-56 py-4 rounded-xl text-white bg-neon font-bold shadow-neon shadow-[0_10px_40px_rgba(0,0,0,0.1)]">
+                        <button type="submit" className="xl:px-80 lg:px-56 py-4 rounded-xl text-white bg-neon font-bold shadow-neon">
                             Login
                         </button>
                     </div>
