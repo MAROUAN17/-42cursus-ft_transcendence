@@ -1,37 +1,36 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
-
-
-import type { FastifyReply, FastifyRequest } from "fastify";
 import { v4 as uuidv4 } from 'uuid';
+import { DefaultGame, type GameInfo } from "../models/game.js";
 
 const waitingPlayers: Player[] = [];
-const activeGames: Game[] = [];
+export const activeGames: Game[] = [];
 
-interface Player {
+export interface Player {
   id: string;
-  socketId?: string; 
+  socketId?: string;
   joinedAt: Date;
   username?: string;
   rating?: number;
 }
 
-interface Game {
+export interface Game {
   id: string;
   player1: Player;
   player2: Player;
   status: 'waiting' | 'active' | 'finished';
   createdAt: Date;
+  gameInfo: GameInfo; 
 }
+
+export const playerConnections = new Map<string, any>();
 
 export const pair_players = async (req: FastifyRequest, res: FastifyReply) => {
   try {
     const playerId = req.headers['player-id'] as string || uuidv4();
-    
     const player: Player = {
       id: playerId,
       joinedAt: new Date(),
-      // socketId: req.headers['socket-id'] as string,
-       username: req.body?.username,
+      username: req.body?.username,
     };
 
     const existingPlayerIndex = waitingPlayers.findIndex(p => p.id === player.id);
@@ -48,27 +47,39 @@ export const pair_players = async (req: FastifyRequest, res: FastifyReply) => {
     if (waitingPlayers.length >= 2) {
       const player1 = waitingPlayers.shift()!;
       const player2 = waitingPlayers.shift()!;
+      
+      const gameInfo: GameInfo = {
+        ...DefaultGame,
+        ball: {
+          x: DefaultGame.bounds.width / 2,
+          y: DefaultGame.bounds.height / 2,
+          velX: (Math.random() > 0.5 ? 1 : -1) * 200,
+          velY: (Math.random() > 0.5 ? 1 : -1) * 200
+        }
+      };
 
       const game: Game = {
         id: uuidv4(),
         player1,
         player2,
         status: 'active',
-        createdAt: new Date()
+        createdAt: new Date(),
+        gameInfo
       };
 
       activeGames.push(game);
-
       console.log(`Game created: ${game.id} with players ${player1.id} and ${player2.id}`);
 
       if (player.id === player1.id || player.id === player2.id) {
         return res.status(200).send({
           status: 'paired',
           message: 'Game found!',
+          redirect: '/remote_game',
           game: {
             id: game.id,
             opponent: player.id === player1.id ? player2 : player1,
-            yourRole: player.id === player1.id ? 'player1' : 'player2'
+            yourRole: player.id === player1.id ? 'player1' : 'player2',
+            gameInfo: game.gameInfo
           }
         });
       }
@@ -80,7 +91,6 @@ export const pair_players = async (req: FastifyRequest, res: FastifyReply) => {
       position: waitingPlayers.length,
       playerId: player.id
     });
-
   } catch (err) {
     console.error('Pairing error:', err);
     res.status(500).send({ error: err });
@@ -105,8 +115,8 @@ export const get_queue_status = async (req: FastifyRequest, res: FastifyReply) =
 export const leave_queue = async (req: FastifyRequest, res: FastifyReply) => {
   try {
     const playerId = req.headers['player-id'] as string;
-    
     const playerIndex = waitingPlayers.findIndex(p => p.id === playerId);
+    
     if (playerIndex !== -1) {
       waitingPlayers.splice(playerIndex, 1);
       console.log(`Player ${playerId} left the queue`);
@@ -134,3 +144,44 @@ export const get_game = async (req: FastifyRequest, res: FastifyReply) => {
   }
 };
 
+export const get_player_game = async (req: FastifyRequest, res: FastifyReply) => {
+  try {
+    const playerId = req.headers['player-id'] as string;
+    const game = activeGames.find(g => 
+      g.player1.id === playerId || g.player2.id === playerId
+    );
+    
+    if (!game) {
+      return res.status(404).send({ error: 'No active game found for player' });
+    }
+    
+    const playerRole = game.player1.id === playerId ? 'player1' : 'player2';
+    const opponent = playerRole === 'player1' ? game.player2 : game.player1;
+    
+    res.status(200).send({ 
+      game: {
+        id: game.id,
+        opponent,
+        yourRole: playerRole,
+        gameInfo: game.gameInfo,
+        status: game.status
+      }
+    });
+  } catch (err) {
+    res.status(500).send({ error: err });
+  }
+};
+
+export const updateGameForId = (gameId: string, updates: Partial<GameInfo>) => {
+  const game = activeGames.find(g => g.id === gameId);
+  if (game) {
+    Object.assign(game.gameInfo, updates);
+    return game.gameInfo;
+  }
+  return null;
+};
+
+export const getGameStateById = (gameId: string) => {
+  const game = activeGames.find(g => g.id === gameId);
+  return game?.gameInfo || null;
+};

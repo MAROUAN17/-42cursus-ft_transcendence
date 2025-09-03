@@ -2,13 +2,18 @@ import React from 'react';
 import { useEffect, useState } from 'react';
 import im1 from "./imgs/user1.png"
 import axios from 'axios';
+import { useNavigate } from 'react-router';
 
 export default function MatchMaking() {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
-
   const [dots, setDots] = useState("");
+  const [gameInfo, setGameInfo] = useState(null);
+  const [username, setUsername] = useState("");
+
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -18,28 +23,67 @@ export default function MatchMaking() {
     return () => clearInterval(interval);
   }, []);
 
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      if (loading) {
+        try {
+          const response = await axios.get("https://localhost:5000/match/my-game", {
+            headers: {
+              "player-id": username + "id",
+            },
+          });
+  
+          if (response.data.game) {
+            setGameInfo(response.data.game);
+            setLoading(false);
+  
+            sessionStorage.setItem("currentGame", JSON.stringify(response.data.game));
+  
+            navigate("/remote_game");
+  
+            clearInterval(interval);
+          }
+        } catch (err) {
+          if (err.response) {
+            console.error("Error data:", err.response.data);
+            console.error("Error status:", err.response.status);
+            console.error("Error headers:", err.response.headers);
+          } else {
+            console.error("Error message:", err.message);
+          }
+        }
+      }
+    }, 1000); 
+  
+    return () => clearInterval(interval);
+  }, [loading, username, navigate]);
+  
+
   const fetchData = async () => {
     console.log('entered');
     try {
       setLoading(true);
       const response = await axios.post('https://localhost:5000/match/pair',
       {
-        username: 'melamarty',
+        username: username,
       },
       {
         headers: {
           'Content-Type': 'application/json',
-          'player-id': 'user-123',
+          'player-id': username + "id",
         }
       }
     );
 
       console.log(response.data);
     } catch (err) {
-      setError(err.message);
-      console.error('API Error:', err);
-    } finally {
-      //setLoading(false);
+      if (err.response) {
+        console.error('Error data:', err.response.data);
+        console.error('Error status:', err.response.status);
+        console.error('Error headers:', err.response.headers);
+      } else {
+        console.error('Error message:', err.message);
+      }
     }
   };
   const leave_queue = async () => {
@@ -68,6 +112,19 @@ export default function MatchMaking() {
         MATCHMAKING
       </h1>
       
+
+      <div className="flex flex-col items-center gap-4">
+      <input
+        type="text"
+        placeholder="Enter your username"
+        value={username}
+        onChange={(e) => setUsername(e.target.value)}
+        className="w-full max-w-xs px-4 py-2 border border-gray-300 rounded-lg shadow-sm 
+                   focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+      />
+
+      <p className="text-white">Current input: {username}</p>
+    </div>
       <div className="flex items-center justify-center mb-20 w-full max-w-4xl">
         <div className="flex flex-col items-center relative">
           <div className="relative">
