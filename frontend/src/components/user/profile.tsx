@@ -44,7 +44,7 @@ export default function Profile() {
     <div className="flex flex-col bg-darkBg h-full w-full font-poppins">
       <div className="flex p-8 h-[50%] space-x-4">
         {/* stats section */}
-        <div className="p-14 bg-compBg/20 w-[85%] rounded-lg space-y-12">
+        <div className="p-14 bg-compBg/20 w-[85%] rounded-[10px] space-y-12">
           <div className="rounded-lg flex space-x-8 h-[25%]">
             <div className="p-4 bg-neon/[88%] w-[360px] h-[100px] rounded-lg flex items-center space-x-3">
               <div>
@@ -109,7 +109,7 @@ export default function Profile() {
           </div>
         </div>
         {/* profile section */}
-        <div className="bg-compBg/20 w-[15%] rounded-lg p-8 flex flex-col justify-between ">
+        <div className="bg-compBg/20 w-[15%] rounded-[10px] p-8 flex flex-col justify-between ">
           <div className="flex justify-between w-full">
             <h1 className="text-white font-bold">Your profile</h1>
             <img src="3dots-icon.png" alt="" />
@@ -172,8 +172,8 @@ export default function Profile() {
           </div>
         </div>
       </div>
-      <div className="px-8 h-[50%] rounded-lg">
-        <div className="bg-compBg/20 flex flex-col justify-center">
+      <div className="px-8 h-[50%]">
+        <div className="bg-compBg/20 flex flex-col justify-center rounded-[10px]">
           <div className="p-12 flex justify-between">
             <h1 className="text-white font-bold">All users</h1>
             <h1 className="text-white font-bold">

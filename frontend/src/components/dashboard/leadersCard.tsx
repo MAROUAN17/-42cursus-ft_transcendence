@@ -34,7 +34,7 @@ const LeadersCard = ({ rank, username, name, score }: props) => {
             <p>@{username}</p>
           </div>
         </div>
-        <h2 className="font-bold text-shadow-[50px] text-shadow-black">{score}</h2>
+        <h2 className="font-bold text-shadow-[50px] text-shadow-black text-3xl">{score}</h2>
       </div>
       <img src="/src/assets/photo.png" className="h-[60px] w-[60px]" />
     </div>

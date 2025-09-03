@@ -11,7 +11,6 @@ import FriendBubble from "./friendBubble";
 import { IoChatbubblesSharp } from "react-icons/io5";
 import MessageBubble from "./messageBubble";
 import type { User, userInfos } from "../../../../backend/src/models/user.model";
-import type { PUserInfo } from "../../types/user";
 
 export default function Dashboard() {
   const data = [
@@ -121,25 +120,30 @@ export default function Dashboard() {
           Hi, <span className="text-neon">{user.username}</span>
         </h1>
         <div className="flex w-full h-2/5 gap-5">
-          <div className="bg-compBg flex flex-row basis-3/6  grow rounded-[30px] p-10">
-            <div className="flex flex-col gap-1 justify-between ">
-              <h2 className="text-white font-bold text-[40px]">Find Your Next Opponent!</h2>
-              <p className="text-[#fff]/[50%] text-[20px]">
-                Jump into matchmaking and challenge players from around the world. Serve, smash, and score!
-              </p>
-              <button className="bg-darkBg/10 p-2 shadow-[0_5px_10px_rgba(0,0,0,0.25)] px-8 flex items-center rounded-full gap-2 w-fit">
-                <p className="text-white font-medium">Play Now</p>
-                <div className=" bg-neon rounded-full">
-                  <GrFormNextLink className="text-white w-7 h-7" />
-                </div>
-              </button>
+          <div className="bg-compBg flex flex-row basis-3/5  grow rounded-[30px] p-10">
+            <div className="flex flex-col gap-1 p-12 space-y-16">
+              <div className="space-y-4">
+                <h2 className="text-white font-bold text-[40px]/10">Welcome, Watch Streaming Games
+                  Anywhere & Anytime! Anywhere & Anytime!</h2>
+                <p className="text-[#fff]/[50%] text-[20px]">
+                  Jump into matchmaking and challenge players from around the world. Serve, smash, and score!
+                </p>
+              </div>
+              <div>
+                <button className="bg-darkBg/10 p-2 shadow-[0_5px_10px_rgba(0,0,0,0.25)] px-8 flex items-center rounded-full gap-2 w-fit">
+                  <p className="text-white font-medium">Play Now</p>
+                  <div className=" bg-neon rounded-full">
+                    <GrFormNextLink className="text-white w-7 h-7" />
+                  </div>
+                </button>
+              </div>
             </div>
             <img src="/src/assets/paddle.png" className="w-[400px] h-[400px]" />
           </div>
           <div className="bg-compBg overflow-hidden relative basis-2/5 grow rounded-[30px]">
             <div className="flex flex-col justify-between p-10 relative gap-6 z-10 w-fit">
               <div className="">
-                <h2 className="text-white font-bold text-[60px] h-fit">30</h2>
+                <h2 className="text-white font-bold text-[90px] h-fit">30</h2>
                 <p className="text-white text-[30px] mt-[-15px]">Games Played</p>
               </div>
               <button className="bg-darkBg/10 p-2 shadow-[0_5px_10px_rgba(0,0,0,0.25)]  px-8 flex items-center rounded-full gap-2 w-fit">
@@ -167,7 +171,7 @@ export default function Dashboard() {
             </div>
           </div>
         </div>
-        <div className="flex w-full h-3/5 gap-3">
+        <div className="flex w-full h-3/5 gap-5">
           <div className="flex flex-col basis-3/5 h-full">
             <div className="text-white flex justify-between items-center">
               <h3 className="font-semibold text-[25px]">Tournaments</h3>
@@ -181,6 +185,15 @@ export default function Dashboard() {
               <TournamentCard />
               <TournamentCard />
               <TournamentCard />
+              <TournamentCard />
+              <TournamentCard />
+              <TournamentCard />
+              <TournamentCard />
+              <TournamentCard />
+              <TournamentCard />
+
+
+              
             </div>
           </div>
           <div className="flex flex-col basis-2/5 h-full gap-2">
@@ -216,7 +229,7 @@ export default function Dashboard() {
           <FriendBubble inGame={true} isOnline={true} />
         </div>
         <div className="bg-compBg flex flex-col rounded-[30px] h-full my-7 items-center gap-6 p-5">
-          <IoChatbubblesSharp className="w-[27px] h-auto text-white mb-5" />
+          <IoChatbubblesSharp className="w-[27px] h-auto text-white mb-2" />
           <MessageBubble unreadCount={0} isOnline={true} />
           <MessageBubble unreadCount={0} isOnline={false} />
           <MessageBubble unreadCount={0} isOnline={false} />
