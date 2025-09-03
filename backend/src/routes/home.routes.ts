@@ -6,4 +6,5 @@ import { deleteNotification } from "../services/deleteNotification.service.js";
 export const homeRoutes: FastifyPluginAsync = async (fastify) => {
   app.get("/notifications", { onRequest: [app.jwtAuth] }, getNotifications);
   app.delete("/notifications/:id", { onRequest: [app.jwtAuth] }, deleteNotification);
+  app.post("/block/:id", { onRequest: [app.jwtAuth] }, deleteNotification);
 };

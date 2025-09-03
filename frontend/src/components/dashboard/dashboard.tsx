@@ -3,7 +3,15 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import type { PUserInfo } from "../../types/user";
 import { GrFormNextLink } from "react-icons/gr";
-import { LineChart, Line, AreaChart, Area, ResponsiveContainer, Tooltip } from "recharts";
+import TournamentCard from "./tournamentCard";
+import { AreaChart, Area, ResponsiveContainer, Tooltip } from "recharts";
+import LeadersCard from "./leadersCard";
+import { MdGroups } from "react-icons/md";
+import FriendBubble from "./friendBubble";
+import { IoChatbubblesSharp } from "react-icons/io5";
+import MessageBubble from "./messageBubble";
+import type { User, userInfos } from "../../../../backend/src/models/user.model";
+import type { PUserInfo } from "../../types/user";
 
 export default function Dashboard() {
   const data = [
@@ -18,6 +26,7 @@ export default function Dashboard() {
 
   const navigate = useNavigate();
   const [user, setUser] = useState<PUserInfo>({ id: 0, username: "", email: "" });
+  const [show, setShow] = useState<boolean>(false);
   function handleClick(e: React.MouseEvent<HTMLButtonElement>) {
     e.preventDefault();
     axios
@@ -45,6 +54,9 @@ export default function Dashboard() {
   }
 
   useEffect(() => {
+    setTimeout(() => {
+      setShow(true);
+    }, 50);
     axios
       .get("https://localhost:5000/user", { withCredentials: true })
       .then(function (res) {
@@ -52,11 +64,10 @@ export default function Dashboard() {
       })
       .catch(function (err) {
         console.log(err);
-        if (err.response.status == 401 && err.response.data.error == "Unauthorized") 
-          navigate("/login");
+        if (err.response.status == 401 && err.response.data.error == "Unauthorized") navigate("/login");
       });
 
-      axios
+    axios
       .get("https://localhost:5000/users", { withCredentials: true })
       .then(function (res) {
         console.log(res.data);
@@ -100,65 +111,121 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="font-poppins w-full pl-5 flex flex-col ">
-      <h1 className="text-white font-bold text-[30px]">
-        Hi, <span className="text-neon">{user.username}</span>
-      </h1>
-      <div className="flex w-full h-2/5 gap-5">
-        <div className="bg-compBg flex flex-row basis-3/5  grow rounded-[30px] p-10">
-          <div className="flex flex-col gap-1 justify-between ">
-            <h2 className="text-white font-bold text-[40px]">Find Your Next Opponent!</h2>
-            <p className="text-[#fff]/[50%] text-[20px]">
-              Jump into matchmaking and challenge players from around the world. Serve, smash, and score!
-            </p>
-            <button className="bg-darkBg/10 p-2 shadow-[0_5px_10px_rgba(0,0,0,0.25)] px-8 flex items-center rounded-full gap-2 w-fit">
-              <p className="text-white font-medium">Play Now</p>
-              <div className=" bg-neon rounded-full">
-                <GrFormNextLink className="text-white w-7 h-7" />
-              </div>
-            </button>
-          </div>
-          <img src="/src/assets/paddle.png" className="w-[400px] h-[400px]" />
-        </div>
-        <div className="bg-compBg overflow-hidden relative basis-2/5 grow rounded-[30px]">
-          <div className="flex flex-col justify-between p-10 relative gap-6 z-10 w-fit">
-            <div className="">
-              <h2 className="text-white font-bold text-[60px] h-fit">30</h2>
-              <p className="text-white text-[30px] mt-[-15px]">Games Played</p>
+    <div
+      className={`w-full h-full pr-5 flex flex-row transition-all duration-700 ease-in-out ${
+        show ? "opacity-100" : "opacity-0"
+      }`}
+    >
+      <div className={`font-poppins w-full h-full p-5 flex flex-col gap-3 `}>
+        <h1 className="text-white font-bold text-[30px]">
+          Hi, <span className="text-neon">{user.username}</span>
+        </h1>
+        <div className="flex w-full h-2/5 gap-5">
+          <div className="bg-compBg flex flex-row basis-3/6  grow rounded-[30px] p-10">
+            <div className="flex flex-col gap-1 justify-between ">
+              <h2 className="text-white font-bold text-[40px]">Find Your Next Opponent!</h2>
+              <p className="text-[#fff]/[50%] text-[20px]">
+                Jump into matchmaking and challenge players from around the world. Serve, smash, and score!
+              </p>
+              <button className="bg-darkBg/10 p-2 shadow-[0_5px_10px_rgba(0,0,0,0.25)] px-8 flex items-center rounded-full gap-2 w-fit">
+                <p className="text-white font-medium">Play Now</p>
+                <div className=" bg-neon rounded-full">
+                  <GrFormNextLink className="text-white w-7 h-7" />
+                </div>
+              </button>
             </div>
-            <button className="bg-darkBg/10 p-2 shadow-[0_5px_10px_rgba(0,0,0,0.25)]  px-8 flex items-center rounded-full gap-2 w-fit">
-              <p className="text-white font-medium">History</p>
-              <div className=" bg-neon rounded-full">
-                <GrFormNextLink className="text-white w-7 h-7" />
-              </div>
-            </button>
+            <img src="/src/assets/paddle.png" className="w-[400px] h-[400px]" />
           </div>
-          <div className="absolute inset-0 opacity-40 z-0">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart
-                width={600}
-                height={300}
-                data={data}
-                margin={{
-                  top: 10,
-                  right: 0,
-                  left: 0,
-                  bottom: 0,
-                }}
-              >
-                <Tooltip content={<CustomTooltip />} />
-                <Area type="monotone" dataKey="uv" stroke="#8884d8" fill="#8884d8" />
-              </AreaChart>
-            </ResponsiveContainer>
+          <div className="bg-compBg overflow-hidden relative basis-2/5 grow rounded-[30px]">
+            <div className="flex flex-col justify-between p-10 relative gap-6 z-10 w-fit">
+              <div className="">
+                <h2 className="text-white font-bold text-[60px] h-fit">30</h2>
+                <p className="text-white text-[30px] mt-[-15px]">Games Played</p>
+              </div>
+              <button className="bg-darkBg/10 p-2 shadow-[0_5px_10px_rgba(0,0,0,0.25)]  px-8 flex items-center rounded-full gap-2 w-fit">
+                <p className="text-white font-medium">History</p>
+                <div className=" bg-neon rounded-full">
+                  <GrFormNextLink className="text-white w-7 h-7" />
+                </div>
+              </button>
+            </div>
+            <div className="absolute inset-0 opacity-40 z-0">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart
+                  data={data}
+                  margin={{
+                    top: 10,
+                    right: 0,
+                    left: 0,
+                    bottom: 0,
+                  }}
+                >
+                  <Tooltip content={<CustomTooltip />} />
+                  <Area type="monotone" dataKey="uv" stroke="#8884d8" fill="#8884d8" />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
           </div>
         </div>
-      </div>
-      {/* <button className="px-12 py-4 bg-neon text-white" onClick={handleClick}>
+        <div className="flex w-full h-3/5 gap-3">
+          <div className="flex flex-col basis-3/5 h-full">
+            <div className="text-white flex justify-between items-center">
+              <h3 className="font-semibold text-[25px]">Tournaments</h3>
+              <div className="flex items-center gap-1">
+                <h4>View All</h4>
+                <GrFormNextLink />
+              </div>
+            </div>
+            <div className="flex flex-wrap w-full justify-between h-full">
+              <TournamentCard />
+              <TournamentCard />
+              <TournamentCard />
+              <TournamentCard />
+            </div>
+          </div>
+          <div className="flex flex-col basis-2/5 h-full gap-2">
+            <div className="text-white flex justify-between items-center">
+              <h3 className="font-semibold text-[25px]">Leaders</h3>
+              <div className="flex items-center gap-1">
+                <h4>View All</h4>
+                <GrFormNextLink />
+              </div>
+            </div>
+            <div className="flex flex-wrap w-full justify-between h-full">
+              <LeadersCard rank={2} username="username" name="Jackson" score={2000} />
+              <LeadersCard rank={1} username="username" name="Jackson" score={2000} />
+              <LeadersCard rank={3} username="username" name="Jackson" score={2000} />
+            </div>
+          </div>
+        </div>
+        {/* <button className="px-12 py-4 bg-neon text-white" onClick={handleClick}>
         click
       </button>
       <button className="px-12 py-4 bg-neon text-white" onClick={handleLogout}>
         logout
       </button> */}
+      </div>
+      <div className="h-full flex flex-col">
+        <div className="bg-compBg flex flex-col rounded-[30px] h-[42.7%] mt-5 items-center gap-6 p-5">
+          <MdGroups className="w-[27px] h-auto text-white mb-1" />
+          <FriendBubble inGame={true} isOnline={true} />
+          <FriendBubble inGame={true} isOnline={true} />
+          <FriendBubble inGame={false} isOnline={true} />
+          <FriendBubble inGame={false} isOnline={false} />
+          <FriendBubble inGame={false} isOnline={false} />
+          <FriendBubble inGame={true} isOnline={true} />
+        </div>
+        <div className="bg-compBg flex flex-col rounded-[30px] h-full my-7 items-center gap-6 p-5">
+          <IoChatbubblesSharp className="w-[27px] h-auto text-white mb-5" />
+          <MessageBubble unreadCount={0} isOnline={true} />
+          <MessageBubble unreadCount={0} isOnline={false} />
+          <MessageBubble unreadCount={0} isOnline={false} />
+          <MessageBubble unreadCount={8} isOnline={false} />
+          <MessageBubble unreadCount={4} isOnline={true} />
+          <MessageBubble unreadCount={2} isOnline={true} />
+          <MessageBubble unreadCount={2} isOnline={false} />
+        </div>
+      </div>
     </div>
   );
 }

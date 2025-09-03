@@ -14,10 +14,11 @@ sqlite3 "$DB_NAME" <<EOF
         username TEXT NOT NULL,
         email TEXT NOT NULL,
         password TEXT,
-        twoFA_flag BOOLEAN,
         secret_otp TEXT,
         reset_flag BOOLEAN,
-        reset_time INTEGER
+        reset_time INTEGER,
+        friends JSON,
+        block_list JSON
     );
     CREATE TABLE IF NOT EXISTS messages (
         id INTEGER PRIMARY KEY,
