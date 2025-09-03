@@ -6,6 +6,9 @@ import { CiSettings } from "react-icons/ci";
 import { MdEmail } from "react-icons/md";
 import { FaLocationDot } from "react-icons/fa6";
 import { FaHistory } from "react-icons/fa";
+import { BsPersonFill } from "react-icons/bs";
+import { VscListSelection } from "react-icons/vsc";
+import { MdUpdate } from "react-icons/md";
 import {
   Line,
   LineChart,
@@ -14,6 +17,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import HistoryCard from "./historyCard";
 
 export default function Profile() {
   const data = [
@@ -37,10 +41,10 @@ export default function Profile() {
     return null;
   }
   return (
-    <div className="flex flex-col bg-darkBg h-screen font-poppins">
-      <div className="flex p-12 space-x-4 h-1/2">
+    <div className="flex flex-col bg-darkBg h-full w-full font-poppins">
+      <div className="flex p-8 h-[50%] space-x-4">
         {/* stats section */}
-        <div className="p-14 bg-compBg/20 w-[85%] rounded-lg space-y-8">
+        <div className="p-14 bg-compBg/20 w-[85%] rounded-lg space-y-12">
           <div className="rounded-lg flex space-x-8 h-[25%]">
             <div className="p-4 bg-neon/[88%] w-[360px] h-[100px] rounded-lg flex items-center space-x-3">
               <div>
@@ -168,8 +172,54 @@ export default function Profile() {
           </div>
         </div>
       </div>
-      <div className="h-[50%]">
-        <h1 className="text-white">hello</h1>
+      <div className="px-8 h-[50%] rounded-lg">
+        <div className="bg-compBg/20 flex flex-col justify-center">
+          <div className="p-12 flex justify-between">
+            <h1 className="text-white font-bold">All users</h1>
+            <h1 className="text-white font-bold">
+              <span className="text-neon">1 - 10 </span>of 256
+            </h1>
+          </div>
+          <div>
+            <hr className="border-1" />
+          </div>
+          {/* fields */}
+          <div className="px-12 py-8 text-white font-bold flex justify-between">
+            <div className="flex justify-center items-center space-x-2 w-[200px]">
+              <BsPersonFill />
+              <h1>User</h1>
+            </div>
+            <div className="flex justify-center items-center space-x-2 w-[200px]">
+              <VscListSelection />
+              <h1>Match Type</h1>
+            </div>
+            <div className="flex justify-center items-center space-x-2 w-[200px]">
+              <MdLeaderboard />
+              <h1>Result</h1>
+            </div>
+            <div className="flex justify-center items-center space-x-2 w-[200px]">
+              <RiSwordLine />
+              <h1>Final Score</h1>
+            </div>
+            <div className="flex justify-center items-center space-x-2 w-[200px]">
+              <MdUpdate />
+              <h1>Date & Time</h1>
+            </div>
+          </div>
+          {/* values */}
+          <HistoryCard />
+          <HistoryCard />
+          <HistoryCard />
+          <HistoryCard />
+        </div>
+        <div className="flex justify-between">
+          <div>
+            <h1 className="text-white">1 - 10 of 460</h1>
+          </div>
+          <div>
+            <h1 className="text-white">Rows per page</h1>
+          </div>
+        </div>
       </div>
     </div>
   );

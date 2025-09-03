@@ -39,6 +39,10 @@ export default function App() {
           path: "/chat/:username",
           Component: Chat,
         },
+        {
+          path: '/profile',
+          Component: Profile
+        }
       ],
     },
     {
@@ -69,10 +73,6 @@ export default function App() {
       path: '/remote_game',
       Component: RGame
     },
-    {
-      path: '/profile',
-      Component: Profile
-    }
   ]);
   return <RouterProvider router={router} />;
 }
