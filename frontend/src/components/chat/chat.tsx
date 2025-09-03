@@ -1,5 +1,5 @@
 import { IoFilter } from "react-icons/io5";
-import { FaSearch } from "react-icons/fa";
+import { FaSearch, FaUser } from "react-icons/fa";
 import { IoCheckmarkDoneOutline } from "react-icons/io5";
 import { IoIosMore } from "react-icons/io";
 import { RiSendPlaneFill } from "react-icons/ri";
@@ -389,12 +389,18 @@ const Chat = () => {
                 </div>
               </div>
               <div className="relative">
-                <IoIosMore onClick={() => setIsOptionsOpen(!isOptionsOpen)} className="text-white h-6 w-6" />
+                <IoIosMore
+                  onClick={() => setIsOptionsOpen(!isOptionsOpen)}
+                  className="text-white h-10 w-10 hover:bg-compBg/30 rounded-full p-2"
+                />
                 {isOptionsOpen ? (
-                  <div className="absolute overflow-hidden right-0 mt-2 w-32 z-10 bg-[#1f085f] border-2 border-neon/10 py-1 px-3 rounded-lg shadow-[0_0px_20px_rgba(0,0,0,0.25)]">
-                    <ul className="py-2">
-                      <li className="text-white">Profile</li>
-                      <li className="text-red-600">
+                  <div className="absolute overflow-hidden right-0 mt-2 w-fit z-10 bg-[#1f085f] border-2 border-neon/10 rounded-lg shadow-[0_0px_1px_rgba(0,0,0,0.25)] shadow-neon">
+                    <ul className="">
+                      <li className="text-white flex items-center hover:bg-compBg/30 gap-1 justify-center py-2 px-4">
+                        <FaUser className="text-white" />
+                        Profile
+                      </li>
+                      <li className="text-red-600 flex items-center justify-center hover:bg-compBg/30 gap-1 py-2 px-4">
                         <MdBlock className="text-red-600" />
                         Block
                       </li>

@@ -12,7 +12,7 @@ const LeadersCard = ({ rank, username, name, score }: props) => {
   useEffect(() => {
     setTimeout(() => {
       setShow(true);
-    }, 50);
+    }, 100);
   }, []);
 
   return (
@@ -20,7 +20,7 @@ const LeadersCard = ({ rank, username, name, score }: props) => {
       <div
         className={`bg-compBg transition-all duration-700 ease-in-out flex flex-col p-5 justify-between items-center text-white ${
           rank == 3 ? "h-3/5" : rank == 2 ? "h-4/5" : rank == 1 ? "h-full" : ""
-        } ${show ? "overflow-hidden" : "h-0 overflow-hidden"} w-full rounded-[30px]`}
+        } ${show ? "overflow-hidden" : "h-5 overflow-hidden"} w-full rounded-[30px]`}
       >
         <div className="relative flex flex-col items-center w-[24px] h-[24px] gap-6">
           <div

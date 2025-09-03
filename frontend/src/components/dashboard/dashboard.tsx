@@ -1,15 +1,16 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import type { Infos } from "../user/login";
 import { GrFormNextLink } from "react-icons/gr";
 import TournamentCard from "./tournamentCard";
-import { LineChart, Line, AreaChart, Area, ResponsiveContainer, Tooltip } from "recharts";
+import { AreaChart, Area, ResponsiveContainer, Tooltip } from "recharts";
 import LeadersCard from "./leadersCard";
 import { MdGroups } from "react-icons/md";
 import FriendBubble from "./friendBubble";
 import { IoChatbubblesSharp } from "react-icons/io5";
 import MessageBubble from "./messageBubble";
+import type { User, userInfos } from "../../../../backend/src/models/user.model";
+import type { PUserInfo } from "../../types/user";
 
 export default function Dashboard() {
   const data = [
@@ -23,7 +24,7 @@ export default function Dashboard() {
   ];
 
   const navigate = useNavigate();
-  const [user, setUser] = useState<Infos>({ username: "", email: "" });
+  const [user, setUser] = useState<PUserInfo>({ id: 0, username: "", email: "" });
   const [show, setShow] = useState<boolean>(false);
   function handleClick(e: React.MouseEvent<HTMLButtonElement>) {
     e.preventDefault();
@@ -63,8 +64,7 @@ export default function Dashboard() {
       })
       .catch(function (err) {
         console.log(err);
-        if (err.response.status == 401 && err.response.data.error == "Unauthorized") 
-          navigate("/login");
+        if (err.response.status == 401 && err.response.data.error == "Unauthorized") navigate("/login");
       });
 
     axios
@@ -111,12 +111,12 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="w-full h-full pr-5 flex flex-row">
-      <div
-        className={`font-poppins w-full h-full p-5 flex flex-col gap-3 transition-all duration-700 ease-in-out ${
-          show ? "opacity-100" : "opacity-0"
-        }`}
-      >
+    <div
+      className={`w-full h-full pr-5 flex flex-row transition-all duration-700 ease-in-out ${
+        show ? "opacity-100" : "opacity-0"
+      }`}
+    >
+      <div className={`font-poppins w-full h-full p-5 flex flex-col gap-3 `}>
         <h1 className="text-white font-bold text-[30px]">
           Hi, <span className="text-neon">{user.username}</span>
         </h1>

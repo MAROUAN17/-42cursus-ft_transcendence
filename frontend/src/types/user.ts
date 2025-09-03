@@ -4,3 +4,10 @@ export interface UserInfo
     email: string,
     password: string
 }
+
+export interface PUserInfo
+{
+    id: number,
+    username: string,
+    email: string,
+}
