@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
+import type { PUserInfo } from "../../types/user";
 import { GrFormNextLink } from "react-icons/gr";
 import TournamentCard from "./tournamentCard";
 import { AreaChart, Area, ResponsiveContainer, Tooltip } from "recharts";
@@ -59,7 +60,6 @@ export default function Dashboard() {
     axios
       .get("https://localhost:5000/user", { withCredentials: true })
       .then(function (res) {
-        console.log(res.data.infos);
         setUser(res.data.infos);
       })
       .catch(function (err) {
