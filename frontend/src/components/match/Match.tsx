@@ -11,6 +11,8 @@ export default function MatchMaking() {
   const [dots, setDots] = useState("");
   const [gameInfo, setGameInfo] = useState(null);
   const [username, setUsername] = useState("");
+  const [paired, setPaired] = useState(false);
+  const [countdown, setCountdown] = useState(5);
 
 
   const navigate = useNavigate();
@@ -22,6 +24,24 @@ export default function MatchMaking() {
 
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    let timer;
+    if (paired) {
+      console.log("players are paired")
+      timer = setInterval(() => {
+        setCountdown((prev) => {
+          if (prev <= 1) {
+            clearInterval(timer);
+            navigate("/remote_game");
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+    return () => clearInterval(timer); 
+  }, [paired, navigate]);
 
   useEffect(() => {
     const interval = setInterval(async () => {
@@ -38,8 +58,10 @@ export default function MatchMaking() {
             setLoading(false);
   
             sessionStorage.setItem("currentGame", JSON.stringify(response.data.game));
-  
-            navigate("/remote_game");
+            setPaired(true)
+            setTimeout(() => {
+              navigate("/remote_game");
+            }, 5000);
   
             clearInterval(interval);
           }
@@ -123,7 +145,6 @@ export default function MatchMaking() {
                    focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
       />
 
-      <p className="text-white">Current input: {username}</p>
     </div>
       <div className="flex items-center justify-center mb-20 w-full max-w-4xl">
         <div className="flex flex-col items-center relative">
@@ -163,28 +184,42 @@ export default function MatchMaking() {
           </div>
         </div>
       </div>
-
-      <div className="flex flex-col gap-4 w-full max-w-xs">
-      <button
-        onClick={() => fetchData()}
-        className="bg-purple-500 hover:bg-purple-600 text-white font-bold py-4 px-8 rounded-full text-lg transition-colors shadow-lg flex items-center justify-center gap-1"
+      {!paired ? (
+        <div className="flex flex-col gap-4 w-full max-w-xs">
+          <button
+            onClick={() => fetchData()}
+            className="bg-purple-500 hover:bg-purple-600 text-white font-bold py-4 px-8 rounded-full text-lg transition-colors shadow-lg flex items-center justify-center gap-1"
           >
-        {loading ? (
-          <>
-            <span>Pairing</span>
-            <span className="tracking-widest">{dots}</span>
-          </>
-        ) : (
-          "Play Game"
-        )}
-    </button>
+            {loading ? (
+              <>
+                <span>Pairing</span>
+                <span className="tracking-widest">{dots}</span>
+              </>
+            ) : (
+              "Play Game"
+            )}
+          </button>
 
-        <button
-        onClick={() => {leave_queue()}}
-        className="bg-white hover:bg-gray-100 text-purple-600 font-bold py-4 px-8 rounded-full text-lg transition-colors shadow-lg">
-          BACK
-        </button>
-      </div>
+          <button
+            onClick={() => leave_queue()}
+            className="bg-white hover:bg-gray-100 text-purple-600 font-bold py-4 px-8 rounded-full text-lg transition-colors shadow-lg"
+          >
+            BACK
+          </button>
+        </div>
+      ) : (
+        <div className="countdown flex flex-col items-center justify-center mt-6 space-y-4">
+          <p className="text-xl md:text-2xl font-semibold text-gray-200 tracking-wide">
+            Match will <span className="text-purple-400">start</span> in
+          </p>
+          <div className="bg-gradient-to-br from-purple-600 to-indigo-600 text-white 
+                          w-24 h-24 rounded-full flex items-center justify-center 
+                          text-4xl font-extrabold shadow-xl animate-pulse">
+            {countdown}
+          </div>
+        </div>
+    )}
+
     </div>
   );
 }
