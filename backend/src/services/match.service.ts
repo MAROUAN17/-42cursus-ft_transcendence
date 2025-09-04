@@ -78,7 +78,7 @@ export const pair_players = async (req: FastifyRequest, res: FastifyReply) => {
           game: {
             id: game.id,
             opponent: player.id === player1.id ? player2 : player1,
-            yourRole: player.id === player1.id ? 'player1' : 'player2',
+            yourRole: player.id === player1.id ? player1 : player2,
             gameInfo: game.gameInfo
           }
         });
@@ -155,8 +155,8 @@ export const get_player_game = async (req: FastifyRequest, res: FastifyReply) =>
       return res.status(404).send({ error: 'No active game found for player' });
     }
     
-    const playerRole = game.player1.id === playerId ? 'player1' : 'player2';
-    const opponent = playerRole === 'player1' ? game.player2 : game.player1;
+    const playerRole = game.player1.id === playerId ? game.player1 : game.player2;
+    const opponent = playerRole === game.player1 ? game.player2 : game.player1;
     
     res.status(200).send({ 
       game: {

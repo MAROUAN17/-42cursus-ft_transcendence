@@ -80,16 +80,16 @@ export default function RBall({
         top: y,
         bottom: y + paddle.height,
       };
-      if (i < 10 && paddle.x < 200)
-        {
-          setI(i + 1);
-          console.log("cords", leftY, rightY)
-          console.log("ball top ", ballRect.top)
-          console.log("top ", paddleRect.top)
-          console.log("ball bottom ", ballRect.bottom)
-          console.log("bottom ", paddleRect.bottom)
-          console.log("============================")
-        }
+      //if (i < 10 && paddle.x < 200)
+      //  {
+      //    setI(i + 1);
+      //    console.log("cords", leftY, rightY)
+      //    console.log("ball top ", ballRect.top)
+      //    console.log("top ", paddleRect.top)
+      //    console.log("ball bottom ", ballRect.bottom)
+      //    console.log("bottom ", paddleRect.bottom)
+      //    console.log("============================")
+      //  }
       return !(
         ballRect.right < paddleRect.left ||
         ballRect.left > paddleRect.right ||
@@ -100,14 +100,14 @@ export default function RBall({
     
 
     if (ball.velX < 0 && checkPaddleCollision(paddleLeft, leftY)) {
-      console.log("entered left");
+      //console.log("entered left");
       
       updateVel("velx");
       localDir.current.x = -localDir.current.x;
       //setDir({ x: localDir.current.x, y: localDir.current.y });
     }
     if (ball.velX > 0 && checkPaddleCollision(paddleRight, rightY)) {
-      console.log("entered right");
+      //console.log("entered right");
       updateVel("velx");
       localDir.current.x = -localDir.current.x;
       //setDir({ x: localDir.current.x, y: localDir.current.y });

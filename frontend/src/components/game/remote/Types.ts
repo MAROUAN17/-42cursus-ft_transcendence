@@ -28,3 +28,17 @@ export interface PaddlY {
   rRightY: number;
 }
   
+export interface Player {
+  id: string;
+  socketId?: string;
+  joinedAt: Date;
+  username?: string;
+  rating?: number;
+}
+
+export interface Game {
+  id: string;
+  opponent: Player
+  yourRole: Player
+  gameInfo: GameInfo;
+}
