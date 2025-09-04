@@ -16,7 +16,7 @@ export interface notificationPacket {
   username: string;
   sender_id: number;
   recipient_id: number;
-  message: string;
+  message?: string;
   unreadCount?: number;
   createdAt: string;
 }

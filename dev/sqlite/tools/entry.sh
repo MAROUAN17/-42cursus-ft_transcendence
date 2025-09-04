@@ -17,8 +17,8 @@ sqlite3 "$DB_NAME" <<EOF
         secret_otp TEXT,
         reset_flag BOOLEAN,
         reset_time INTEGER,
-        friends JSON,
-        block_list JSON
+        friends JSON DEFAULT '[]',
+        block_list JSON DEFAULT '[]'
     );
     CREATE TABLE IF NOT EXISTS messages (
         id INTEGER PRIMARY KEY,

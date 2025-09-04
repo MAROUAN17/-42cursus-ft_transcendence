@@ -38,7 +38,7 @@ function createNotification(currPacket: websocketPacket) {
         username: senderUsername,
         sender_id: currPacket.data.sender_id,
         recipient_id: currPacket.data.recipient_id,
-        message: currPacket.data.message,
+        message: currPacket.data.message!,
         unreadCount: 1,
         createdAt: currPacket.data.createdAt,
       },
@@ -142,18 +142,14 @@ export const chatService = {
   websocket: true,
   handler: (connection: WebSocket, req: FastifyRequest, res: FastifyReply) => {
     const token = req.cookies.accessToken!;
-    console.log("token -> ", token);
     try {
       var payload = app.jwt.jwt1.verify(token) as Payload;
-      console.log('token verified');
     } catch (error) {
-      console.log("fail ws inside server")
       res.status(401).send({ error: "JWT_EXPIRED" });
       connection.close();
       return;
     }
     const userId = payload.id;
-    console.log(`user id -> `, userId);
     clients.set(userId, connection);
     console.log("Connection Done with => " + payload.username);
     connection.on("message", (message: Buffer) => {

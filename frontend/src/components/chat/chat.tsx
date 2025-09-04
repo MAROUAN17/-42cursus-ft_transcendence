@@ -19,6 +19,7 @@ import { MdBlock } from "react-icons/md";
 const Chat = () => {
   const { username } = useParams<{ username?: string }>();
   const [show, setShow] = useState<boolean>(false);
+  const [blocked, setBlocked] = useState<boolean>(false);
   const [isOptionsOpen, setIsOptionsOpen] = useState<boolean>(false);
   const [messages, setMessages] = useState<messagePacket[]>([]);
   const [users, setUsers] = useState<UsersLastMessage[]>([]);
@@ -400,10 +401,29 @@ const Chat = () => {
                         <FaUser className="text-white" />
                         Profile
                       </li>
-                      <li className="text-red-600 flex items-center justify-center hover:bg-compBg/30 gap-1 py-2 px-4">
-                        <MdBlock className="text-red-600" />
-                        Block
-                      </li>
+                      {blocked ? (
+                        <li
+                          onClick={() => {
+                            setBlocked(false);
+                            axios.post("https://localhost:5000/block/" + targetUser.id, {}, { withCredentials: true });
+                          }}
+                          className="text-red-400 flex items-center justify-center hover:bg-compBg/30 gap-1 py-2 px-4"
+                        >
+                          <MdBlock className="text-red-400" />
+                          Unblock
+                        </li>
+                      ) : (
+                        <li
+                          onClick={() => {
+                            setBlocked(true);
+                            axios.post("https://localhost:5000/block/" + targetUser.id, {}, { withCredentials: true });
+                          }}
+                          className="text-red-600 flex items-center justify-center hover:bg-compBg/30 gap-1 py-2 px-4"
+                        >
+                          <MdBlock className="text-red-600" />
+                          Block
+                        </li>
+                      )}
                     </ul>
                   </div>
                 ) : null}
@@ -468,16 +488,23 @@ const Chat = () => {
               )}
             </div>
             <div className="bg-compBg/20 h-[95px] items-center flex px-5 justify-between">
-              <div className="flex p-1 flex-row bg-neon/[35%] items-center pr-4 w-full rounded-full">
-                <input
-                  type="text"
-                  id="msg"
-                  onKeyDown={sendMsg}
-                  placeholder="Type your message..."
-                  className="w-full p-4 pr-2 h-[45px] focus:outline-none rounded-full bg-transparent text-white placeholder-[#fff]/[40%]"
-                />
-                <RiSendPlaneFill className="text-white w-[20px] h-[20px]" />
-              </div>
+              {blocked ? (
+                <div className="flex items-center justify-center flex-col text-white w-full">
+                  <h3 className="font-medium text-center text-[20px]">You've blocked this user</h3>
+                  <p className="text-white/50 text-[15px]">You can't send or receive messages until you unblock them</p>
+                </div>
+              ) : (
+                <div className="flex p-1 flex-row bg-neon/[35%] items-center pr-4 w-full rounded-full">
+                  <input
+                    type="text"
+                    id="msg"
+                    onKeyDown={sendMsg}
+                    placeholder="Type your message..."
+                    className="w-full p-4 pr-2 h-[45px] focus:outline-none rounded-full bg-transparent text-white placeholder-[#fff]/[40%]"
+                  />
+                  <RiSendPlaneFill className="text-white w-[20px] h-[20px]" />
+                </div>
+              )}
             </div>
           </>
         ) : (
