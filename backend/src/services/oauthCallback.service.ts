@@ -43,7 +43,7 @@ export const oauthCallback = async (req: FastifyRequest, res: FastifyReply) => {
         .prepare("INSERT INTO players(email, username) VALUES (?, ?)")
         .run(email, username);
     }
-
+  
     //sign new JWT tokens
     const accessToken = app.jwt.jwt1.sign({ id:user?.id, email:user?.email, username:user?.username }, { expiresIn: '10s' });
     const refreshToken = app.jwt.jwt2.sign({ id:user?.id, email:user?.email, username:user?.username }, { expiresIn: '1d' });

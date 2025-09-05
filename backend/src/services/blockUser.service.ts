@@ -1,7 +1,6 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
 import app from "../server.js";
 import type { Payload } from "../models/chat.js";
-import { error } from "console";
 
 export const blockUser = async (req: FastifyRequest<{ Params: { id: number } }>, res: FastifyReply) => {
   try {
@@ -13,7 +12,7 @@ export const blockUser = async (req: FastifyRequest<{ Params: { id: number } }>,
     const blockedUser = app.db
       .prepare("UPDATE players SET block_list = json_insert(block_list, '$[#]', ?) WHERE id = ?")
       .run(req.params.id, payload.id);
-    if (blockedUser.changes == 0) return res.status(404).send({ error: error });
+    if (blockedUser.changes == 0) return res.status(404).send({ error: "Error" });
     res.status(200).send();
   } catch (err) {
     console.log('error ->', err);
