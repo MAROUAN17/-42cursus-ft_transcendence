@@ -7,7 +7,7 @@ import {
   verifyRegisterUser,
 } from "../services/register.service.js";
 import { getUsers } from "../services/getUsers.service.js";
-import { fetchUser } from "../services/user.service.js";
+import { fetchUser, fetchProfileUser } from "../services/user.service.js";
 import { oauthCallback } from "../services/oauthCallback.service.js";
 import {
   verify2FAToken,
@@ -44,6 +44,7 @@ export const authRoutes: FastifyPluginAsync = async () => {
   //get user data
   app.get("/", { onRequest: [app.jwtAuth] }, getUsers);
   app.get("/user", { onRequest: [app.jwtAuth] }, fetchUser);
+  app.get('/profile/:username', { onRequest: [app.jwtAuth] }, fetchProfileUser);
 
   //2fa
   app.post("/2fa/setup", setup2FA);

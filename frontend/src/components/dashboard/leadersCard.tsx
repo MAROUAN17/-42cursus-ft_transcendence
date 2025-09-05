@@ -23,8 +23,8 @@ const LeadersCard = ({ rank, username, name, score }: props) => {
         username: "",
         sender_id: 1,
         recipient_id: 2,
-        message: "",
-        createdAt: "",
+        message: "sent you a friend request",
+        createdAt: new Date().toISOString().replace("T", " ").split(".")[0],
       },
     };
     send(JSON.stringify(notif));

@@ -4,12 +4,12 @@ import { WebSocket } from "ws";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import type { RequestQuery, Payload, messagePacket } from "../models/chat.js";
 import type {
+  ChatPacket,
   NotificationPacket,
   notificationPacket,
   notificationPacketDB,
   websocketPacket,
 } from "../models/webSocket.model.js";
-import { type } from "os";
 
 const clients = new Map<number, WebSocket>();
 const messageQueue: websocketPacket[] = [];
@@ -22,8 +22,15 @@ interface rowInserted {
 
 function createNotification(currPacket: websocketPacket) {
   const savedNotification: rowInserted = app.db
-    .prepare("INSERT INTO notifications(type, sender_id, recipient_id,message) VALUES (?, ?, ?, ?)")
-    .run(currPacket.data.type, currPacket.data.sender_id, currPacket.data.recipient_id, currPacket.data.message);
+    .prepare(
+      "INSERT INTO notifications(type, sender_id, recipient_id,message) VALUES (?, ?, ?, ?)"
+    )
+    .run(
+      currPacket.data.type,
+      currPacket.data.sender_id,
+      currPacket.data.recipient_id,
+      currPacket.data.message
+    );
   const senderUsername: string = app.db
     .prepare("SELECT username FROM players WHERE id = ?")
     .get(currPacket.data.sender_id).username;
@@ -48,37 +55,63 @@ function createNotification(currPacket: websocketPacket) {
   }
 }
 
-function sendNotification(sender_id: number, recipient_id: number, currPacket: websocketPacket) {
-  if (currPacket.type != "chat") return;
+function sendNotification(currPacket: websocketPacket) {
+  const notif: notificationPacketDB = app.db
+    .prepare(
+      "SELECT * FROM notifications WHERE sender_id = ? AND recipient_id = ? AND type = ?"
+    )
+    .get(currPacket.data.sender_id, currPacket.data.recipient_id, "message");
+  let client = clients.get(currPacket.data.recipient_id);
+  console.log("sending notif to ", currPacket.data.recipient_id);
+  if (client) {
+    const notification: NotificationPacket = {
+      type: "notification",
+      data: {
+        id: notif.id,
+        type: "message",
+        username: "",
+        sender_id: currPacket.data.sender_id,
+        recipient_id: currPacket.data.recipient_id,
+        message: currPacket.data.message!,
+        unreadCount: 1,
+        createdAt: notif.updatedAt,
+      },
+    };
+    client.send(JSON.stringify(notification));
+  }
+}
+
+function checkNotificationMssg(currPacket: websocketPacket) {
   const updatedRow: rowInserted = app.db
     .prepare(
       "UPDATE notifications SET isRead = true, unreadCount = unreadCount + 1, updatedAt = (datetime('now')), message = ? WHERE sender_id = ? AND recipient_id = ? AND type = ?"
     )
-    .run(currPacket.data.message, currPacket.data.sender_id, currPacket.data.recipient_id, "message");
+    .run(
+      currPacket.data.message,
+      currPacket.data.sender_id,
+      currPacket.data.recipient_id,
+      "message"
+    );
   if (updatedRow.changes == 0) {
     createNotification(currPacket);
   } else {
-    const notif: notificationPacketDB = app.db
-      .prepare("SELECT * FROM notifications WHERE sender_id = ? AND recipient_id = ? AND type = ?")
-      .get(currPacket.data.sender_id, currPacket.data.recipient_id, "message");
-    let client = clients.get(currPacket.data.recipient_id);
-    console.log("sending notif to ", currPacket.data.recipient_id);
-    if (client) {
-      const notification: NotificationPacket = {
-        type: "notification",
-        data: {
-          id: notif.id,
-          type: "message",
-          username: "",
-          sender_id: currPacket.data.sender_id,
-          recipient_id: currPacket.data.recipient_id,
-          message: currPacket.data.message,
-          unreadCount: 1,
-          createdAt: notif.updatedAt,
-        },
-      };
-      client.send(JSON.stringify(notification));
-    }
+    sendNotification(currPacket);
+  }
+}
+
+function checkNotificationFriend(currPacket: websocketPacket) {
+  console.log('curr packet -> ', currPacket);
+  const notif = app.db
+    .prepare(
+      "SELECT * FROM notifications WHERE sender_id = ? AND recipient_id = ? AND type = ?"
+    )
+    .get(
+      currPacket.data.sender_id,
+      currPacket.data.recipient_id,
+      "friendReq"
+    );
+  if (!notif) {
+    createNotification(currPacket);
   }
 }
 
@@ -93,8 +126,14 @@ async function processMessages() {
       if (currPacket.type == "chat") {
         if (currPacket.data.type == "message") {
           const savedMessage: rowInserted = app.db
-            .prepare("INSERT INTO messages(sender_id, recipient_id, message) VALUES (?, ?, ?)")
-            .run(currPacket.data.sender_id, currPacket.data.recipient_id, currPacket.data.message);
+            .prepare(
+              "INSERT INTO messages(sender_id, recipient_id, message) VALUES (?, ?, ?)"
+            )
+            .run(
+              currPacket.data.sender_id,
+              currPacket.data.recipient_id,
+              currPacket.data.message
+            );
           currPacket.data.id = savedMessage.lastInsertRowid;
           currPacket.data.isDelivered = true;
           currPacket.data.type = "message";
@@ -108,11 +147,17 @@ async function processMessages() {
             currPacket.data.type = "message";
             console.log("sending delivered to =>", currPacket.data.sender_id);
           }
-          sendNotification(currPacket.data.sender_id, currPacket.data.recipient_id, currPacket);
+          checkNotificationMssg(currPacket);
         } else if (currPacket.data.type == "markSeen") {
           app.db
-            .prepare("UPDATE messages SET isRead = true WHERE id = ? AND sender_id = ? AND recipient_id = ?")
-            .run(currPacket.data.id, currPacket.data.sender_id, currPacket.data.recipient_id);
+            .prepare(
+              "UPDATE messages SET isRead = true WHERE id = ? AND sender_id = ? AND recipient_id = ?"
+            )
+            .run(
+              currPacket.data.id,
+              currPacket.data.sender_id,
+              currPacket.data.recipient_id
+            );
 
           if (currPacket.data.sender_id) {
             let client = clients.get(currPacket.data.sender_id);
@@ -122,15 +167,21 @@ async function processMessages() {
           console.log("marking Seen to ->", currPacket.data.recipient_id);
         }
       } else if (currPacket.type == "notification") {
+        console.log('curr packet -> ',currPacket)
         if (currPacket.data.type == "markSeen") {
           app.db
             .prepare(
               "UPDATE notifications SET isRead = true, unreadCount = 0 WHERE sender_id = ? AND recipient_id = ? AND type = ?"
             )
-            .run(currPacket.data.sender_id, currPacket.data.recipient_id, "message");
+            .run(
+              currPacket.data.sender_id,
+              currPacket.data.recipient_id,
+              "message"
+            );
           let client = clients.get(currPacket.data.recipient_id);
           if (client) client.send(JSON.stringify(currPacket));
         } else if (currPacket.data.type == "friendReq") {
+          checkNotificationFriend(currPacket);
         }
       }
     } catch (error) {
@@ -159,9 +210,11 @@ export const chatService = {
       try {
         const msgPacket: websocketPacket = JSON.parse(message.toString());
         if (msgPacket.type == "chat") {
-          if (msgPacket.data.type == "message") msgPacket.data.sender_id = userId;
+          if (msgPacket.data.type == "message")
+            msgPacket.data.sender_id = userId;
           else msgPacket.data.recipient_id = userId;
         }
+        console.log('mssg packet -> ', msgPacket);
         setImmediate(processMessages);
         messageQueue.push(msgPacket);
       } catch {

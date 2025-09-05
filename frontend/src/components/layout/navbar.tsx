@@ -78,7 +78,7 @@ const Navbar = () => {
         });
       });
     } else if (newNotif.type == "friendReq") {
-      console.log(packet);
+      setNotifications((prev) => [...prev, newNotif]);
     }
   }
 

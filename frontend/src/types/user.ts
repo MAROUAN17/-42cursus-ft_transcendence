@@ -11,3 +11,9 @@ export interface PUserInfo
     username: string,
     email: string,
 }
+
+export interface ProfileUserInfo
+{
+    username: string,
+    email: string,
+}

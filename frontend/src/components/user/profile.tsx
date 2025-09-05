@@ -9,6 +9,8 @@ import { FaHistory } from "react-icons/fa";
 import { BsPersonFill } from "react-icons/bs";
 import { VscListSelection } from "react-icons/vsc";
 import { MdUpdate } from "react-icons/md";
+import { IoIosPersonAdd } from "react-icons/io";
+
 import {
   Line,
   LineChart,
@@ -18,8 +20,20 @@ import {
   YAxis,
 } from "recharts";
 import HistoryCard from "./historyCard";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { useParams, useNavigate } from "react-router";
+import type { ProfileUserInfo } from "../../types/user";
 
 export default function Profile() {
+  const { username } = useParams();
+  const navigate = useNavigate();
+  let reqURL: string = "";
+  const [user, setUser] = useState<ProfileUserInfo>({
+    username: "",
+    email: "",
+  });
+
   const data = [
     { uv: 12, pv: 55 },
     { uv: 13, pv: 30 },
@@ -40,6 +54,54 @@ export default function Profile() {
 
     return null;
   }
+
+  useEffect(() => {
+    if (!username) {
+      reqURL = 'https://localhost:5000/user';
+    } else {
+      reqURL = 'https://localhost:5000/profile/' + username;
+    }
+    axios
+      .get(reqURL, {
+        withCredentials: true,
+      })
+      .then(function (res) {
+        console.log(res);
+        setUser(res.data.infos);
+      })
+      .catch(function (err) {
+        console.log(err);
+      });
+
+    axios.interceptors.response.use(
+      (response) => {
+        return response;
+      },
+      async (error) => {
+        const originalReq = error.config;
+        if (
+          error.response.status == 401 &&
+          error.response.data.error == "JWT_EXPIRED"
+        ) {
+          originalReq._retry = false;
+          try {
+            const res = await axios.post(
+              "https://localhost:5000/jwt/new",
+              {},
+              { withCredentials: true }
+            );
+            console.log(res);
+            return axios(originalReq);
+          } catch (error) {
+            console.log(error);
+            navigate("/login");
+          }
+        }
+        return Promise.reject(error);
+      }
+    );
+  }, []);
+
   return (
     <div className="flex flex-col bg-darkBg h-full w-full font-poppins">
       <div className="flex p-8 h-[50%] space-x-4">
@@ -125,11 +187,25 @@ export default function Profile() {
               />
             </div>
             <div>
-              <h1 className="text-white text-2xl font-bold">Gessama</h1>
-              <p className="text-white text-gray-500">Full Name</p>
+              <h1 className="text-white text-2xl font-bold">{user.username}</h1>
             </div>
-            <div className="flex justify-center mt-8 outline outline-white outline-2 outline-offset-4 rounded-full">
-              <CiSettings color="white" size={30} />
+            <div
+              className={`flex ${
+                username ? "space-x-5" : ""
+              } w-[120px] justify-center`}
+            >
+              <div
+                className={`flex justify-center mt-8 outline outline-white outline-2 outline-offset-4 rounded-full w-[25%]`}
+              >
+                <CiSettings color="white" size={30} />
+              </div>
+              {username ? (
+                <div className="flex justify-center mt-8 outline outline-white outline-2 outline-offset-4 rounded-full w-[25%] items-center">
+                  <IoIosPersonAdd color="white" size={22} />
+                </div>
+              ) : (
+                ""
+              )}
             </div>
           </div>
           <div className="flex flex-col space-y-6 mx-auto mt-6">
@@ -142,19 +218,7 @@ export default function Profile() {
               </div>
               <div>
                 <h1 className="text-neon font-bold">Email</h1>
-                <h1 className="text-white font-bold">test@gmail.com</h1>
-              </div>
-            </div>
-            <div className="flex space-x-6 items-center">
-              <div>
-                <FaLocationDot
-                  className="text-neon outline outline-3 outline-offset-8 rounded-full"
-                  size={25}
-                />
-              </div>
-              <div>
-                <h1 className="text-neon font-bold">Location</h1>
-                <h1 className="text-white font-bold">Morocco</h1>
+                <h1 className="text-white font-bold">{user.email}</h1>
               </div>
             </div>
             <div className="flex space-x-6 items-center">

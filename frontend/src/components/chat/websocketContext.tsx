@@ -44,6 +44,7 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     };
   }, []);
   function send(msg: string) {
+    console.log('sent to server')
     if (socketRef.current && socketRef.current.readyState == WebSocket.OPEN) socketRef.current.send(msg);
   }
   function addHandler(packetType: string, handler: (data: websocketPacket) => void) {

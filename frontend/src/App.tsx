@@ -42,6 +42,10 @@ export default function App() {
         {
           path: '/profile',
           Component: Profile
+        },
+        {
+          path: '/profile/:username',
+          Component: Profile
         }
       ],
     },
