@@ -1,27 +1,27 @@
 //this is the file where we start the server
-import fs from "fs"
+import fs from "fs";
 import { v4 as uuidv4 } from "uuid";
 import Fastify, { type RequestQuerystringDefault } from "fastify";
 import App from "./app.js";
-import { options } from "./plugins/env.plugin.js"
+import { options } from "./plugins/env.plugin.js";
 import websocketPlugin from "@fastify/websocket";
 import fastifyEnv from "@fastify/env";
 import fastifyJwt from "@fastify/jwt";
-import fastifyCookie from "@fastify/cookie";;
+import fastifyCookie from "@fastify/cookie";
 import cors from "@fastify/cors";
 import { chatService } from "./services/chat.service.js";
 import { getUsers } from "./services/getUsers.service.js";
 import { oauthPlugin } from "./plugins/oauth.plugin.js";
-import {mailTransporter} from "./plugins/nodemailer.plugin.js";
+import { mailTransporter } from "./plugins/nodemailer.plugin.js";
 
 const httpsOptions = {
   key: fs.readFileSync("../ssl/server.key"),
-  cert: fs.readFileSync("../ssl/server.crt")
+  cert: fs.readFileSync("../ssl/server.crt"),
 };
 
 const app = Fastify({
-  logger: true,
-  https: httpsOptions
+  logger: false,
+  https: httpsOptions,
 });
 
 async function start(): Promise<void> {
@@ -34,29 +34,29 @@ async function start(): Promise<void> {
   });
   await app.register(fastifyEnv, options);
   await app.register(fastifyCookie);
-  await app.register(fastifyJwt, { 
+  await app.register(fastifyJwt, {
     secret: process.env.JWT_TMP_LOGIN!,
     cookie: {
-      cookieName: 'loginToken',
-      signed: false
+      cookieName: "loginToken",
+      signed: false,
     },
-    namespace: 'jwt0'
+    namespace: "jwt0",
   });
-  await app.register(fastifyJwt, { 
+  await app.register(fastifyJwt, {
     secret: process.env.JWT_ACCESS_TOKEN!,
     cookie: {
-      cookieName: 'accessToken',
-      signed: false
+      cookieName: "accessToken",
+      signed: false,
     },
-    namespace: 'jwt1'
+    namespace: "jwt1",
   });
-  await app.register(fastifyJwt, { 
+  await app.register(fastifyJwt, {
     secret: process.env.JWT_REFRESH_TOKEN!,
     cookie: {
-      cookieName: 'refreshToken',
-      signed: false
+      cookieName: "refreshToken",
+      signed: false,
     },
-    namespace: 'jwt2'
+    namespace: "jwt2",
   });
   await app.register(oauthPlugin);
   await app.register(websocketPlugin);

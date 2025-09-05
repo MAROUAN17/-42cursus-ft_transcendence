@@ -6,6 +6,7 @@ import { useState } from "react";
 interface props {
   notification: notificationPacket;
   deleteFunc: (notif: notificationPacket) => void;
+  markNotifSeen: (id: number) => void;
 }
 
 function passedTime(createdAt: string) {
@@ -17,17 +18,17 @@ function passedTime(createdAt: string) {
   const days: number = Math.floor(hours / 24);
   return days ? days + " days" : hours ? hours + " hours" : minutes ? minutes + " minutes" : seconds + " seconds";
 }
-const NotificationElement = ({ notification, deleteFunc }: props) => {
+const NotificationElement = ({ notification, deleteFunc, markNotifSeen }: props) => {
   const navigate = useNavigate();
   const [removeNotif, setRemoveNotif] = useState<boolean>(false);
   return (
     <li className={`${removeNotif ? "duration-500 opacity-0 translate-x-5" : ""}`}>
       <button
         onClick={() => {
-          notification.unreadCount = 0;
+          markNotifSeen(notification.id);
           navigate(`/chat/${notification.username}`);
         }}
-        className="flex group gap-3 w-full flex-row hover:bg-compBg/20 hover:rounded-xl  px-4 py-2 text-white text-left"
+        className="flex group gap-3 w-full flex-row hover:bg-compBg/20 hover:rounded-xl  px-4 py-3 text-white text-left"
       >
         <img src="/src/assets/photo.png" className="border border-white h-[40px] w-[40px] rounded-full p-[1px]" />
         <div className="flex flex-col w-full">
