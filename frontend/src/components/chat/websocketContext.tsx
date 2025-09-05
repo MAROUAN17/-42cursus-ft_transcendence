@@ -15,17 +15,13 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   );
   function connectWs() {
     const ws = new WebSocket("wss://localhost:5000/send-message");
-    console.log("socketRef -> ", socketRef.current);
     socketRef.current = ws;
     socketRef.current.onopen = () => {
       console.log("Socket Created!");
-      console.log("ws ->", ws.readyState);
     };
 
     socketRef.current.onclose = () => {
-      console.log("closing ws");
       setTimeout(() => {
-        console.log("Retrying-----------------------");
         connectWs();
       }, 1000);
     };
@@ -41,17 +37,13 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   useEffect(() => {
     try {
       connectWs();
-    } catch (error) {
-      console.log("this is ws error -> ", error);
-    }
+    } catch (error) {}
 
     return () => {
-      console.log("Closing WebSocket...");
       socketRef.current?.close();
     };
   }, []);
   function send(msg: string) {
-    console.log("sending packet!");
     if (socketRef.current && socketRef.current.readyState == WebSocket.OPEN) socketRef.current.send(msg);
   }
   function addHandler(packetType: string, handler: (data: websocketPacket) => void) {

@@ -7,7 +7,6 @@ export const blockUser = async (req: FastifyRequest<{ Params: { id: number } }>,
   try {
     const token = req.cookies.accessToken;
     const payload = app.jwt.jwt1.verify(token) as Payload;
-    console.log("before");
     const checkBlocked = app.db.prepare("SELECT key FROM json_each((SELECT block_list FROM players WHERE id = ?)) WHERE value = ?").get(payload.id, req.params.id);
     if (checkBlocked != undefined)
       return;
