@@ -1,4 +1,7 @@
 import { useEffect, useState } from "react";
+import axios from "axios";
+import { useWebSocket } from "../chat/websocketContext";
+import type { websocketPacket } from "../../../../backend/src/models/webSocket.model";
 
 interface props {
   rank: number;
@@ -9,6 +12,24 @@ interface props {
 
 const LeadersCard = ({ rank, username, name, score }: props) => {
   const [show, setShow] = useState<boolean>(false);
+  const { send, addHandler } = useWebSocket();
+
+  function sendFriendReq() {
+    const notif: websocketPacket = {
+      type: "notification",
+      data: {
+        id: 0,
+        type: "friendReq",
+        username: "",
+        sender_id: 1,
+        recipient_id: 2,
+        message: "",
+        createdAt: "",
+      },
+    };
+    send(JSON.stringify(notif));
+  }
+
   useEffect(() => {
     setTimeout(() => {
       setShow(true);
@@ -20,21 +41,40 @@ const LeadersCard = ({ rank, username, name, score }: props) => {
       <div
         className={`bg-compBg transition-all duration-700 ease-in-out flex flex-col p-5 justify-between items-center text-white ${
           rank == 3 ? "h-3/5" : rank == 2 ? "h-4/5" : rank == 1 ? "h-full" : ""
-        } ${show ? "overflow-hidden" : "h-5 overflow-hidden"} w-full rounded-[30px]`}
+        } ${
+          show ? "overflow-hidden" : "h-5 overflow-hidden"
+        } w-full rounded-[30px]`}
       >
         <div className="relative flex flex-col items-center w-[24px] h-[24px] gap-6">
           <div
             className={`absolute inset-0 rounded-[5px] ${
-              rank == 3 ? "bg-[#00D95F]" : rank == 2 ? "bg-[#009BD6]" : rank == 1 ? "bg-[#FFAA00]" : ""
+              rank == 3
+                ? "bg-[#00D95F]"
+                : rank == 2
+                ? "bg-[#009BD6]"
+                : rank == 1
+                ? "bg-[#FFAA00]"
+                : ""
             } rotate-[45deg]`}
           ></div>
-          <div className="relative flex items-center justify-center w-full h-full text-white font-bold">{rank}</div>
+          <div className="relative flex items-center justify-center w-full h-full text-white font-bold">
+            {rank}
+          </div>
           <div className="flex flex-col items-center">
-            <h3 className="font-bold">{name}</h3>
+            <h3
+              onClick={() => {
+                sendFriendReq();
+              }}
+              className="font-bold"
+            >
+              {name}
+            </h3>
             <p>@{username}</p>
           </div>
         </div>
-        <h2 className="font-bold text-shadow-[50px] text-shadow-black text-3xl">{score}</h2>
+        <h2 className="font-bold text-shadow-[50px] text-shadow-black text-3xl">
+          {score}
+        </h2>
       </div>
       <img src="/src/assets/photo.png" className="h-[60px] w-[60px]" />
     </div>
