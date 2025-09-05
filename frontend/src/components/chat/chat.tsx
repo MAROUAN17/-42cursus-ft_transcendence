@@ -199,12 +199,6 @@ const Chat = () => {
     if (packet.type != "chat") return;
     const newMsg: messagePacket = packet.data;
     if (newMsg.type === "message") {
-      console.log("newMsg.recipient_id ", newMsg.recipient_id);
-      console.log("currUserRef.current?.id ", currUserRef.current?.id);
-      console.log("newMsg.sender_id ", newMsg.sender_id);
-      console.log("targetUserRef.current?.id ", targetUserRef.current?.id);
-      console.log("condition -> ", newMsg.recipient_id == currUserRef.current?.id);
-      console.log("condition 2 -> ", newMsg.sender_id == targetUserRef.current?.id);
       if (newMsg.recipient_id == currUserRef.current?.id && newMsg.sender_id == targetUserRef.current?.id) {
         setMessages((prev) => [newMsg, ...prev]);
       }
@@ -405,7 +399,7 @@ const Chat = () => {
                         <li
                           onClick={() => {
                             setBlocked(false);
-                            axios.post("https://localhost:5000/block/" + targetUser.id, {}, { withCredentials: true });
+                            axios.post("https://localhost:5000/unblock/" + targetUser.id, {}, { withCredentials: true });
                           }}
                           className="text-red-400 flex items-center justify-center hover:bg-compBg/30 gap-1 py-2 px-4"
                         >
