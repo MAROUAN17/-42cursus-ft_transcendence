@@ -3,7 +3,7 @@ import app from "../server.js";
 import { getNotifications } from "../services/getNotifications.service.js";
 import { deleteNotification } from "../services/deleteNotification.service.js";
 import { blockUser } from "../services/blockUser.service.js";
-import { unblockUser } from "../services/UnblockUser.service.js";
+import { unblockUser } from "../services/unblockUser.service.js";
 
 export const homeRoutes: FastifyPluginAsync = async (fastify) => {
   app.get("/notifications", { onRequest: [app.jwtAuth] }, getNotifications);

@@ -8,7 +8,7 @@ import type { messagePacket } from "../../../../backend/src/models/chat";
 
 const WebsocketContext = createContext<websocketContextType | undefined>(undefined);
 
-export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const WebSocketProvider: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
   const socketRef = useRef<WebSocket | null>(null);
   const handlersRef = useRef<Map<string, (msg: websocketPacket) => void>>(
     new Map<string, (msg: websocketPacket) => void>()
@@ -30,7 +30,7 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       const handler = handlersRef.current.get(data.type);
       if (handler) handler(data);
     };
-    socketRef.current.onerror = function (err: any) {
+    socketRef.current.onerror = function () {
       ws.close();
     };
   }

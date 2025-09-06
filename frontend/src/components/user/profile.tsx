@@ -57,9 +57,9 @@ export default function Profile() {
 
   useEffect(() => {
     if (!username) {
-      reqURL = 'https://localhost:5000/user';
+      reqURL = "https://localhost:5000/user";
     } else {
-      reqURL = 'https://localhost:5000/profile/' + username;
+      reqURL = "https://localhost:5000/profile/" + username;
     }
     axios
       .get(reqURL, {
@@ -237,18 +237,18 @@ export default function Profile() {
         </div>
       </div>
       <div className="px-8 h-[50%]">
-        <div className="bg-compBg/20 flex flex-col justify-center rounded-[10px]">
-          <div className="p-12 flex justify-between">
-            <h1 className="text-white font-bold">All users</h1>
+        <div className="bg-compBg/20 flex flex-col justify-center rounded-[20px]">
+          <div className="px-8 py-6 flex justify-between">
+            <h1 className="text-white font-bold">History</h1>
             <h1 className="text-white font-bold">
               <span className="text-neon">1 - 10 </span>of 256
             </h1>
           </div>
           <div>
-            <hr className="border-1" />
+            <hr className="border-1 border-[#343B4F]" />
           </div>
           {/* fields */}
-          <div className="px-12 py-8 text-white font-bold flex justify-between">
+          <div className="px-12 py-6 text-white font-bold flex justify-between">
             <div className="flex justify-center items-center space-x-2 w-[200px]">
               <BsPersonFill />
               <h1>User</h1>
@@ -272,8 +272,13 @@ export default function Profile() {
           </div>
           {/* values */}
           <HistoryCard />
+          <hr className="border-1 border-white/20" />
           <HistoryCard />
+          <hr className="border-1 border-white/20" />
           <HistoryCard />
+          <hr className="border-1 border-white/20" />
+          <HistoryCard />
+          <hr className="border-1 border-white/20" />
           <HistoryCard />
         </div>
         <div className="flex justify-between">
