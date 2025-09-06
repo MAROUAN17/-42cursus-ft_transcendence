@@ -22,6 +22,7 @@ import ResetPasswordForm from "./components/user/passwordResetForm";
 import { WebSocketProvider } from "./components/chat/websocketContext";
 import Layout from "./components/layout/layout";
 import type Tournament from './components/gametyping/listTournament/listTournament';
+import GameTyping from './components/gametyping/game/gameTyping';
 
 export default function App() {
   let router = createBrowserRouter([
@@ -73,11 +74,14 @@ export default function App() {
       Component: RGame
     },
     {
-      path: '/tournament',
+      path: '/typing-game/tournament',
       Component: tournament
     },{
-      path:'/listtournament',
+      path:'/typing-game/listtournament',
       Component: listTournament
+    },{
+      path:'/typing-game/game',
+      Component: GameTyping
     }
   ]);
   return <RouterProvider router={router} />;

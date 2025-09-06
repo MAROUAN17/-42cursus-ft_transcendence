@@ -8,7 +8,7 @@ export default function TournamentCard({ name }: TournamentCardProps) {
       {/* Top image */}
       <div className="h-[120px] bg-[#00cfff] flex items-center justify-center">
         <img
-          src="./table-tennis.png"
+          src="/table-tennis.png"
           alt="Tournament"
           className="h-[90px]"
         />
