@@ -38,7 +38,8 @@ export interface Player {
 
 export interface Game {
   id: string;
-  opponent: Player
-  yourRole: Player
+  opponent: Player;
+  you: Player;
+  side: string;
   gameInfo: GameInfo;
 }

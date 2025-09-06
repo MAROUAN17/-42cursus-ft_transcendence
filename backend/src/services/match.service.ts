@@ -78,7 +78,8 @@ export const pair_players = async (req: FastifyRequest, res: FastifyReply) => {
           game: {
             id: game.id,
             opponent: player.id === player1.id ? player2 : player1,
-            yourRole: player.id === player1.id ? player1 : player2,
+            side : player.id === player1.id ? "left" : "right",
+            you: player.id === player1.id ? player1 : player2,
             gameInfo: game.gameInfo
           }
         });
@@ -156,13 +157,15 @@ export const get_player_game = async (req: FastifyRequest, res: FastifyReply) =>
     }
     
     const playerRole = game.player1.id === playerId ? game.player1 : game.player2;
+    const side = game.player1.id === playerId ? "left" : "right";
     const opponent = playerRole === game.player1 ? game.player2 : game.player1;
     
     res.status(200).send({ 
       game: {
         id: game.id,
         opponent,
-        yourRole: playerRole,
+        you: playerRole,
+        side:side,
         gameInfo: game.gameInfo,
         status: game.status
       }

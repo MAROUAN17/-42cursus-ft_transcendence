@@ -5,7 +5,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router';
 
 
-export default function MatchMaking() {
+export default function Pairing() {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);

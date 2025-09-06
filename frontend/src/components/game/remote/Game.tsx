@@ -21,7 +21,6 @@ export default function RGame() {
   const PADDLE_HEIGHT = 120;
   const paddleLeft = { x: 24, y: leftY, width: PADDLE_WIDTH, height: PADDLE_HEIGHT };
   const paddleRight = { x:  600 - 24 - PADDLE_WIDTH, y: rightY, width: PADDLE_WIDTH, height: PADDLE_HEIGHT };
-  const [you, setYou] = useState<Player >();
   var x = 0;
 
   useEffect(() => {
@@ -30,7 +29,6 @@ export default function RGame() {
 	  const sessionGame = JSON.parse(storedGame);
 	  console.log("-----:  " , sessionGame)
 	  setGame(sessionGame)
-	  setYou(sessionGame.yourRole);
 	} else {
 	  console.log("No game found in sessionStorage.");
 	}
@@ -137,7 +135,8 @@ export default function RGame() {
 	  <RHeader
 		scoreLeft={gameInfo?.scoreLeft ?? 0}
 		scoreRight={gameInfo?.scoreRight ?? 0}
-		you = {game?.yourRole }
+		you = {game?.you }
+		side = {game?.side}
 		opponent = {game?.opponent}
 	  />
 
