@@ -1,7 +1,7 @@
 //this file for where we create the fastify instance and register all the plugins
 import Sensible from "@fastify/sensible";
 import fastifyFormbody from "@fastify/formbody";
-import { type FastifyInstance, type FastifyPluginOptions } from "fastify"
+import { type FastifyInstance, type FastifyPluginOptions } from "fastwify"
 import { dbConnection } from "./plugins/db.plugin.js"
 import { authRoutes } from "./routes/auth.routes.js";
 import { jwtPlugin } from "./plugins/jwt.plugin.js";
