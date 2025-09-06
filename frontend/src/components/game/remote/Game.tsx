@@ -2,14 +2,16 @@ import  { useEffect, useRef, useState } from "react";
 import RBall from "./RBall";
 import RBat from "./Bat";
 import RHeader from "./RHeader";
-import { type GameInfo } from "./Types";
+import { type GameInfo, type  Game } from "./Types";
+import { useNavigate } from "react-router";
 
 
 export default function RGame() {
-   const [i, setI] = useState(0);
+ const [i, setI] = useState(0);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [dir, setDir] = useState({x:1, y:1});
-  const [gameInfo, setGameInfo] = useState<GameInfo>()
+  const [gameInfo, setGameInfo] = useState<GameInfo>();
+  const [game, setGame] = useState<Game>();
 
   const [leftY, setLeftY] = useState(140);
   const [rightY, setRightY] = useState(140);
@@ -19,15 +21,27 @@ export default function RGame() {
   const PADDLE_HEIGHT = 120;
   const paddleLeft = { x: 24, y: leftY, width: PADDLE_WIDTH, height: PADDLE_HEIGHT };
   const paddleRight = { x:  600 - 24 - PADDLE_WIDTH, y: rightY, width: PADDLE_WIDTH, height: PADDLE_HEIGHT };
+  const [you, setYou] = useState<Player >();
   var x = 0;
 
   useEffect(() => {
+	const storedGame = sessionStorage.getItem("currentGame");
+	if (storedGame) {
+	  const sessionGame = JSON.parse(storedGame);
+	  console.log("-----:  " , sessionGame)
+	  setGame(sessionGame)
+	  setYou(sessionGame.yourRole);
+	} else {
+	  console.log("No game found in sessionStorage.");
+	}
+  }, []);  
+  useEffect(() => {
 	if (i < 3)
 		{
-			console.log("game info", gameInfo)
+			console.log("session game ", game)
 			setI(i + 1);
 		}
-  }, [gameInfo])
+  }, [game])
   useEffect(() => {
     const down = new Set<string>();
     const onKeyDown = (e: KeyboardEvent) => {
@@ -123,8 +137,8 @@ export default function RGame() {
 	  <RHeader
 		scoreLeft={gameInfo?.scoreLeft ?? 0}
 		scoreRight={gameInfo?.scoreRight ?? 0}
-		leftAvatar="/path/to/player1.png"
-		rightAvatar="/path/to/player2.png"
+		you = {game?.yourRole }
+		opponent = {game?.opponent}
 	  />
 
 	  <div

@@ -11,7 +11,7 @@ import Register from "./components/user/register"
 import Chat from './components/chat/chat';
 import tournament from './components/gametyping/tournament/Tournament';
 import listTournament from './components/gametyping/listTournament/listTournament';
-
+import MatchMaking  from './components/gametyping/matchmaking/Matchmaking';
 import RGame from './components/game/remote/Game';
 
 import Dashboard from './components/dashboard/dashboard';
@@ -82,6 +82,9 @@ export default function App() {
     },{
       path:'/typing-game/game',
       Component: GameTyping
+    },{
+      path:'/typing-game/matchmaking',
+      Component: MatchMaking
     }
   ]);
   return <RouterProvider router={router} />;
