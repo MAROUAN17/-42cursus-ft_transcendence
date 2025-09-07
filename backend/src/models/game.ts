@@ -12,6 +12,11 @@ export interface Paddle {
     velY: number;
   }
   
+  export interface Dir {
+    vertical: string;
+    horizontal:string;
+  }
+
   export interface GameInfo {
     ball: Ball;
     paddleLeft: Paddle;
@@ -19,6 +24,7 @@ export interface Paddle {
     bounds: { width: number; height: number };
     scoreLeft: number;
     scoreRight: number;
+    dir:Dir;
   }
   
   const GAME_WIDTH = 600;
@@ -50,5 +56,9 @@ export interface Paddle {
       height: GAME_HEIGHT
     },
     scoreLeft: 0,
-    scoreRight: 0
+    scoreRight: 0,
+    dir: {
+      vertical: "default",
+      horizontal: "default",
+    }
   };

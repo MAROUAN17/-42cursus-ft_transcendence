@@ -7,7 +7,7 @@ import { useNavigate } from "react-router";
 
 
 export default function RGame() {
- const [i, setI] = useState(0);
+  const [i, setI] = useState(0);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [dir, setDir] = useState({x:1, y:1});
   const [gameInfo, setGameInfo] = useState<GameInfo>();
@@ -89,37 +89,15 @@ export default function RGame() {
 			try {
 				const message = JSON.parse(event.data);
 				setGameInfo(message.game_info);
-				
-				if (!x) {
-					setDir({
-						x: (gameInfo?.ball?.velX ?? 0) >= 0 ? 1 : -1,
-						y: (gameInfo?.ball?.velY ?? 0) >= 0 ? 1 : -1,
-					});
-					x =1;
-				}
 			} catch (err) {
 				console.error("Invalid message from server:", event.data);
 			}
 		};
-	  
 		return () => {
 		  console.log("Closing WebSocket...");
 		  ws.close();
 		};
 	  }, [16]);
-	  const updateVel = ( type:string) =>
-	  {
-		if (websocket && websocket.readyState == WebSocket.OPEN){
-			if (type == "vely")
-				websocket.send(JSON.stringify({ type: "vely"}));
-			if (type == "velx")
-				websocket.send(JSON.stringify({ type: "velx"}));
-			//console.log("message sent [DIR]: ", type);
-		} else {
-			console.log("there is a proble in socket:", websocket);
-		}
-
-	  }
 	  const handleScore = (who: "left" | "right") => {
 		if (websocket && websocket.readyState == WebSocket.OPEN)
 		{
@@ -156,9 +134,6 @@ export default function RGame() {
 		  paddleRight={gameInfo?.paddleRight ?? paddleRight}
 		  bounds={gameInfo?.bounds ?? {width:600, height:400}}
 		  onScore={handleScore}
-		  updateVel={updateVel}
-		  leftY={leftY}
-		  rightY={rightY}
 		/>
 
 		<div className="absolute top-0 left-1/2 transform -translate-x-1/2 h-full flex flex-col justify-center items-center">
