@@ -5,6 +5,7 @@ import { useState } from "react";
 import { FaCheck } from "react-icons/fa";
 import { IoClose } from "react-icons/io5";
 import axios from "axios";
+import api from "../../axios";
 
 interface props {
   notification: notificationPacket;
@@ -76,9 +77,9 @@ const NotificationElement = ({
             <FaCheck
               color="green"
               onClick={() => {
-                axios
+                api
                   .post(
-                    "https://localhost:5000/add-friend/" +
+                    "/add-friend/" +
                       notification.sender_id,
                     {},
                     { withCredentials: true }

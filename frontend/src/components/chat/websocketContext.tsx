@@ -1,14 +1,25 @@
-import { createContext, useContext, useEffect, useRef } from "react";
+import { useState, createContext, useContext, useEffect, useRef } from "react";
+import { useNavigate } from "react-router";
+import type { userInfos } from "../../../../backend/src/models/user.model";
 import {
   type notificationPacket,
   type websocketContextType,
   type websocketPacket,
 } from "../../../../backend/src/models/webSocket.model";
 import type { messagePacket } from "../../../../backend/src/models/chat";
+import axios from "axios";
+import type { ProfileUserInfo } from "../../types/user";
+import api from "../../axios"
 
-const WebsocketContext = createContext<websocketContextType | undefined>(undefined);
+const WebsocketContext = createContext<websocketContextType | undefined>(
+  undefined
+);
 
-export const WebSocketProvider: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
+export const WebSocketProvider: React.FC<{ children?: React.ReactNode }> = ({
+  children,
+}) => {
+  const navigate = useNavigate();
+  const [user, setUser] = useState<ProfileUserInfo | null>(null);
   const socketRef = useRef<WebSocket | null>(null);
   const handlersRef = useRef<Map<string, (msg: websocketPacket) => void>>(
     new Map<string, (msg: websocketPacket) => void>()
@@ -37,6 +48,19 @@ export const WebSocketProvider: React.FC<{ children?: React.ReactNode }> = ({ ch
   useEffect(() => {
     try {
       connectWs();
+      api
+        .get("/user", { withCredentials: true })
+        .then(function (res) {
+          setUser(res.data.infos);
+        })
+        .catch(function (err) {
+          console.log(err);
+          if (
+            err.response.status == 401 &&
+            err.response.data.error == "Unauthorized"
+          )
+            navigate("/login");
+        });
     } catch (error) {}
 
     return () => {
@@ -44,17 +68,26 @@ export const WebSocketProvider: React.FC<{ children?: React.ReactNode }> = ({ ch
     };
   }, []);
   function send(msg: string) {
-    console.log('sent to server')
-    if (socketRef.current && socketRef.current.readyState == WebSocket.OPEN) socketRef.current.send(msg);
+    console.log("sent to server");
+    if (socketRef.current && socketRef.current.readyState == WebSocket.OPEN)
+      socketRef.current.send(msg);
   }
-  function addHandler(packetType: string, handler: (data: websocketPacket) => void) {
-    if (!handlersRef.current.get(packetType)) handlersRef.current.set(packetType, handler);
+  function addHandler(
+    packetType: string,
+    handler: (data: websocketPacket) => void
+  ) {
+    if (!handlersRef.current.get(packetType))
+      handlersRef.current.set(packetType, handler);
 
     return () => {
       handlersRef.current.delete(packetType);
     };
   }
-  return <WebsocketContext.Provider value={{ send, addHandler }}>{children}</WebsocketContext.Provider>;
+  return (
+    <WebsocketContext.Provider value={{ send, addHandler, user }}>
+      {children}
+    </WebsocketContext.Provider>
+  );
 };
 
 export const useWebSocket = () => {

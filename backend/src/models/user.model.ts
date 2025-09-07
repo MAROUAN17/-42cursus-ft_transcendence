@@ -25,4 +25,4 @@ export interface userInfos {
 
 export interface userPass {
     password : string;
-}
+} 

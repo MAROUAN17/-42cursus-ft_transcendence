@@ -2,18 +2,22 @@ import React, { useEffect, useRef, useState } from "react";
 import { FaSearch } from "react-icons/fa";
 import { IoNotifications } from "react-icons/io5";
 import axios from "axios";
-import type { User } from "../../../../backend/src/models/user.model";
+import type { User, userInfos } from "../../../../backend/src/models/user.model";
 import { IoIosArrowDropdown } from "react-icons/io";
 import { RiArrowDropDownLine } from "react-icons/ri";
 import { TiDelete } from "react-icons/ti";
-import type { notificationPacket, websocketPacket } from "../../../../backend/src/models/webSocket.model";
+import type {
+  notificationPacket,
+  websocketPacket,
+} from "../../../../backend/src/models/webSocket.model";
 import { useWebSocket } from "../chat/websocketContext";
 import NotificationElement from "./notificationElement";
 import { useNavigate } from "react-router";
+import api from "../../axios";
 
 const Navbar = () => {
   const navigate = useNavigate();
-  const [currUser, setCurrUser] = useState<User>();
+  const { user } = useWebSocket();
   const [isNotificationOpen, setIsNotificationOpen] = useState<boolean>(false);
   const [hasUnread, setHasUnread] = useState<boolean>(false);
   const [notifications, setNotifications] = useState<notificationPacket[]>([]);
@@ -22,8 +26,8 @@ const Navbar = () => {
   const { send, addHandler } = useWebSocket();
 
   useEffect(() => {
-    axios
-      .get("https://localhost:5000/notifications", { withCredentials: true })
+    api
+      .get("/notifications", { withCredentials: true })
       .then((res) => {
         console.log("notifications -> ", res.data.data);
         setNotifications(res.data.data);
@@ -36,22 +40,22 @@ const Navbar = () => {
   }, []);
 
   useEffect(() => {
-    axios
-      .get("https://localhost:5000/user", { withCredentials: true })
-      .then((res) => {
-        setCurrUser(res.data.infos);
-      })
-      .catch((error) => console.error("Error fetching user:", error));
     function handleClickOutside(e: MouseEvent) {
-      if (notificationRef.current && !notificationRef.current.contains(e.target as Node)) setIsNotificationOpen(false);
+      if (
+        notificationRef.current &&
+        !notificationRef.current.contains(e.target as Node)
+      )
+        setIsNotificationOpen(false);
     }
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
   useEffect(() => {
-    const res: notificationPacket | undefined = notifications?.find((notif: notificationPacket) => {
-      return notif.unreadCount ? notif.unreadCount > 0 : false;
-    });
+    const res: notificationPacket | undefined = notifications?.find(
+      (notif: notificationPacket) => {
+        return notif.unreadCount ? notif.unreadCount > 0 : false;
+      }
+    );
     // console.log("res -> ", res);
     res ? setHasUnread(true) : setHasUnread(false);
   }, [notifications]);
@@ -74,7 +78,9 @@ const Navbar = () => {
     } else if (newNotif.type == "markSeen") {
       setNotifications((prev) => {
         return prev.map((notif) => {
-          return notif.sender_id == packet.data.sender_id ? { ...notif, unreadCount: 0 } : notif;
+          return notif.sender_id == packet.data.sender_id
+            ? { ...notif, unreadCount: 0 }
+            : notif;
         });
       });
     } else if (newNotif.type == "friendReq") {
@@ -83,7 +89,7 @@ const Navbar = () => {
   }
 
   function deleteNotification(notif: notificationPacket) {
-    axios.delete("https://localhost:5000/notifications/" + notif.id, {
+    api.delete("/notifications/" + notif.id, {
       withCredentials: true,
     });
     setTimeout(() => {
@@ -92,7 +98,11 @@ const Navbar = () => {
   }
 
   function markNotifSeen(id: number) {
-    setNotifications((prev) => prev.map((notif) => (notif.id == id ? { ...notif, unreadCount: 0  } : notif)));
+    setNotifications((prev) =>
+      prev.map((notif) =>
+        notif.id == id ? { ...notif, unreadCount: 0 } : notif
+      )
+    );
   }
 
   return (
@@ -114,7 +124,9 @@ const Navbar = () => {
               className="p-4 flex bg-neon/[10%] hover:bg-neon/[20%] rounded-xl"
             >
               <IoNotifications className="text-neon w-[20px] h-[20px]" />
-              {hasUnread ? <div className="w-[5px] h-[5px] rounded-full bg-red-600 ml-[-4px] mt-[-2px]"></div> : null}
+              {hasUnread ? (
+                <div className="w-[5px] h-[5px] rounded-full bg-red-600 ml-[-4px] mt-[-2px]"></div>
+              ) : null}
             </button>
             {isNotificationOpen ? (
               <div className="absolute overflow-hidden right-0 mt-2 w-72 z-10  bg-[#1f085f] rounded-lg shadow-[0_0px_20px_rgba(0,0,0,0.25)]">
@@ -125,11 +137,13 @@ const Navbar = () => {
                         deleteFunc={deleteNotification}
                         key={notification.id}
                         notification={notification}
-                        markNotifSeen = {markNotifSeen}
+                        markNotifSeen={markNotifSeen}
                       />
                     ))
                   ) : (
-                    <h2 className="text-center font-medium py-2 text-white">No notifications yet 🎉</h2>
+                    <h2 className="text-center font-medium py-2 text-white">
+                      No notifications yet 🎉
+                    </h2>
                   )}
                 </ul>
               </div>
@@ -137,7 +151,9 @@ const Navbar = () => {
           </div>
           <div className="p-3 gap-1 flex items-center hover:bg-neon/[20%] rounded-xl">
             <img src="/src/assets/photo.png" className="h-[30px] w-[30px]" />
-            <h3 className="text-white font-medium text-[12px]">{currUser?.username}</h3>
+            <h3 className="text-white font-medium text-[12px]">
+              {user?.username}
+            </h3>
             <RiArrowDropDownLine className="text-white w-[20px] h-[20px]" />
           </div>
         </div>

@@ -1,4 +1,5 @@
 import type { messagePacket } from "./chat.js";
+import type { userInfos } from "./user.model.js";
 
 export interface ChatPacket {
   type: "chat";
@@ -38,4 +39,5 @@ export interface websocketContextType {
     packetType: string,
     handler: (data: websocketPacket) => void
   ) => void;
+  user: userInfos;
 }

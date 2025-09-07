@@ -20,8 +20,8 @@ export const requestNewToken = async (req: FastifyRequest, res: FastifyReply): P
         httpOnly: true,
         sameSite: "lax",
         maxAge: 10,
-      }).send({ token: newAccessToken });      
+      }).send({ token: newAccessToken });    
     } catch (error) {
-      res.status(401).send({ error: "Refresh token expired" });
+      res.status(401).send({ error: "REFRESH_EXPIRED" });
     }
 }

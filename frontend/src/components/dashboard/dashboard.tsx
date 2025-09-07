@@ -10,7 +10,12 @@ import { MdGroups } from "react-icons/md";
 import FriendBubble from "./friendBubble";
 import { IoChatbubblesSharp } from "react-icons/io5";
 import MessageBubble from "./messageBubble";
-import type { User, userInfos } from "../../../../backend/src/models/user.model";
+import type {
+  User,
+  userInfos,
+} from "../../../../backend/src/models/user.model";
+import { useWebSocket } from "../chat/websocketContext";
+import api from "../../axios";
 
 export default function Dashboard() {
   const data = [
@@ -24,7 +29,7 @@ export default function Dashboard() {
   ];
 
   const navigate = useNavigate();
-  const [user, setUser] = useState<PUserInfo>({ id: 0, username: "", email: "" });
+  const { user } = useWebSocket();
   const [show, setShow] = useState<boolean>(false);
   function handleClick(e: React.MouseEvent<HTMLButtonElement>) {
     e.preventDefault();
@@ -56,46 +61,56 @@ export default function Dashboard() {
     setTimeout(() => {
       setShow(true);
     }, 50);
-    axios
-      .get("https://localhost:5000/user", { withCredentials: true })
-      .then(function (res) {
-        console.log("user -> ", res.data.infos);
-        setUser(res.data.infos);
-      })
-      .catch(function (err) {
-        console.log(err);
-        if (err.response.status == 401 && err.response.data.error == "Unauthorized") navigate("/login");
-      });
+    // axios
+    //   .get("https://localhost:5000/user", { withCredentials: true })
+    //   .then(function (res) {
+    //     setUser(res.data.infos);
+    //   })
+    //   .catch(function (err) {
+    //     console.log(err);
+    //     if (
+    //       err.response.status == 401 &&
+    //       err.response.data.error == "Unauthorized"
+    //     )
+    //       navigate("/login");
+    //   });
 
-    axios
-      .get("https://localhost:5000/users", { withCredentials: true })
+    // axios.interceptors.response.use(
+    //   (response) => {
+    //     return response;
+    //   },
+    //   async (error) => {
+    //     const originalReq = error.config;
+    //     if (
+    //       error.response.status == 401 &&
+    //       error.response.data.error == "JWT_EXPIRED"
+    //     ) {
+    //       originalReq._retry = false;
+    //       try {
+    //         const res = await axios.post(
+    //           "https://localhost:5000/jwt/new",
+    //           {},
+    //           { withCredentials: true }
+    //         );
+    //         console.log(res);
+    //         return axios(originalReq);
+    //       } catch (error) {
+    //         console.log(error);
+    //         navigate("/login");
+    //       }
+    //     }
+    //     return Promise.reject(error);
+    //   }
+    // );
+    
+    api
+      .get("/users", { withCredentials: true })
       .then(function (res) {
         console.log(res.data);
       })
       .catch(function (err) {
         console.log(err);
       });
-
-    axios.interceptors.response.use(
-      (response) => {
-        return response;
-      },
-      async (error) => {
-        const originalReq = error.config;
-        if (error.response.status == 401 && error.response.data.error == "JWT_EXPIRED") {
-          originalReq._retry = false;
-          try {
-            const res = await axios.post("https://localhost:5000/jwt/new", {}, { withCredentials: true });
-            console.log(res);
-            return axios(originalReq);
-          } catch (error) {
-            console.log(error);
-            navigate("/login");
-          }
-        }
-        return Promise.reject(error);
-      }
-    );
   }, []);
 
   function CustomTooltip({ payload, label, active }: any) {
@@ -118,16 +133,19 @@ export default function Dashboard() {
     >
       <div className={`font-poppins w-full h-full p-5 flex flex-col gap-3 `}>
         <h1 className="text-white font-bold text-[30px]">
-          Hi, <span className="text-neon">{user.username}</span>
+          Hi, <span className="text-neon">{user?.username}</span>
         </h1>
         <div className="flex w-full h-2/5 gap-5">
           <div className="bg-compBg flex flex-row basis-3/5  grow rounded-[30px] p-10">
             <div className="flex flex-col gap-1 p-12 space-y-16">
               <div className="space-y-4">
-                <h2 className="text-white font-bold text-[40px]/10">Welcome, Watch Streaming Games
-                  Anywhere & Anytime! Anywhere & Anytime!</h2>
+                <h2 className="text-white font-bold text-[40px]/10">
+                  Welcome, Watch Streaming Games Anywhere & Anytime! Anywhere &
+                  Anytime!
+                </h2>
                 <p className="text-[#fff]/[50%] text-[20px]">
-                  Jump into matchmaking and challenge players from around the world. Serve, smash, and score!
+                  Jump into matchmaking and challenge players from around the
+                  world. Serve, smash, and score!
                 </p>
               </div>
               <div>
@@ -145,7 +163,9 @@ export default function Dashboard() {
             <div className="flex flex-col justify-between p-10 relative gap-6 z-10 w-fit">
               <div className="">
                 <h2 className="text-white font-bold text-[90px] h-fit">30</h2>
-                <p className="text-white text-[30px] mt-[-15px]">Games Played</p>
+                <p className="text-white text-[30px] mt-[-15px]">
+                  Games Played
+                </p>
               </div>
               <button className="bg-darkBg/10 p-2 shadow-[0_5px_10px_rgba(0,0,0,0.25)]  px-8 flex items-center rounded-full gap-2 w-fit">
                 <p className="text-white font-medium">History</p>
@@ -166,7 +186,12 @@ export default function Dashboard() {
                   }}
                 >
                   <Tooltip content={<CustomTooltip />} />
-                  <Area type="monotone" dataKey="uv" stroke="#8884d8" fill="#8884d8" />
+                  <Area
+                    type="monotone"
+                    dataKey="uv"
+                    stroke="#8884d8"
+                    fill="#8884d8"
+                  />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
@@ -192,9 +217,6 @@ export default function Dashboard() {
               <TournamentCard />
               <TournamentCard />
               <TournamentCard />
-
-
-              
             </div>
           </div>
           <div className="flex flex-col basis-2/5 h-full gap-2">
@@ -206,9 +228,24 @@ export default function Dashboard() {
               </div>
             </div>
             <div className="flex flex-wrap w-full justify-between h-full">
-              <LeadersCard rank={2} username="username" name="Jackson" score={2000} />
-              <LeadersCard rank={1} username="username" name="Jackson" score={2000} />
-              <LeadersCard rank={3} username="username" name="Jackson" score={2000} />
+              <LeadersCard
+                rank={2}
+                username="username"
+                name="Jackson"
+                score={2000}
+              />
+              <LeadersCard
+                rank={1}
+                username="username"
+                name="Jackson"
+                score={2000}
+              />
+              <LeadersCard
+                rank={3}
+                username="username"
+                name="Jackson"
+                score={2000}
+              />
             </div>
           </div>
         </div>

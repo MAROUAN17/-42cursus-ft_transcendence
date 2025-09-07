@@ -9,7 +9,8 @@ import { FaHistory } from "react-icons/fa";
 import { BsPersonFill } from "react-icons/bs";
 import { VscListSelection } from "react-icons/vsc";
 import { MdUpdate } from "react-icons/md";
-import { IoIosPersonAdd } from "react-icons/io";
+import { BsPersonFillAdd } from "react-icons/bs";
+import { BsPersonFillCheck } from "react-icons/bs";
 
 import {
   Line,
@@ -21,18 +22,22 @@ import {
 } from "recharts";
 import HistoryCard from "./historyCard";
 import { useEffect, useState } from "react";
-import axios from "axios";
+import axios, { type AxiosError, type AxiosResponse } from "axios";
 import { useParams, useNavigate } from "react-router";
 import type { ProfileUserInfo } from "../../types/user";
+import type { websocketPacket } from "../../../../backend/src/models/webSocket.model";
+import { useWebSocket } from "../chat/websocketContext";
+import api from "../../axios";
 
 export default function Profile() {
   const { username } = useParams();
+  const [profileStatus, setProfileStatus] = useState<string>();
   const navigate = useNavigate();
-  let reqURL: string = "";
-  const [user, setUser] = useState<ProfileUserInfo>({
+  const [currUser, setCurrUser] = useState<ProfileUserInfo>({
     username: "",
     email: "",
   });
+  const { send, addHandler } = useWebSocket();
 
   const data = [
     { uv: 12, pv: 55 },
@@ -55,51 +60,43 @@ export default function Profile() {
     return null;
   }
 
+  function sendFriendReq() {
+    const notif: websocketPacket = {
+      type: "notification",
+      data: {
+        id: 0,
+        type: "friendReq",
+        username: "",
+        sender_id: 1,
+        recipient_id: 2,
+        message: "sent you a friend request",
+        createdAt: new Date().toISOString().replace("T", " ").split(".")[0],
+      },
+    };
+    send(JSON.stringify(notif));
+  }
+
   useEffect(() => {
-    if (!username) {
-      reqURL = "https://localhost:5000/user";
-    } else {
-      reqURL = "https://localhost:5000/profile/" + username;
-    }
-    axios
-      .get(reqURL, {
-        withCredentials: true,
-      })
-      .then(function (res) {
-        console.log(res);
-        setUser(res.data.infos);
-      })
+    api
+      .get("/block/check/" + username, { withCredentials: true })
+      .then(function (res) {})
       .catch(function (err) {
-        console.log(err);
+        console.log("check block ERROR -> ", err);
+        if (err.response.status == 404) {
+          navigate("/404");
+        }
       });
 
-    axios.interceptors.response.use(
-      (response) => {
-        return response;
-      },
-      async (error) => {
-        const originalReq = error.config;
-        if (
-          error.response.status == 401 &&
-          error.response.data.error == "JWT_EXPIRED"
-        ) {
-          originalReq._retry = false;
-          try {
-            const res = await axios.post(
-              "https://localhost:5000/jwt/new",
-              {},
-              { withCredentials: true }
-            );
-            console.log(res);
-            return axios(originalReq);
-          } catch (error) {
-            console.log(error);
-            navigate("/login");
-          }
-        }
-        return Promise.reject(error);
-      }
-    );
+    api
+      .get("/profile/" + username, { withCredentials: true })
+      .then(function (res: AxiosResponse) {
+        console.log("profile user -> ", res);
+        setCurrUser(res.data.infos);
+        setProfileStatus(res.data.profileType);
+      })
+      .catch(function (err: AxiosError) {
+        console.log("profile err -> ", err);
+      });
   }, []);
 
   return (
@@ -187,21 +184,27 @@ export default function Profile() {
               />
             </div>
             <div>
-              <h1 className="text-white text-2xl font-bold">{user.username}</h1>
+              <h1 className="text-white text-2xl font-bold">
+                {currUser.username}
+              </h1>
             </div>
             <div
               className={`flex ${
-                username ? "space-x-5" : ""
+                profileStatus == "other" ? "space-x-5" : ""
               } w-[120px] justify-center`}
             >
-              <div
-                className={`flex justify-center mt-8 outline outline-white outline-2 outline-offset-4 rounded-full w-[25%]`}
-              >
+              <div className="flex justify-center mt-8 outline outline-white outline-2 outline-offset-4 rounded-full w-[25%]">
                 <CiSettings color="white" size={30} />
               </div>
-              {username ? (
+              {profileStatus == "other" ? (
                 <div className="flex justify-center mt-8 outline outline-white outline-2 outline-offset-4 rounded-full w-[25%] items-center">
-                  <IoIosPersonAdd color="white" size={22} />
+                  <BsPersonFillAdd
+                    onClick={() => {
+                      sendFriendReq();
+                    }}
+                    color="white"
+                    size={22}
+                  />
                 </div>
               ) : (
                 ""
@@ -218,7 +221,7 @@ export default function Profile() {
               </div>
               <div>
                 <h1 className="text-neon font-bold">Email</h1>
-                <h1 className="text-white font-bold">{user.email}</h1>
+                <h1 className="text-white font-bold">{currUser.email}</h1>
               </div>
             </div>
             <div className="flex space-x-6 items-center">

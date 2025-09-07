@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useWebSocket } from "../chat/websocketContext";
-import type { websocketPacket } from "../../../../backend/src/models/webSocket.model";
 
 interface props {
   rank: number;
@@ -12,23 +11,6 @@ interface props {
 
 const LeadersCard = ({ rank, username, name, score }: props) => {
   const [show, setShow] = useState<boolean>(false);
-  const { send, addHandler } = useWebSocket();
-
-  function sendFriendReq() {
-    const notif: websocketPacket = {
-      type: "notification",
-      data: {
-        id: 0,
-        type: "friendReq",
-        username: "",
-        sender_id: 1,
-        recipient_id: 2,
-        message: "sent you a friend request",
-        createdAt: new Date().toISOString().replace("T", " ").split(".")[0],
-      },
-    };
-    send(JSON.stringify(notif));
-  }
 
   useEffect(() => {
     setTimeout(() => {
@@ -61,14 +43,7 @@ const LeadersCard = ({ rank, username, name, score }: props) => {
             {rank}
           </div>
           <div className="flex flex-col items-center">
-            <h3
-              onClick={() => {
-                sendFriendReq();
-              }}
-              className="font-bold"
-            >
-              {name}
-            </h3>
+            <h3 className="font-bold">{name}</h3>
             <p>@{username}</p>
           </div>
         </div>
