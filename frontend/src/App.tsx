@@ -5,6 +5,9 @@ import {
   BrowserRouter,
   createBrowserRouter,
   RouterProvider,
+  useNavigate,
+  redirect,
+  Navigate
 } from "react-router";
 import Game from "./components/game/game";
 import Login from "./components/user/login";
@@ -23,6 +26,8 @@ import Setup2FA from "./components/user/setup2FA";
 import type { UserInfo } from "./types/user";
 import Profile from "./components/user/profile";
 import notFound from "./components/error/404";
+import api from "./axios";
+import  checkBlockLoader from "./components/loaders/checkBlock"
 
 export default function App() {
   let router = createBrowserRouter([
@@ -52,6 +57,7 @@ export default function App() {
         {
           path: "/profile/:username",
           Component: Profile,
+          loader: checkBlockLoader
         },
       ],
     },
@@ -84,9 +90,9 @@ export default function App() {
       Component: RGame,
     },
     {
-      path: '/404',
-      Component: notFound
-    }
+      path: "/404",
+      Component: notFound,
+    },
   ]);
   return <RouterProvider router={router} />;
 }

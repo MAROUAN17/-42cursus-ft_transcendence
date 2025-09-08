@@ -34,7 +34,6 @@ api.interceptors.response.use(
       }
     }
 
-    console.log("not catched -> ", error);
     return Promise.reject(error);
   }
 );

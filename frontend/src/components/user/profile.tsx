@@ -77,15 +77,15 @@ export default function Profile() {
   }
 
   useEffect(() => {
-    api
-      .get("/block/check/" + username, { withCredentials: true })
-      .then(function (res) {})
-      .catch(function (err) {
-        console.log("check block ERROR -> ", err);
-        if (err.response.status == 404) {
-          navigate("/404");
-        }
-      });
+    // api
+    //   .get("/block/check/" + username, { withCredentials: true })
+    //   .then(function (res) {})
+    //   .catch(function (err) {
+    //     console.log("check block ERROR -> ", err);
+    //     if (err.response.status == 404) {
+    //       navigate("/404");
+    //     }
+    //   });
 
     api
       .get("/profile/" + username, { withCredentials: true })
