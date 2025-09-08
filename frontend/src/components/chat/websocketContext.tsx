@@ -9,7 +9,7 @@ import {
 import type { messagePacket } from "../../../../backend/src/models/chat";
 import axios from "axios";
 import type { ProfileUserInfo } from "../../types/user";
-import api from "../../axios"
+import api from "../../axios";
 
 const WebsocketContext = createContext<websocketContextType | undefined>(
   undefined

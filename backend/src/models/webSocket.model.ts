@@ -39,5 +39,5 @@ export interface websocketContextType {
     packetType: string,
     handler: (data: websocketPacket) => void
   ) => void;
-  user: userInfos;
+  user: userInfos | null;
 }

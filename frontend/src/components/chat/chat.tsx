@@ -7,14 +7,20 @@ import UserBubble from "./UserBubble";
 import { IoCheckmark } from "react-icons/io5";
 import type { User } from "../../../../backend/src/models/user.model";
 import { useState, useEffect, useRef } from "react";
-import axios from "axios";
-import type { UsersLastMessage, messagePacket } from "../../../../backend/src/models/chat";
+import type {
+  UsersLastMessage,
+  messagePacket,
+} from "../../../../backend/src/models/chat";
 import ChatBubble from "./chatBubble";
 import { v4 as uuidv4 } from "uuid";
 import { useWebSocket } from "./websocketContext";
-import type { notificationPacket, websocketPacket } from "../../../../backend/src/models/webSocket.model";
+import type {
+  notificationPacket,
+  websocketPacket,
+} from "../../../../backend/src/models/webSocket.model";
 import { useParams, useNavigate } from "react-router";
 import { MdBlock } from "react-icons/md";
+import api from "../../axios";
 
 const Chat = () => {
   const { username } = useParams<{ username?: string }>();
@@ -33,7 +39,7 @@ const Chat = () => {
   const { send, addHandler } = useWebSocket();
   useEffect(() => {
     if (!targetUser) return;
-    axios("https://localhost:5000/messages/" + targetUser.id, {
+    api("/messages/" + targetUser.id, {
       withCredentials: true,
     })
       .then((res) => {
@@ -48,62 +54,21 @@ const Chat = () => {
     setTimeout(() => {
       setShow(true);
     }, 50);
-    axios.interceptors.response.use(
-      (response) => {
-        return response;
-      },
-      async (error) => {
-        const originalReq = error.config;
-        if (error.response.status == 401 && error.response.data.error == "JWT_EXPIRED") {
-          originalReq._retry = false;
-          try {
-            const res = await axios.post("https://localhost:5000/jwt/new", {}, { withCredentials: true });
-            console.log(res);
-            return axios(originalReq);
-          } catch (error) {
-            navigate("/login");
-          }
-        }
-        return Promise.reject(error);
-      }
-    );
   }, []);
 
   useEffect(() => {
-    axios("https://localhost:5000/user", { withCredentials: true })
+    api("/user", { withCredentials: true })
       .then((res) => {
         setCurrUser(res.data.infos);
         currUserRef.current = res.data.infos;
       })
       .catch((error) => console.error("Error fetching user:", error));
-    axios.interceptors.response.use(
-      (response) => {
-        return response;
-      },
-      async (error) => {
-        const originalReq = error.config;
-
-        if (error.response.status == 401 && error.response.data.error == "JWT_EXPIRED") {
-          originalReq._retry = false;
-          try {
-            const res = await axios.post("https://localhost:5000/jwt/new", {}, { withCredentials: true });
-            console.log(res);
-            return axios(originalReq);
-          } catch (error) {
-            console.log(error);
-            const navigate = useNavigate();
-            navigate("/login");
-          }
-        }
-        return Promise.reject(error);
-      }
-    );
     const addedHandled = addHandler("chat", handleChat);
     return addedHandled;
   }, []);
 
   useEffect(() => {
-    axios("https://localhost:5000/users", { withCredentials: true })
+    api("/users", { withCredentials: true })
       .then((res) => {
         res.data.data.sort(function (a: UsersLastMessage, b: UsersLastMessage) {
           const x: string = a.lastMessage ? a.lastMessage.createdAt : "";
@@ -112,9 +77,11 @@ const Chat = () => {
           return 1;
         });
         if (username) {
-          const foundUser: UsersLastMessage = res.data.data.find((user: UsersLastMessage) => {
-            return user.user.username == username;
-          });
+          const foundUser: UsersLastMessage = res.data.data.find(
+            (user: UsersLastMessage) => {
+              return user.user.username == username;
+            }
+          );
           if (foundUser) {
             res.data.data.map((user: UsersLastMessage) =>
               user.user.id == foundUser.user.id ? (user.unreadCount = 0) : null
@@ -126,34 +93,13 @@ const Chat = () => {
         setUsers(res.data.data);
       })
       .catch((error) => console.error("Error fetching users:", error));
-    axios.interceptors.response.use(
-      (response) => {
-        return response;
-      },
-      async (error) => {
-        const originalReq = error.config;
-
-        if (error.response.status == 401 && error.response.data.error == "JWT_EXPIRED") {
-          originalReq._retry = false;
-          try {
-            const res = await axios.post("https://localhost:5000/jwt/new", {}, { withCredentials: true });
-            console.log(res);
-            return axios(originalReq);
-          } catch (error) {
-            console.log(error);
-            const navigate = useNavigate();
-            navigate("/login");
-          }
-        }
-        return Promise.reject(error);
-      }
-    );
   }, [username]);
   useEffect(() => {
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
-          const messageObj: string | null = entry.target.getAttribute("data-message");
+          const messageObj: string | null =
+            entry.target.getAttribute("data-message");
           if (!messageObj) return;
           const msgPacket: messagePacket = JSON.parse(messageObj);
           if (!msgPacket.id) return;
@@ -163,7 +109,11 @@ const Chat = () => {
             data: msgPacket,
           };
           send(JSON.stringify(socketpacket));
-          setMessages((prev) => prev.filter((msg) => (msg.id === msgPacket.id ? (msg.isRead = true) : msg)));
+          setMessages((prev) =>
+            prev.filter((msg) =>
+              msg.id === msgPacket.id ? (msg.isRead = true) : msg
+            )
+          );
           observer.unobserve(entry.target);
         }
       });
@@ -171,35 +121,16 @@ const Chat = () => {
     document.querySelectorAll("#message").forEach((msg) => {
       observer.observe(msg);
     });
-    axios.interceptors.response.use(
-      (response) => {
-        return response;
-      },
-      async (error) => {
-        const originalReq = error.config;
-
-        if (error.response.status == 401 && error.response.data.error == "JWT_EXPIRED") {
-          originalReq._retry = false;
-          try {
-            const res = await axios.post("https://localhost:5000/jwt/new", {}, { withCredentials: true });
-            console.log(res);
-            return axios(originalReq);
-          } catch (error) {
-            console.log(error);
-            const navigate = useNavigate();
-            navigate("/login");
-          }
-        }
-        return Promise.reject(error);
-      }
-    );
   }, [messages]);
   function handleChat(packet: websocketPacket) {
     console.log("received msg -> ", packet);
     if (packet.type != "chat") return;
     const newMsg: messagePacket = packet.data;
     if (newMsg.type === "message") {
-      if (newMsg.recipient_id == currUserRef.current?.id && newMsg.sender_id == targetUserRef.current?.id) {
+      if (
+        newMsg.recipient_id == currUserRef.current?.id &&
+        newMsg.sender_id == targetUserRef.current?.id
+      ) {
         setMessages((prev) => [newMsg, ...prev]);
       }
       setUsers((prev: UsersLastMessage[]) => {
@@ -210,7 +141,10 @@ const Chat = () => {
           lastMessage: newMsg,
           unreadCount:
             prev[index].unreadCount +
-            (newMsg.recipient_id == currUserRef.current?.id && newMsg.sender_id == targetUserRef.current?.id ? 0 : 1),
+            (newMsg.recipient_id == currUserRef.current?.id &&
+            newMsg.sender_id == targetUserRef.current?.id
+              ? 0
+              : 1),
         };
         const copy = [...prev];
         copy.splice(index, 1);
@@ -220,11 +154,16 @@ const Chat = () => {
     } else if (newMsg.type == "markSeen") {
       setMessages((prev) => {
         return prev.map((msg: messagePacket) => {
-          return msg.id && msg.id == newMsg.id ? { ...msg, isRead: true, isDelivered: true } : msg;
+          return msg.id && msg.id == newMsg.id
+            ? { ...msg, isRead: true, isDelivered: true }
+            : msg;
         });
       });
       setUsers((prev: UsersLastMessage[]) => {
-        const index = prev.findIndex((u) => u.user.id === newMsg.recipient_id && u.lastMessage?.id == newMsg.id);
+        const index = prev.findIndex(
+          (u) =>
+            u.user.id === newMsg.recipient_id && u.lastMessage?.id == newMsg.id
+        );
         if (index == -1) return prev;
         if (prev[index].lastMessage) prev[index].lastMessage!.isRead = true;
         return prev;
@@ -232,12 +171,16 @@ const Chat = () => {
     } else if (newMsg.type == "markDelivered") {
       setMessages((prev) => {
         return prev.map((msg: messagePacket) => {
-          return msg.tempId == newMsg.tempId ? { ...msg, id: newMsg.id, isDelivered: true } : msg;
+          return msg.tempId == newMsg.tempId
+            ? { ...msg, id: newMsg.id, isDelivered: true }
+            : msg;
         });
       });
       setUsers((prev: UsersLastMessage[]) => {
         const index = prev.findIndex(
-          (u) => u.user.id === newMsg.recipient_id && u.lastMessage?.tempId == newMsg.tempId
+          (u) =>
+            u.user.id === newMsg.recipient_id &&
+            u.lastMessage?.tempId == newMsg.tempId
         );
         if (index == -1) return prev;
         if (prev[index].lastMessage) {
@@ -283,7 +226,9 @@ const Chat = () => {
           createdAt: new Date().toISOString().replace("T", " ").split(".")[0],
         };
         setUsers((prev: UsersLastMessage[]) => {
-          const index = prev.findIndex((u) => u.user.id === msgPacket.recipient_id);
+          const index = prev.findIndex(
+            (u) => u.user.id === msgPacket.recipient_id
+          );
           if (index == -1) return prev;
           const updatedUser: UsersLastMessage = {
             ...prev[index],
@@ -359,7 +304,9 @@ const Chat = () => {
                   }
                   name={user.user.username}
                   style={`transform h-[85px] ${
-                    user.user != targetUser ? "hover:scale-105 hover:bg-neon/[35%]" : "scale-105 bg-neon/[35%]"
+                    user.user != targetUser
+                      ? "hover:scale-105 hover:bg-neon/[35%]"
+                      : "scale-105 bg-neon/[35%]"
                   } transition duration-300 flex flex-row p-5 gap-3 items-center bg-compBg/[25%] rounded-xl`}
                 />
                 {i + 1 < arr.length ? (
@@ -374,9 +321,14 @@ const Chat = () => {
           <>
             <div className="bg-compBg/20 h-[95px] items-center flex px-7 justify-between ">
               <div className="flex gap-3 items-center">
-                <img src="/src/assets/photo.png" className="h-[44px] w-[44px]" />
+                <img
+                  src="/src/assets/photo.png"
+                  className="h-[44px] w-[44px]"
+                />
                 <div className="flex flex-col">
-                  <h3 className="font-semibold text-white">{targetUser.username}</h3>
+                  <h3 className="font-semibold text-white">
+                    {targetUser.username}
+                  </h3>
                   <div className="flex gap-1">
                     <div className="w-[9px] h-[9px] rounded-full bg-green-600 mt-2"></div>
                     <p className="text-[#BABABA]">Online</p>
@@ -399,7 +351,11 @@ const Chat = () => {
                         <li
                           onClick={() => {
                             setBlocked(false);
-                            axios.post("https://localhost:5000/unblock/" + targetUser.id, {}, { withCredentials: true });
+                            api.post(
+                              "/unblock/" + targetUser.id,
+                              {},
+                              { withCredentials: true }
+                            );
                           }}
                           className="text-red-400 flex items-center justify-center hover:bg-compBg/30 gap-1 py-2 px-4"
                         >
@@ -410,7 +366,11 @@ const Chat = () => {
                         <li
                           onClick={() => {
                             setBlocked(true);
-                            axios.post("https://localhost:5000/block/" + targetUser.id, {}, { withCredentials: true });
+                            api.post(
+                              "/block/" + targetUser.id,
+                              {},
+                              { withCredentials: true }
+                            );
                           }}
                           className="text-red-600 flex items-center justify-center hover:bg-compBg/30 gap-1 py-2 px-4"
                         >
@@ -436,7 +396,8 @@ const Chat = () => {
                     >
                       <ChatBubble type="sender" message={message} />
                     </div>
-                  ) : i + 1 < arr.length && arr[i + 1].recipient_id == targetUser.id ? (
+                  ) : i + 1 < arr.length &&
+                    arr[i + 1].recipient_id == targetUser.id ? (
                     <div
                       key={message.id ?? message.tempId}
                       className="self-start gap-1  break-all wrap-anywhere text-wrap flex flex-row bg-neon/[55%] text-white px-4 py-2 rounded-2xl rounded-tl-sm rounded-bl-sm"
@@ -460,7 +421,8 @@ const Chat = () => {
                   >
                     <ChatBubble type="recipient" message={message} />
                   </div>
-                ) : i + 1 < arr.length && arr[i + 1].recipient_id != targetUser.id ? (
+                ) : i + 1 < arr.length &&
+                  arr[i + 1].recipient_id != targetUser.id ? (
                   <div
                     id={!message.isRead ? "message" : ""}
                     key={message.id}
@@ -484,8 +446,12 @@ const Chat = () => {
             <div className="bg-compBg/20 h-[95px] items-center flex px-5 justify-between">
               {blocked ? (
                 <div className="flex items-center justify-center flex-col text-white w-full">
-                  <h3 className="font-medium text-center text-[20px]">You've blocked this user</h3>
-                  <p className="text-white/50 text-[15px]">You can't send or receive messages until you unblock them</p>
+                  <h3 className="font-medium text-center text-[20px]">
+                    You've blocked this user
+                  </h3>
+                  <p className="text-white/50 text-[15px]">
+                    You can't send or receive messages until you unblock them
+                  </p>
                 </div>
               ) : (
                 <div className="flex p-1 flex-row bg-neon/[35%] items-center pr-4 w-full rounded-full">
