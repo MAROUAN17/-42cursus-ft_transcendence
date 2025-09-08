@@ -166,7 +166,7 @@ export const chatService = {
       try {
         const msgPacket: websocketPacket = JSON.parse(message.toString());
         if (msgPacket.type == "chat") {
-          msgPacket.data.sender_id = userId;
+          // msgPacket.data.sender_id = userId;
           // if (msgPacket.data.type == "message") msgPacket.data.sender_id = userId;
           // else msgPacket.data.recipient_id = userId;
         }

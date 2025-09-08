@@ -30,6 +30,7 @@ const Chat = () => {
   const currUserRef = useRef(currUser);
   const blockedbyOtherRef = useRef(blockedbyOther);
   const targetUserRef = useRef(targetUser);
+  const userOptions = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
   const { send, addHandler } = useWebSocket();
@@ -50,6 +51,11 @@ const Chat = () => {
     setTimeout(() => {
       setShow(true);
     }, 50);
+    function handleClickOutside(e: MouseEvent) {
+      if (userOptions.current && !userOptions.current.contains(e.target as Node)) setIsOptionsOpen(false);
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   useEffect(() => {
@@ -166,7 +172,7 @@ const Chat = () => {
       blockedbyOtherRef.current = !blockedbyOtherRef.current;
       setUsers((prev: UsersLastMessage[]) => {
         return prev.map((user) => {
-          return user.user.id === newMsg.recipient_id ? { ...user, blockedByOther: !user.blockedByOther } : user;
+          return user.user.id == newMsg.sender_id ? { ...user, blockedByOther: !user.blockedByOther } : user;
         });
       });
     }
@@ -198,8 +204,8 @@ const Chat = () => {
         id: 0,
         type: "markSeen",
         username: "",
-        sender_id: targetUserRef.current.id,
-        recipient_id: currUser.id,
+        sender_id: currUser.id,
+        recipient_id: targetUserRef.current.id,
         message: "",
         createdAt: "",
       },
@@ -319,7 +325,7 @@ const Chat = () => {
                   </div>
                 </div>
               </div>
-              <div className="relative">
+              <div ref={userOptions} className="relative">
                 <IoIosMore onClick={() => setIsOptionsOpen(!isOptionsOpen)} className="text-white h-10 w-10 hover:bg-compBg/30 rounded-full p-2" />
                 {isOptionsOpen ? (
                   <div className="absolute overflow-hidden right-0 mt-2 w-fit z-10 bg-[#1f085f] border-2 border-neon/10 rounded-lg shadow-[0_0px_1px_rgba(0,0,0,0.25)] shadow-neon">
