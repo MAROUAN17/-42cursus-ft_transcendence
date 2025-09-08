@@ -2,7 +2,7 @@ import { FaUser, FaUserFriends } from "react-icons/fa";
 import { FaGear } from "react-icons/fa6";
 import { IoIosMail } from "react-icons/io";
 import { MdHome, MdLeaderboard } from "react-icons/md";
-import { useNavigate } from "react-router";
+import { replace, useNavigate } from "react-router";
 
 const Sidebar = () => {
   const navigate = useNavigate();

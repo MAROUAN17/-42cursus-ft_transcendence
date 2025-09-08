@@ -13,6 +13,9 @@ import { BsPersonFillAdd } from "react-icons/bs";
 import { BsPersonFillCheck } from "react-icons/bs";
 import { CgUnblock } from "react-icons/cg";
 import { MdBlock } from "react-icons/md";
+import { FiMessageCircle } from "react-icons/fi";
+import { MdOutlinePersonRemove } from "react-icons/md";
+import { MdPending } from "react-icons/md";
 
 import {
   Line,
@@ -25,21 +28,20 @@ import {
 import HistoryCard from "./historyCard";
 import { useEffect, useState } from "react";
 import axios, { type AxiosError, type AxiosResponse } from "axios";
-import {
-  useParams,
-  useNavigate,
-  UNSAFE_WithComponentProps,
-} from "react-router";
+import { useParams, useNavigate } from "react-router";
 import type { ProfileUserInfo } from "../../types/user";
 import type { websocketPacket } from "../../../../backend/src/models/webSocket.model";
 import { useWebSocket } from "../chat/websocketContext";
 import api from "../../axios";
 
 export default function Profile() {
+  const navigate = useNavigate();
   const { username } = useParams();
   const [profileStatus, setProfileStatus] = useState<string>();
   const [blockedUser, setblockedUser] = useState<boolean>(false);
-  const navigate = useNavigate();
+  const [isFriend, setIsFriend] = useState<boolean>(false);
+  const [friendReqSent, setFriendReqSent] = useState<boolean>(false);
+  const { user } = useWebSocket();
   const [currUser, setCurrUser] = useState<ProfileUserInfo>({
     id: 0,
     username: "",
@@ -75,8 +77,8 @@ export default function Profile() {
         id: 0,
         type: "friendReq",
         username: "",
-        sender_id: 1,
-        recipient_id: 2,
+        sender_id: user.id,
+        recipient_id: currUser.id,
         message: "sent you a friend request",
         createdAt: new Date().toISOString().replace("T", " ").split(".")[0],
       },
@@ -88,14 +90,18 @@ export default function Profile() {
     api
       .get("/profile/" + username, { withCredentials: true })
       .then(function (res: AxiosResponse) {
+        console.log(res);
         if (res.data.message == "User1 Blocked User2") {
           setblockedUser(true);
         }
         setCurrUser(res.data.infos);
         setProfileStatus(res.data.profileType);
+        setIsFriend(res.data.friend);
       })
-      .catch(function (err) {});
-  }, []);
+      .catch(function (err) {
+        console.log(err);
+      });
+  }, [username]);
 
   return (
     <div className="flex flex-col bg-darkBg h-full w-full font-poppins">
@@ -186,67 +192,104 @@ export default function Profile() {
                 {currUser.username}
               </h1>
             </div>
-            <div
-              className={`flex ${
-                profileStatus == "other" ? "space-x-5" : ""
-              } w-[120px] justify-center`}
-            >
+            <div>
               {profileStatus == "me" ? (
-                <div className="flex justify-center mt-8 outline outline-white outline-2 outline-offset-4 rounded-full w-[25%]">
-                  <CiSettings color="white" size={30} />
+                <div className="flex w-[120px] justify-center">
+                  <div className="flex justify-center mt-2 outline outline-white outline-2 outline-offset-4 rounded-full w-[25%]">
+                    <CiSettings color="white" size={30} />
+                  </div>
                 </div>
-              ) : null}
-              {!blockedUser ? (
-                <div className="flex justify-center mt-8 outline outline-white outline-2 outline-offset-4 rounded-full w-[25%] items-center">
-                  <MdBlock
-                    color="white"
-                    size={30}
-                    onClick={() => {
-                      api
-                        .post(
-                          "/block/" + currUser.id,
-                          {},
-                          { withCredentials: true }
-                        )
-                        .then(function (res) {
-                          setblockedUser(true);
-                        });
-                    }}
-                  />
+              ) : !blockedUser ? (
+                <div className="flex space-x-5 w-[130px] justify-center">
+                  <div className="flex justify-center mt-2 outline outline-white outline-2 outline-offset-4 rounded-full w-[25%] items-center">
+                    <MdBlock
+                      color="white"
+                      size={30}
+                      onClick={() => {
+                        api
+                          .post(
+                            "/block/" + currUser.id,
+                            {},
+                            { withCredentials: true }
+                          )
+                          .then(function () {
+                            setblockedUser(true);
+                          });
+                      }}
+                    />
+                  </div>
+                  {isFriend ? (
+                    <>
+                      <div className=" flex justify-center mt-2 outline outline-white outline-2 outline-offset-4 rounded-full w-[25%] items-center">
+                        <FiMessageCircle
+                          onClick={() => {
+                            navigate("/chat/" + currUser.username);
+                          }}
+                          color="white"
+                          size={25}
+                        />
+                      </div>
+                      {friendReqSent ? (
+                        <div className="flex justify-center mt-2 outline outline-white outline-2 outline-offset-4 rounded-full w-[25%] items-center">
+                          <MdPending color="white" size={25} />
+                        </div>
+                      ) : (
+                        <div className="flex justify-center mt-2 outline outline-white outline-2 outline-offset-4 rounded-full w-[25%] items-center">
+                          <MdOutlinePersonRemove
+                            onClick={() => {
+                              api
+                                .post(
+                                  "/unfriend/" + currUser.id,
+                                  {},
+                                  { withCredentials: true }
+                                )
+                                .then(function () {
+                                  setIsFriend(false);
+                                });
+                            }}
+                            color="white"
+                            size={25}
+                          />
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <div className="flex justify-center mt-2 outline outline-white outline-2 outline-offset-4 rounded-full w-[25%] items-center">
+                      <BsPersonFillAdd
+                        onClick={() => {
+                          sendFriendReq();
+                          setFriendReqSent(true);
+                        }}
+                        color="white"
+                        size={25}
+                      />
+                    </div>
+                  )}
                 </div>
               ) : (
-                <div className="flex justify-center mt-8 outline outline-white outline-2 outline-offset-4 rounded-full w-[25%] items-center">
-                  <CgUnblock
-                    color="white"
-                    size={30}
-                    onClick={() => {
-                      api
-                        .post(
-                          "/unblock/" + currUser.id,
-                          {},
-                          { withCredentials: true }
-                        )
-                        .then(function (res) {
-                          setblockedUser(false);
-                        })
-                        .catch(function (err) {
-                          console.log(err);
-                        });
-                    }}
-                  />
+                <div className="flex w-[120px] justify-center">
+                  <div className="flex justify-center mt-2 outline outline-white outline-2 outline-offset-4 rounded-full w-[25%] items-center">
+                    <CgUnblock
+                      color="white"
+                      size={30}
+                      onClick={() => {
+                        api
+                          .post(
+                            "/unblock/" + currUser.id,
+                            {},
+                            { withCredentials: true }
+                          )
+                          .then(function (res) {
+                            setblockedUser(false);
+                          })
+                          .catch(function (err) {
+                            console.log(err);
+                          });
+                      }}
+                    />
+                  </div>
                 </div>
               )}
-              {profileStatus == "other" && !blockedUser ? (
-                <div className="flex justify-center mt-8 outline outline-white outline-2 outline-offset-4 rounded-full w-[25%] items-center">
-                  <BsPersonFillAdd
-                    onClick={() => {
-                      sendFriendReq();
-                    }}
-                    color="white"
-                    size={25}
-                  />
-                </div>
-              ) : null}
             </div>
           </div>
           <div className="flex flex-col space-y-6 mx-auto mt-6">

@@ -7,7 +7,11 @@ import {
   verifyRegisterUser,
 } from "../services/register.service.js";
 import { getUsers } from "../services/getUsers.service.js";
-import { fetchUser, fetchProfileUser, checkBlock } from "../services/user.service.js";
+import {
+  fetchUser,
+  fetchProfileUser,
+  checkBlock,
+} from "../services/user.service.js";
 import { oauthCallback } from "../services/oauthCallback.service.js";
 import {
   verify2FAToken,
@@ -22,6 +26,7 @@ import {
 } from "../services/resetPassword.service.js";
 import { requestNewToken } from "../services/newAccessToken.service.js";
 import { addFriend } from "../services/addFriend.service.js";
+import { unfriendUser } from "../services/unfriend.service.js";
 
 export const authRoutes: FastifyPluginAsync = async () => {
   app.post("/login", loginUser);
@@ -46,10 +51,12 @@ export const authRoutes: FastifyPluginAsync = async () => {
   app.get("/user", { onRequest: [app.jwtAuth] }, fetchUser);
 
   //fetch profile data
-  app.get('/block/check/undefined', { onRequest: [app.jwtAuth] }, checkBlock);
-  app.get('/block/check/:username', { onRequest: [app.jwtAuth] }, checkBlock);
-  app.get('/profile/undefined', { onRequest: [app.jwtAuth] }, fetchProfileUser);
-  app.get('/profile/:username', { onRequest: [app.jwtAuth] }, fetchProfileUser);
+  app.post("/unfriend/undefined", { onRequest: [app.jwtAuth] }, unfriendUser);
+  app.post("/unfriend/:id", { onRequest: [app.jwtAuth] }, unfriendUser);
+  app.get("/block/check/undefined", { onRequest: [app.jwtAuth] }, checkBlock);
+  app.get("/block/check/:username", { onRequest: [app.jwtAuth] }, checkBlock);
+  app.get("/profile/undefined", { onRequest: [app.jwtAuth] }, fetchProfileUser);
+  app.get("/profile/:username", { onRequest: [app.jwtAuth] }, fetchProfileUser);
 
   //2fa
   app.post("/2fa/setup", setup2FA);

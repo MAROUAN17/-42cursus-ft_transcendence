@@ -18,9 +18,7 @@ export const addFriend = async (
         "SELECT * from notifications WHERE recipient_id = ? AND sender_id = ? AND type = ?"
       )
       .get(payload.id, id, "friendReq");
-    
-    console.log('notif > ', notif);
-  
+      
     if (notif) {
       const checkFriend = app.db
         .prepare(

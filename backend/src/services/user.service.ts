@@ -34,6 +34,7 @@ export const fetchProfileUser = async (
         .get(username);
       if (!user) return res.status(404).send({ message: "User not found" });
       else {
+        //check if the requested user blocked the current user
         const checkBlocked = app.db
           .prepare(
             "SELECT key FROM json_each((SELECT block_list FROM players WHERE id = ?)) WHERE value = ?"
@@ -41,12 +42,28 @@ export const fetchProfileUser = async (
           .get(payload?.id, user.id.toString());
 
         if (checkBlocked) {
-          return res
-            .status(200)
-            .send({ message: "User1 Blocked User2", infos: user, profileType: "other" });
+          return res.status(200).send({
+            message: "User1 Blocked User2",
+            infos: user,
+            profileType: "other",
+          });
         }
 
-        return res.status(200).send({ infos: user, profileType: "other" });
+        //check if the requested user if a friend
+        const checkFriend = app.db
+          .prepare(
+            "SELECT key FROM json_each((SELECT friends FROM players WHERE id = ?)) WHERE value = ?"
+          )
+          .get(payload?.id, user.id.toString());
+
+        if (checkFriend)
+          return res
+            .status(200)
+            .send({ infos: user, profileType: "other", friend: true });
+
+        res
+          .status(200)
+          .send({ infos: user, profileType: "other", friend: false });
       }
     }
   } catch (error) {

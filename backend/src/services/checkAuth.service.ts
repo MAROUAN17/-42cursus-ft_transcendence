@@ -3,9 +3,8 @@ import app from "../server.js";
 
 export const checkAuth = async (req: FastifyRequest, res: FastifyReply) => {
   try {
-    const accessToken = req.cookies.accessToken;
     const refreshToken = req.cookies.refreshToken;
-    if (accessToken && refreshToken)
+    if (!refreshToken)
       return res.status(200).send({ message: "LOGGED_IN" });
     res.status(401).send({ error: "NOT LOGGED_IN" });
   } catch (error) {

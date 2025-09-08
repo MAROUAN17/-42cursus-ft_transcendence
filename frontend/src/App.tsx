@@ -26,7 +26,7 @@ export default function App() {
           <Layout />
         </WebSocketProvider>
       ),
-      loader: checkAuthLoader,
+      // loader: checkAuthLoader,
       children: [
         {
           path: "/",
