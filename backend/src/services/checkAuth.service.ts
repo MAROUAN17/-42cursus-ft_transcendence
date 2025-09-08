@@ -6,8 +6,8 @@ export const checkAuth = async (req: FastifyRequest, res: FastifyReply) => {
     const accessToken = req.cookies.accessToken;
     const refreshToken = req.cookies.refreshToken;
     if (accessToken && refreshToken)
-      return res.status(200).send({ message: "Already logged in" });
-    res.status(401).send({ message: "Not logged in yet" });
+      return res.status(200).send({ message: "LOGGED_IN" });
+    res.status(401).send({ error: "NOT LOGGED_IN" });
   } catch (error) {
     res.status(500).send({ error: error });
   }

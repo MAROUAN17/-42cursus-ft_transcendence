@@ -14,6 +14,7 @@ export interface PUserInfo
 
 export interface ProfileUserInfo
 {
+    id: number,
     username: string,
     email: string,
 }

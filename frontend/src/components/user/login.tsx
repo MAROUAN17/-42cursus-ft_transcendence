@@ -37,13 +37,6 @@ function Login() {
         setPassword(e.target.value);
     }
 
-    useEffect(() => {
-        axios.get('https://localhost:5000/login/verify', { withCredentials: true })
-            .catch(function() {
-                navigate('/');
-            })
-    }, [])
-
     return (
         <div className="flex justify-between font-poppins h-screen bg-gameBg items-center overflow-hidden">
             <div className="xl:py-[260px] xl:px-[300px] xl:mt-32 lg:mt-24 lg:w-1/2 lg:px-[220px]">

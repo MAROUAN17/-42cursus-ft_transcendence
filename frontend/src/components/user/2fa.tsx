@@ -1,5 +1,4 @@
-import { useEffect, useState, useRef, type FormEvent, type InputHTMLAttributes, type KeyboardEvent } from "react";
-import type { Infos } from "../user/login";
+import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router";
 
@@ -93,10 +92,6 @@ function Page2FA() {
     }
 
     useEffect(() => {
-        axios.get('https://localhost:5000/login/verify', { withCredentials: true })
-            .catch(function() {
-                navigate('/');
-            })
         input1Ref.current?.focus();
         const intervId  = setInterval(() => {
             setTimerVerify((prevTime) => {

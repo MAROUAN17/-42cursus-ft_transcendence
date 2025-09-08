@@ -22,18 +22,32 @@ export const fetchProfileUser = async (
     const { username } = req.params;
 
     const accessToken = req.cookies.accessToken;
-    const infos = app.jwt.jwt1.decode(accessToken!) as Payload | null;
+    const payload = app.jwt.jwt1.decode(accessToken!) as Payload | null;
 
-    if (!username || username == infos?.username) {
-      return res.status(200).send({ infos: infos, profileType: "me" });
+    if (!username || username == payload?.username) {
+      return res.status(200).send({ infos: payload, profileType: "me" });
     }
 
-    const user = app.db
-      .prepare("SELECT * FROM players WHERE username = ?")
-      .get(username);
-    if (!user) return res.status(404).send({ message: "User not found" });
-    else {
-      return res.status(200).send({ infos: user, profileType: "other" });
+    if (username) {
+      const user = app.db
+        .prepare("SELECT * FROM players WHERE username = ?")
+        .get(username);
+      if (!user) return res.status(404).send({ message: "User not found" });
+      else {
+        const checkBlocked = app.db
+          .prepare(
+            "SELECT key FROM json_each((SELECT block_list FROM players WHERE id = ?)) WHERE value = ?"
+          )
+          .get(payload?.id, user.id.toString());
+
+        if (checkBlocked) {
+          return res
+            .status(200)
+            .send({ message: "User1 Blocked User2", infos: user, profileType: "other" });
+        }
+
+        return res.status(200).send({ infos: user, profileType: "other" });
+      }
     }
   } catch (error) {
     res.status(500).send({ error: error });
@@ -62,10 +76,9 @@ export const checkBlock = async (
           )
           .get(user.id, payload?.id.toString());
 
-        console.log("blocked user -> ", checkBlocked);
-
         if (checkBlocked)
-          return res.status(404).send({ message: "user not found" });
+          return res.status(404).send({ error: "User2 Blocked User1" });
+
         res.status(200).send({ message: "you can see user profile" });
       }
     }

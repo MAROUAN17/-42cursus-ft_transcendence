@@ -1,14 +1,5 @@
 import "./App.css";
-import {
-  Routes,
-  Route,
-  BrowserRouter,
-  createBrowserRouter,
-  RouterProvider,
-  useNavigate,
-  redirect,
-  Navigate
-} from "react-router";
+import { createBrowserRouter, RouterProvider } from "react-router";
 import Game from "./components/game/game";
 import Login from "./components/user/login";
 import Register from "./components/user/register";
@@ -22,12 +13,9 @@ import NewPassword from "./components/user/newPassword";
 import ResetPasswordForm from "./components/user/passwordResetForm";
 import { WebSocketProvider } from "./components/chat/websocketContext";
 import Layout from "./components/layout/layout";
-import Setup2FA from "./components/user/setup2FA";
-import type { UserInfo } from "./types/user";
 import Profile from "./components/user/profile";
 import notFound from "./components/error/404";
-import api from "./axios";
-import  checkBlockLoader from "./components/loaders/checkBlock"
+import checkBlockLoader from "./components/loaders/checkBlock";
 import checkAuthLoader from "./components/loaders/checkAuthUser";
 
 export default function App() {
@@ -59,7 +47,7 @@ export default function App() {
         {
           path: "/profile/:username",
           Component: Profile,
-          loader: checkBlockLoader
+          loader: checkBlockLoader,
         },
       ],
     },

@@ -11,6 +11,8 @@ import { VscListSelection } from "react-icons/vsc";
 import { MdUpdate } from "react-icons/md";
 import { BsPersonFillAdd } from "react-icons/bs";
 import { BsPersonFillCheck } from "react-icons/bs";
+import { CgUnblock } from "react-icons/cg";
+import { MdBlock } from "react-icons/md";
 
 import {
   Line,
@@ -23,7 +25,11 @@ import {
 import HistoryCard from "./historyCard";
 import { useEffect, useState } from "react";
 import axios, { type AxiosError, type AxiosResponse } from "axios";
-import { useParams, useNavigate } from "react-router";
+import {
+  useParams,
+  useNavigate,
+  UNSAFE_WithComponentProps,
+} from "react-router";
 import type { ProfileUserInfo } from "../../types/user";
 import type { websocketPacket } from "../../../../backend/src/models/webSocket.model";
 import { useWebSocket } from "../chat/websocketContext";
@@ -32,8 +38,10 @@ import api from "../../axios";
 export default function Profile() {
   const { username } = useParams();
   const [profileStatus, setProfileStatus] = useState<string>();
+  const [blockedUser, setblockedUser] = useState<boolean>(false);
   const navigate = useNavigate();
   const [currUser, setCurrUser] = useState<ProfileUserInfo>({
+    id: 0,
     username: "",
     email: "",
   });
@@ -77,26 +85,16 @@ export default function Profile() {
   }
 
   useEffect(() => {
-    // api
-    //   .get("/block/check/" + username, { withCredentials: true })
-    //   .then(function (res) {})
-    //   .catch(function (err) {
-    //     console.log("check block ERROR -> ", err);
-    //     if (err.response.status == 404) {
-    //       navigate("/404");
-    //     }
-    //   });
-
     api
       .get("/profile/" + username, { withCredentials: true })
       .then(function (res: AxiosResponse) {
-        console.log("profile user -> ", res);
+        if (res.data.message == "User1 Blocked User2") {
+          setblockedUser(true);
+        }
         setCurrUser(res.data.infos);
         setProfileStatus(res.data.profileType);
       })
-      .catch(function (err: AxiosError) {
-        console.log("profile err -> ", err);
-      });
+      .catch(function (err) {});
   }, []);
 
   return (
@@ -193,22 +191,62 @@ export default function Profile() {
                 profileStatus == "other" ? "space-x-5" : ""
               } w-[120px] justify-center`}
             >
-              <div className="flex justify-center mt-8 outline outline-white outline-2 outline-offset-4 rounded-full w-[25%]">
-                <CiSettings color="white" size={30} />
-              </div>
-              {profileStatus == "other" ? (
+              {profileStatus == "me" ? (
+                <div className="flex justify-center mt-8 outline outline-white outline-2 outline-offset-4 rounded-full w-[25%]">
+                  <CiSettings color="white" size={30} />
+                </div>
+              ) : null}
+              {!blockedUser ? (
+                <div className="flex justify-center mt-8 outline outline-white outline-2 outline-offset-4 rounded-full w-[25%] items-center">
+                  <MdBlock
+                    color="white"
+                    size={30}
+                    onClick={() => {
+                      api
+                        .post(
+                          "/block/" + currUser.id,
+                          {},
+                          { withCredentials: true }
+                        )
+                        .then(function (res) {
+                          setblockedUser(true);
+                        });
+                    }}
+                  />
+                </div>
+              ) : (
+                <div className="flex justify-center mt-8 outline outline-white outline-2 outline-offset-4 rounded-full w-[25%] items-center">
+                  <CgUnblock
+                    color="white"
+                    size={30}
+                    onClick={() => {
+                      api
+                        .post(
+                          "/unblock/" + currUser.id,
+                          {},
+                          { withCredentials: true }
+                        )
+                        .then(function (res) {
+                          setblockedUser(false);
+                        })
+                        .catch(function (err) {
+                          console.log(err);
+                        });
+                    }}
+                  />
+                </div>
+              )}
+              {profileStatus == "other" && !blockedUser ? (
                 <div className="flex justify-center mt-8 outline outline-white outline-2 outline-offset-4 rounded-full w-[25%] items-center">
                   <BsPersonFillAdd
                     onClick={() => {
                       sendFriendReq();
                     }}
                     color="white"
-                    size={22}
+                    size={25}
                   />
                 </div>
-              ) : (
-                ""
-              )}
+              ) : null}
             </div>
           </div>
           <div className="flex flex-col space-y-6 mx-auto mt-6">

@@ -45,7 +45,7 @@ export const oauthCallback = async (req: FastifyRequest, res: FastifyReply) => {
     }
   
     //sign new JWT tokens
-    const accessToken = app.jwt.jwt1.sign({ id:user?.id, email:user?.email, username:user?.username }, { expiresIn: '10s' });
+    const accessToken = app.jwt.jwt1.sign({ id:user?.id, email:user?.email, username:user?.username }, { expiresIn: '900s' });
     const refreshToken = app.jwt.jwt2.sign({ id:user?.id, email:user?.email, username:user?.username }, { expiresIn: '1d' });
 
     //set JWT token as cookie
@@ -54,7 +54,7 @@ export const oauthCallback = async (req: FastifyRequest, res: FastifyReply) => {
         secure: true,
         httpOnly: true, 
         sameSite: 'lax',
-        maxAge: 10
+        maxAge: 900
     });
 
     res.setCookie('refreshToken', refreshToken, {
