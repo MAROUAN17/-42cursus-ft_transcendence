@@ -84,6 +84,7 @@ export default function Profile() {
       },
     };
     send(JSON.stringify(notif));
+    setFriendReqSent(true);
   }
 
   useEffect(() => {
@@ -97,6 +98,7 @@ export default function Profile() {
         setCurrUser(res.data.infos);
         setProfileStatus(res.data.profileType);
         setIsFriend(res.data.friend);
+        setFriendReqSent(res.data.friendNotif);
       })
       .catch(function (err) {
         console.log(err);
@@ -229,23 +231,35 @@ export default function Profile() {
                           size={25}
                         />
                       </div>
+                      <div className="flex justify-center mt-2 outline outline-white outline-2 outline-offset-4 rounded-full w-[25%] items-center">
+                        <MdOutlinePersonRemove
+                          onClick={() => {
+                            api
+                              .post(
+                                "/unfriend/" + currUser.id,
+                                {},
+                                { withCredentials: true }
+                              )
+                              .then(function () {
+                                setIsFriend(false);
+                              });
+                          }}
+                          color="white"
+                          size={25}
+                        />
+                      </div>
+                    </>
+                  ) : (
+                    <>
                       {friendReqSent ? (
                         <div className="flex justify-center mt-2 outline outline-white outline-2 outline-offset-4 rounded-full w-[25%] items-center">
                           <MdPending color="white" size={25} />
                         </div>
                       ) : (
                         <div className="flex justify-center mt-2 outline outline-white outline-2 outline-offset-4 rounded-full w-[25%] items-center">
-                          <MdOutlinePersonRemove
+                          <BsPersonFillAdd
                             onClick={() => {
-                              api
-                                .post(
-                                  "/unfriend/" + currUser.id,
-                                  {},
-                                  { withCredentials: true }
-                                )
-                                .then(function () {
-                                  setIsFriend(false);
-                                });
+                              sendFriendReq();
                             }}
                             color="white"
                             size={25}
@@ -253,17 +267,6 @@ export default function Profile() {
                         </div>
                       )}
                     </>
-                  ) : (
-                    <div className="flex justify-center mt-2 outline outline-white outline-2 outline-offset-4 rounded-full w-[25%] items-center">
-                      <BsPersonFillAdd
-                        onClick={() => {
-                          sendFriendReq();
-                          setFriendReqSent(true);
-                        }}
-                        color="white"
-                        size={25}
-                      />
-                    </div>
                   )}
                 </div>
               ) : (

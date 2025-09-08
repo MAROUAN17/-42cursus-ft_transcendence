@@ -46,10 +46,12 @@ export const fetchProfileUser = async (
             message: "User1 Blocked User2",
             infos: user,
             profileType: "other",
+            friend: false,
+            friendNotif: false,
           });
         }
 
-        //check if the requested user if a friend
+        //check if the requested user is a friend
         const checkFriend = app.db
           .prepare(
             "SELECT key FROM json_each((SELECT friends FROM players WHERE id = ?)) WHERE value = ?"
@@ -57,13 +59,34 @@ export const fetchProfileUser = async (
           .get(payload?.id, user.id.toString());
 
         if (checkFriend)
-          return res
-            .status(200)
-            .send({ infos: user, profileType: "other", friend: true });
+          return res.status(200).send({
+            infos: user,
+            profileType: "other",
+            friend: true,
+            friendNotif: false,
+          });
 
-        res
-          .status(200)
-          .send({ infos: user, profileType: "other", friend: false });
+        //check if friend request already sent
+        const checkNotif = app.db
+          .prepare(
+            "SELECT * from notifications WHERE sender_id = ? AND recipient_id = ? AND type = ?"
+          )
+          .get(payload?.id, user.id.toString(), "friendReq");
+
+        if (checkNotif)
+          return res.status(200).send({
+            infos: user,
+            profileType: "other",
+            friend: false,
+            friendNotif: true,
+          });
+
+        res.status(200).send({
+          infos: user,
+          profileType: "other",
+          friend: false,
+          friendNotif: false,
+        });
       }
     }
   } catch (error) {
