@@ -15,7 +15,9 @@ import { CgUnblock } from "react-icons/cg";
 import { MdBlock } from "react-icons/md";
 import { FiMessageCircle } from "react-icons/fi";
 import { MdOutlinePersonRemove } from "react-icons/md";
-import { MdPending } from "react-icons/md";
+import { LiaUserClockSolid } from "react-icons/lia";
+import { FaHourglassHalf } from "react-icons/fa";
+
 
 import {
   Line,
@@ -174,12 +176,12 @@ export default function Profile() {
           </div>
         </div>
         {/* profile section */}
-        <div className="bg-compBg/20 w-[15%] rounded-[10px] p-8 flex flex-col justify-between ">
-          <div className="flex justify-between w-full">
+        <div className="bg-compBg/20 w-[30%] rounded-[10px] py-10 flex flex-col justify-between items-center">
+          <div className="flex justify-between w-full px-8">
             <h1 className="text-white font-bold">Your profile</h1>
             <img src="3dots-icon.png" alt="" />
           </div>
-          <div className="text-center flex flex-col items-center space-y-6">
+          <div className="text-center flex flex-col items-center space-y-9">
             <div className="w-[100px] h-[100px] mt-4 outline outline-8 outline-neon rounded-full flex items-center justify-center">
               <img
                 className="rounded-full"
@@ -253,7 +255,7 @@ export default function Profile() {
                     <>
                       {friendReqSent ? (
                         <div className="flex justify-center mt-2 outline outline-white outline-2 outline-offset-4 rounded-full w-[25%] items-center">
-                          <MdPending color="white" size={25} />
+                          <FaHourglassHalf color="white" size={20} />
                         </div>
                       ) : (
                         <div className="flex justify-center mt-2 outline outline-white outline-2 outline-offset-4 rounded-full w-[25%] items-center">
@@ -295,7 +297,7 @@ export default function Profile() {
               )}
             </div>
           </div>
-          <div className="flex flex-col space-y-6 mx-auto mt-6">
+          <div className="flex flex-col space-y-5">
             <div className="flex space-x-6 items-center">
               <div>
                 <MdEmail
