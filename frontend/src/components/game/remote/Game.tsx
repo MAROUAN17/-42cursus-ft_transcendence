@@ -21,12 +21,15 @@ export default function RGame() {
   const PADDLE_HEIGHT = 120;
   const paddleLeft = { x: 24, y: leftY, width: PADDLE_WIDTH, height: PADDLE_HEIGHT };
   const paddleRight = { x:  600 - 24 - PADDLE_WIDTH, y: rightY, width: PADDLE_WIDTH, height: PADDLE_HEIGHT };
-  var x = 0;
 
   useEffect(() => {
 	const storedGame = sessionStorage.getItem("currentGame");
 	if (storedGame) {
 	  const sessionGame = JSON.parse(storedGame);
+	  if (websocket && websocket.readyState == WebSocket.OPEN)
+			websocket.send( JSON.stringify({type:"newGame",currentGame: storedGame}));
+	  else
+	  	console.log("socket errror")
 	  console.log("-----:  " , sessionGame)
 	  setGame(sessionGame)
 	} else {
@@ -51,12 +54,17 @@ export default function RGame() {
 
     let raf = 0;
     const step = () => {
-      if (down.has("ArrowUp")) setRightY((y) => Math.max(0, y - 8));
-      if (down.has("ArrowDown")) setRightY((y) => Math.min((gameInfo?.bounds.height ?? 0) - 120, y + 8));
-      if (down.has("w") || down.has("W")) setLeftY((y) => Math.max(0, y - 8));
-      if (down.has("s") || down.has("S")) setLeftY((y) => Math.min((gameInfo?.bounds.height ?? 0) - 120, y + 8));
-
-	  
+	  if (game?.side == "right") {
+		  if (down.has("ArrowUp")) setRightY((y) => Math.max(0, y - 8));
+		  if (down.has("ArrowDown")) setRightY((y) => Math.min((gameInfo?.bounds.height ?? 0) - 120, y + 8));
+	  } else if (game?.side == "left") {
+		if (down.has("ArrowUp")) setLeftY((y) => Math.max(0, y - 8));
+		  if (down.has("ArrowDown")) setLeftY((y) => Math.min((gameInfo?.bounds.height ?? 0) - 120, y + 8));
+	  }
+	//  if (down.has("ArrowUp")) setRightY((y) => Math.max(0, y - 8));
+	//  if (down.has("ArrowDown")) setRightY((y) => Math.min((gameInfo?.bounds.height ?? 0) - 120, y + 8));
+    //  if (down.has("w") || down.has("W")) setLeftY((y) => Math.max(0, y - 8));
+    //  if (down.has("s") || down.has("S")) setLeftY((y) => Math.min((gameInfo?.bounds.height ?? 0) - 120, y + 8));
       raf = requestAnimationFrame(step);
     };
 
@@ -71,20 +79,19 @@ export default function RGame() {
   }, [gameInfo?.bounds.height]);
 
 	useEffect ( () => {
-		if (websocket && websocket.readyState == WebSocket.OPEN){
+		if (websocket && websocket.readyState == WebSocket.OPEN)
 			websocket.send(JSON.stringify({ type: "updateY", leftY, rightY}));
-			//console.log("message sent [DIR]: ", type);
-		} else
+		else
 			console.log("there is a proble in socket:", websocket);
 	}, [leftY, rightY]);
 
 	useEffect(() => {
 		const ws = new WebSocket("wss://localhost:5000/game");
 		setWebsocket(ws);
+		console.log('web socket ===== ', ws)
 		ws.onopen = () => {
 		  console.log("WebSocket Connected!");
 		};
-	  
 		ws.onmessage = (event) => {
 			try {
 				const message = JSON.parse(event.data);
@@ -97,16 +104,7 @@ export default function RGame() {
 		  console.log("Closing WebSocket...");
 		  ws.close();
 		};
-	  }, [16]);
-	  const handleScore = (who: "left" | "right") => {
-		if (websocket && websocket.readyState == WebSocket.OPEN)
-		{
-			websocket.send(JSON.stringify({type: "score", who}));
-			//console.log("message sent [score]: ", dir);
-		}
-		else
-			console.log("there is a proble in socket:", websocket);
-	  };
+	  }, []);
 
   return (
 	<div className="h-screen bg-gameBg flex items-center justify-center">
@@ -133,7 +131,6 @@ export default function RGame() {
 		  paddleLeft={gameInfo?.paddleLeft ?? paddleLeft}
 		  paddleRight={gameInfo?.paddleRight ?? paddleRight}
 		  bounds={gameInfo?.bounds ?? {width:600, height:400}}
-		  onScore={handleScore}
 		/>
 
 		<div className="absolute top-0 left-1/2 transform -translate-x-1/2 h-full flex flex-col justify-center items-center">

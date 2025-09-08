@@ -6,7 +6,9 @@ export function broadcast(message: any) {
   //console.log("Broadcasting to clients...");
   for (const [id, conn] of clients) {
     //console.log("->", id);
-    conn.send(JSON.stringify(message));
+    //if (conn.readyState === WebSocket.OPEN) {
+      conn.send(JSON.stringify(message));
+    //}
   }
 }
 
