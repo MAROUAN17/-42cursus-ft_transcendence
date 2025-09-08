@@ -28,6 +28,7 @@ import Profile from "./components/user/profile";
 import notFound from "./components/error/404";
 import api from "./axios";
 import  checkBlockLoader from "./components/loaders/checkBlock"
+import checkAuthLoader from "./components/loaders/checkAuthUser";
 
 export default function App() {
   let router = createBrowserRouter([
@@ -37,6 +38,7 @@ export default function App() {
           <Layout />
         </WebSocketProvider>
       ),
+      loader: checkAuthLoader,
       children: [
         {
           path: "/",
