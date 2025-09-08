@@ -1,9 +1,9 @@
-import type { User } from "./user.model.js";
+import type { User, userInfos } from "./user.model.js";
 
 export interface messagePacket {
   id?: number;
   tempId?: string;
-  type: "message" | "markSeen" | "markDelivered";
+  type: "message" | "markSeen" | "markDelivered" | "block";
   isDelivered: boolean;
   sender_id: number;
   recipient_id: number;
@@ -12,8 +12,10 @@ export interface messagePacket {
   isRead: boolean;
 }
 export interface UsersLastMessage {
-  user: User;
+  user: userInfos;
   unreadCount: number;
+  blockedByUser: boolean;
+  blockedByOther: boolean;
   lastMessage: messagePacket | undefined;
 }
 export interface messagePacketDB {
