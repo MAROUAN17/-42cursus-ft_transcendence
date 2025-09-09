@@ -1,10 +1,11 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
 import type { Payload } from "../models/chat.js";
 import app from "../server.js";
+import type { LoginBody } from "../models/user.model.js";
+import type { User } from "../models/user.model.js";
 
 export const fetchUser = async (req: FastifyRequest, res: FastifyReply) => {
   try {
-    // const { username } = req.params;
     const accessToken = req.cookies.accessToken;
 
     const infos = app.jwt.jwt1.decode(accessToken!) as Payload | null;
@@ -128,14 +129,53 @@ export const checkBlock = async (
   }
 };
 
-
-export const check2faStatus = async (
+export const checkUserLoginPageStatus = async (
   req: FastifyRequest,
   res: FastifyReply
 ) => {
   try {
-    
+    const accessToken = req.cookies.accessToken;
+    const refreshToken = req.cookies.refreshToken;
+
+    if (accessToken || refreshToken) {
+      return res.status(401).send({ error: "LOGGED_IN" });
+    }
+    res.status(200).send({ message: "NOT LOGGED_IN" });
   } catch (error) {
-    
+    res.status(500).send({ error: error });
   }
-}
+};
+
+export const checkUserLoginStatus = async (
+  req: FastifyRequest,
+  res: FastifyReply
+) => {
+  try {
+    const accessToken = req.cookies.accessToken;
+    const refreshToken = req.cookies.refreshToken;
+
+    if (accessToken || refreshToken) {
+      return res.status(200).send({ message: "LOGGED_IN" });
+    }
+    res.status(401).send({ error: "NOT LOGGED_IN" });
+  } catch (error) {
+    res.status(500).send({ error: error });
+  }
+};
+
+export const checkUser2faStatus = async (
+  req: FastifyRequest,
+  res: FastifyReply
+) => {
+  try {
+    const loginToken = req.cookies.loginToken;
+
+    if (!loginToken) {
+      return res.status(401).send({ error: "UNAUTHORIZED" });
+    }
+
+    res.status(200).send({ message: "AUTHORIZED" });
+  } catch (error) {
+    res.status(500).send({ error: error });
+  }
+};

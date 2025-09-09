@@ -11,7 +11,9 @@ import {
   fetchUser,
   fetchProfileUser,
   checkBlock,
-  check2faStatus,
+  checkUserLoginStatus,
+  checkUser2faStatus,
+  checkUserLoginPageStatus
 } from "../services/user.service.js";
 import { oauthCallback } from "../services/oauthCallback.service.js";
 import {
@@ -50,7 +52,9 @@ export const authRoutes: FastifyPluginAsync = async () => {
   //get user data
   app.get("/", { onRequest: [app.jwtAuth] }, getUsers);
   app.get("/user", { onRequest: [app.jwtAuth] }, fetchUser);
-  app.get("/check/2fa", check2faStatus);
+  app.get("/check/login-page", checkUserLoginPageStatus);
+  app.get("/check/login", checkUserLoginStatus);
+  app.get("/check/2fa", checkUser2faStatus);
 
   //fetch profile data
   app.post("/unfriend/undefined", { onRequest: [app.jwtAuth] }, unfriendUser);

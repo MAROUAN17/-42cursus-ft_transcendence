@@ -5,7 +5,8 @@ export interface User {
     email: string,
     password: string,
     secret_otp: string,
-    twoFA_flag: boolean
+    logged_in: boolean,
+    twoFA_verify: boolean
 };
 
 export interface LoginBody {
@@ -21,6 +22,8 @@ export interface userInfos {
     id: number,
     email: string,
     username: string
+    logged_in: boolean,
+    twoFA_verify: boolean
 }
 
 export interface userPass {

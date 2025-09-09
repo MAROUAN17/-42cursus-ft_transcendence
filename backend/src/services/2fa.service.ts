@@ -48,21 +48,21 @@ export const verify2FAToken = async (
   res: FastifyReply
 ) => {
   try {
-    const { token } = req.body;
+    let { token, email } = req.body;
 
-    const loginToken = req.cookies.loginToken;
-    if (!loginToken) {
-      return res.status(401).send({ error: "Unauthorized" });
-    }
+    let user = {} as User | null;
 
-    const infos = (await app.jwt.jwt0.decode(loginToken!)) as userInfos | null;
-
-    console.log(infos?.email);
-
+    email = email.toLowerCase();
     //find user
-    const user = app.db
-      .prepare("SELECT * FROM PLAYERS WHERE email = ?")
-      .get(infos?.email) as User;
+    if (email.includes("@")) {
+      user = app.db
+        .prepare("SELECT * FROM PLAYERS WHERE email = ?")
+        .get(email) as User;
+    } else {
+      user = app.db
+        .prepare("SELECT * FROM PLAYERS WHERE username = ?")
+        .get(email) as User;
+    }
 
     const secret = user.secret_otp;
     const isValid = authenticator.verify({ token: token, secret: secret });
@@ -83,6 +83,14 @@ export const verify2FAToken = async (
         { id: user.id, email: user.email, username: user.username },
         { expiresIn: "1d" }
       );
+
+      //clear login token
+      res.clearCookie("loginToken", {
+        path: "/",
+        secure: true,
+        httpOnly: true,
+        sameSite: "lax",
+      });
 
       //set JWT token as cookie
       res.setCookie("accessToken", accessToken, {
@@ -109,3 +117,4 @@ export const verify2FAToken = async (
     res.status(500).send({ error: error.message });
   }
 };
+

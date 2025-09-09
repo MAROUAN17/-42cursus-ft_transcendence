@@ -16,7 +16,11 @@ import Layout from "./components/layout/layout";
 import Profile from "./components/user/profile";
 import notFound from "./components/error/404";
 import checkBlockLoader from "./components/loaders/checkBlock";
-import checkAuthLoader from "./components/loaders/checkAuthUser";
+import {
+  checkAuthLoader,
+  checkLoginPageLoader,
+} from "./components/loaders/checkAuthUser";
+import { check2FALoader } from "./components/loaders/check2fa";
 
 export default function App() {
   let router = createBrowserRouter([
@@ -26,7 +30,7 @@ export default function App() {
           <Layout />
         </WebSocketProvider>
       ),
-      // loader: checkAuthLoader,
+      loader: checkAuthLoader,
       children: [
         {
           path: "/",
@@ -58,6 +62,7 @@ export default function App() {
     {
       path: "/login",
       Component: Login,
+      loader: checkLoginPageLoader,
     },
     {
       path: "/register",
@@ -66,6 +71,7 @@ export default function App() {
     {
       path: "/verify",
       Component: Page2FA,
+      loader: check2FALoader
     },
     {
       path: "/reset-password",

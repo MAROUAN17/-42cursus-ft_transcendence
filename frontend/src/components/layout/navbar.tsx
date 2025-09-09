@@ -24,6 +24,19 @@ const Navbar = () => {
 
   const { send, addHandler } = useWebSocket();
 
+  function handleLogout(e: React.MouseEvent<HTMLLIElement>) {
+    e.preventDefault();
+    api
+      .post("/logout", {}, { withCredentials: true })
+      .then(function (res) {
+        console.log(res);
+        navigate("/login");
+      })
+      .catch(function (err) {
+        console.log(err.response);
+      });
+  }
+
   useEffect(() => {
     api
       .get("/notifications", { withCredentials: true })
@@ -151,7 +164,7 @@ const Navbar = () => {
             {isUserOptionOpen ? (
               <div className="absolute overflow-hidden right-0 mt-2 w-fit z-10 bg-[#1f085f] border-2 border-neon/10 rounded-lg shadow-[0_0px_1px_rgba(0,0,0,0.25)] shadow-neon">
                 <ul>
-                  <li className="text-red-500 flex items-center hover:bg-compBg/30 gap-2 justify-center py-2 px-4">
+                  <li className="text-red-500 flex items-center hover:bg-compBg/30 gap-2 justify-center py-2 px-4" onClick={handleLogout}>
                     <FiLogOut />
                     <p>Logout</p>
                   </li>
