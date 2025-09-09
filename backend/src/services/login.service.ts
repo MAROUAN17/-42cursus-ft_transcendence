@@ -31,15 +31,15 @@ export const loginUser = async (req: FastifyRequest<{Body: LoginBody}>, res: Fas
             return res.status(401).send({ error: "Incorrect username or password." });
         }
 
-        const loginToken = app.jwt.jwt0.sign({ email: user.email }, { expiresIn: '30s' });
+        // const loginToken = app.jwt.jwt0.sign({ email: user.email }, { expiresIn: '30s' });
+
+        const updatedUser = app.db
+            .prepare('UPDATE players SET logged_in = ? WHERE id = ?')
+            .run(1, user.id);
+
+        if (updatedUser.changes == 0) return ;
     
-        res.setCookie('loginToken', loginToken, {
-            path: '/',
-            secure: true,
-            httpOnly: true, 
-            sameSite: 'lax',
-            maxAge: 30
-        }).status(200).send({ message: "Logged in", data: { username: user?.username, email: user?.email } })
+        res.status(200).send({ message: "Logged in", data: { username: user?.username, email: user?.email } })
     } catch (err) {
         console.log(err);
         return res.status(500).send({ err });

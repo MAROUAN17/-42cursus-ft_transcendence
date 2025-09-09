@@ -298,7 +298,7 @@ export default function Profile() {
             </div>
           </div>
           <div className="flex flex-col space-y-5">
-            <div className="flex space-x-6 items-center">
+            <div className="flex space-x-5 items-center">
               <div>
                 <MdEmail
                   className="text-neon outline outline-3 outline-offset-8 rounded-full"
@@ -310,7 +310,7 @@ export default function Profile() {
                 <h1 className="text-white font-bold">{currUser.email}</h1>
               </div>
             </div>
-            <div className="flex space-x-6 items-center">
+            <div className="flex space-x-5 items-center">
               <div>
                 <FaHistory
                   className="text-neon outline outline-3 outline-offset-8 rounded-full"

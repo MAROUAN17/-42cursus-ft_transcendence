@@ -127,3 +127,15 @@ export const checkBlock = async (
     res.status(500).send({ error: error });
   }
 };
+
+
+export const check2faStatus = async (
+  req: FastifyRequest,
+  res: FastifyReply
+) => {
+  try {
+    
+  } catch (error) {
+    
+  }
+}

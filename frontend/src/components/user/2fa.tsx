@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router";
+import api from "../../axios"
 
 function Page2FA() {
     const [qrGenerated, setQrGenerated] = useState<boolean>(false);
@@ -92,6 +93,10 @@ function Page2FA() {
     }
 
     useEffect(() => {
+        api.post('/user', {}, {withCredentials: true})
+            .then(function(res) {
+                
+            })
         input1Ref.current?.focus();
         const intervId  = setInterval(() => {
             setTimerVerify((prevTime) => {
