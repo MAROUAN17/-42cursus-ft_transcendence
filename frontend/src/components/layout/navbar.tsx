@@ -6,19 +6,18 @@ import type { User, userInfos } from "../../../../backend/src/models/user.model"
 import { IoIosArrowDropdown } from "react-icons/io";
 import { RiArrowDropDownLine } from "react-icons/ri";
 import { TiDelete } from "react-icons/ti";
-import type {
-  notificationPacket,
-  websocketPacket,
-} from "../../../../backend/src/models/webSocket.model";
+import type { notificationPacket, websocketPacket } from "../../../../backend/src/models/webSocket.model";
 import { useWebSocket } from "../chat/websocketContext";
 import NotificationElement from "./notificationElement";
 import { useNavigate } from "react-router";
 import api from "../../axios";
+import { FiLogOut } from "react-icons/fi";
 
 const Navbar = () => {
   const navigate = useNavigate();
   const { user } = useWebSocket();
   const [isNotificationOpen, setIsNotificationOpen] = useState<boolean>(false);
+  const [isUserOptionOpen, setIsUserOptionOpen] = useState<boolean>(false);
   const [hasUnread, setHasUnread] = useState<boolean>(false);
   const [notifications, setNotifications] = useState<notificationPacket[]>([]);
   const notificationRef = useRef<HTMLDivElement>(null);
@@ -41,21 +40,15 @@ const Navbar = () => {
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
-      if (
-        notificationRef.current &&
-        !notificationRef.current.contains(e.target as Node)
-      )
-        setIsNotificationOpen(false);
+      if (notificationRef.current && !notificationRef.current.contains(e.target as Node)) setIsNotificationOpen(false);
     }
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
   useEffect(() => {
-    const res: notificationPacket | undefined = notifications?.find(
-      (notif: notificationPacket) => {
-        return notif.unreadCount ? notif.unreadCount > 0 : false;
-      }
-    );
+    const res: notificationPacket | undefined = notifications?.find((notif: notificationPacket) => {
+      return notif.unreadCount ? notif.unreadCount > 0 : false;
+    });
     // console.log("res -> ", res);
     res ? setHasUnread(true) : setHasUnread(false);
   }, [notifications]);
@@ -78,9 +71,7 @@ const Navbar = () => {
     } else if (newNotif.type == "markSeen") {
       setNotifications((prev) => {
         return prev.map((notif) => {
-          return notif.sender_id == packet.data.sender_id
-            ? { ...notif, unreadCount: 0 }
-            : notif;
+          return notif.sender_id == packet.data.sender_id ? { ...notif, unreadCount: 0 } : notif;
         });
       });
     } else if (newNotif.type == "friendReq") {
@@ -97,12 +88,21 @@ const Navbar = () => {
     }, 500);
   }
 
-  function markNotifSeen(id: number) {
-    setNotifications((prev) =>
-      prev.map((notif) =>
-        notif.id == id ? { ...notif, unreadCount: 0 } : notif
-      )
-    );
+  function markNotifSeen(notification: notificationPacket) {
+    const packet: websocketPacket = {
+      type: "notification",
+      data: {
+        id: 0,
+        type: "markSeen",
+        username: "",
+        sender_id: notification.sender_id,
+        recipient_id: notification.recipient_id,
+        message: "",
+        createdAt: "",
+      },
+    };
+    send(JSON.stringify(packet));
+    setNotifications((prev) => prev.map((notif) => (notif.id == notification.id ? { ...notif, unreadCount: 0 } : notif)));
   }
 
   return (
@@ -119,14 +119,9 @@ const Navbar = () => {
         </div>
         <div className="flex flex-row gap-3">
           <div ref={notificationRef} className="relative inline-block">
-            <button
-              onClick={() => setIsNotificationOpen(!isNotificationOpen)}
-              className="p-4 flex bg-neon/[10%] hover:bg-neon/[20%] rounded-xl"
-            >
+            <button onClick={() => setIsNotificationOpen(!isNotificationOpen)} className="p-4 flex bg-neon/[10%] hover:bg-neon/[20%] rounded-xl">
               <IoNotifications className="text-neon w-[20px] h-[20px]" />
-              {hasUnread ? (
-                <div className="w-[5px] h-[5px] rounded-full bg-red-600 ml-[-4px] mt-[-2px]"></div>
-              ) : null}
+              {hasUnread ? <div className="w-[5px] h-[5px] rounded-full bg-red-600 ml-[-4px] mt-[-2px]"></div> : null}
             </button>
             {isNotificationOpen ? (
               <div className="absolute overflow-hidden right-0 mt-2 w-72 z-10  bg-[#1f085f] rounded-lg shadow-[0_0px_20px_rgba(0,0,0,0.25)]">
@@ -141,20 +136,28 @@ const Navbar = () => {
                       />
                     ))
                   ) : (
-                    <h2 className="text-center font-medium py-2 text-white">
-                      No notifications yet 🎉
-                    </h2>
+                    <h2 className="text-center font-medium py-2 text-white">No notifications yet 🎉</h2>
                   )}
                 </ul>
               </div>
             ) : null}
           </div>
-          <div className="p-3 gap-1 flex items-center hover:bg-neon/[20%] rounded-xl">
-            <img src="/src/assets/photo.png" className="h-[30px] w-[30px]" />
-            <h3 className="text-white font-medium text-[12px]">
-              {user?.username}
-            </h3>
-            <RiArrowDropDownLine className="text-white w-[20px] h-[20px]" />
+          <div className="relative">
+            <div onClick={() => setIsUserOptionOpen(!isUserOptionOpen)} className="p-3 gap-1 flex items-center hover:bg-neon/[20%] rounded-xl">
+              <img src="/src/assets/photo.png" className="h-[30px] w-[30px]" />
+              <h3 className="text-white font-medium text-[12px]">{user?.username}</h3>
+              <RiArrowDropDownLine className="text-white w-[20px] h-[20px]" />
+            </div>
+            {isUserOptionOpen ? (
+              <div className="absolute overflow-hidden right-0 mt-2 w-fit z-10 bg-[#1f085f] border-2 border-neon/10 rounded-lg shadow-[0_0px_1px_rgba(0,0,0,0.25)] shadow-neon">
+                <ul>
+                  <li className="text-red-500 flex items-center hover:bg-compBg/30 gap-2 justify-center py-2 px-4">
+                    <FiLogOut />
+                    <p>Logout</p>
+                  </li>
+                </ul>
+              </div>
+            ) : null}
           </div>
         </div>
       </div>
