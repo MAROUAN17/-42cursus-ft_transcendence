@@ -13,12 +13,12 @@ export const getNotifications = async (req: FastifyRequest, res: FastifyReply) =
       res.status(401).send({ error: "JWT_EXPIRED" });
       return;
     }
-    const user = payload.username;
+    const userId = payload.id;
     const notifications: notificationPacket[] = app.db
       .prepare(
-        "SELECT notifications.*, players.username FROM notifications JOIN players ON notifications.sender_id = players.id WHERE notifications.recipient_id = (SELECT id FROM players WHERE username = ?) ORDER BY notifications.updatedAt DESC"
+        "SELECT notifications.*, players.username FROM notifications JOIN players ON notifications.sender_id = players.id WHERE notifications.recipient_id = ? ORDER BY notifications.updatedAt DESC"
       )
-      .all(user)
+      .all(userId)
       .map((row: notificationPacketDB) => ({
         id: row.id,
         type: row.type,

@@ -257,7 +257,7 @@ const Chat = () => {
         show ? "opacity-100" : "opacity-0"
       }`}
     >
-      <div className="flex flex-col bg-compBg/20 basis-1/3 rounded-xl p-3 gap-5">
+      <div className="flex flex-col h-full bg-compBg/20 basis-1/3 rounded-xl p-3 gap-5">
         <div className="flex flex-row justify-between items-center p-3">
           <div className="flex flex-row gap-1">
             <h2 className="text-white font-semibold text-[24px]">Messaging</h2>
@@ -292,7 +292,7 @@ const Chat = () => {
                     setBlockedByOther(user.blockedByOther);
                     blockedbyOtherRef.current = user.blockedByOther;
                     user.unreadCount = 0;
-                    updateNotification();
+                    if (user.unreadCount > 0) updateNotification();
                   }}
                   msg={
                     user.lastMessage
@@ -311,10 +311,10 @@ const Chat = () => {
             ))}
         </div>
       </div>
-      <div className="bg-compBg/20 rounded-xl  flex-1 flex flex-col justify-between min-w-0">
+      <div className="bg-compBg/20 rounded-xl max-h-full basis-2/3 flex flex-col justify-between min-w-0">
         {targetUser ? (
           <>
-            <div className="bg-compBg/20 h-[95px] items-center flex px-7 justify-between ">
+            <div className="bg-compBg/20 h-[95px] items-center flex px-7 justify-between">
               <div className="flex gap-3 items-center">
                 <img src="/src/assets/photo.png" className="h-[44px] w-[44px]" />
                 <div className="flex flex-col">
@@ -366,7 +366,7 @@ const Chat = () => {
             </div>
             <div
               id="messages"
-              className="overflow-y-auto flex flex-col-reverse p-6 gap-1 space-y-reverse h-full scrollbar-thin scrollbar scrollbar-thumb-neon/80 scrollbar-track-white/10 "
+              className="overflow-y-auto overflow-hidden flex flex-col-reverse p-6 gap-1 space-y-reverse h-full w-full scrollbar-thin scrollbar scrollbar-thumb-neon/80 scrollbar-track-white/10 "
             >
               {messages.map((message, i, arr) =>
                 message.recipient_id == targetUser.id ? (
