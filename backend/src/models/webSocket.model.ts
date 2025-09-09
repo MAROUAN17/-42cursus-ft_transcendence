@@ -13,7 +13,7 @@ export interface NotificationPacket {
 
 export interface notificationPacket {
   id: number;
-  type: "message" | "markSeen" | "friendReq";
+  type: "message" | "markSeen" | "friendReq" | "friendAccept";
   username: string;
   sender_id: number;
   recipient_id: number;

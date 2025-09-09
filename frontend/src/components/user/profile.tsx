@@ -79,9 +79,9 @@ export default function Profile() {
         id: 0,
         type: "friendReq",
         username: "",
-        sender_id: user.id,
+        sender_id: user!.id,
         recipient_id: currUser.id,
-        message: "sent you a friend request",
+        message: "Sent you a friend request",
         createdAt: new Date().toISOString().replace("T", " ").split(".")[0],
       },
     };

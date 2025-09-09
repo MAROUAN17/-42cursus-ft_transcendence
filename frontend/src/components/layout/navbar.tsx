@@ -87,7 +87,7 @@ const Navbar = () => {
           return notif.sender_id == packet.data.sender_id ? { ...notif, unreadCount: 0 } : notif;
         });
       });
-    } else if (newNotif.type == "friendReq") {
+    } else if (newNotif.type == "friendReq" || newNotif.type == "friendAccept") {
       setNotifications((prev) => [...prev, newNotif]);
     }
   }

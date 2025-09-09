@@ -138,6 +138,8 @@ async function processMessages() {
           if (client) client.send(JSON.stringify(currPacket));
         } else if (currPacket.data.type == "friendReq") {
           checkNotificationFriend(currPacket);
+        }else if (currPacket.data.type == "friendAccept") {
+          createNotification(currPacket);
         }
       }
     } catch (error) {
