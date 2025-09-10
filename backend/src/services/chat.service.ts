@@ -122,19 +122,16 @@ async function processMessages() {
         } else if (currPacket.data.type == "markSeen") {
           app.db
             .prepare("UPDATE messages SET isRead = true WHERE id = ? AND sender_id = ? AND recipient_id = ?")
-            .run(currPacket.data.id, currPacket.data.sender_id, currPacket.data.recipient_id);
-
-          if (currPacket.data.sender_id) {
-            let client = clients.get(currPacket.data.sender_id);
-            if (client) client.send(JSON.stringify(currPacket));
-          }
+            .run(currPacket.data.id, currPacket.data.recipient_id, currPacket.data.sender_id);
+          let client = clients.get(currPacket.data.recipient_id);
+          if (client) client.send(JSON.stringify(currPacket));
         } else if (currPacket.data.type == "block") handleBlock(currPacket);
       } else if (currPacket.type == "notification") {
         if (currPacket.data.type == "markSeen") {
           app.db
             .prepare("UPDATE notifications SET isRead = true, unreadCount = 0 WHERE sender_id = ? AND recipient_id = ? AND type = ?")
-            .run(currPacket.data.sender_id, currPacket.data.recipient_id, "message");
-          let client = clients.get(currPacket.data.recipient_id);
+            .run(currPacket.data.recipient_id, currPacket.data.sender_id, "message");
+          let client = clients.get(currPacket.data.sender_id);
           if (client) client.send(JSON.stringify(currPacket));
         } else if (currPacket.data.type == "friendReq") {
           checkNotificationFriend(currPacket);
@@ -148,6 +145,26 @@ async function processMessages() {
     }
   }
   isProcessingQueue = false;
+}
+
+function checkValidPacket(packet: websocketPacket, userId: number): boolean {
+  if (packet.data.sender_id != userId || packet.data.sender_id == packet.data.recipient_id) return false;
+  const checkFriend = app.db
+    .prepare("SELECT key FROM json_each((SELECT friends FROM players WHERE id = ?)) WHERE value = ?")
+    .get(userId.toString(), packet.data.recipient_id.toString());
+  const checkSenderBlock = app.db
+    .prepare("SELECT key FROM json_each((SELECT block_list FROM players WHERE id = ?)) WHERE value = ?")
+    .get(userId.toString(), packet.data.recipient_id.toString());
+  const checkRecipientBlock = app.db
+    .prepare("SELECT key FROM json_each((SELECT block_list FROM players WHERE id = ?)) WHERE value = ?")
+    .get(packet.data.recipient_id.toString(), userId.toString());
+  if (
+    (!checkFriend && packet.data.type != "friendReq") || // send friendReq packet if not friend
+    (checkFriend && packet.data.type == "friendReq") || // drop friendReq packet if already friend
+    ((checkSenderBlock || checkRecipientBlock) && packet.data.type != "block") // let block/unblock packet even if blocked
+  )
+    return false;
+  return true;
 }
 
 export const chatService = {
@@ -167,15 +184,14 @@ export const chatService = {
     connection.on("message", (message: Buffer) => {
       try {
         const msgPacket: websocketPacket = JSON.parse(message.toString());
-        if (msgPacket.type == "chat") {
-          // msgPacket.data.sender_id = userId;
-          // if (msgPacket.data.type == "message") msgPacket.data.sender_id = userId;
-          // else msgPacket.data.recipient_id = userId;
+        if (checkValidPacket(msgPacket, userId) == false) {
+          console.log("packet dropped -> ", msgPacket);
+          return;
         }
         setImmediate(processMessages);
         messageQueue.push(msgPacket);
-      } catch {
-        console.error("Invalid message");
+      } catch (e) {
+        console.error("Error -> ", e);
       }
     });
 

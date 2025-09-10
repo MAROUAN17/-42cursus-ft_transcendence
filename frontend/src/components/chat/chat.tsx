@@ -104,6 +104,9 @@ const Chat = () => {
           const msgPacket: messagePacket = JSON.parse(messageObj);
           if (!msgPacket.id) return;
           msgPacket.type = "markSeen";
+          const sender_id = msgPacket.sender_id;
+          msgPacket.sender_id = msgPacket.recipient_id;
+          msgPacket.recipient_id = sender_id;
           const socketpacket: websocketPacket = {
             type: "chat",
             data: msgPacket,
@@ -253,7 +256,7 @@ const Chat = () => {
   }
   return (
     <div
-      className={`flex flex-row h-full w-full bg-darkBg p-5 gap-x-4 font-poppins transition-all duration-700 ease-in-out ${
+      className={`flex flex-row h-full max-h-full w-full bg-darkBg p-5 gap-x-4 font-poppins transition-all duration-700 ease-in-out ${
         show ? "opacity-100" : "opacity-0"
       }`}
     >
@@ -291,8 +294,8 @@ const Chat = () => {
                     setBlockedByUser(user.blockedByUser);
                     setBlockedByOther(user.blockedByOther);
                     blockedbyOtherRef.current = user.blockedByOther;
-                    user.unreadCount = 0;
                     if (user.unreadCount > 0) updateNotification();
+                    user.unreadCount = 0;
                   }}
                   msg={
                     user.lastMessage
@@ -311,7 +314,7 @@ const Chat = () => {
             ))}
         </div>
       </div>
-      <div className="bg-compBg/20 rounded-xl max-h-full basis-2/3 flex flex-col justify-between min-w-0">
+      <div className="bg-compBg/20 rounded-xl h-full basis-2/3 flex-1 flex flex-col justify-between min-w-0">
         {targetUser ? (
           <>
             <div className="bg-compBg/20 h-[95px] items-center flex px-7 justify-between">
@@ -330,7 +333,10 @@ const Chat = () => {
                 {isOptionsOpen ? (
                   <div className="absolute overflow-hidden right-0 mt-2 w-fit z-10 bg-[#1f085f] border-2 border-neon/10 rounded-lg shadow-[0_0px_1px_rgba(0,0,0,0.25)] shadow-neon">
                     <ul className="">
-                      <li className="text-white flex items-center hover:bg-compBg/30 gap-1 justify-center py-2 px-4">
+                      <li
+                        onClick={() => navigate("/profile/" + targetUser.username)}
+                        className="text-white flex items-center hover:bg-compBg/30 gap-1 justify-center py-2 px-4"
+                      >
                         <FaUser className="text-white" />
                         Profile
                       </li>
@@ -366,7 +372,7 @@ const Chat = () => {
             </div>
             <div
               id="messages"
-              className="overflow-y-auto overflow-hidden flex flex-col-reverse p-6 gap-1 space-y-reverse h-full w-full scrollbar-thin scrollbar scrollbar-thumb-neon/80 scrollbar-track-white/10 "
+              className="overflow-y-auto flex flex-col-reverse p-6 gap-1 max-h-[1020px] h-full w-full scrollbar-thin scrollbar scrollbar-thumb-neon/80 scrollbar-track-white/10 "
             >
               {messages.map((message, i, arr) =>
                 message.recipient_id == targetUser.id ? (

@@ -83,7 +83,7 @@ const Navbar = () => {
     } else if (newNotif.type == "markSeen") {
       setNotifications((prev) => {
         return prev.map((notif) => {
-          return notif.sender_id == packet.data.sender_id ? { ...notif, unreadCount: 0 } : notif;
+          return notif.sender_id == packet.data.recipient_id ? { ...notif, unreadCount: 0 } : notif;
         });
       });
     } else if (newNotif.type == "friendReq" || newNotif.type == "friendAccept") {
@@ -107,8 +107,8 @@ const Navbar = () => {
         id: 0,
         type: "markSeen",
         username: "",
-        sender_id: notification.sender_id,
-        recipient_id: notification.recipient_id,
+        sender_id: notification.recipient_id,
+        recipient_id: notification.sender_id,
         message: "",
         createdAt: "",
       },
