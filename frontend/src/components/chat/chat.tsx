@@ -200,8 +200,7 @@ const Chat = () => {
   }
 
   function updateNotification() {
-    console.log("inside")
-    if (!targetUser || !currUser) return;
+    if (!targetUserRef.current || !currUser) return;
     const notif: websocketPacket = {
       type: "notification",
       data: {
@@ -209,12 +208,11 @@ const Chat = () => {
         type: "markSeen",
         username: "",
         sender_id: currUser.id,
-        recipient_id: targetUser.id,
+        recipient_id: targetUserRef.current.id,
         message: "",
         createdAt: "",
       },
     };
-    console.log("notif -> ", notif);
     send(JSON.stringify(notif));
   }
 
@@ -296,8 +294,8 @@ const Chat = () => {
                     setBlockedByUser(user.blockedByUser);
                     setBlockedByOther(user.blockedByOther);
                     blockedbyOtherRef.current = user.blockedByOther;
-                    user.unreadCount = 0;
                     if (user.unreadCount > 0) updateNotification();
+                    user.unreadCount = 0;
                   }}
                   msg={
                     user.lastMessage
@@ -335,7 +333,10 @@ const Chat = () => {
                 {isOptionsOpen ? (
                   <div className="absolute overflow-hidden right-0 mt-2 w-fit z-10 bg-[#1f085f] border-2 border-neon/10 rounded-lg shadow-[0_0px_1px_rgba(0,0,0,0.25)] shadow-neon">
                     <ul className="">
-                      <li className="text-white flex items-center hover:bg-compBg/30 gap-1 justify-center py-2 px-4">
+                      <li
+                        onClick={() => navigate("/profile/" + targetUser.username)}
+                        className="text-white flex items-center hover:bg-compBg/30 gap-1 justify-center py-2 px-4"
+                      >
                         <FaUser className="text-white" />
                         Profile
                       </li>

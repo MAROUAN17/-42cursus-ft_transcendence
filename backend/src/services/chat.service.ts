@@ -131,7 +131,7 @@ async function processMessages() {
           app.db
             .prepare("UPDATE notifications SET isRead = true, unreadCount = 0 WHERE sender_id = ? AND recipient_id = ? AND type = ?")
             .run(currPacket.data.recipient_id, currPacket.data.sender_id, "message");
-          let client = clients.get(currPacket.data.recipient_id);
+          let client = clients.get(currPacket.data.sender_id);
           if (client) client.send(JSON.stringify(currPacket));
         } else if (currPacket.data.type == "friendReq") {
           checkNotificationFriend(currPacket);
@@ -158,10 +158,6 @@ function checkValidPacket(packet: websocketPacket, userId: number): boolean {
   const checkRecipientBlock = app.db
     .prepare("SELECT key FROM json_each((SELECT block_list FROM players WHERE id = ?)) WHERE value = ?")
     .get(packet.data.recipient_id.toString(), userId.toString());
-  console.log("userId ->", userId);
-  console.log("checkFriend ->", checkFriend);
-  console.log("checkSenderBlock ->", checkSenderBlock);
-  console.log("checkRecipientBlock ->", checkRecipientBlock);
   if (
     (!checkFriend && packet.data.type != "friendReq") || // send friendReq packet if not friend
     (checkFriend && packet.data.type == "friendReq") || // drop friendReq packet if already friend
