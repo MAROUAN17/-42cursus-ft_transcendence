@@ -29,21 +29,20 @@ export const oauthCallback = async (req: FastifyRequest, res: FastifyReply) => {
   
     const userData = await resData.json();
     
-    console.log(userData.id);
 
-    const email = userData.email, username = userData.login;
+    const email = userData.email, username = userData.login, intraId = userData.id;
 
     //check if user already exists
-    if (username) {
+    if (intraId) {
       user = app.db
-        .prepare("SELECT * from players WHERE username = ?")
-        .get(username) as User | undefined;
+        .prepare("SELECT * from players WHERE intra_id = ?")
+        .get(intraId) as User | undefined;
     }
 
     if (!user) {
       app.db
-        .prepare("INSERT INTO players(email, username) VALUES (?, ?)")
-        .run(email, username);
+        .prepare("INSERT INTO players(intra_id, email, username) VALUES (?, ?, ?)")
+        .run(intraId, email, username);
     }
   
     //sign new JWT tokens

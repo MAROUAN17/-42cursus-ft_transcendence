@@ -24,6 +24,9 @@ export const logoutUser = async (req: FastifyRequest, res: FastifyReply) => {
     if (updateUserState.changes == 0)
       return res.status(500).send({ error: "Error occured" });
 
+    res.clearCookie("oauth2-redirect-state", {
+      path: "/intra42",
+    });
     res.clearCookie("refreshToken", {
       path: "/",
       secure: true,
