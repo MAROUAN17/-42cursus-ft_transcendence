@@ -41,7 +41,6 @@ const Navbar = () => {
     api
       .get("/notifications", { withCredentials: true })
       .then((res) => {
-        console.log("notifications -> ", res.data.data);
         setNotifications(res.data.data);
       })
       .catch((error) => {

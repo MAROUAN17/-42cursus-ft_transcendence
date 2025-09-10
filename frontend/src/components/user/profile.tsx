@@ -17,7 +17,7 @@ import { FiMessageCircle } from "react-icons/fi";
 import { MdOutlinePersonRemove } from "react-icons/md";
 import { LiaUserClockSolid } from "react-icons/lia";
 import { FaHourglassHalf } from "react-icons/fa";
-
+import { IoMdClose } from "react-icons/io";
 
 import {
   Line,
@@ -39,16 +39,24 @@ import api from "../../axios";
 export default function Profile() {
   const navigate = useNavigate();
   const { username } = useParams();
+  const [settingsPopup, setSettingsPopup] = useState<boolean>(true);
   const [profileStatus, setProfileStatus] = useState<string>();
   const [blockedUser, setblockedUser] = useState<boolean>(false);
   const [isFriend, setIsFriend] = useState<boolean>(false);
   const [friendReqSent, setFriendReqSent] = useState<boolean>(false);
+  const [currEmail, setCurrEmail] = useState<string>("");
+  const [currUsername, setCurrUsername] = useState<string>("");
+  const [usernameErrorFlag, setUsernameErrorFlag] = useState<boolean>(false);
+  const [usernameErrorMssg, setUsernameErrorMssg] = useState<string>("");
+  const [emailErrorFlag, setEmailErrorFlag] = useState<boolean>(false);
+  const [emailErrorMssg, setEmailErrorMssg] = useState<string>("");
   const { user } = useWebSocket();
   const [currUser, setCurrUser] = useState<ProfileUserInfo>({
     id: 0,
     username: "",
     email: "",
   });
+  let usernamePattern = new RegExp("^[a-zA-Z0-9]+$");
   const { send, addHandler } = useWebSocket();
 
   const data = [
@@ -89,11 +97,59 @@ export default function Profile() {
     setFriendReqSent(true);
   }
 
+  function handleEmailChange(e: React.ChangeEvent<HTMLInputElement>) {
+    e.preventDefault();
+    setCurrEmail(e.target.value);
+  }
+
+  function handleUsernameChange(e: React.ChangeEvent<HTMLInputElement>) {
+    e.preventDefault();
+    setCurrUsername(e.target.value);
+    setUsernameErrorFlag(false);
+    setUsernameErrorMssg("");
+  }
+
+  function editProfile(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    if (currUsername.length < 3 || currUsername.length > 16) {
+      setUsernameErrorFlag(true);
+      setUsernameErrorMssg("Username must be between 3 and 16 characters");
+      return;
+    } else if (!usernamePattern.test(currUsername)) {
+      setUsernameErrorFlag(true);
+      setUsernameErrorMssg("Username must be valid");
+      return;
+    }
+
+    api
+      .post(
+        "/edit-user",
+        {
+          id: currUser.id,
+          username: currUsername,
+          email: currEmail,
+        },
+        { withCredentials: true }
+      )
+      .then(function () {
+        setSettingsPopup(false);
+      })
+      .catch(function (err) {
+        if (err.response.data.error.includes("Username")) {
+          setUsernameErrorFlag(true);
+          setUsernameErrorMssg(err.response.data.error);
+        }
+        if (err.response.data.error.includes("Email")) {
+          setEmailErrorFlag(true);
+          setEmailErrorMssg(err.response.data.error);
+        }
+      });
+  }
+
   useEffect(() => {
     api
       .get("/profile/" + username, { withCredentials: true })
       .then(function (res: AxiosResponse) {
-        console.log(res);
         if (res.data.message == "User1 Blocked User2") {
           setblockedUser(true);
         }
@@ -101,15 +157,94 @@ export default function Profile() {
         setProfileStatus(res.data.profileType);
         setIsFriend(res.data.friend);
         setFriendReqSent(res.data.friendNotif);
+        setCurrEmail(res.data.infos.email);
+        setCurrUsername(res.data.infos.username);
       })
       .catch(function (err) {
         console.log(err);
       });
+
+    return () => {
+      setSettingsPopup(false);
+    };
   }, [username]);
 
   return (
     <div className="flex flex-col bg-darkBg h-full w-full font-poppins">
-      <div className="flex p-8 h-[50%] space-x-4">
+      {settingsPopup ? (
+        <div className="absolute z-10 inset-x-[850px] inset-y-[220px] rounded-lg flex justify-center items-center bg-darkBg ">
+          <div className="justify-end w-full h-full p-6">
+            <div className="w-[50px] h-[50px] items-center flex flex-col justify-center">
+              <IoMdClose
+                onClick={() => {
+                  setSettingsPopup(false);
+                  setUsernameErrorFlag(false);
+                  setUsernameErrorMssg("");
+                  setCurrEmail(currUser.email);
+                  setCurrUsername(currUser.username);
+                }}
+                color="white"
+                className="w-[30px] h-[30px] hover:w-[40px] hover:h-[40px]"
+              />
+            </div>
+            <div className="">
+              <h1 className="text-white font-bold text-5xl text-center">
+                Edit Profile
+              </h1>
+            </div>
+            <form onSubmit={editProfile}>
+              <div className="flex flex-col items-center mt-24 space-y-8">
+                <div className="flex flex-col space-y-3">
+                  {usernameErrorFlag ? (
+                    <div>
+                      <h1 className="text-red-700 font-bold">
+                        {usernameErrorMssg}
+                      </h1>
+                    </div>
+                  ) : null}
+                  <label htmlFor="" className="text-white font-bold">
+                    Username
+                  </label>
+                  <input
+                    value={currUsername}
+                    onChange={handleUsernameChange}
+                    type="text"
+                    className={`bg-transparent px-12 py-4 rounded-lg text-white ${
+                      usernameErrorFlag
+                        ? "border-b border-red-700"
+                        : "border border-white"
+                    }`}
+                  />
+                </div>
+                <div className="flex flex-col space-y-3">
+                  <label htmlFor="" className="text-white font-bold">
+                    Email
+                  </label>
+                  <input
+                    value={currEmail}
+                    onChange={handleEmailChange}
+                    type="email"
+                    className="bg-transparent px-12 py-4 rounded-lg border border-white text-white"
+                  />
+                </div>
+                <div className="py-12">
+                  <button
+                    type="submit"
+                    className="bg-neon py-3 px-36 text-white rounded-lg font-bold"
+                  >
+                    Save changes
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      ) : null}
+      <div
+        className={`flex p-8 h-[50%] space-x-4 ${
+          settingsPopup ? "blur-sm" : ""
+        }`}
+      >
         {/* stats section */}
         <div className="p-14 bg-compBg/20 w-[85%] rounded-[10px] space-y-12">
           <div className="rounded-lg flex space-x-8 h-[25%]">
@@ -200,7 +335,13 @@ export default function Profile() {
               {profileStatus == "me" ? (
                 <div className="flex w-[120px] justify-center">
                   <div className="flex justify-center mt-2 outline outline-white outline-2 outline-offset-4 rounded-full w-[25%]">
-                    <CiSettings color="white" size={30} />
+                    <CiSettings
+                      onClick={() => {
+                        setSettingsPopup(true);
+                      }}
+                      color="white"
+                      size={30}
+                    />
                   </div>
                 </div>
               ) : !blockedUser ? (
@@ -325,7 +466,7 @@ export default function Profile() {
           </div>
         </div>
       </div>
-      <div className="px-8 h-[50%]">
+      <div className={`px-8 h-[50%] ${settingsPopup ? "blur-sm" : ""}`}>
         <div className="bg-compBg/20 flex flex-col justify-center rounded-[20px]">
           <div className="px-8 py-6 flex justify-between">
             <h1 className="text-white font-bold">History</h1>

@@ -30,6 +30,7 @@ import {
 import { requestNewToken } from "../services/newAccessToken.service.js";
 import { addFriend } from "../services/addFriend.service.js";
 import { unfriendUser } from "../services/unfriend.service.js";
+import { editUserInfos } from "../services/edit.service.js";
 
 export const authRoutes: FastifyPluginAsync = async () => {
   app.post("/login", loginUser);
@@ -40,6 +41,7 @@ export const authRoutes: FastifyPluginAsync = async () => {
 
   //user features
   app.post("/add-friend/:id", { onRequest: [app.jwtAuth] }, addFriend);
+  app.post("/edit-user", { onRequest: [app.jwtAuth] }, editUserInfos);
 
   //reset password
   app.post("/reset-password", resetPassword);

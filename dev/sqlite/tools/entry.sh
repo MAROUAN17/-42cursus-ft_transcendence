@@ -11,6 +11,7 @@ touch $DB_NAME
 sqlite3 "$DB_NAME" <<EOF 
     CREATE TABLE IF NOT EXISTS players (
         id INTEGER PRIMARY KEY,
+        intra42_id INTEGER,
         username TEXT NOT NULL,
         email TEXT NOT NULL,
         password TEXT,

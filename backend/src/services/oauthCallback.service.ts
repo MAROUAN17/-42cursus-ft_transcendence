@@ -28,6 +28,8 @@ export const oauthCallback = async (req: FastifyRequest, res: FastifyReply) => {
     });
   
     const userData = await resData.json();
+    
+    console.log(userData.id);
 
     const email = userData.email, username = userData.login;
 

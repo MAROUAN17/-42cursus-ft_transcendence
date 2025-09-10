@@ -9,7 +9,13 @@ export const fetchUser = async (req: FastifyRequest, res: FastifyReply) => {
     const accessToken = req.cookies.accessToken;
 
     const infos = app.jwt.jwt1.decode(accessToken!) as Payload | null;
-    res.status(200).send({ infos: infos });
+
+    const user = app.db
+      .prepare("SELECT * FROM players WHERE id = ?")
+      .get(infos?.id);
+    if (!user) return;
+
+    res.status(200).send({ infos: user });
   } catch (error) {
     res.status(500).send({ error: error });
   }
@@ -25,8 +31,13 @@ export const fetchProfileUser = async (
     const accessToken = req.cookies.accessToken;
     const payload = app.jwt.jwt1.decode(accessToken!) as Payload | null;
 
-    if (!username || username == payload?.username) {
-      return res.status(200).send({ infos: payload, profileType: "me" });
+    const user = app.db
+      .prepare("SELECT * FROM players WHERE id = ?")
+      .get(payload?.id) as User | undefined;
+    if (!user) return res.status(404).send({ error: "USER NOT FOUND" });
+
+    if (!username || username == user.username) {
+      return res.status(200).send({ infos: user, profileType: "me" });
     }
 
     if (username) {
@@ -34,61 +45,60 @@ export const fetchProfileUser = async (
         .prepare("SELECT * FROM players WHERE username = ?")
         .get(username);
       if (!user) return res.status(404).send({ message: "User not found" });
-      else {
-        //check if the requested user blocked the current user
-        const checkBlocked = app.db
-          .prepare(
-            "SELECT key FROM json_each((SELECT block_list FROM players WHERE id = ?)) WHERE value = ?"
-          )
-          .get(payload?.id, user.id.toString());
 
-        if (checkBlocked) {
-          return res.status(200).send({
-            message: "User1 Blocked User2",
-            infos: user,
-            profileType: "other",
-            friend: false,
-            friendNotif: false,
-          });
-        }
+      //check if the requested user blocked the current user
+      const checkBlocked = app.db
+        .prepare(
+          "SELECT key FROM json_each((SELECT block_list FROM players WHERE id = ?)) WHERE value = ?"
+        )
+        .get(payload?.id, user.id.toString());
 
-        //check if the requested user is a friend
-        const checkFriend = app.db
-          .prepare(
-            "SELECT key FROM json_each((SELECT friends FROM players WHERE id = ?)) WHERE value = ?"
-          )
-          .get(payload?.id, user.id.toString());
-
-        if (checkFriend)
-          return res.status(200).send({
-            infos: user,
-            profileType: "other",
-            friend: true,
-            friendNotif: false,
-          });
-
-        //check if friend request already sent
-        const checkNotif = app.db
-          .prepare(
-            "SELECT * from notifications WHERE sender_id = ? AND recipient_id = ? AND type = ?"
-          )
-          .get(payload?.id, user.id.toString(), "friendReq");
-
-        if (checkNotif)
-          return res.status(200).send({
-            infos: user,
-            profileType: "other",
-            friend: false,
-            friendNotif: true,
-          });
-
-        res.status(200).send({
+      if (checkBlocked) {
+        return res.status(200).send({
+          message: "User1 Blocked User2",
           infos: user,
           profileType: "other",
           friend: false,
           friendNotif: false,
         });
       }
+
+      //check if the requested user is a friend
+      const checkFriend = app.db
+        .prepare(
+          "SELECT key FROM json_each((SELECT friends FROM players WHERE id = ?)) WHERE value = ?"
+        )
+        .get(payload?.id, user.id.toString());
+
+      if (checkFriend)
+        return res.status(200).send({
+          infos: user,
+          profileType: "other",
+          friend: true,
+          friendNotif: false,
+        });
+
+      //check if friend request already sent
+      const checkNotif = app.db
+        .prepare(
+          "SELECT * from notifications WHERE sender_id = ? AND recipient_id = ? AND type = ?"
+        )
+        .get(payload?.id, user.id.toString(), "friendReq");
+
+      if (checkNotif)
+        return res.status(200).send({
+          infos: user,
+          profileType: "other",
+          friend: false,
+          friendNotif: true,
+        });
+
+      res.status(200).send({
+        infos: user,
+        profileType: "other",
+        friend: false,
+        friendNotif: false,
+      });
     }
   } catch (error) {
     res.status(500).send({ error: error });
