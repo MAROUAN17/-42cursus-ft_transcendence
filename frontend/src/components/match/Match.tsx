@@ -13,7 +13,7 @@ export default function Pairing() {
   const [gameInfo, setGameInfo] = useState(null);
   const [username, setUsername] = useState("");
   const [paired, setPaired] = useState(false);
-  const [countdown, setCountdown] = useState(5);
+  const [countdown, setCountdown] = useState(2);
 
 
   const navigate = useNavigate();

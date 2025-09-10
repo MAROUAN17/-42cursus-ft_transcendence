@@ -1,11 +1,10 @@
 
-import { DefaultGame, type GameInfo } from "../models/game.js";
+import { DefaultGame, type GameInfo, type Room } from "../models/game.js";
 
-import { v4 as uuidv4 } from "uuid";
 import { type MessagePacket } from "../types/game.js";
 import { clients, broadcast, checkPaddleCollision } from "./game.utils.js"; 
 
-
+const rooms:Room[] = [];
 const msgPacket: MessagePacket = {
   to: "me",
   game_info: set_random_Info(DefaultGame)
@@ -24,109 +23,158 @@ function set_random_Info(game_info:GameInfo) {
   return game_info;
 }
 
-function gameLoop () {
-  let last = Date.now();
+function gameLoop (room:Room)
+{
+  var game = room.gameInfo;
+    const dt = 1 / 60; 
+    
 
-  setInterval(() => {
-    const now = Date.now();
-    const dt = Math.min(32, now - last) / 1000; 
-    last = now;
+    const nx = game.ball.x + game.ball.velX * dt
+    const ny = game.ball.y + game.ball.velY * dt
 
-    const nx = msgPacket.game_info.ball.x + msgPacket.game_info.ball.velX * dt
-    const ny = msgPacket.game_info.ball.y + msgPacket.game_info.ball.velY * dt
-
-    if (ny + 10 >= DefaultGame.bounds.height && msgPacket.game_info.dir.vertical === "down"){
-      msgPacket.game_info.ball.velY *= -1;
-      msgPacket.game_info.dir.vertical = "up";
+    if (ny + 10 >= DefaultGame.bounds.height && game.dir.vertical === "down"){
+      game.ball.velY *= -1;
+      game.dir.vertical = "up";
     }
-    if (ny - 10 <= 0 && msgPacket.game_info.dir.vertical === "up"){
-      msgPacket.game_info.ball.velY *= -1
-      msgPacket.game_info.dir.vertical = "down";
+    if (ny - 10 <= 0 && game.dir.vertical === "up"){
+      game.ball.velY *= -1
+      game.dir.vertical = "down";
     }
-    if (msgPacket.game_info.ball.velX < 0 
-      && msgPacket.game_info.dir.horizontal === "left" 
-      && checkPaddleCollision(msgPacket.game_info.paddleLeft, nx, ny))
+    if (game.ball.velX < 0 
+      && game.dir.horizontal === "left" 
+      && checkPaddleCollision(game.paddleLeft, nx, ny))
       {
-        const intersectY = (ny - (msgPacket.game_info.paddleLeft.y + DefaultGame.paddleLeft.height/ 2)) / (DefaultGame.bounds.height / 2);
-        const speed = Math.hypot(msgPacket.game_info.ball.velX, msgPacket.game_info.ball.velY);
+        const intersectY = (ny - (game.paddleLeft.y + DefaultGame.paddleLeft.height/ 2)) / (DefaultGame.bounds.height / 2);
+        const speed = Math.hypot(game.ball.velX, game.ball.velY);
         const newAngle = intersectY * (Math.PI / 3);
-        const newSpeed = Math.min(900, speed * 1.1);
+        const newSpeed = Math.min(900, speed * 1.02);
         
-        msgPacket.game_info.ball.velX =  Math.cos(newAngle) * newSpeed ;
-        msgPacket.game_info.ball.velY =  Math.sin(newAngle) * newSpeed ;
-        msgPacket.game_info.dir = {
-          vertical:msgPacket.game_info.ball.velY < 0 ? "up" : "down",
+        game.ball.velX =  Math.cos(newAngle) * newSpeed ;
+        game.ball.velY =  Math.sin(newAngle) * newSpeed ;
+        game.dir = {
+          vertical:game.ball.velY < 0 ? "up" : "down",
           horizontal: "right"
         }
       }
-    if (msgPacket.game_info.ball.velX > 0 
-      && msgPacket.game_info.dir.horizontal === "right" 
-      && checkPaddleCollision(msgPacket.game_info.paddleRight, nx, ny))
+    if (game.ball.velX > 0 
+      && game.dir.horizontal === "right" 
+      && checkPaddleCollision(game.paddleRight, nx, ny))
       {
-        const intersectY = (ny - (msgPacket.game_info.paddleRight.y + DefaultGame.paddleRight.height/ 2)) / (DefaultGame.bounds.height / 2);
-        const speed = Math.hypot(msgPacket.game_info.ball.velX, msgPacket.game_info.ball.velY);
+        const intersectY = (ny - (game.paddleRight.y + DefaultGame.paddleRight.height/ 2)) / (DefaultGame.bounds.height / 2);
+        const speed = Math.hypot(game.ball.velX, game.ball.velY);
         const newAngle = Math.PI - intersectY * (Math.PI / 3);
-        const newSpeed = Math.min(900, speed * 1.1);
-        msgPacket.game_info.ball.velX =  Math.cos(newAngle) * newSpeed ;
-        msgPacket.game_info.ball.velY =  -Math.sin(newAngle) * newSpeed ;
-        msgPacket.game_info.dir = {
-          vertical:msgPacket.game_info.ball.velY < 0 ? "up" : "down",
+        const newSpeed = Math.min(900, speed * 1.02);
+        game.ball.velX =  Math.cos(newAngle) * newSpeed ;
+        game.ball.velY =  -Math.sin(newAngle) * newSpeed ;
+        game.dir = {
+          vertical:game.ball.velY < 0 ? "up" : "down",
           horizontal: "left"
         }
-        msgPacket.game_info.dir.horizontal = "left";
+        game.dir.horizontal = "left";
       }
     if (nx < -10) {
-      msgPacket.game_info.scoreRight++;
-      msgPacket.game_info = set_random_Info(msgPacket.game_info);
+      game.scoreRight++;
+      game = set_random_Info(game);
       return  ;
     }
     if (nx > DefaultGame.bounds.width + 10){
-      msgPacket.game_info.scoreLeft++;
-      msgPacket.game_info = set_random_Info(msgPacket.game_info);
+      game.scoreLeft++;
+      game = set_random_Info(game);
       return ;
     }
-    msgPacket.game_info.ball.x = nx;
-    msgPacket.game_info.ball.y = ny;
+    game.ball.x = nx;
+    game.ball.y = ny;
+    room.gameInfo = game;
+    broadcastToRoom(room, { type: "update", game_info: room.gameInfo });
+}
 
-    broadcast(msgPacket);
-  }, 1000 / 60);
+
+function broadcastToRoom(room: Room, message: any) {
+  [room.player1, room.player2].forEach(pid => {
+    if (!pid) return;
+    const conn = clients.get(pid);
+    if (conn) {
+      conn.send(JSON.stringify(message));
+    }
+  });
+}
+
+
+function startGame (room:Room) {
+  if (room.intervalId) return;
+  room.intervalId = setInterval(() => gameLoop(room), 1000 / 60);
 }
 
 export function handleGameConnection(connection: any, req: any) {
-  const id: string = uuidv4();
-  clients.set(id, connection);
-  console.log("Connection established with =>", id);
-  
-  gameLoop();
-  
+  let userId: string ;
+
   connection.on("message", (message: any) => {
-    //console.log(`Received from ${id}:`, message.toString());
     try {
       const msg = JSON.parse(message.toString());
-      updateInfo(msg)
-      const clientConn = clients.get(msgPacket.to);
-      if (clientConn) {
-        clientConn.send(JSON.stringify(msgPacket.game_info));
+
+      if (msg.type === "newGame") {
+        userId = msg.userId;
+        clients.set(userId, connection);
+        addPlayerToRoom(msg.gameId, userId);
+        console.log('-- connectionn established with ', userId);
+      }
+
+      if (msg.type === "updateY") {
+        const room = getRoom(msg.gameId);
+        console.log("-- trying to update y for the game:", msg.gameId)
+        console.log("Before update - Left Y:", room.gameInfo.paddleLeft.y, "Right Y:", room.gameInfo.paddleRight.y);
+        console.log("Received values - leftY:", msg.leftY, "rightY:", msg.rightY);
+        
+        room.gameInfo.paddleLeft.y = msg.leftY;
+        room.gameInfo.paddleRight.y = msg.rightY;
+        
+        console.log("After update - Left Y:", room.gameInfo.paddleLeft.y, "Right Y:", room.gameInfo.paddleRight.y);
+        console.log("Broadcasting to room:", room.gameId, "Players:", room.player1, room.player2);
+        
+        broadcastToRoom(room, { type: "update", game_info: room.gameInfo });
       }
     } catch (err) {
-      console.error("Invalid game info packet:", err);
+      console.error("Invalid packet:", err);
     }
   });
 
   connection.on("close", () => {
-    console.log("Client disconnected ->", id);
-    clients.delete(id);
+    console.log("Client disconnected ->", userId);
+    if (userId) clients.delete(userId);
   });
+
+}
+function getRoom(gameId: string): Room {
+  let room = rooms.find(r => r.gameId === gameId);
+  if (!room) {
+    room = { 
+      gameId, 
+      ready: false, 
+      gameInfo: set_random_Info(structuredClone(DefaultGame)) 
+    };
+    rooms.push(room);
+  }
+  return room;
 }
 
-function updateInfo(msg:any) {
-  if (msg.type == 'newgame')
-    console.log(msg.currentGame);
-  if (msg.type == "updateY"){
-    msgPacket.game_info.paddleLeft.y = msg.leftY;
-    msgPacket.game_info.paddleRight.y = msg.rightY;
+function addPlayerToRoom(gameId: string, playerId: string) {
+  const room = getRoom(gameId);
+
+  if (!room.player1) {
+    room.player1 = playerId;
+  } else if (!room.player2 && room.player1 !== playerId) {
+    room.player2 = playerId;
+  }
+
+  if (room.player1 && room.player2 && !room.ready) {
+    room.ready = true;
+    console.log(`-- Room ${gameId} ready! Players: ${room.player1}, ${room.player2}`);
+    startGame(room);
+  } else {
+    console.log(`-- Waiting for another player in room ${gameId}`);
   }
 }
+
 
 export const getGameState = () => {
   return DefaultGame;

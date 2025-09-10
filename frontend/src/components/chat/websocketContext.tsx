@@ -15,17 +15,17 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   );
   function connectWs() {
     const ws = new WebSocket("wss://localhost:5000/send-message");
-    console.log("socketRef -> ", socketRef.current);
+    //console.log("socketRef -> ", socketRef.current);
     socketRef.current = ws;
     socketRef.current.onopen = () => {
-      console.log("Socket Created!");
-      console.log("ws ->", ws.readyState);
+      //console.log("Socket Created!");
+      //console.log("ws ->", ws.readyState);
     };
 
     socketRef.current.onclose = () => {
-      console.log("closing ws");
+      //console.log("closing ws");
       setTimeout(() => {
-        console.log("Retrying-----------------------");
+        //console.log("Retrying-----------------------");
         connectWs();
       }, 1000);
     };
@@ -35,25 +35,25 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       if (handler) handler(data);
     };
     socketRef.current.onerror = function (err: any) {
-      console.log("Socket encountered error: ", err.message, "Closing socket");
+      //console.log("Socket encountered error: ", err.message, "Closing socket");
       ws.close();
     };
   }
   useEffect(() => {
     try {
-      connectWs();
+      //connectWs();
     } catch (error) {
-      console.log("this is ws error -> ", error);
+      //console.log("this is ws error -> ", error);
     }
 
     return () => {
-      console.log("Closing WebSocket...");
+      //console.log("Closing WebSocket...");
       socketRef.current?.close();
     };
   }, []);
   function send(msg: string) {
-    console.log("sending packet!");
-    console.log("socketRef.current.readyState -> ", socketRef.current?.readyState);
+    //console.log("sending packet!");
+    //console.log("socketRef.current.readyState -> ", socketRef.current?.readyState);
     if (socketRef.current && socketRef.current.readyState == WebSocket.OPEN) socketRef.current.send(msg);
   }
   function addHandler(packetType: string, handler: (data: websocketPacket) => void) {

@@ -24,18 +24,34 @@ export default function RGame() {
 
   useEffect(() => {
 	const storedGame = sessionStorage.getItem("currentGame");
-	if (storedGame) {
-	  const sessionGame = JSON.parse(storedGame);
-	  if (websocket && websocket.readyState == WebSocket.OPEN)
-			websocket.send( JSON.stringify({type:"newGame",currentGame: storedGame}));
-	  else
-	  	console.log("socket errror")
-	  console.log("-----:  " , sessionGame)
-	  setGame(sessionGame)
-	} else {
+	if (!storedGame) {
 	  console.log("No game found in sessionStorage.");
+	  return;
 	}
-  }, []);  
+  
+	const sessionGame = JSON.parse(storedGame);
+	setGame(sessionGame);
+  
+	let interval: NodeJS.Timeout;
+  
+	interval = setInterval(() => {
+	  if (websocket && websocket.readyState === WebSocket.OPEN) {
+		websocket.send(
+		  JSON.stringify({
+			type: "newGame",
+			userId: sessionGame.you.id,
+			gameId: sessionGame.id,
+		  })
+		);
+		console.log("Game sent to server ✅");
+		clearInterval(interval);
+	  } else {
+		console.log("⏳ Waiting for socket...");
+	  }
+	}, 1000);
+  
+	return () => clearInterval(interval);
+  }, [websocket]);
   useEffect(() => {
 	if (i < 3)
 		{
@@ -80,7 +96,7 @@ export default function RGame() {
 
 	useEffect ( () => {
 		if (websocket && websocket.readyState == WebSocket.OPEN)
-			websocket.send(JSON.stringify({ type: "updateY", leftY, rightY}));
+			websocket.send(JSON.stringify({ type: "updateY", leftY, rightY, gameId:game?.id}));
 		else
 			console.log("there is a proble in socket:", websocket);
 	}, [leftY, rightY]);

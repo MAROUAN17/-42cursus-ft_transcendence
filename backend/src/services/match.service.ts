@@ -22,7 +22,6 @@ export interface Game {
   gameInfo: GameInfo; 
 }
 
-export const playerConnections = new Map<string, any>();
 
 export const pair_players = async (req: FastifyRequest, res: FastifyReply) => {
   try {
