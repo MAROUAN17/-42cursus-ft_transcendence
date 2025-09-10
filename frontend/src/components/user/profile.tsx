@@ -35,6 +35,7 @@ import type { ProfileUserInfo } from "../../types/user";
 import type { websocketPacket } from "../../../../backend/src/models/webSocket.model";
 import { useWebSocket } from "../chat/websocketContext";
 import api from "../../axios";
+import { ToastContainer, toast } from "react-toastify";
 
 export default function Profile() {
   const navigate = useNavigate();
@@ -133,6 +134,10 @@ export default function Profile() {
       )
       .then(function () {
         setSettingsPopup(false);
+        toast("Your data changed successfully", {
+          closeButton: false,
+          className: 'font-poppins border-3 border-neon bg-neon/70 text-white font-bold text-md'
+        });
       })
       .catch(function (err) {
         if (err.response.data.error.includes("Username")) {
@@ -172,9 +177,9 @@ export default function Profile() {
   return (
     <div className="flex flex-col bg-darkBg h-full w-full font-poppins">
       {settingsPopup ? (
-        <div className="absolute z-10 inset-x-[850px] inset-y-[220px] rounded-lg flex justify-center items-center bg-darkBg ">
+        <div className="absolute z-10 inset-x-[850px] inset-y-[220px] rounded-lg bg-darkBg ">
           <div className="justify-end w-full h-full p-6">
-            <div className="w-[50px] h-[50px] items-center flex flex-col justify-center">
+            <div className="h-[50px] items-center w-full flex justify-end">
               <IoMdClose
                 onClick={() => {
                   setSettingsPopup(false);
@@ -184,7 +189,7 @@ export default function Profile() {
                   setCurrUsername(currUser.username);
                 }}
                 color="white"
-                className="w-[30px] h-[30px] hover:w-[40px] hover:h-[40px]"
+                className="w-[30px] h-[30px] hover:scale-110"
               />
             </div>
             <div className="">
@@ -245,6 +250,7 @@ export default function Profile() {
           settingsPopup ? "blur-sm" : ""
         }`}
       >
+        <ToastContainer closeOnClick={true} className='bg-green text-green-600' />
         {/* stats section */}
         <div className="p-14 bg-compBg/20 w-[85%] rounded-[10px] space-y-12">
           <div className="rounded-lg flex space-x-8 h-[25%]">
@@ -339,6 +345,7 @@ export default function Profile() {
                       onClick={() => {
                         setSettingsPopup(true);
                       }}
+                      className="hover:scale-110"
                       color="white"
                       size={30}
                     />
