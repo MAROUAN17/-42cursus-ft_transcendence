@@ -19,6 +19,7 @@
     "@fastify/env": "^5.0.2",
     "@fastify/formbody": "^8.0.2",
     "@fastify/jwt": "^9.1.0",
+    "@fastify/multipart": "^9.2.1",
     "@fastify/oauth2": "^8.1.2",
     "@fastify/sensible": "^6.0.3",
     "@fastify/websocket": "^11.2.0",

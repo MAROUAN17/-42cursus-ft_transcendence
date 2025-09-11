@@ -3,6 +3,8 @@ import type { Payload } from "../models/chat.js";
 import app from "../server.js";
 import type { LoginBody } from "../models/user.model.js";
 import type { User } from "../models/user.model.js";
+import { pump } from "../server.js";
+import fs from "fs";
 
 export const fetchUser = async (req: FastifyRequest, res: FastifyReply) => {
   try {
@@ -185,6 +187,39 @@ export const checkUser2faStatus = async (
     }
 
     res.status(200).send({ message: "AUTHORIZED" });
+  } catch (error) {
+    res.status(500).send({ error: error });
+  }
+};
+
+import path from "path";
+export const uploadUserInfos = async (
+  req: FastifyRequest,
+  res: FastifyReply
+) => {
+  try {
+    const fileData = await req.file();
+
+    console.log(fileData);
+
+    if (
+      fileData?.mimetype != "image/png" &&
+      fileData?.mimetype != "image/jpg" &&
+      fileData?.mimetype != "image/jpeg"
+    ) {
+      return res.status(401).send({ error: "File format not supported!" });
+    }
+
+    const uploadDir = path.resolve(
+      "/goinfre/maglagal/ft_transcendence/frontend/public/uploads/"
+    );
+
+    const filePath = path.join(uploadDir, fileData!.filename);
+
+    await pump(fileData!.file, fs.createWriteStream(filePath));
+    return res
+      .status(200)
+      .send({ message: "files uploaded", file: fileData?.filename });
   } catch (error) {
     res.status(500).send({ error: error });
   }

@@ -28,7 +28,7 @@ import {
   YAxis,
 } from "recharts";
 import HistoryCard from "./historyCard";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import axios, { type AxiosError, type AxiosResponse } from "axios";
 import { useParams, useNavigate } from "react-router";
 import type { ProfileUserInfo } from "../../types/user";
@@ -51,6 +51,8 @@ export default function Profile() {
   const [usernameErrorMssg, setUsernameErrorMssg] = useState<string>("");
   const [emailErrorFlag, setEmailErrorFlag] = useState<boolean>(false);
   const [emailErrorMssg, setEmailErrorMssg] = useState<string>("");
+  const pictureInput = useRef<HTMLInputElement>(null);
+  const [avatar, setAvatar] = useState<string>("");
   const { user } = useWebSocket();
   const [currUser, setCurrUser] = useState<ProfileUserInfo>({
     id: 0,
@@ -110,6 +112,24 @@ export default function Profile() {
     setUsernameErrorMssg("");
   }
 
+  function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    e.preventDefault();
+
+    console.log(e.target.value);
+    const formData = new FormData();
+
+    // formData.append("username", currUsername);
+    // formData.append("email", currEmail);
+    formData.append("avatar", pictureInput.current!.files![0]);
+
+    api
+      .post("/upload", formData, { withCredentials: true })
+      .then(function (res) {
+        setAvatar(res.data.file);
+        console.log(res.data.file);
+      });
+  }
+
   function editProfile(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (currUsername.length < 3 || currUsername.length > 16) {
@@ -136,7 +156,8 @@ export default function Profile() {
         setSettingsPopup(false);
         toast("Your data changed successfully", {
           closeButton: false,
-          className: 'font-poppins border-3 border-neon bg-neon/70 text-white font-bold text-md'
+          className:
+            "font-poppins border-3 border-neon bg-neon/70 text-white font-bold text-md",
         });
       })
       .catch(function (err) {
@@ -198,7 +219,26 @@ export default function Profile() {
               </h1>
             </div>
             <form onSubmit={editProfile}>
-              <div className="flex flex-col items-center mt-24 space-y-8">
+              <div className="flex flex-col items-center mt-12 space-y-8">
+                <div className="w-[150px] h-[150px] mt-4 outline outline-8 outline-neon rounded-full flex items-center justify-center">
+                  <img
+                    className="rounded-full"
+                    src="/photo.png"
+                    alt=""
+                    width="150px"
+                    height="150px"
+                  />
+                </div>
+                <div className="flex flex-col space-y-3">
+                  <input
+                    ref={pictureInput}
+                    onChange={handleImageUpload}
+                    type="file"
+                  />
+                </div>
+                <div>
+                  <img src={`/uploads/${avatar}`} alt="avatar-img" />
+                </div>
                 <div className="flex flex-col space-y-3">
                   {usernameErrorFlag ? (
                     <div>
@@ -250,7 +290,10 @@ export default function Profile() {
           settingsPopup ? "blur-sm" : ""
         }`}
       >
-        <ToastContainer closeOnClick={true} className='bg-green text-green-600' />
+        <ToastContainer
+          closeOnClick={true}
+          className="bg-green text-green-600"
+        />
         {/* stats section */}
         <div className="p-14 bg-compBg/20 w-[85%] rounded-[10px] space-y-12">
           <div className="rounded-lg flex space-x-8 h-[25%]">

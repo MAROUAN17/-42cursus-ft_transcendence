@@ -13,11 +13,16 @@ import { chatService } from "./services/chat.service.js";
 import { getUsers } from "./services/getUsers.service.js";
 import { oauthPlugin } from "./plugins/oauth.plugin.js";
 import { mailTransporter } from "./plugins/nodemailer.plugin.js";
+import multipart from "@fastify/multipart";
+import util from "util";
+import { pipeline } from "stream";
 
 const httpsOptions = {
   key: fs.readFileSync("../ssl/server.key"),
   cert: fs.readFileSync("../ssl/server.crt"),
 };
+
+export const pump = util.promisify(pipeline);
 
 const app = Fastify({
   logger: false,
@@ -58,6 +63,7 @@ async function start(): Promise<void> {
     },
     namespace: "jwt2",
   });
+  await app.register(multipart);
   await app.register(oauthPlugin);
   await app.register(websocketPlugin);
   await app.register(mailTransporter);
