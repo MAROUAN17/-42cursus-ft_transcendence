@@ -17,6 +17,10 @@ export const fetchUser = async (req: FastifyRequest, res: FastifyReply) => {
       .get(infos?.id);
     if (!user) return;
 
+    if (!user.avatar) {
+      app.db.prepare('UPDATE players SET avatar = ? WHERE id = ?').run('photo.png', infos?.id);
+    }
+  
     res.status(200).send({ infos: user });
   } catch (error) {
     res.status(500).send({ error: error });
