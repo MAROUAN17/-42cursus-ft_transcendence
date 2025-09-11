@@ -1,7 +1,9 @@
 
 import { DefaultGame, type GameInfo, type Room } from "../models/game.js";
 
-import { clients, checkPaddleCollision } from "./game.utils.js"; 
+import { clients, checkPaddleCollision } from "./game.utils.js";
+import app from "../server.js";
+import type { FastifyReply, FastifyRequest } from "fastify";
 
 const rooms:Room[] = [];
 
@@ -18,6 +20,28 @@ function set_random_Info(game_info:GameInfo) {
   return game_info;
 }
 
+function saveData (room: Room) {
+  try {
+    app.db
+      .prepare("INSERT INTO Room(gameId, player1, player2, startedAt, scoreLeft, scoreRight, winner) VALUES (?, ?, ?, ?, ?, ?, ?)")
+      .run(room.gameId, room.player1, room.player2, room.startedAt?.toString(), room.scoreLeft, room.scoreRight, room.winner)
+    console.log("-- Room registred successfully");
+    }catch (err){
+    console.log(err);
+  }
+}
+
+export const getData = async(req: FastifyRequest, res: FastifyReply)=> {
+  try {
+    const history_rooms: Room[] = app.db
+      .prepare("SELECT * FROM Room")
+      .all() as Room[];
+      console.log("-- history rooms :", history_rooms)
+    res.status(200).send({data:history_rooms});
+  } catch (err) {
+    res.status(500).send({error:err});
+  }
+}
 function gameLoop (room:Room)
 {
   var game = room.gameInfo;
@@ -80,6 +104,20 @@ function gameLoop (room:Room)
     game.ball.x = nx;
     game.ball.y = ny;
     room.gameInfo = game;
+    if (game.scoreLeft > 1)
+      room.winner = room.player1;
+    else if (game.scoreRight > 1)
+      room.winner = room.player2;
+    if (room.winner) {
+      room.scoreLeft = game.scoreLeft;
+      room.scoreRight = game.scoreRight;
+      saveData(room);
+      console.log("-- game ended the winner is ", room.winner);
+      if (room.intervalId) {
+        clearInterval(room.intervalId);
+        room.intervalId = undefined;
+      }
+    }
     broadcastToRoom(room, { type: "update", game_info: room.gameInfo });
 }
 
@@ -163,6 +201,7 @@ function addPlayerToRoom(gameId: string, playerId: string) {
 
   if (room.player1 && room.player2 && !room.ready) {
     room.ready = true;
+    room.winner = undefined;
     room.startedAt = new Date();
     console.log(`-- Room ${gameId} ready! Players: ${room.player1}, ${room.player2} at time ${room.startedAt}`);
     startGame(room);

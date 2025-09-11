@@ -25,16 +25,18 @@ export interface GameInfo {
   scoreRight: number;
   dir:Dir;
 }
+
 export interface Room {
   gameId: string;
   player1?: string;
   player2?: string;
   ready: boolean;
   gameInfo: GameInfo;
-  intervalId?: NodeJS.Timer;
+  intervalId?: NodeJS.Timer | undefined;
   startedAt?: Date;
-  //scoreLeft?:number;
-  //scoreRight?:number;
+  scoreLeft?:number;
+  scoreRight?:number;
+  winner?:string | undefined;
 }
 
   

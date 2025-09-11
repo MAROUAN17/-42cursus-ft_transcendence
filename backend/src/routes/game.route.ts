@@ -2,7 +2,7 @@ import { type FastifyPluginAsync } from "fastify";
 import websocketPlugin from "@fastify/websocket";
 import { v4 as uuidv4 } from "uuid";
 import type { GameInfo } from "../models/game.js";
-import { handleGameConnection } from "../services/game.service.js";
+import { getData, handleGameConnection } from "../services/game.service.js";
 import { 
   pair_players, 
   get_game, 
@@ -27,4 +27,6 @@ export const gameRoutes: FastifyPluginAsync = async (fastify) => {
   fastify.get("/match/game/:gameId", {}, get_game);
   
   fastify.get("/match/my-game", {}, get_player_game);
+
+  fastify.get("/game/rooms", getData);
 }
