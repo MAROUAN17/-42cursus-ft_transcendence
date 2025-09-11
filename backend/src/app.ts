@@ -18,9 +18,6 @@ export default async function App(fastify: FastifyInstance, opts: FastifyPluginO
     await app.register(fastifyFormbody);
     await app.register(jwtPlugin);
     
-
-    // await app.register(websocketPlugin);
-
     //routes of auth
     await app.register(authRoutes);
 

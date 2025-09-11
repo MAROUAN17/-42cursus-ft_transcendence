@@ -4,7 +4,7 @@ import app from "../server.js";
 import type { LoginBody } from "../models/user.model.js";
 import type { User } from "../models/user.model.js";
 import { pump } from "../server.js";
-import fs from "fs";
+import fs, { access } from "fs";
 
 export const fetchUser = async (req: FastifyRequest, res: FastifyReply) => {
   try {
@@ -198,9 +198,10 @@ export const uploadUserInfos = async (
   res: FastifyReply
 ) => {
   try {
-    const fileData = await req.file();
+    const accessToken = req.cookies.accessToken;
+    const payload = app.jwt.jwt1.decode(accessToken) as Payload;
 
-    console.log(fileData);
+    const fileData = await req.file();
 
     if (
       fileData?.mimetype != "image/png" &&
@@ -211,12 +212,22 @@ export const uploadUserInfos = async (
     }
 
     const uploadDir = path.resolve(
-      "/goinfre/maglagal/ft_transcendence/frontend/public/uploads/"
+      "/goinfre/maglagal/ft_transcendence/frontend/public/"
     );
 
     const filePath = path.join(uploadDir, fileData!.filename);
 
     await pump(fileData!.file, fs.createWriteStream(filePath));
+
+    const user = app.db
+      .prepare("SELECT * FROM players WHERE id = ?")
+      .get(payload.id) as User | null;
+    if (!user) return res.status(404).send({ error: "USER NOT FOUND" });
+
+    app.db
+      .prepare("UPDATE players SET avatar = ? WHERE id = ?")
+      .run(fileData?.filename, payload.id);
+
     return res
       .status(200)
       .send({ message: "files uploaded", file: fileData?.filename });

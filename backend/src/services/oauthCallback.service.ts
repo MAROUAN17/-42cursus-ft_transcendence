@@ -13,6 +13,7 @@ export const redirectPath = async (req: FastifyRequest, res: FastifyReply) => {
   );
 };
 
+import util from "util";
 export const oauthCallback = async (req: FastifyRequest, res: FastifyReply) => {
   try {
     const { access, refresh } = req.cookies;
@@ -21,15 +22,15 @@ export const oauthCallback = async (req: FastifyRequest, res: FastifyReply) => {
         return res.status(401).send({ error: 'Unauthorized' })
   
     let user = {} as User | undefined;
+    
     const { token } = await app.intra42Oauth.getAccessTokenFromAuthorizationCodeFlow(req);
-
+    
     const resData = await fetch("https://api.intra.42.fr/v2/me", {
       headers: { Authorization: `Bearer ${token.access_token}` },
     });
   
     const userData = await resData.json();
     
-
     const email = userData.email, username = userData.login, intraId = userData.id;
 
     //check if user already exists
@@ -68,7 +69,7 @@ export const oauthCallback = async (req: FastifyRequest, res: FastifyReply) => {
   
     return res.redirect('https://localhost:3000/');
     } catch (error) {
-        console.log(error);
+        console.log(util.inspect(error, { depth: 3 }));
         res.status(401).send({ error: error });
     }
 }

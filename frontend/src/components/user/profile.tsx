@@ -47,6 +47,7 @@ export default function Profile() {
   const [friendReqSent, setFriendReqSent] = useState<boolean>(false);
   const [currEmail, setCurrEmail] = useState<string>("");
   const [currUsername, setCurrUsername] = useState<string>("");
+  const [currAvatar, setCurrAvatar] = useState<string>("");
   const [usernameErrorFlag, setUsernameErrorFlag] = useState<boolean>(false);
   const [usernameErrorMssg, setUsernameErrorMssg] = useState<string>("");
   const [emailErrorFlag, setEmailErrorFlag] = useState<boolean>(false);
@@ -56,6 +57,7 @@ export default function Profile() {
   const { user } = useWebSocket();
   const [currUser, setCurrUser] = useState<ProfileUserInfo>({
     id: 0,
+    avatar: "",
     username: "",
     email: "",
   });
@@ -125,9 +127,10 @@ export default function Profile() {
     api
       .post("/upload", formData, { withCredentials: true })
       .then(function (res) {
-        setAvatar(res.data.file);
+        setCurrAvatar(res.data.file);
         console.log(res.data.file);
       });
+
   }
 
   function editProfile(e: React.FormEvent<HTMLFormElement>) {
@@ -185,6 +188,7 @@ export default function Profile() {
         setFriendReqSent(res.data.friendNotif);
         setCurrEmail(res.data.infos.email);
         setCurrUsername(res.data.infos.username);
+        setCurrAvatar(res.data.infos.avatar);
       })
       .catch(function (err) {
         console.log(err);
@@ -223,7 +227,7 @@ export default function Profile() {
                 <div className="w-[150px] h-[150px] mt-4 outline outline-8 outline-neon rounded-full flex items-center justify-center">
                   <img
                     className="rounded-full"
-                    src="/photo.png"
+                    src={currAvatar}
                     alt=""
                     width="150px"
                     height="150px"
@@ -235,9 +239,6 @@ export default function Profile() {
                     onChange={handleImageUpload}
                     type="file"
                   />
-                </div>
-                <div>
-                  <img src={`/uploads/${avatar}`} alt="avatar-img" />
                 </div>
                 <div className="flex flex-col space-y-3">
                   {usernameErrorFlag ? (
@@ -369,7 +370,7 @@ export default function Profile() {
             <div className="w-[100px] h-[100px] mt-4 outline outline-8 outline-neon rounded-full flex items-center justify-center">
               <img
                 className="rounded-full"
-                src="/photo.png"
+                src={currAvatar}
                 alt=""
                 width="90px"
                 height="90px"

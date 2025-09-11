@@ -63,8 +63,8 @@ async function start(): Promise<void> {
     },
     namespace: "jwt2",
   });
-  await app.register(multipart);
   await app.register(oauthPlugin);
+  await app.register(multipart);
   await app.register(websocketPlugin);
   await app.register(mailTransporter);
   await app.register(App);

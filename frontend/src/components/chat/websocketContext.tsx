@@ -18,6 +18,7 @@ export const WebSocketProvider: React.FC<{ children?: React.ReactNode }> = ({
   const navigate = useNavigate();
   const [user, setUser] = useState<ProfileUserInfo | null>({
     id: 0,
+    avatar: "",
     username: "",
     email: "",
   });

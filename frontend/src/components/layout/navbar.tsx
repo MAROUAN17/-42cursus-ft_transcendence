@@ -156,7 +156,7 @@ const Navbar = () => {
           </div>
           <div className="relative">
             <div onClick={() => setIsUserOptionOpen(!isUserOptionOpen)} className="p-3 gap-1 flex items-center hover:bg-neon/[20%] rounded-xl">
-              <img src="/src/assets/photo.png" className="h-[30px] w-[30px]" />
+              <img src={user?.avatar} className="h-[30px] w-[30px]" />
               <h3 className="text-white font-medium text-[12px]">{user?.username}</h3>
               <RiArrowDropDownLine className="text-white w-[20px] h-[20px]" />
             </div>

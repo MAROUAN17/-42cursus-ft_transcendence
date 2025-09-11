@@ -12,7 +12,7 @@ sqlite3 "$DB_NAME" <<EOF
     CREATE TABLE IF NOT EXISTS players (
         id INTEGER PRIMARY KEY,
         intra_id INTEGER,
-        avatar TEXT,
+        avatar TEXT DEFAULT '/photo.png',
         username TEXT NOT NULL,
         email TEXT NOT NULL,
         password TEXT,
