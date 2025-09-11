@@ -1,12 +1,6 @@
-import type { GameInfo, Paddle } from "../models/game.js";
+import type {  Paddle } from "../models/game.js";
 
 export const clients = new Map<string, any>();
-
-export function broadcast(message: any) {
-  for (const [id, conn] of clients) {
-      conn.send(JSON.stringify(message));
-  }
-}
 
 export const checkPaddleCollision = (paddle:Paddle, nx:number , ny:number) => {
   const ballRect = {

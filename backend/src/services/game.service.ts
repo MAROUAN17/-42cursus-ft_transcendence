@@ -1,14 +1,9 @@
 
 import { DefaultGame, type GameInfo, type Room } from "../models/game.js";
 
-import { type MessagePacket } from "../types/game.js";
-import { clients, broadcast, checkPaddleCollision } from "./game.utils.js"; 
+import { clients, checkPaddleCollision } from "./game.utils.js"; 
 
 const rooms:Room[] = [];
-const msgPacket: MessagePacket = {
-  to: "me",
-  game_info: set_random_Info(DefaultGame)
-};
 
 function set_random_Info(game_info:GameInfo) {
   const ballx = game_info.bounds.width / 2;
@@ -168,24 +163,10 @@ function addPlayerToRoom(gameId: string, playerId: string) {
 
   if (room.player1 && room.player2 && !room.ready) {
     room.ready = true;
-    console.log(`-- Room ${gameId} ready! Players: ${room.player1}, ${room.player2}`);
+    room.startedAt = new Date();
+    console.log(`-- Room ${gameId} ready! Players: ${room.player1}, ${room.player2} at time ${room.startedAt}`);
     startGame(room);
   } else {
     console.log(`-- Waiting for another player in room ${gameId}`);
   }
 }
-
-
-export const getGameState = () => {
-  return DefaultGame;
-};
-
-export const updateGameState = (updates: Partial<typeof DefaultGame>) => {
-  Object.assign(DefaultGame, updates);
-  return DefaultGame;
-};
-
-export const moveBall = () => {
-  DefaultGame.ball.x += 2;
-  return DefaultGame;
-};
