@@ -42,7 +42,7 @@ sqlite3 "$DB_NAME" <<EOF
         gameId TEXT,
         player1 TEXT,
         player2 TEXT,
-        startedAt TEXT DEFAULT (datetime('now'),
+        startedAt TEXT DEFAULT (datetime('now')),
         scoreLeft INTEGER,
         scoreRight INTEGER,
         winner TEXT
