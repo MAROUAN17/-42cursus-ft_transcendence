@@ -7,3 +7,10 @@ services:
       - "8191:8191"
     volumes:
       - ~/goinfre/db_data:/db
+  nginx:
+    container_name: nginx
+    build: nginx/.
+    ports:
+      - "8080:8080"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
