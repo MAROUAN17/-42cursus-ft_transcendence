@@ -1,5 +1,5 @@
 all:
-	docker compose up -d
+	export HOST=$$(hostname -I | awk '{print $$1}') && docker compose up -d
 
 down:
 	docker compose down

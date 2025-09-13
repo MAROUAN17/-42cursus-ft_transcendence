@@ -1,15 +1,15 @@
 #!/bin/bash
 set -x
 
-git clone --recursive https://github.com/owasp-modsecurity/ModSecurity ModSecurity
+# git clone --recursive https://github.com/owasp-modsecurity/ModSecurity ModSecurity
 
-cd ModSecurity
-git submodule init
-git submodule update
-./build.sh
-./configure
-make -j$(nproc)
-make -j$(nproc) install
+# cd ModSecurity
+# git submodule init
+# git submodule update
+# ./build.sh
+# ./configure
+# make -j$(nproc)
+# make -j$(nproc) install
 
 # build ModSecurity nginx connector with same nginx version to get the module binary
 cd /opt/

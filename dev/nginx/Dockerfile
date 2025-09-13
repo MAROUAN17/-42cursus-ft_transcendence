@@ -10,4 +10,13 @@ COPY ./tools/entry.sh /usr/local/bin/entry.sh
 COPY conf/nginx.conf /etc/nginx/nginx.conf
 RUN chmod +x /usr/local/bin/entry.sh
 
+RUN git clone --recursive https://github.com/owasp-modsecurity/ModSecurity ModSecurity
+
+WORKDIR /ModSecurity
+
+RUN ./build.sh && \
+    ./configure && \
+    make -j$(nproc) && \
+    make -j$(nproc) install
+
 ENTRYPOINT /usr/local/bin/entry.sh
