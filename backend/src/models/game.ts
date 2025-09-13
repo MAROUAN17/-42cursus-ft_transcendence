@@ -53,13 +53,15 @@ export interface Game {
   player2: Player;
   status: 'waiting' | 'active' | 'finished';
   createdAt: Date;
-  gameInfo: GameInfo; 
+  gameInfo: GameInfo;
 }
 
 export interface Tournament  {
-  id : string;
-  players: Player[];
-  joinedAt:Date;
+  players: number[];
+  createdAt:Date;
+  status: "waiting" | "ready";
+  admin: number;
+  name: string;
 }
 
   

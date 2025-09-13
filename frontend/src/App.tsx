@@ -19,9 +19,8 @@ import Page2FA from "./components/user/2fa";
 import checkAuthLoader from "../src/loaders/checkAuth";
 import NewPassword from "./components/user/newPassword";
 import ResetPasswordForm from "./components/user/passwordResetForm";
-import { WebSocketProvider } from "./components/chat/websocketContext";
 import Layout from "./components/layout/layout";
-import type Tournament from './components/gametyping/listTournament/listTournament';
+import Tournament from './components/tournament/tournament';
 import GameTyping from './components/gametyping/game/gameTyping';
 import Pairing from './components/match/Match';
 
@@ -90,6 +89,10 @@ export default function App() {
     {
       path:'/match',
       Component: Pairing
+    },
+    {
+      path:'/tournament',
+      Component:Tournament,
     }
   ]);
   return <RouterProvider router={router} />;
