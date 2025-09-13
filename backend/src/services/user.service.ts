@@ -9,7 +9,7 @@ import fs, { access } from "fs";
 export const fetchUser = async (req: FastifyRequest, res: FastifyReply) => {
   try {
     const accessToken = req.cookies.accessToken;
-
+    
     const infos = app.jwt.jwt1.decode(accessToken!) as Payload | null;
 
     const user = app.db
@@ -20,7 +20,6 @@ export const fetchUser = async (req: FastifyRequest, res: FastifyReply) => {
     if (!user.avatar) {
       app.db.prepare('UPDATE players SET avatar = ? WHERE id = ?').run('photo.png', infos?.id);
     }
-  
     res.status(200).send({ infos: user });
   } catch (error) {
     res.status(500).send({ error: error });

@@ -135,7 +135,7 @@ async function processMessages() {
           if (client) client.send(JSON.stringify(currPacket));
         } else if (currPacket.data.type == "friendReq") {
           checkNotificationFriend(currPacket);
-        }else if (currPacket.data.type == "friendAccept") {
+        } else if (currPacket.data.type == "friendAccept") {
           createNotification(currPacket);
         }
       }
@@ -159,7 +159,7 @@ function checkValidPacket(packet: websocketPacket, userId: number): boolean {
     .prepare("SELECT key FROM json_each((SELECT block_list FROM players WHERE id = ?)) WHERE value = ?")
     .get(packet.data.recipient_id.toString(), userId.toString());
   if (
-    (!checkFriend && packet.data.type != "friendReq") || // send friendReq packet if not friend
+    (!checkFriend && packet.data.type != "friendReq" && packet.data.type != "friendAccept") || // send friendReq packet if not friend
     (checkFriend && packet.data.type == "friendReq") || // drop friendReq packet if already friend
     ((checkSenderBlock || checkRecipientBlock) && packet.data.type != "block") // let block/unblock packet even if blocked
   )
@@ -179,6 +179,9 @@ export const chatService = {
       return;
     }
     const userId = payload.id;
+    const pingInterval = setInterval(() => {
+      if (connection.readyState == connection.OPEN) connection.ping();
+    }, 30000);
     clients.set(userId, connection);
     console.log("Connection Done with => " + payload.username);
     connection.on("message", (message: Buffer) => {
@@ -197,6 +200,7 @@ export const chatService = {
 
     connection.on("close", () => {
       console.log("Client disconnected -> " + payload.username);
+      clearInterval(pingInterval);
       clients.delete(userId);
     });
   },

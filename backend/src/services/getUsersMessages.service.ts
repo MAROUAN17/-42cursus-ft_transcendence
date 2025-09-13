@@ -5,7 +5,6 @@ import type { Payload, UsersLastMessage, messagePacket, messagePacketDB } from "
 
 export const getUsersMessages = async (req: FastifyRequest, res: FastifyReply) => {
   try {
-    console.log("Users req!");
     const token: string = req.cookies.accessToken!;
     try {
       var payload = app.jwt.jwt1.verify(token) as Payload;
