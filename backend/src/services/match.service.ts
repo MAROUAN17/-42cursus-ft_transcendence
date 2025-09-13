@@ -1,31 +1,16 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { v4 as uuidv4 } from 'uuid';
 import { DefaultGame, type GameInfo } from "../models/game.js";
-
+import type {Player, Game} from "../models/game.js"
 const waitingPlayers: Player[] = [];
 export const activeGames: Game[] = [];
 
-export interface Player {
-  id: string;
-  socketId?: string;
-  joinedAt: Date;
-  username?: string;
-  rating?: number;
-}
 
-export interface Game {
-  id: string;
-  player1: Player;
-  player2: Player;
-  status: 'waiting' | 'active' | 'finished';
-  createdAt: Date;
-  gameInfo: GameInfo; 
-}
 
 
 export const pair_players = async (req: FastifyRequest, res: FastifyReply) => {
   try {
-    const playerId = req.headers['player-id'] as string || uuidv4();
+    const playerId = req.headers['player-id'] as string ;
     const player: Player = {
       id: playerId,
       joinedAt: new Date(),

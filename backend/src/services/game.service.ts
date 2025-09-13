@@ -23,8 +23,8 @@ function set_random_Info(game_info:GameInfo) {
 function saveData (room: Room) {
   try {
     app.db
-      .prepare("INSERT INTO Room(gameId, player1, player2, startedAt, scoreLeft, scoreRight, winner) VALUES (?, ?, ?, ?, ?, ?, ?)")
-      .run(room.gameId, room.player1, room.player2, room.startedAt?.toString(), room.scoreLeft, room.scoreRight, room.winner)
+      .prepare("INSERT INTO Room( player1, player2, startedAt, scoreLeft, scoreRight, winner) VALUES (?, ?, ?, ?, ?, ?)")
+      .run( room.player1, room.player2, room.startedAt?.toString(), room.scoreLeft, room.scoreRight, room.winner)
     console.log("-- Room registred successfully");
     }catch (err){
     console.log(err);
@@ -154,14 +154,14 @@ export function handleGameConnection(connection: any, req: any) {
 
       if (msg.type === "updateY") {
         const room = getRoom(msg.gameId);
-        console.log("-- trying to update y for the game:", msg.gameId)
-        console.log("Before update - Left Y:", room.gameInfo.paddleLeft.y, "Right Y:", room.gameInfo.paddleRight.y);
-        console.log("Received values - leftY:", msg.leftY, "rightY:", msg.rightY);
+        // console.log("-- trying to update y for the game:", msg.gameId)
+        // console.log("Before update - Left Y:", room.gameInfo.paddleLeft.y, "Right Y:", room.gameInfo.paddleRight.y);
+        // console.log("Received values - leftY:", msg.leftY, "rightY:", msg.rightY);
         
         room.gameInfo.paddleLeft.y = msg.leftY;
         room.gameInfo.paddleRight.y = msg.rightY;
         
-        console.log("After update - Left Y:", room.gameInfo.paddleLeft.y, "Right Y:", room.gameInfo.paddleRight.y);
+        // console.log("After update - Left Y:", room.gameInfo.paddleLeft.y, "Right Y:", room.gameInfo.paddleRight.y);
         console.log("Broadcasting to room:", room.gameId, "Players:", room.player1, room.player2);
         
         broadcastToRoom(room, { type: "update", game_info: room.gameInfo });

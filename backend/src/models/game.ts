@@ -39,6 +39,29 @@ export interface Room {
   winner?:string | undefined;
 }
 
+export interface Player {
+  id: string;
+  socketId?: string;
+  joinedAt: Date;
+  username?: string;
+  rating?: number;
+}
+
+export interface Game {
+  id: string;
+  player1: Player;
+  player2: Player;
+  status: 'waiting' | 'active' | 'finished';
+  createdAt: Date;
+  gameInfo: GameInfo; 
+}
+
+export interface Tournament  {
+  id : string;
+  players: Player[];
+  joinedAt:Date;
+}
+
   
 const GAME_WIDTH = 600;
 const GAME_HEIGHT = 400;

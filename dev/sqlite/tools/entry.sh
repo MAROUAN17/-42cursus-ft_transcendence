@@ -39,7 +39,6 @@ sqlite3 "$DB_NAME" <<EOF
     );
     CREATE TABLE IF NOT EXISTS Room (
         id INTEGER PRIMARY KEY,
-        gameId TEXT,
         player1 TEXT,
         player2 TEXT,
         startedAt TEXT DEFAULT (datetime('now')),
