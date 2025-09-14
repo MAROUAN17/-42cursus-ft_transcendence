@@ -23,6 +23,7 @@ import Layout from "./components/layout/layout";
 import Tournament from './components/tournament/tournament';
 import GameTyping from './components/gametyping/game/gameTyping';
 import Pairing from './components/match/Match';
+import { Tournaments } from './components/tournament/tournaments';
 
 export default function App() {
   let router = createBrowserRouter([
@@ -93,6 +94,10 @@ export default function App() {
     {
       path:'/tournament',
       Component:Tournament,
+    },
+    {
+      path: '/tournaments',
+      Component: Tournaments,
     }
   ]);
   return <RouterProvider router={router} />;

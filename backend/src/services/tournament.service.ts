@@ -3,7 +3,6 @@ import type { Tournament } from "../models/game.js";
 import app from "../server.js";
 
 
-const tournaments: Tournament[] = [];
 
 export const create_tournament = async (req: FastifyRequest, res: FastifyReply) => {
   try {
@@ -15,7 +14,7 @@ export const create_tournament = async (req: FastifyRequest, res: FastifyReply) 
     const tournament : Tournament = {
       players: [playerId],
       createdAt: new Date(),
-      status: "waiting",
+      status: "open",
       admin: playerId,
       name: tName
     }
@@ -41,7 +40,7 @@ export const create_tournament = async (req: FastifyRequest, res: FastifyReply) 
 };
 
 export const join_tournament = async (req: FastifyRequest, res: FastifyReply) => {
-  const playerId = Number(req.headers['player-id']);
+  const playerId = Number(req.headers["player-id"]);
   const tournamentId = Number((req.body as any)?.tournamentId);
 
   if (!playerId || !tournamentId)
@@ -58,17 +57,21 @@ export const join_tournament = async (req: FastifyRequest, res: FastifyReply) =>
 
   if (players.includes(playerId))
     return res.status(400).send({ error: "Player already joined" });
+
   if (players.length >= 4)
-      return res.status(400).send({ error: "Tournament is full" });
+    return res.status(400).send({ error: "Tournament is full" });
 
   players.push(playerId);
 
-  app.db
-    .prepare("UPDATE Tournament SET players = ? WHERE id = ?")
-    .run(JSON.stringify(players), tournamentId);
+  const newStatus = players.length >= 4 ? "full" : tournament.status;
 
-  return res.send({ success: true, players });
+  app.db
+    .prepare("UPDATE Tournament SET players = ?, status = ? WHERE id = ?")
+    .run(JSON.stringify(players), newStatus, tournamentId);
+
+  return res.send({ success: true, players, status: newStatus });
 };
+
 
 export const get_tournaments = async (req: FastifyRequest, res: FastifyReply) => {
   try {
@@ -107,3 +110,42 @@ export const delete_tournament = async (req: FastifyRequest, res: FastifyReply) 
     return res.status(500).send({ error: "Failed to delete tournament" });
   }
 };
+
+export const leave_tournament = async (req: FastifyRequest, res: FastifyReply) => {
+  const playerId = Number(req.headers["player-id"]);
+  const tournamentId = Number((req.body as any)?.tournamentId);
+
+  if (!playerId || !tournamentId)
+    return res.status(400).send({ error: "Missing player info" });
+
+  const tournament = app.db
+    .prepare("SELECT * FROM Tournament WHERE id = ?")
+    .get(tournamentId);
+
+  if (!tournament)
+    return res.status(404).send({ error: "Tournament not found" });
+
+  let players: number[] = JSON.parse(tournament.players);
+
+  if (!players.includes(playerId))
+    return res.status(400).send({ error: "Player not in tournament" });
+
+  players = players.filter((id) => id !== playerId);
+
+  if (players.length === 0) {
+    app.db.prepare("DELETE FROM Tournament WHERE id = ?").run(tournamentId);
+    return res.send({ success: true, msg: "Tournament deleted (no players left)" });
+  }
+
+  let newStatus = tournament.status;
+  if (tournament.status === "full" && players.length < 4) {
+    newStatus = "open";
+  }
+
+  app.db
+    .prepare("UPDATE Tournament SET players = ?, status = ? WHERE id = ?")
+    .run(JSON.stringify(players), newStatus, tournamentId);
+
+  return res.send({ success: true, players, status: newStatus });
+};
+

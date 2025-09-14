@@ -59,7 +59,7 @@ export interface Game {
 export interface Tournament  {
   players: number[];
   createdAt:Date;
-  status: "waiting" | "ready";
+  status: "open" | "started" | "full";
   admin: number;
   name: string;
 }
