@@ -24,6 +24,7 @@ import Tournament from './components/tournament/tournament';
 import GameTyping from './components/gametyping/game/gameTyping';
 import Pairing from './components/match/Match';
 import { Tournaments } from './components/tournament/tournaments';
+import TournamentBracket from './components/tournament/Bracket';
 
 export default function App() {
   let router = createBrowserRouter([
@@ -98,6 +99,10 @@ export default function App() {
     {
       path: '/tournaments',
       Component: Tournaments,
+    },
+    {
+      path: '/bracket/:id',
+      Component: TournamentBracket
     }
   ]);
   return <RouterProvider router={router} />;

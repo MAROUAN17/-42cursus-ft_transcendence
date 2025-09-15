@@ -1,6 +1,7 @@
 import { FaUsers, FaTrophy, FaDollarSign } from "react-icons/fa";
 import { GrCurrency } from "react-icons/gr";
 import type { Tournament } from "./tournaments";
+import { useNavigate } from "react-router";
 
 export function TournamentCard({
   name,
@@ -9,8 +10,11 @@ export function TournamentCard({
   status,
 }: Tournament) {
   const maxParticipants = 4;
+  const navigate = useNavigate();
   return (
-    <div className="rounded-2xl overflow-hidden bg-gradient-to-b from-purple-600/90 to-purple-800/90 border border-purple-500/20 shadow-lg hover:shadow-purple-500/30 hover:scale-105 transition-transform duration-300">
+    <div className="rounded-2xl overflow-hidden bg-gradient-to-b from-purple-600/90 to-purple-800/90 border border-purple-500/20 shadow-lg hover:shadow-purple-500/30 hover:scale-105 transition-transform duration-300"
+      onClick={() => navigate("/bracket/10")}
+    >
       <div className="h-40 relative overflow-hidden">
         <img
           src={"/img.jpg"}
