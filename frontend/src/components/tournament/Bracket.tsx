@@ -1,6 +1,7 @@
 
 import PlayerBox from "./playerBox";
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
+import LeaveButton from "./ui/leaveBtn";
 
 const mockUsers = [
   { username: "USER1", avatar: "https://i.pravatar.cc/40?img=1" },
@@ -10,13 +11,21 @@ const mockUsers = [
 ];
 
  const TournamentBracket: React.FC = () => {
+  const navigate = useNavigate();
     const { id } = useParams<{ id: string }>();
     console.log("tournament idis :", id);
   return (
     <div className="bg-[#0a043c] text-white min-h-screen flex flex-col items-center justify-center gap-10">
-        <h1>id is {id}</h1>
+
+  <div className="w-full flex justify-end p-4 cursor-pointer">
+    <LeaveButton tournamentId={Number(id)} playerId={1} onLeave={() => navigate("/tournaments")} />
+  </div>
+
+  <div className="relative h-40 overflow-hidden cursor-pointer  text-white rounded-lg">
+    <div className="flex flex-col items-center justify-center h-full">
+      <h1>id is {id}</h1>
       <div className="flex gap-32 items-center">
-        
+
         <div className="flex gap-12 items-center">
           <div className="relative flex flex-col gap-10">
             <PlayerBox {...mockUsers[0]} />
@@ -47,6 +56,10 @@ const mockUsers = [
 
       </div>
     </div>
+  </div>
+
+</div>
+
   );
 };
 
