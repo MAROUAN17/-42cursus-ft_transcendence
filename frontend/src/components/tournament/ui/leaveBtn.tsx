@@ -1,14 +1,17 @@
 import { useState } from "react";
 
 interface LeaveButtonProps {
+  label: string;
   tournamentId: number;
   playerId: number;
   onLeave?: () => void;
 }
 
-const LeaveButton: React.FC<LeaveButtonProps> = ({ tournamentId, playerId, onLeave }) => {
+const LeaveButton: React.FC<LeaveButtonProps> = ({label, tournamentId, playerId, onLeave }) => {
   const [loading, setLoading] = useState(false);
-
+  const handelStart = async () => {
+    //
+  }
   const handleLeave = async () => {
     try {
       setLoading(true);
@@ -35,14 +38,21 @@ const LeaveButton: React.FC<LeaveButtonProps> = ({ tournamentId, playerId, onLea
       setLoading(false);
     }
   };
+  const handelAction = () =>
+  {
+    if (label === "start")
+        handelStart();
+    else if (label == "leave")
+        handleLeave();
+  }
 
   return (
     <button
-      onClick={handleLeave}
+      onClick={handelAction}
       disabled={loading}
       className="absolute top-2 right-2 bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-lg shadow cursor-pointer text-sm font-medium"
     >
-      {loading ? "Leaving..." : "Leave"}
+      {label}
     </button>
   );
 };

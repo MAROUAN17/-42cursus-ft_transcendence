@@ -10,7 +10,7 @@ import {
   leave_queue, 
   get_player_game 
 } from "../services/match.service.js";
-import { create_tournament, delete_tournament, get_tournaments, join_tournament, leave_tournament } from "../services/tournament.service.js";
+import { create_tournament, delete_tournament, get_tournament_by_id, get_tournaments, join_tournament, leave_tournament } from "../services/tournament.service.js";
 
 const clients = new Map<string, websocketPlugin.WebSocket>();
 
@@ -36,4 +36,6 @@ export const gameRoutes: FastifyPluginAsync = async (fastify) => {
   fastify.get("/tournament/all", get_tournaments);
   fastify.delete("/tournament/delete", delete_tournament);
   fastify.delete("/tournament/leave", leave_tournament);
+  fastify.get("/tournament/:tournamentId", get_tournament_by_id);
+
 }

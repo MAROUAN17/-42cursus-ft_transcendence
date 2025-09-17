@@ -90,6 +90,36 @@ export const get_tournaments = async (req: FastifyRequest, res: FastifyReply) =>
   }
 };
 
+export const get_tournament_by_id = async (req: FastifyRequest, res: FastifyReply) => {
+  try {
+    const tournamentId = Number((req.params as any)?.tournamentId);
+
+    if (!tournamentId) {
+      return res.status(400).send({ error: "Missing tournamentId" });
+    }
+
+    const tournament = app.db
+      .prepare("SELECT * FROM Tournament WHERE id = ?")
+      .get(tournamentId);
+
+    if (!tournament) {
+      return res.status(404).send({ error: "Tournament not found" });
+    }
+
+    const resData = {
+      ...tournament,
+      players: JSON.parse(tournament.players),
+      createdAt: new Date(tournament.createdAt),
+    };
+
+    return res.send(resData);
+  } catch (err) {
+    console.error("Error fetching tournament:", err);
+    return res.status(500).send({ error: "Failed to fetch tournament" });
+  }
+};
+
+
 export const delete_tournament = async (req: FastifyRequest, res: FastifyReply) => {
   const tournamentId = Number((req.body as any)?.tournamentId);
 
