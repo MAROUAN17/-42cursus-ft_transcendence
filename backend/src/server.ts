@@ -16,6 +16,7 @@ import { mailTransporter } from "./plugins/nodemailer.plugin.js";
 import multipart from "@fastify/multipart";
 import util from "util";
 import { pipeline } from "stream";
+import vault from "node-vault";
 
 const httpsOptions = {
   key: fs.readFileSync("../ssl/server.key"),
@@ -29,7 +30,18 @@ const app = Fastify({
   https: httpsOptions,
 });
 
+const vaultToken: string = fs.readFileSync("./vault/token.txt", "utf8").trim();
+const vaultCert: string = fs.readFileSync("./vault/certificate.pem", "utf8");
+export const vaultClient = vault({
+  endpoint: "https://localhost:8200",
+  token: vaultToken,
+  requestOptions: {
+    ca: vaultCert,
+  },
+});
+
 async function start(): Promise<void> {
+  const jwtSecrets = await vaultClient.read("secret/jwt");
   await app.register(cors, {
     origin: "https://localhost:3000",
     methods: ["GET", "POST", "OPTIONS", "DELETE"],
@@ -40,7 +52,7 @@ async function start(): Promise<void> {
   await app.register(fastifyEnv, options);
   await app.register(fastifyCookie);
   await app.register(fastifyJwt, {
-    secret: process.env.JWT_TMP_LOGIN!,
+    secret: jwtSecrets.data.JWT_TMP_LOGIN,
     cookie: {
       cookieName: "loginToken",
       signed: false,
@@ -48,7 +60,7 @@ async function start(): Promise<void> {
     namespace: "jwt0",
   });
   await app.register(fastifyJwt, {
-    secret: process.env.JWT_ACCESS_TOKEN!,
+    secret: jwtSecrets.data.JWT_ACCESS_TOKEN,
     cookie: {
       cookieName: "accessToken",
       signed: false,
@@ -56,7 +68,7 @@ async function start(): Promise<void> {
     namespace: "jwt1",
   });
   await app.register(fastifyJwt, {
-    secret: process.env.JWT_REFRESH_TOKEN!,
+    secret: jwtSecrets.data.JWT_REFRESH_TOKEN,
     cookie: {
       cookieName: "refreshToken",
       signed: false,
