@@ -14,7 +14,7 @@ export const getUsersMessages = async (req: FastifyRequest, res: FastifyReply) =
     }
     const currUserId = payload.id;
     let usersAndMessages: UsersLastMessage[] = [];
-    const users: userInfos[] = app.db.prepare("SELECT id, username, email FROM players WHERE id != ?").all(currUserId) as userInfos[];
+    const users: userInfos[] = app.db.prepare("SELECT id, username, email, avatar FROM players WHERE id != ?").all(currUserId) as userInfos[];
     users.map((user) => {
       const query: messagePacketDB | undefined = app.db
         .prepare(

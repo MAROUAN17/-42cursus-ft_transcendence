@@ -283,6 +283,7 @@ const Chat = () => {
             .map((user, i, arr) => (
               <div key={user.user.id}>
                 <UserBubble
+                  avatar={user.user.avatar}
                   createdAt={user.lastMessage?.createdAt}
                   unreadCount={user.unreadCount}
                   isRead={user.lastMessage?.isRead}
@@ -319,7 +320,7 @@ const Chat = () => {
           <>
             <div className="bg-compBg/20 h-[95px] items-center flex px-7 justify-between">
               <div className="flex gap-3 items-center">
-                <img src="/src/assets/photo.png" className="h-[44px] w-[44px]" />
+                <img src={targetUser.avatar} className="h-[44px] w-[44px] rounded-full" />
                 <div className="flex flex-col">
                   <h3 className="font-semibold text-white">{targetUser.username}</h3>
                   <div className="flex gap-1">

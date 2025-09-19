@@ -36,5 +36,14 @@ mv /modsec-rules /etc/nginx/modsec/
 mv /etc/nginx/modsec/modsec-rules/crs-setup.conf.example /etc/nginx/modsec/modsec-rules/crs-setup.conf
 echo "Include /etc/nginx/modsec/modsec-rules/crs-setup.conf" >> /etc/nginx/modsec/main.conf
 echo "Include /etc/nginx/modsec/modsec-rules/rules/*.conf" >> /etc/nginx/modsec/main.conf
+echo "SecAction \\
+    \"id:900200,\\
+    phase:1,\\
+    pass,\\
+    t:none,\\
+    nolog,\\
+    tag:'OWASP_CRS',\\
+    ver:'OWASP_CRS/4.19.0-dev',\\
+    setvar:'tx.allowed_methods=GET HEAD POST OPTIONS DELETE'\"" >> /etc/nginx/modsec/modsec-rules/crs-setup.conf
 
 exec nginx -g "daemon off;"

@@ -16,13 +16,14 @@ export const getNotifications = async (req: FastifyRequest, res: FastifyReply) =
     const userId = payload.id;
     const notifications: notificationPacket[] = app.db
       .prepare(
-        "SELECT notifications.*, players.username FROM notifications JOIN players ON notifications.sender_id = players.id WHERE notifications.recipient_id = ? ORDER BY notifications.updatedAt DESC"
+        "SELECT notifications.*, players.username, players.avatar FROM notifications JOIN players ON notifications.sender_id = players.id WHERE notifications.recipient_id = ? ORDER BY notifications.updatedAt DESC"
       )
       .all(userId)
       .map((row: notificationPacketDB) => ({
         id: row.id,
         type: row.type,
-        username: row.username,
+        username: row.username || "Deleted User",
+        avatar: row.avatar,
         recipient_id: row.recipient_id,
         sender_id: row.sender_id,
         message: row.message,

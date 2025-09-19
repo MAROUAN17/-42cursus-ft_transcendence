@@ -20,6 +20,7 @@ export interface notificationPacket {
   id: number;
   type: "message" | "markSeen" | "friendReq" | "friendAccept";
   username: string;
+  avatar: string;
   sender_id: number;
   recipient_id: number;
   message?: string;
@@ -31,6 +32,7 @@ export interface notificationPacketDB {
   type: string;
   sender_id: number;
   username: string;
+  avatar: string;
   recipient_id: number;
   message: string;
   isRead: boolean;

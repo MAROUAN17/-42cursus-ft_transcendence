@@ -107,6 +107,7 @@ const Navbar = () => {
         id: 0,
         type: "markSeen",
         username: "",
+        avatar: "",
         sender_id: notification.recipient_id,
         recipient_id: notification.sender_id,
         message: "",

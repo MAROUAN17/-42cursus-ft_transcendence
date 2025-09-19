@@ -18,7 +18,7 @@ function createNotification(currPacket: websocketPacket) {
   const savedNotification: rowInserted = app.db
     .prepare("INSERT INTO notifications(type, sender_id, recipient_id,message) VALUES (?, ?, ?, ?)")
     .run(currPacket.data.type, currPacket.data.sender_id, currPacket.data.recipient_id, currPacket.data.message);
-  const senderUsername: string = app.db.prepare("SELECT username FROM players WHERE id = ?").get(currPacket.data.sender_id).username;
+  const senderInfo = app.db.prepare("SELECT username, avatar FROM players WHERE id = ?").get(currPacket.data.sender_id);
 
   let client = clients.get(currPacket.data.recipient_id);
   if (client) {
@@ -28,7 +28,8 @@ function createNotification(currPacket: websocketPacket) {
       data: {
         id: savedNotification.lastInsertRowid,
         type: currPacket.data.type,
-        username: senderUsername,
+        username: senderInfo.username,
+        avatar: senderInfo.avatar,
         sender_id: currPacket.data.sender_id,
         recipient_id: currPacket.data.recipient_id,
         message: currPacket.data.message!,
@@ -52,6 +53,7 @@ function sendNotification(currPacket: websocketPacket) {
         id: notif.id,
         type: "message",
         username: "",
+        avatar: "",
         sender_id: currPacket.data.sender_id,
         recipient_id: currPacket.data.recipient_id,
         message: currPacket.data.message!,
