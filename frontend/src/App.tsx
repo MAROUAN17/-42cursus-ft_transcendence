@@ -1,3 +1,4 @@
+
 import './App.css'
 import { Routes, 
          Route, 
@@ -13,10 +14,11 @@ import tournament from './components/gametyping/tournament/Tournament';
 import listTournament from './components/gametyping/listTournament/listTournament';
 import MatchMaking  from './components/gametyping/matchmaking/Matchmaking';
 import RGame from './components/game/remote/Game';
+import "./App.css";
+import { WebSocketProvider } from './components/chat/websocketContext';
 
-import Dashboard from './components/dashboard/dashboard';
+import Dashboard from "./components/dashboard/dashboard";
 import Page2FA from "./components/user/2fa";
-import checkAuthLoader from "../src/loaders/checkAuth";
 import NewPassword from "./components/user/newPassword";
 import ResetPasswordForm from "./components/user/passwordResetForm";
 import Layout from "./components/layout/layout";
@@ -25,11 +27,24 @@ import GameTyping from './components/gametyping/game/gameTyping';
 import Pairing from './components/match/Match';
 import { Tournaments } from './components/tournament/tournaments';
 import TournamentBracket from './components/tournament/Bracket';
+import Profile from "./components/user/profile";
+import notFound from "./components/error/404";
+import checkBlockLoader from "./components/loaders/checkBlock";
+import {
+  checkAuthLoader,
+  checkLoginPageLoader,
+} from "./components/loaders/checkAuthUser";
+import { check2FALoader } from "./components/loaders/check2fa";
 
 export default function App() {
   let router = createBrowserRouter([
     {
-      Component: Layout,
+      element: (
+        <WebSocketProvider>
+          <Layout />
+        </WebSocketProvider>
+      ),
+      loader: checkAuthLoader,
       children: [
         {
           path: "/",
@@ -43,6 +58,15 @@ export default function App() {
           path: "/chat/:username",
           Component: Chat,
         },
+        {
+          path: "/profile",
+          Component: Profile,
+        },
+        {
+          path: "/profile/:username",
+          Component: Profile,
+          loader: checkBlockLoader,
+        },
       ],
     },
     {
@@ -52,7 +76,7 @@ export default function App() {
     {
       path: "/login",
       Component: Login,
-      loader: checkAuthLoader,
+      loader: checkLoginPageLoader,
     },
     {
       path: "/register",
@@ -61,14 +85,14 @@ export default function App() {
     {
       path: "/verify",
       Component: Page2FA,
-      loader: checkAuthLoader,
+      loader: check2FALoader
     },
     {
-      path: '/reset-password',
+      path: "/reset-password",
       Component: ResetPasswordForm,
     },
     {
-      path: '/reset-password/new',
+      path: "/reset-password/new",
       Component: NewPassword,
     },
     {
@@ -102,8 +126,16 @@ export default function App() {
     },
     {
       path: '/bracket/:id',
-      Component: TournamentBracket
-    }
+      element: (
+        <WebSocketProvider>
+          <TournamentBracket />
+        </WebSocketProvider>
+      )
+    },
+    {
+      path: "/404",
+      Component: notFound,
+    },
   ]);
   return <RouterProvider router={router} />;
 }

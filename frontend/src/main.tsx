@@ -7,8 +7,8 @@ import App from "./App.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <WebSocketProvider>
-      <App />
-    </WebSocketProvider>
+    {/* <WebSocketProvider> */}
+    <App />
+    {/* </WebSocketProvider> */}
   </StrictMode>
 );

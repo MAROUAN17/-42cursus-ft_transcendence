@@ -6,6 +6,7 @@
 
 /backend/dist
 /backend/.env
+/backend/vault/
 
 
 /ssl

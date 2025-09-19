@@ -7,3 +7,23 @@ services:
       - "8191:8191"
     volumes:
       - ~/goinfre/db_data:/db
+  nginx:
+    container_name: nginx
+    build: nginx/.
+    ports:
+      - "5000:5000"
+    extra_hosts:
+      - "host.docker.internal:${HOST}"
+    restart: always
+  vault:
+    container_name: vault
+    build: vault/.
+    ports:
+      - "8200:8200"
+    cap_add:
+      - IPC_LOCK
+    volumes:
+      - ../backend/vault/:/vault/shared/
+    env_file:
+      - ../backend/.env
+    restart: always

@@ -13,41 +13,42 @@ export const redirectPath = async (req: FastifyRequest, res: FastifyReply) => {
   );
 };
 
+import util from "util";
 export const oauthCallback = async (req: FastifyRequest, res: FastifyReply) => {
   try {
-    let user = {} as User | undefined;
-    const { token } = await app.intra42Oauth.getAccessTokenFromAuthorizationCodeFlow(req);
+    const { access, refresh } = req.cookies;
 
+    if (refresh || access)
+        return res.status(401).send({ error: 'Unauthorized' })
+  
+    let user = {} as User | undefined;
+    
+    const { token } = await app.intra42Oauth.getAccessTokenFromAuthorizationCodeFlow(req);
+    
     const resData = await fetch("https://api.intra.42.fr/v2/me", {
       headers: { Authorization: `Bearer ${token.access_token}` },
     });
   
     const userData = await resData.json();
-
-    const email = userData.email, username = userData.login;
+    
+    const email = userData.email, username = userData.login, intraId = userData.id;
 
     //check if user already exists
-    if (username) {
+    if (intraId) {
       user = app.db
-        .prepare("SELECT * from players WHERE username = ?")
-        .get(username) as User | undefined;
+        .prepare("SELECT * from players WHERE intra_id = ?")
+        .get(intraId) as User | undefined;
     }
 
     if (!user) {
       app.db
-        .prepare("INSERT INTO players(email, username) VALUES (?, ?)")
-        .run(email, username);
+        .prepare("INSERT INTO players(intra_id, email, username) VALUES (?, ?, ?)")
+        .run(intraId, email, username);
     }
-
+  
     //sign new JWT tokens
-    const accessToken = app.jwt.jwt1.sign({ 
-      id: user?.id, 
-      email: user?.email, 
-      username: user?.username }, { expiresIn: '10s' });
-    const refreshToken = app.jwt.jwt2.sign({ 
-      id: user?.id, 
-      email: user?.email, 
-      username: user?.username }, { expiresIn: '15m' });
+    const accessToken = app.jwt.jwt1.sign({ id:user?.id, email:user?.email, username:user?.username }, { expiresIn: '900s' });
+    const refreshToken = app.jwt.jwt2.sign({ id:user?.id, email:user?.email, username:user?.username }, { expiresIn: '1d' });
 
     //set JWT token as cookie
     res.setCookie('accessToken', accessToken, {
@@ -55,7 +56,7 @@ export const oauthCallback = async (req: FastifyRequest, res: FastifyReply) => {
         secure: true,
         httpOnly: true, 
         sameSite: 'lax',
-        maxAge: 10
+        maxAge: 900
     });
 
     res.setCookie('refreshToken', refreshToken, {
@@ -63,12 +64,12 @@ export const oauthCallback = async (req: FastifyRequest, res: FastifyReply) => {
         secure: true,
         httpOnly: true, 
         sameSite: 'lax',
-        maxAge: 900
+        maxAge: 86400
     });
   
     return res.redirect('https://localhost:3000/');
     } catch (error) {
-        console.log(error);
+        console.log(util.inspect(error, { depth: 3 }));
         res.status(401).send({ error: error });
     }
 }

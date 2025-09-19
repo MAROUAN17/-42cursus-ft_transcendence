@@ -3,7 +3,7 @@ import { FaGear } from "react-icons/fa6";
 import { IoIosMail } from "react-icons/io";
 import { IoGameController } from "react-icons/io5";
 import { MdHome, MdLeaderboard } from "react-icons/md";
-import { useNavigate } from "react-router";
+import { replace, useNavigate } from "react-router";
 
 const Sidebar = () => {
   const navigate = useNavigate();
@@ -16,7 +16,10 @@ const Sidebar = () => {
             onClick={() => navigate("/")}
             className="text-white w-7 h-7 shadow-[0_0px_30px_rgba(0,0,0,0.25)] hover:shadow-neon transform hover:scale-150 hover:bg-neon p-1 transition rounded-full duration-300"
           />
-          <FaUser className="text-white w-7 h-7 shadow-[0_0px_30px_rgba(0,0,0,0.25)] hover:shadow-neon transform hover:scale-150 transition hover:bg-neon p-1 rounded-full duration-300" />
+          <FaUser
+            onClick={() => navigate("/profile")}
+            className="text-white w-7 h-7 shadow-[0_0px_30px_rgba(0,0,0,0.25)] hover:shadow-neon transform hover:scale-150 transition hover:bg-neon p-1 rounded-full duration-300"
+          />
           <IoIosMail
             onClick={() => navigate("/chat")}
             className="text-white w-7 h-7 shadow-[0_0px_30px_rgba(0,0,0,0.25)] hover:shadow-neon transform hover:scale-150 transition hover:bg-neon p-1 rounded-full duration-300"

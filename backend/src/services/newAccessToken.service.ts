@@ -12,16 +12,16 @@ export const requestNewToken = async (req: FastifyRequest, res: FastifyReply): P
       const infos = (await app.jwt.jwt2.verify(refreshToken)) as userInfos | undefined;
       const newAccessToken = app.jwt.jwt1.sign(
         { id: infos?.id, email: infos?.email, username: infos?.username, otp_verified: false },
-        { expiresIn: "10s" }
+        { expiresIn: "900s" }
       );
       res.status(200).setCookie("accessToken", newAccessToken, {
         path: "/",
         secure: true,
         httpOnly: true,
         sameSite: "lax",
-        maxAge: 10,
-      }).send({ token: newAccessToken });      
+        maxAge: 900,
+      }).send({ token: newAccessToken });    
     } catch (error) {
-      res.status(401).send({ error: "Refresh token expired" });
+      res.status(401).send({ error: "REFRESH_EXPIRED" });
     }
 }

@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router";
 import LeaveButton from "./ui/leaveBtn";
 import type { Tournament } from "./tournaments";
 import { useEffect, useState } from "react";
+import { useWebSocket } from "../chat/websocketContext";
 
 const mockUsers = [
   { username: "USER1", avatar: "https://i.pravatar.cc/40?img=1" },
@@ -11,7 +12,6 @@ const mockUsers = [
   { username: "USER3", avatar: "https://i.pravatar.cc/40?img=3" },
   { username: "USER4", avatar: "https://i.pravatar.cc/40?img=4" },
 ];
-
  const TournamentBracket: React.FC = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
@@ -20,6 +20,7 @@ const mockUsers = [
   const [tournament, setTournament] = useState<Tournament | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const {user} = useWebSocket();
   useEffect(() => {
     const fetchTournament = async () => {
       try {
@@ -48,7 +49,7 @@ const mockUsers = [
 
       <div className="relative h-40 overflow-hidden cursor-pointer  text-white rounded-lg">
         <div className="flex flex-col items-center justify-center h-full">
-          <h1>id is {id}</h1>
+          <h1>id is {user?.id} {user?.username}</h1>
           <div className="flex gap-32 items-center">
 
             <div className="flex gap-12 items-center">

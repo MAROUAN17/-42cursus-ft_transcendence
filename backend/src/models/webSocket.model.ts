@@ -1,5 +1,11 @@
 import type { messagePacket } from "./chat.js";
 
+export interface ProfileUserInfo {
+  id: number;
+  username: string;
+  email: string;
+}
+
 export interface ChatPacket {
   type: "chat";
   data: messagePacket;
@@ -12,11 +18,11 @@ export interface NotificationPacket {
 
 export interface notificationPacket {
   id: number;
-  type: "message" | "markSeen";
+  type: "message" | "markSeen" | "friendReq" | "friendAccept";
   username: string;
   sender_id: number;
   recipient_id: number;
-  message: string;
+  message?: string;
   unreadCount?: number;
   createdAt: string;
 }
@@ -38,4 +44,5 @@ export interface websocketContextType {
     packetType: string,
     handler: (data: websocketPacket) => void
   ) => void;
+  user: ProfileUserInfo | null;
 }
