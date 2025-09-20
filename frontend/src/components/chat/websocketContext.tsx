@@ -24,7 +24,6 @@ export const WebSocketProvider: React.FC<{ children?: React.ReactNode }> = ({ ch
     };
 
     socketRef.current.onclose = () => {
-      console.log("websocket closed");
       setTimeout(() => {
         connectWs();
       }, 1000);
