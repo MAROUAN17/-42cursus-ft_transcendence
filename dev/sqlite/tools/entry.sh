@@ -42,6 +42,24 @@ sqlite3 "$DB_NAME" <<EOF
         isRead BOOLEAN DEFAULT FALSE,
         updatedAt TEXT DEFAULT (datetime('now'))
     );
+    CREATE TABLE IF NOT EXISTS Room (
+        id INTEGER PRIMARY KEY,
+        player1 TEXT,
+        player2 TEXT,
+        startedAt TEXT DEFAULT (datetime('now')),
+        scoreLeft INTEGER,
+        scoreRight INTEGER,
+        winner TEXT
+    );
+    CREATE TABLE IF NOT EXISTS Tournament (
+        id INTEGER PRIMARY KEY,
+        name TEXT NOT NULL,
+        players TEXT NOT NULL,
+        createdAt TEXT NOT NULL,
+        status TEXT NOT NULL,
+        admin INTEGER NOT NULL  
+    );
+
 EOF
 
 tail -f /dev/null;

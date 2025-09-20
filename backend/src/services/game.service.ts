@@ -1,95 +1,211 @@
 
-import { DefaultGame, type GameInfo } from "../models/game.js";
+import { DefaultGame, type GameInfo, type Room } from "../models/game.js";
 
-import { v4 as uuidv4 } from "uuid";
-import { type MessagePacket } from "../types/game.js";
-import { clients, broadcast } from "./game.utils.js"; 
+import { clients, checkPaddleCollision } from "./game.utils.js";
+import app from "../server.js";
+import type { FastifyReply, FastifyRequest } from "fastify";
 
-const msgPacket: MessagePacket = {
-  to: "me",
-  game_info: DefaultGame
-};
+const rooms:Room[] = [];
 
-function gameLoop () {
-  let last = Date.now();
+function set_random_Info(game_info:GameInfo) {
+  const ballx = game_info.bounds.width / 2;
+  const bally = game_info.bounds.height / 2;
+  const angle = (Math.random() * Math.PI / 3) - Math.PI / 6;
+  const dir = Math.random() > 0.5 ? 1 : -1; 
+  const velX = dir * Math.cos(angle) * 200;
+  const velY = Math.sin(angle) * 200;
+  game_info.dir.vertical = velY < 0 ? "up" : "down";
+  game_info.dir.horizontal= velX < 0 ? "left" : "right";
+  game_info.ball = { x: ballx, y: bally, velX, velY };
+  return game_info;
+}
 
-setInterval(() => {
-  const now = Date.now();
-  const dt = Math.min(32, now - last) / 1000; 
-  last = now;
+function saveData (room: Room) {
+  try {
+    app.db
+      .prepare("INSERT INTO Room( player1, player2, startedAt, scoreLeft, scoreRight, winner) VALUES (?, ?, ?, ?, ?, ?)")
+      .run( room.player1, room.player2, room.startedAt?.toString(), room.scoreLeft, room.scoreRight, room.winner)
+    console.log("-- Room registred successfully");
+    }catch (err){
+    console.log(err);
+  }
+}
 
-  msgPacket.game_info.ball.x += msgPacket.game_info.ball.velX * dt;
-  msgPacket.game_info.ball.y += msgPacket.game_info.ball.velY * dt;
+export const getData = async(req: FastifyRequest, res: FastifyReply)=> {
+  try {
+    const history_rooms: Room[] = app.db
+      .prepare("SELECT * FROM Room")
+      .all() as Room[];
+      console.log("-- history rooms :", history_rooms)
+    res.status(200).send({data:history_rooms});
+  } catch (err) {
+    res.status(500).send({error:err});
+  }
+}
+function gameLoop (room:Room)
+{
+  var game = room.gameInfo;
+    const dt = 1 / 60; 
+    
 
-  broadcast(msgPacket);
-}, 1000 / 60);
+    const nx = game.ball.x + game.ball.velX * dt
+    const ny = game.ball.y + game.ball.velY * dt
 
+    if (ny + 10 >= DefaultGame.bounds.height && game.dir.vertical === "down"){
+      game.ball.velY *= -1;
+      game.dir.vertical = "up";
+    }
+    if (ny - 10 <= 0 && game.dir.vertical === "up"){
+      game.ball.velY *= -1
+      game.dir.vertical = "down";
+    }
+    if (game.ball.velX < 0 
+      && game.dir.horizontal === "left" 
+      && checkPaddleCollision(game.paddleLeft, nx, ny))
+      {
+        const intersectY = (ny - (game.paddleLeft.y + DefaultGame.paddleLeft.height/ 2)) / (DefaultGame.bounds.height / 2);
+        const speed = Math.hypot(game.ball.velX, game.ball.velY);
+        const newAngle = intersectY * (Math.PI / 3);
+        const newSpeed = Math.min(900, speed * 1.02);
+        
+        game.ball.velX =  Math.cos(newAngle) * newSpeed ;
+        game.ball.velY =  Math.sin(newAngle) * newSpeed ;
+        game.dir = {
+          vertical:game.ball.velY < 0 ? "up" : "down",
+          horizontal: "right"
+        }
+      }
+    if (game.ball.velX > 0 
+      && game.dir.horizontal === "right" 
+      && checkPaddleCollision(game.paddleRight, nx, ny))
+      {
+        const intersectY = (ny - (game.paddleRight.y + DefaultGame.paddleRight.height/ 2)) / (DefaultGame.bounds.height / 2);
+        const speed = Math.hypot(game.ball.velX, game.ball.velY);
+        const newAngle = Math.PI - intersectY * (Math.PI / 3);
+        const newSpeed = Math.min(900, speed * 1.02);
+        game.ball.velX =  Math.cos(newAngle) * newSpeed ;
+        game.ball.velY =  -Math.sin(newAngle) * newSpeed ;
+        game.dir = {
+          vertical:game.ball.velY < 0 ? "up" : "down",
+          horizontal: "left"
+        }
+        game.dir.horizontal = "left";
+      }
+    if (nx < -10) {
+      game.scoreRight++;
+      game = set_random_Info(game);
+      return  ;
+    }
+    if (nx > DefaultGame.bounds.width + 10){
+      game.scoreLeft++;
+      game = set_random_Info(game);
+      return ;
+    }
+    game.ball.x = nx;
+    game.ball.y = ny;
+    room.gameInfo = game;
+    if (game.scoreLeft > 1)
+      room.winner = room.player1;
+    else if (game.scoreRight > 1)
+      room.winner = room.player2;
+    if (room.winner) {
+      room.scoreLeft = game.scoreLeft;
+      room.scoreRight = game.scoreRight;
+      saveData(room);
+      console.log("-- game ended the winner is ", room.winner);
+      if (room.intervalId) {
+        clearInterval(room.intervalId);
+        room.intervalId = undefined;
+      }
+    }
+    broadcastToRoom(room, { type: "update", game_info: room.gameInfo });
+}
+
+
+function broadcastToRoom(room: Room, message: any) {
+  [room.player1, room.player2].forEach(pid => {
+    if (!pid) return;
+    const conn = clients.get(pid);
+    if (conn) {
+      conn.send(JSON.stringify(message));
+    }
+  });
+}
+
+
+function startGame (room:Room) {
+  if (room.intervalId) return;
+  room.intervalId = setInterval(() => gameLoop(room), 1000 / 60);
 }
 
 export function handleGameConnection(connection: any, req: any) {
-  const id: string = uuidv4();
-  clients.set(id, connection);
-  console.log("Connection established with =>", id);
-  
-  gameLoop();
-  
+  let userId: string ;
+
   connection.on("message", (message: any) => {
-    //console.log(`Received from ${id}:`, message.toString());
     try {
       const msg = JSON.parse(message.toString());
-      updateInfo(msg)
-      const clientConn = clients.get(msgPacket.to);
-      if (clientConn) {
-        clientConn.send(JSON.stringify(msgPacket.game_info));
+
+      if (msg.type === "newGame") {
+        userId = msg.userId;
+        clients.set(userId, connection);
+        addPlayerToRoom(msg.gameId, userId);
+        console.log('-- connectionn established with ', userId);
+      }
+
+      if (msg.type === "updateY") {
+        const room = getRoom(msg.gameId);
+        // console.log("-- trying to update y for the game:", msg.gameId)
+        // console.log("Before update - Left Y:", room.gameInfo.paddleLeft.y, "Right Y:", room.gameInfo.paddleRight.y);
+        // console.log("Received values - leftY:", msg.leftY, "rightY:", msg.rightY);
+        
+        room.gameInfo.paddleLeft.y = msg.leftY;
+        room.gameInfo.paddleRight.y = msg.rightY;
+        
+        // console.log("After update - Left Y:", room.gameInfo.paddleLeft.y, "Right Y:", room.gameInfo.paddleRight.y);
+        console.log("Broadcasting to room:", room.gameId, "Players:", room.player1, room.player2);
+        
+        broadcastToRoom(room, { type: "update", game_info: room.gameInfo });
       }
     } catch (err) {
-      console.error("Invalid game info packet:", err);
+      console.error("Invalid packet:", err);
     }
   });
 
   connection.on("close", () => {
-    console.log("Client disconnected ->", id);
-    clients.delete(id);
+    console.log("Client disconnected ->", userId);
+    if (userId) clients.delete(userId);
   });
+
+}
+function getRoom(gameId: string): Room {
+  let room = rooms.find(r => r.gameId === gameId);
+  if (!room) {
+    room = { 
+      gameId, 
+      ready: false, 
+      gameInfo: set_random_Info(structuredClone(DefaultGame)) 
+    };
+    rooms.push(room);
+  }
+  return room;
 }
 
-function updateInfo(msg:any) {
-  if (msg.type == "vely")
-    msgPacket.game_info.ball.velY *=-1
-  else if (msg.type == "velx")
-    msgPacket.game_info.ball.velX *= -1;
+function addPlayerToRoom(gameId: string, playerId: string) {
+  const room = getRoom(gameId);
 
-  else if (msg.type == "score") {
-    //console.log("WHO received:", msg.who);
-    if (msg.who == "right") msgPacket.game_info.scoreRight++;
-    else msgPacket.game_info.scoreLeft++;
-  
-    const ballx = msgPacket.game_info.bounds.width / 2;
-    const bally = msgPacket.game_info.bounds.height / 2;
-    const angle = (Math.random() * Math.PI / 3) - Math.PI / 6;
-    const dir = Math.random() > 0.5 ? 1 : -1; 
-    const velX = dir * Math.cos(angle) * 200;
-    const velY = Math.sin(angle) * 200;
-  
-    msgPacket.game_info.ball = { x: ballx, y: bally, velX, velY };
-    //console.log("new Ball info: ", msgPacket.game_info.ball);
+  if (!room.player1) {
+    room.player1 = playerId;
+  } else if (!room.player2 && room.player1 !== playerId) {
+    room.player2 = playerId;
   }
-  else if (msg.type == "updateY"){
-    msgPacket.game_info.paddleLeft.y = msg.leftY;
-    msgPacket.game_info.paddleRight.y = msg.rightY;
+
+  if (room.player1 && room.player2 && !room.ready) {
+    room.ready = true;
+    room.winner = undefined;
+    room.startedAt = new Date();
+    console.log(`-- Room ${gameId} ready! Players: ${room.player1}, ${room.player2} at time ${room.startedAt}`);
+    startGame(room);
+  } else {
+    console.log(`-- Waiting for another player in room ${gameId}`);
   }
 }
-
-export const getGameState = () => {
-  return DefaultGame;
-};
-
-export const updateGameState = (updates: Partial<typeof DefaultGame>) => {
-  Object.assign(DefaultGame, updates);
-  return DefaultGame;
-};
-
-export const moveBall = () => {
-  DefaultGame.ball.x += 2;
-  return DefaultGame;
-};

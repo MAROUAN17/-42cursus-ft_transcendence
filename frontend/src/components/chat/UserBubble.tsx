@@ -1,6 +1,7 @@
 import { IoCheckmark, IoCheckmarkDoneOutline } from "react-icons/io5";
 
-interface props {
+interface props
+{
   msg: string;
   name: string;
   avatar: string;

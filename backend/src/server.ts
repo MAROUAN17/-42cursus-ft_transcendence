@@ -26,7 +26,7 @@ const httpsOptions = {
 export const pump = util.promisify(pipeline);
 
 const app = Fastify({
-  logger: false,
+  logger: true,
   https: httpsOptions,
 });
 
@@ -45,7 +45,7 @@ async function start(): Promise<void> {
   await app.register(cors, {
     origin: "https://localhost:3000",
     methods: ["GET", "POST", "OPTIONS", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"],
+    allowedHeaders: ["Content-Type", "Authorization", "player-id"],
     credentials: true,
     maxAge: 600,
   });

@@ -1,18 +1,32 @@
-import "./App.css";
-import { createBrowserRouter, RouterProvider } from "react-router";
-import Game from "./components/game/game";
-import Login from "./components/user/login";
-import Register from "./components/user/register";
-import Chat from "./components/chat/chat";
 
-import RGame from "./components/game/remote/Game";
+import './App.css'
+import { Routes, 
+         Route, 
+         BrowserRouter,
+         createBrowserRouter,
+         RouterProvider,
+} from 'react-router';
+import Game from './components/game/game'
+import Login from "./components/user/login"
+import Register from "./components/user/register"
+import Chat from './components/chat/chat';
+import tournament from './components/gametyping/tournament/Tournament';
+import listTournament from './components/gametyping/listTournament/listTournament';
+import MatchMaking  from './components/gametyping/matchmaking/Matchmaking';
+import RGame from './components/game/remote/Game';
+import "./App.css";
+import { WebSocketProvider } from './components/chat/websocketContext';
 
 import Dashboard from "./components/dashboard/dashboard";
 import Page2FA from "./components/user/2fa";
 import NewPassword from "./components/user/newPassword";
 import ResetPasswordForm from "./components/user/passwordResetForm";
-import { WebSocketProvider } from "./components/chat/websocketContext";
 import Layout from "./components/layout/layout";
+import Tournament from './components/tournament/tournament';
+import GameTyping from './components/gametyping/game/gameTyping';
+import Pairing from './components/match/Match';
+import { Tournaments } from './components/tournament/tournaments';
+import TournamentBracket from './components/tournament/Bracket';
 import Profile from "./components/user/profile";
 import notFound from "./components/error/404";
 import checkBlockLoader from "./components/loaders/checkBlock";
@@ -82,8 +96,41 @@ export default function App() {
       Component: NewPassword,
     },
     {
-      path: "/remote_game",
-      Component: RGame,
+      path: '/remote_game',
+      Component: RGame
+    },
+    {
+      path: '/typing-game/tournament',
+      Component: tournament
+    },{
+      path:'/typing-game/listtournament',
+      Component: listTournament
+    },{
+      path:'/typing-game/game',
+      Component: GameTyping
+    },{
+      path:'/typing-game/matchmaking',
+      Component: MatchMaking
+    },
+    {
+      path:'/match',
+      Component: Pairing
+    },
+    {
+      path:'/tournament',
+      Component:Tournament,
+    },
+    {
+      path: '/tournaments',
+      Component: Tournaments,
+    },
+    {
+      path: '/bracket/:id',
+      element: (
+        <WebSocketProvider>
+          <TournamentBracket />
+        </WebSocketProvider>
+      )
     },
     {
       path: "/404",
