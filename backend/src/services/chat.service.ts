@@ -21,6 +21,7 @@ function sendToClient(clientSockets: Set<WebSocket>, packet: websocketPacket) {
 }
 
 function createNotification(currPacket: websocketPacket) {
+  if (currPacket.type == "onlineStatus") return;
   const savedNotification: rowInserted = app.db
     .prepare("INSERT INTO notifications(type, sender_id, recipient_id,message) VALUES (?, ?, ?, ?)")
     .run(currPacket.data.type, currPacket.data.sender_id, currPacket.data.recipient_id, currPacket.data.message);
@@ -48,6 +49,7 @@ function createNotification(currPacket: websocketPacket) {
 }
 
 function sendNotification(currPacket: websocketPacket) {
+  if (currPacket.type == "onlineStatus") return;
   const notif: notificationPacketDB = app.db
     .prepare("SELECT * FROM notifications WHERE sender_id = ? AND recipient_id = ? AND type = ?")
     .get(currPacket.data.sender_id, currPacket.data.recipient_id, "message");
@@ -72,6 +74,7 @@ function sendNotification(currPacket: websocketPacket) {
 }
 
 function checkNotificationMssg(currPacket: websocketPacket) {
+  if (currPacket.type == "onlineStatus") return;
   const updatedRow: rowInserted = app.db
     .prepare(
       "UPDATE notifications SET isRead = true, unreadCount = unreadCount + 1, updatedAt = (datetime('now')), message = ? WHERE sender_id = ? AND recipient_id = ? AND type = ?"
@@ -85,6 +88,7 @@ function checkNotificationMssg(currPacket: websocketPacket) {
 }
 
 function checkNotificationFriend(currPacket: websocketPacket) {
+  if (currPacket.type == "onlineStatus") return;
   const notif = app.db
     .prepare("SELECT * FROM notifications WHERE sender_id = ? AND recipient_id = ? AND type = ?")
     .get(currPacket.data.sender_id, currPacket.data.recipient_id, "friendReq");
@@ -94,10 +98,9 @@ function checkNotificationFriend(currPacket: websocketPacket) {
 }
 
 function handleBlock(currPacket: websocketPacket) {
-  console.log("outside");
+  if (currPacket.type == "onlineStatus") return;
   let client = clients.get(currPacket.data.recipient_id);
   if (client) {
-    console.log("sending block to -> ", currPacket.data.recipient_id);
     sendToClient(client, currPacket);
   }
 }
@@ -156,6 +159,7 @@ async function processMessages() {
 }
 
 function checkValidPacket(packet: websocketPacket, userId: number): boolean {
+  if (packet.type == "onlineStatus") return false;
   if (packet.data.sender_id != userId || packet.data.sender_id == packet.data.recipient_id) return false;
   const checkFriend = app.db
     .prepare("SELECT key FROM json_each((SELECT friends FROM players WHERE id = ?)) WHERE value = ?")
@@ -175,6 +179,24 @@ function checkValidPacket(packet: websocketPacket, userId: number): boolean {
   return true;
 }
 
+function broadcastToFriends(userId: number) {
+  // const friends = app.db.prepare("SELECT * FROM json_each((SELECT friends FROM players WHERE id = ?))").get(userId);
+  const friendsDB: string = app.db.prepare("SELECT friends FROM players WHERE id = ?").get(userId).friends;
+  if (!friendsDB) return;
+  const friends: string[] = JSON.parse(friendsDB);
+  const packet: websocketPacket = {
+    type: "onlineStatus",
+    data: {
+      friend_id: userId,
+      online: true,
+    },
+  };
+  for (const friendId of friends) {
+    const client = clients.get(Number(friendId));
+    if (client) sendToClient(client, packet);
+  }
+}
+
 export const chatService = {
   websocket: true,
   handler: (connection: WebSocket, req: FastifyRequest, res: FastifyReply) => {
@@ -192,6 +214,7 @@ export const chatService = {
     }, 30000);
     if (clients.has(userId)) clients.get(userId)!.add(connection);
     else clients.set(userId, new Set<WebSocket>());
+    broadcastToFriends(userId);
     console.log("Connection Done with => " + payload.username);
     connection.on("message", (message: Buffer) => {
       try {

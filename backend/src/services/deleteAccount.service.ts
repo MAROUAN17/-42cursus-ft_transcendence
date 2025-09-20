@@ -4,7 +4,6 @@ import type { Payload } from "../models/chat.js";
 
 export const deleteAccount = async (req: FastifyRequest, res: FastifyReply) => {
   try {
-    console.log("starting removing");
     const token = req.cookies.accessToken;
     const payload = app.jwt.jwt1.verify(token) as Payload;
     // delete photo later

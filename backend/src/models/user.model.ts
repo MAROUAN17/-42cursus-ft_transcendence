@@ -23,6 +23,7 @@ export interface userInfos {
   email: string;
   username: string;
   avatar: string;
+  online: boolean;
   logged_in: boolean;
   twoFA_verify: boolean;
 }

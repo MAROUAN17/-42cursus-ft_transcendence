@@ -1,10 +1,10 @@
 import { IoCheckmark, IoCheckmarkDoneOutline } from "react-icons/io5";
 
-interface props
-{
+interface props {
   msg: string;
   name: string;
   avatar: string;
+  online: boolean;
   onclick: () => void;
   style: string;
   isRead?: boolean;
@@ -27,10 +27,13 @@ function passedTime(createdAt: string) {
   return "";
 }
 
-const UserBubble = ({ msg, name, onclick, style, isDelivered, isRead, type, createdAt, unreadCount, avatar }: props) => {
+const UserBubble = ({ msg, name, onclick, online, style, isDelivered, isRead, type, createdAt, unreadCount, avatar }: props) => {
   return (
     <div onClick={onclick} className={style}>
-      <img src={avatar} className="h-[44px] w-[44px] rounded-full" />
+      <div className="h-[44px] w-[55px] relative">
+        <img src={avatar} className="h-[44px] w-[44px] rounded-full" />
+        <div className={`absolute w-[9px] h-[9px] rounded-full ${online ? "bg-[#00FF38]" : "bg-[#A5BAA9]"} bottom-1 right-0 mt-2`}></div>
+      </div>
       <div className="w-full">
         <div className="flex flex-row justify-between items-center">
           <h3 className="text-white font-medium">{name}</h3>

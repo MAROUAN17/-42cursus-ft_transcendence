@@ -59,6 +59,11 @@ const Chat = () => {
   }, []);
 
   useEffect(() => {
+    const addedHandler = addHandler("onlineStatus", handleOnlineNotif);
+    return addedHandler;
+  }, []);
+
+  useEffect(() => {
     api("/user", { withCredentials: true })
       .then((res) => {
         setCurrUser(res.data.infos);
@@ -121,6 +126,21 @@ const Chat = () => {
       observer.observe(msg);
     });
   }, [messages]);
+
+  function handleOnlineNotif(packet: websocketPacket) {
+    if (packet.type != "onlineStatus") return;
+    if (targetUserRef.current?.id == packet.data.friend_id) {
+      const newTargetUser = targetUserRef.current;
+      newTargetUser.online = packet.data.online;
+      setTargetUser(newTargetUser);
+    }
+    setUsers((prev: UsersLastMessage[]) => {
+      return prev.map((user) => {
+        return user.user.id == packet.data.friend_id ? { ...user, user: { ...user.user, online: packet.data.online } } : user;
+      });
+    });
+  }
+
   function handleChat(packet: websocketPacket) {
     console.log("received msg -> ", packet);
     if (packet.type != "chat") return;
@@ -285,6 +305,7 @@ const Chat = () => {
               <div key={user.user.id}>
                 <UserBubble
                   avatar={user.user.avatar}
+                  online={user.user.online}
                   createdAt={user.lastMessage?.createdAt}
                   unreadCount={user.unreadCount}
                   isRead={user.lastMessage?.isRead}
@@ -325,8 +346,17 @@ const Chat = () => {
                 <div className="flex flex-col">
                   <h3 className="font-semibold text-white">{targetUser.username}</h3>
                   <div className="flex gap-1">
-                    <div className="w-[9px] h-[9px] rounded-full bg-green-600 mt-2"></div>
-                    <p className="text-[#BABABA]">Online</p>
+                    {targetUser.online ? (
+                      <>
+                        <div className="w-[9px] h-[9px] rounded-full bg-[#00FF38] mt-2"></div>
+                        <p className="text-[#BABABA] font-medium">Online</p>
+                      </>
+                    ) : (
+                      <>
+                        <div className="w-[9px] h-[9px] rounded-full bg-[#A5BAA9] mt-2"></div>
+                        <p className="text-[#BABABA] font-medium">Offline</p>
+                      </>
+                    )}
                   </div>
                 </div>
               </div>

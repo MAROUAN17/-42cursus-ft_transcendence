@@ -15,6 +15,13 @@ export interface NotificationPacket {
   type: "notification";
   data: notificationPacket;
 }
+export interface OnlineStatusPacket {
+  type: "onlineStatus";
+  data: {
+    friend_id: number;
+    online: boolean;
+  };
+}
 
 export interface notificationPacket {
   id: number;
@@ -39,7 +46,7 @@ export interface notificationPacketDB {
   unreadCount: number;
   updatedAt: string;
 }
-export type websocketPacket = NotificationPacket | ChatPacket;
+export type websocketPacket = NotificationPacket | ChatPacket | OnlineStatusPacket;
 export interface websocketContextType {
   send: (msg: string) => void;
   addHandler: (

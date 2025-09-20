@@ -7,7 +7,6 @@ DB_NAME="app.db"
 # cd $DB_PATH
 touch $DB_NAME
 #chmod 777 $DB_PATH$DB_NAME
-
 sqlite3 "$DB_NAME" <<EOF 
     CREATE TABLE IF NOT EXISTS players (
         id INTEGER PRIMARY KEY,
