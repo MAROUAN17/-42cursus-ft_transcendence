@@ -5,13 +5,19 @@ import type { FastifyReply, FastifyRequest } from "fastify";
 import type { RequestQuery, Payload, messagePacket } from "../models/chat.js";
 import type { ChatPacket, NotificationPacket, notificationPacket, notificationPacketDB, websocketPacket } from "../models/webSocket.model.js";
 
-const clients = new Map<number, WebSocket>();
+const clients = new Map<number, Set<WebSocket>>();
 const messageQueue: websocketPacket[] = [];
 let isProcessingQueue: boolean = false;
 
 interface rowInserted {
   changes: number;
   lastInsertRowid: number;
+}
+
+function sendToClient(clientSockets: Set<WebSocket>, packet: websocketPacket) {
+  for (const socket of clientSockets) {
+    socket.send(JSON.stringify(packet));
+  }
 }
 
 function createNotification(currPacket: websocketPacket) {
@@ -37,7 +43,7 @@ function createNotification(currPacket: websocketPacket) {
         createdAt: currPacket.data.createdAt,
       },
     };
-    client.send(JSON.stringify(notification));
+    sendToClient(client, notification);
   }
 }
 
@@ -61,7 +67,7 @@ function sendNotification(currPacket: websocketPacket) {
         createdAt: notif.updatedAt,
       },
     };
-    client.send(JSON.stringify(notification));
+    sendToClient(client, notification);
   }
 }
 
@@ -92,7 +98,7 @@ function handleBlock(currPacket: websocketPacket) {
   let client = clients.get(currPacket.data.recipient_id);
   if (client) {
     console.log("sending block to -> ", currPacket.data.recipient_id);
-    client.send(JSON.stringify(currPacket));
+    sendToClient(client, currPacket);
   }
 }
 
@@ -113,11 +119,11 @@ async function processMessages() {
           currPacket.data.isDelivered = true;
           currPacket.data.type = "message";
           let client = clients.get(currPacket.data.recipient_id);
-          if (client) client.send(JSON.stringify(currPacket));
+          if (client) sendToClient(client, currPacket);
           if (currPacket.data.sender_id) {
             client = clients.get(currPacket.data.sender_id);
             currPacket.data.type = "markDelivered";
-            if (client) client.send(JSON.stringify(currPacket));
+            if (client) sendToClient(client, currPacket);
             currPacket.data.type = "message";
           }
           checkNotificationMssg(currPacket);
@@ -126,7 +132,7 @@ async function processMessages() {
             .prepare("UPDATE messages SET isRead = true WHERE id = ? AND sender_id = ? AND recipient_id = ?")
             .run(currPacket.data.id, currPacket.data.recipient_id, currPacket.data.sender_id);
           let client = clients.get(currPacket.data.recipient_id);
-          if (client) client.send(JSON.stringify(currPacket));
+          if (client) sendToClient(client, currPacket);
         } else if (currPacket.data.type == "block") handleBlock(currPacket);
       } else if (currPacket.type == "notification") {
         if (currPacket.data.type == "markSeen") {
@@ -134,7 +140,7 @@ async function processMessages() {
             .prepare("UPDATE notifications SET isRead = true, unreadCount = 0 WHERE sender_id = ? AND recipient_id = ? AND type = ?")
             .run(currPacket.data.recipient_id, currPacket.data.sender_id, "message");
           let client = clients.get(currPacket.data.sender_id);
-          if (client) client.send(JSON.stringify(currPacket));
+          if (client) sendToClient(client, currPacket);
         } else if (currPacket.data.type == "friendReq") {
           checkNotificationFriend(currPacket);
         } else if (currPacket.data.type == "friendAccept") {
@@ -184,7 +190,8 @@ export const chatService = {
     const pingInterval = setInterval(() => {
       if (connection.readyState == connection.OPEN) connection.ping();
     }, 30000);
-    clients.set(userId, connection);
+    if (clients.has(userId)) clients.get(userId)!.add(connection);
+    else clients.set(userId, new Set<WebSocket>());
     console.log("Connection Done with => " + payload.username);
     connection.on("message", (message: Buffer) => {
       try {
@@ -202,8 +209,9 @@ export const chatService = {
 
     connection.on("close", () => {
       console.log("Client disconnected -> " + payload.username);
+      clients.get(userId)?.delete(connection);
       clearInterval(pingInterval);
-      clients.delete(userId);
+      if (clients.get(userId)?.size == 0) clients.delete(userId);
     });
   },
 };

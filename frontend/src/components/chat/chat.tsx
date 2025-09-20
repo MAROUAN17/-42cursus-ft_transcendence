@@ -431,7 +431,12 @@ const Chat = () => {
               )}
             </div>
             <div className="bg-compBg/20 h-[95px] items-center flex px-5 justify-between">
-              {blockedbyUser ? (
+              {targetUser.username == "Deleted User" ? (
+                <div className="flex items-center justify-center flex-col text-white w-full">
+                  <h3 className="font-medium text-center text-[20px]">This account has been deleted.</h3>
+                  <p className="text-white/50 text-[15px]">Messaging is no longer possible</p>
+                </div>
+              ) : blockedbyUser ? (
                 <div className="flex items-center justify-center flex-col text-white w-full">
                   <h3 className="font-medium text-center text-[20px]">You've blocked this user.</h3>
                   <p className="text-white/50 text-[15px]">You can't send or receive messages until you unblock them</p>

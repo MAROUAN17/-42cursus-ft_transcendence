@@ -26,7 +26,7 @@ const httpsOptions = {
 export const pump = util.promisify(pipeline);
 
 const app = Fastify({
-  logger: true,
+  logger: false,
   https: httpsOptions,
 });
 
