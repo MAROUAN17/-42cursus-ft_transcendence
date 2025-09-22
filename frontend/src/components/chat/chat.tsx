@@ -128,17 +128,34 @@ const Chat = () => {
   }, [messages]);
 
   function handleOnlineNotif(packet: websocketPacket) {
+    console.log("got packet -> ", packet);
     if (packet.type != "onlineStatus") return;
-    if (targetUserRef.current?.id == packet.data.friend_id) {
-      const newTargetUser = targetUserRef.current;
-      newTargetUser.online = packet.data.online;
-      setTargetUser(newTargetUser);
-    }
-    setUsers((prev: UsersLastMessage[]) => {
-      return prev.map((user) => {
-        return user.user.id == packet.data.friend_id ? { ...user, user: { ...user.user, online: packet.data.online } } : user;
+    if (packet.data.type == "singleFriend") {
+      if (targetUserRef.current?.id == packet.data.friend_id) {
+        const newTargetUser = targetUserRef.current;
+        newTargetUser.online = packet.data.online;
+        setTargetUser(newTargetUser);
+      }
+      setUsers((prev: UsersLastMessage[]) => {
+        return prev.map((user) => {
+          return user.user.id == packet.data.friend_id ? { ...user, user: { ...user.user, online: packet.data.online } } : user;
+        });
       });
-    });
+    } else if (packet.data.type == "friendsList") {
+      if (!packet.data.friends_list) return;
+      for (const friendId of packet.data.friends_list) {
+        if (targetUserRef.current?.id == friendId) {
+          const newTargetUser = targetUserRef.current;
+          newTargetUser.online = true;
+          setTargetUser(newTargetUser);
+        }
+        setUsers((prev: UsersLastMessage[]) => {
+          return prev.map((user) => {
+            return user.user.id == friendId ? { ...user, user: { ...user.user, online: true } } : user;
+          });
+        });
+      }
+    }
   }
 
   function handleChat(packet: websocketPacket) {

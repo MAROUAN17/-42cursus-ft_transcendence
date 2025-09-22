@@ -18,6 +18,8 @@ export interface NotificationPacket {
 export interface OnlineStatusPacket {
   type: "onlineStatus";
   data: {
+    type: "singleFriend" | "friendsList";
+    friends_list?: number[];
     friend_id: number;
     online: boolean;
   };
@@ -49,9 +51,6 @@ export interface notificationPacketDB {
 export type websocketPacket = NotificationPacket | ChatPacket | OnlineStatusPacket;
 export interface websocketContextType {
   send: (msg: string) => void;
-  addHandler: (
-    packetType: string,
-    handler: (data: websocketPacket) => void
-  ) => void;
+  addHandler: (packetType: string, handler: (data: websocketPacket) => void) => void;
   user: ProfileUserInfo | null;
 }

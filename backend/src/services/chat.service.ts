@@ -179,16 +179,39 @@ function checkValidPacket(packet: websocketPacket, userId: number): boolean {
   return true;
 }
 
-function broadcastToFriends(userId: number) {
-  // const friends = app.db.prepare("SELECT * FROM json_each((SELECT friends FROM players WHERE id = ?))").get(userId);
+function checkOnlineFriends(userId: number) {
   const friendsDB: string = app.db.prepare("SELECT friends FROM players WHERE id = ?").get(userId).friends;
   if (!friendsDB) return;
   const friends: string[] = JSON.parse(friendsDB);
   const packet: websocketPacket = {
     type: "onlineStatus",
     data: {
+      type: "friendsList",
       friend_id: userId,
       online: true,
+    },
+  };
+  let onlineFriends: number[] = [];
+  for (const friendId of friends) {
+    const client = clients.get(Number(friendId));
+    if (client) onlineFriends.push(Number(friendId));
+  }
+  packet.data.friends_list = onlineFriends;
+  const client = clients.get(userId);
+  if (client) {
+    sendToClient(client, packet);
+  }
+}
+function broadcastToFriends(userId: number, status: boolean) {
+  const friendsDB: string = app.db.prepare("SELECT friends FROM players WHERE id = ?").get(userId).friends;
+  if (!friendsDB) return;
+  const friends: string[] = JSON.parse(friendsDB);
+  const packet: websocketPacket = {
+    type: "onlineStatus",
+    data: {
+      type: "singleFriend",
+      friend_id: userId,
+      online: status,
     },
   };
   for (const friendId of friends) {
@@ -214,7 +237,8 @@ export const chatService = {
     }, 30000);
     if (clients.has(userId)) clients.get(userId)!.add(connection);
     else clients.set(userId, new Set<WebSocket>());
-    broadcastToFriends(userId);
+    checkOnlineFriends(userId);
+    broadcastToFriends(userId, true);
     console.log("Connection Done with => " + payload.username);
     connection.on("message", (message: Buffer) => {
       try {
@@ -232,6 +256,7 @@ export const chatService = {
 
     connection.on("close", () => {
       console.log("Client disconnected -> " + payload.username);
+      broadcastToFriends(userId, false);
       clients.get(userId)?.delete(connection);
       clearInterval(pingInterval);
       if (clients.get(userId)?.size == 0) clients.delete(userId);

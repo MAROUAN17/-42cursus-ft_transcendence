@@ -1,19 +1,24 @@
+import { useNavigate } from "react-router";
+import type { userInfos } from "../../../../backend/src/models/user.model";
+
 interface props {
   unreadCount: number;
   isOnline: boolean;
+  user: userInfos;
+  onclick: () => void;
 }
 
-const MessageBubble = ({ unreadCount, isOnline }: props) => {
+const MessageBubble = ({ unreadCount, isOnline, user, onclick }: props) => {
   return (
-    <div className="relative w-[55px] h-[55px] bg-[#FFDCB9] rounded-full">
+    <div key={user.id} onClick={onclick} className="relative w-[55px] h-[55px] bg-[#FFDCB9] rounded-full">
       <div
-        className={`absolute w-[12px] h-[12px] text-[10px] flex items-center justify-center rounded-full top-0 right-0 ${
+        className={`absolute flex px- items-center justify-center h-[12px] min-w-[12px] max-w-[30px] rounded-full text-[10px] top-0 right-0 ${
           isOnline ? "bg-[#00FF38]" : "bg-[#A5BAA9]"
         } border-compBg mt-2`}
       >
-        {unreadCount > 0 ? unreadCount : null}
+        <span className="truncate">{unreadCount > 0 ? unreadCount : null}</span>
       </div>
-      <img src="/src/assets/fr1.png" />
+      <img src={user.avatar} className="rounded-full" />
     </div>
   );
 };
