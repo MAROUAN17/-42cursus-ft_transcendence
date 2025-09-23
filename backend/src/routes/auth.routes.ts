@@ -44,6 +44,7 @@ export const authRoutes: FastifyPluginAsync = async () => {
   app.post("/add-friend/:id", { onRequest: [app.jwtAuth] }, addFriend);
   app.post("/edit-user", { onRequest: [app.jwtAuth] }, editUserInfos);
   app.post("/upload", { onRequest: [app.jwtAuth] }, uploadUserInfos);
+  app.post("/set/avatar", { onRequest: [app.jwtAuth] }, setAvatar);
 
   //reset password
   app.post("/reset-password", resetPassword);

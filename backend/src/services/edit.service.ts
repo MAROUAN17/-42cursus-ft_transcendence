@@ -51,3 +51,23 @@ export const editUserInfos = async (
     res.status(500).send({ error: error });
   }
 };
+
+export const setAvatar = async (
+  req: FastifyRequest<{ Body: LoginBody }>,
+  res: FastifyReply
+) => {
+  const { id, avatar } = req.body;
+
+  if (!id) {
+    return res.status(401).send({ error: "Id must be provided" });
+  }
+
+  const user = app.db
+    .prepare("SELECT * FROM players WHERE id = ?")
+    .get(id) as User | null;
+  if (!user) {
+    return res.status(404).send({ error: "User not found" });
+  }
+
+  
+};

@@ -13,6 +13,7 @@ export interface LoginBody {
   id: number;
   username: string;
   confirmPassword: string;
+  avatar: string;
   email: string;
   password: string;
   token: string;

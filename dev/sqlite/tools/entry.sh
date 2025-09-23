@@ -23,6 +23,7 @@ sqlite3 "$DB_NAME" <<EOF
         twoFA_verify BOOLEAN DEFAULT FALSE,
         friends JSON DEFAULT '[]',
         block_list JSON DEFAULT '[]'
+        first_login INTEGER DEFAULT 1
     );
     CREATE TABLE IF NOT EXISTS messages (
         id INTEGER PRIMARY KEY,

@@ -13,7 +13,7 @@ export default function AvatarSelection() {
           <img
             className="rounded-full w-[380px] h-[380px] object-cover"
             src={previewImg}
-            alt=""
+            alt="preview-img"
           />
         </div>
         <div className="grid grid-cols-3 gap-12 mt-3">
@@ -24,7 +24,7 @@ export default function AvatarSelection() {
               }}
               className="rounded-full w-[90px] h-[90px] object-cover"
               src="/profile1.jpg"
-              alt=""
+              alt="profile1-img"
             />
           </div>
           <div className="w-[100px] h-[100px] outline outline-8 outline-white rounded-full flex items-center justify-center">
@@ -34,7 +34,7 @@ export default function AvatarSelection() {
               }}
               className="rounded-full w-[90px] h-[90px] object-cover"
               src="/profile2.jpg"
-              alt=""
+              alt="profile2-img"
             />
           </div>
           <div className="w-[100px] h-[100px] outline outline-8 outline-white rounded-full flex items-center justify-center">
@@ -44,7 +44,7 @@ export default function AvatarSelection() {
               }}
               className="rounded-full w-[90px] h-[90px] object-cover"
               src="/profile3.jpg"
-              alt=""
+              alt="profile3-img"
             />
           </div>
           <div className="w-[100px] h-[100px] outline outline-8 outline-white rounded-full flex items-center justify-center">
@@ -54,7 +54,7 @@ export default function AvatarSelection() {
               }}
               className="rounded-full w-[90px] h-[90px] object-cover"
               src="/profile4.jpg"
-              alt=""
+              alt="profile4-img"
             />
           </div>
           <div className="w-[100px] h-[100px] outline outline-8 outline-white rounded-full flex items-center justify-center">
@@ -64,7 +64,7 @@ export default function AvatarSelection() {
               }}
               className="rounded-full w-[90px] h-[90px] object-cover"
               src="/profile5.jpg"
-              alt=""
+              alt="profile5-img"
             />
           </div>
           <div className="w-[100px] h-[100px] outline outline-8 outline-white rounded-full flex items-center justify-center">
@@ -74,7 +74,7 @@ export default function AvatarSelection() {
               }}
               className="rounded-full w-[90px] h-[90px] object-cover"
               src="/profile6.jpg"
-              alt=""
+              alt="profile6-img"
             />
           </div>
         </div>
