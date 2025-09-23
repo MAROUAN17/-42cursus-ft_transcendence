@@ -31,6 +31,7 @@ import {
   checkLoginPageLoader,
 } from "./components/loaders/checkAuthUser";
 import { check2FALoader } from "./components/loaders/check2fa";
+import AvatarSelection from './components/user/avatar';
 
 export default function App() {
   let router = createBrowserRouter([
@@ -106,6 +107,10 @@ export default function App() {
     {
       path: '/tournaments',
       Component: Tournaments,
+    },
+    {
+      path: '/avatar',
+      Component: AvatarSelection,
     },
     {
       path: '/bracket/:id',
