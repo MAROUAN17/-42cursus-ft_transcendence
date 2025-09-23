@@ -1,6 +1,6 @@
 #!/bin/bash
 set -x
-set -e
+# set -e
 
 export VAULT_SKIP_VERIFY=true
 

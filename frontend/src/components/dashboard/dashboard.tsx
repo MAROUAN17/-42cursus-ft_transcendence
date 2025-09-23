@@ -30,9 +30,10 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const { user } = useWebSocket();
   const [show, setShow] = useState<boolean>(false);
-  const [showFriends, setShowFriends] = useState<boolean>(false);
+  const [friendOpt, setFriendOpt] = useState<Number>(0);
   const [friends, setFriends] = useState<UsersLastMessage[]>([]);
   const friendsRef = useRef(friends);
+  const friendOptRef = useRef<HTMLDivElement>(null);
   const [friendsMessages, setFriendsMessages] = useState<UsersLastMessage[]>([]);
   function handleClick(e: React.MouseEvent<HTMLButtonElement>) {
     e.preventDefault();
@@ -46,6 +47,15 @@ export default function Dashboard() {
         navigate("/login");
       });
   }
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      console.log("clickeed");
+      if (friendOptRef.current && !friendOptRef.current.contains(e.target as Node)) setFriendOpt(0);
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   function handleOnlineNotif(packet: websocketPacket) {
     console.log("got packet -> ", packet);
@@ -79,7 +89,6 @@ export default function Dashboard() {
         })
       );
     }
-    setShowFriends(true);
   }
   useEffect(() => {
     const addedHandled = addHandler("chat", handleChat);
@@ -248,18 +257,26 @@ export default function Dashboard() {
       <div className="h-full flex flex-col">
         <div className={`bg-compBg flex flex-col rounded-[30px] min-h-[43.4%] mt-5 items-center gap-6 p-5`}>
           <MdGroups className="w-[27px] h-auto text-white mb-1" />
-          <div className={`flex flex-col gap-6 transition-all duration-700 ease-in-out ${showFriends ? "opacity-100" : "opacity-0"}`}>
+          <div ref={friendOptRef} className={`flex flex-col gap-6 transition-all duration-700 ease-in-out`}>
             {friends
               .filter((friend) => friend.user.username != "Deleted User")
               .slice(0, 6)
               .map((friend) => (
-                <FriendBubble inGame={false} user={friend.user} isOnline={friend.user.online} />
+                <FriendBubble
+                  friendOpt={friendOpt}
+                  setFriendOpt={() => {
+                    friendOpt == friend.user.id ? setFriendOpt(0) : setFriendOpt(friend.user.id);
+                  }}
+                  inGame={false}
+                  user={friend.user}
+                  isOnline={friend.user.online}
+                />
               ))}
           </div>
         </div>
         <div className={`bg-compBg flex flex-col rounded-[30px] h-full my-7 items-center gap-6 p-5`}>
           <IoChatbubblesSharp className="w-[27px] h-auto text-white mb-2" />
-          <div className={`flex flex-col gap-6 transition-all duration-700 ease-in-out ${showFriends ? "opacity-100" : "opacity-0"}`}>
+          <div className={`flex flex-col gap-6 transition-all duration-700 ease-in-out`}>
             {friendsMessages
               .filter((friend) => friend.user.username != "Deleted User")
               .slice(0, 7)
