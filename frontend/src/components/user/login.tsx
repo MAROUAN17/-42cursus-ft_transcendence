@@ -22,7 +22,6 @@ function Login() {
         navigate("/verify?email=" + email);
       })
       .catch(function (err) {
-        console.log(err.response.data.error);
         setErrorFlag(true);
         setErrorMssg(err.response.data.error);
       });

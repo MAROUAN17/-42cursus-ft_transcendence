@@ -52,32 +52,32 @@ export const verifyRegisterUser = async (
     let { username, email, password, secret } = req.body;
 
     //regex check
-    const usernamePattern = new RegExp("^[a-zA-Z0-9]+$");
+    const usernamePattern = new RegExp("^[a-zA-Z0-9_-]+$");
     const passwordPattern = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).+$");
 
     if (!usernamePattern.test(username)) {
-      res.status(401).send({ error: "Username not valid, try another one!" });
-      return;
+      return res
+        .status(401)
+        .send({ error: "Username not valid, try another one!" });
     }
 
     if (username.length < 3 || username.length > 16) {
-      res
+      return res
         .status(401)
         .send({ error: "Username must be between 3 and 16 characters" });
-      return;
-    }
-
-    if (!passwordPattern.test(password)) {
-      res.status(401).send({ error: "Password not valid, try another one!" });
-      return;
     }
 
     if (password.length < 8 || password.length > 30) {
-      res.status(401).send({
+      return res.status(401).send({
         error:
           "Password should be at least 8 characters including a lowercaser letter and a number",
       });
-      return;
+    }
+
+    if (!passwordPattern.test(password)) {
+      return res
+        .status(401)
+        .send({ error: "Password not valid, try another one!" });
     }
 
     email = email.toLowerCase();

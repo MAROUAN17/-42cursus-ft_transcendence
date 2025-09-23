@@ -10,9 +10,6 @@ import Game from './components/game/game'
 import Login from "./components/user/login"
 import Register from "./components/user/register"
 import Chat from './components/chat/chat';
-import tournament from './components/gametyping/tournament/Tournament';
-import listTournament from './components/gametyping/listTournament/listTournament';
-import MatchMaking  from './components/gametyping/matchmaking/Matchmaking';
 import RGame from './components/game/remote/Game';
 import "./App.css";
 import { WebSocketProvider } from './components/chat/websocketContext';
@@ -23,7 +20,6 @@ import NewPassword from "./components/user/newPassword";
 import ResetPasswordForm from "./components/user/passwordResetForm";
 import Layout from "./components/layout/layout";
 import Tournament from './components/tournament/tournament';
-import GameTyping from './components/gametyping/game/gameTyping';
 import Pairing from './components/match/Match';
 import { Tournaments } from './components/tournament/tournaments';
 import TournamentBracket from './components/tournament/Bracket';
@@ -98,19 +94,6 @@ export default function App() {
     {
       path: '/remote_game',
       Component: RGame
-    },
-    {
-      path: '/typing-game/tournament',
-      Component: tournament
-    },{
-      path:'/typing-game/listtournament',
-      Component: listTournament
-    },{
-      path:'/typing-game/game',
-      Component: GameTyping
-    },{
-      path:'/typing-game/matchmaking',
-      Component: MatchMaking
     },
     {
       path:'/match',

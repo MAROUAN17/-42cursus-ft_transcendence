@@ -125,16 +125,15 @@ export default function Profile() {
 
   function editProfile(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (currUsername.length < 3 || currUsername.length > 16) {
-      setUsernameErrorFlag(true);
-      setUsernameErrorMssg("Username must be between 3 and 16 characters");
-      return;
-    } else if (!usernamePattern.test(currUsername)) {
-      setUsernameErrorFlag(true);
-      setUsernameErrorMssg("Username must be valid");
-      return;
-    }
-
+    // if (currUsername.length < 3 || currUsername.length > 16) {
+    //   setUsernameErrorFlag(true);
+    //   setUsernameErrorMssg("Username must be between 3 and 16 characters");
+    //   return;
+    // } else if (!usernamePattern.test(currUsername)) {
+    //   setUsernameErrorFlag(true);
+    //   setUsernameErrorMssg("Username must be valid");
+    //   return;
+    // }
     api
       .post(
         "/edit-user",

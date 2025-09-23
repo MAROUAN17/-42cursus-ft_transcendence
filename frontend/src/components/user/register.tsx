@@ -15,9 +15,6 @@ function Register() {
   const [emailErrorFlag, setEmailErrorFlag] = useState<boolean>(false);
   const [setup2FA, setSetup2FA] = useState<boolean>(false);
 
-  let usernamePattern = new RegExp("^[a-zA-Z0-9]+$");
-  let passwordPattern = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).+$");
-
   const handleForm = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 

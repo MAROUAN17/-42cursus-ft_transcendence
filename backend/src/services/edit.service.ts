@@ -12,8 +12,16 @@ export const editUserInfos = async (
 
     if (!id) return;
 
-    console.log(`username -> ${username}`);
-    console.log(`email -> ${email}`);
+    const usernamePattern = new RegExp("^[a-zA-Z0-9]+$");
+    if (username.length < 3 || username.length > 16) {
+      res
+        .status(401)
+        .send({ error: "Username must be between 3 and 16 characters" });
+      return;
+    } else if (!usernamePattern.test(username)) {
+      res.status(401).send({ error: "Username must be valid" });
+      return;
+    }
 
     email = email.toLowerCase();
     username = username.toLowerCase();

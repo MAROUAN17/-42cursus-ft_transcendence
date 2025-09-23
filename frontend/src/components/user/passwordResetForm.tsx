@@ -20,11 +20,9 @@ export default function ResetPasswordForm() {
         e.preventDefault();
         axios.post('https://localhost:5000/reset-password', { email: email })
             .then(function(res) {
-                console.log(res);
                 setEmailSent(true);
             })
             .catch(function(err) {
-                console.log(err);
                 setErrorFlag(true)
                 setErrorMssg(err.response.data.error);
             })
