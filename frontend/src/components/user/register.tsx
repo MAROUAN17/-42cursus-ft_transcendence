@@ -20,26 +20,6 @@ function Register() {
 
   const handleForm = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (
-      username.length < 3 ||
-      username.length > 16 ||
-      !usernamePattern.test(username)
-    ) {
-      setUsernameErrorFlag(true);
-      setUsernameErrorMssg("Username must be between 3 and 16 characters");
-      return;
-    }
-    if (
-      password.length < 8 ||
-      password.length > 30 ||
-      !passwordPattern.test(password)
-    ) {
-      setPassErrorFlag(true);
-      setPassErrorMssg(
-        "Password should be at least 8 characters including a lowercaser letter and a number"
-      );
-      return;
-    }
 
     api
       .post("/register/verify", {
