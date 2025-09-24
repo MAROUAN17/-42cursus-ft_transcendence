@@ -31,7 +31,7 @@ const UserBubble = ({ msg, name, onclick, online, style, isDelivered, isRead, ty
   return (
     <div onClick={onclick} className={style}>
       <div className="h-[44px] w-[55px] relative">
-        <img src={avatar} className="h-[44px] w-[44px] rounded-full" />
+        <img src={avatar} className="h-[44px] w-[44px] rounded-full object-cover" />
         <div className={`absolute w-[9px] h-[9px] rounded-full ${online ? "bg-[#00FF38]" : "bg-[#A5BAA9]"} bottom-1 right-0 mt-2`}></div>
       </div>
       <div className="w-full">
