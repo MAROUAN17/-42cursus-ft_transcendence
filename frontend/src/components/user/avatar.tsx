@@ -5,7 +5,6 @@ import { useNavigate } from "react-router";
 
 export default function AvatarSelection() {
   const navigate = useNavigate();
-  const [previewImg, setPreviewImg] = useState<string>("/profile1.jpg");
   const { user } = useUserContext();
   const avatars = [
     "/profile1.jpg",
@@ -14,19 +13,20 @@ export default function AvatarSelection() {
     "/profile4.jpg",
     "/profile5.jpg",
     "/profile6.jpg",
-  ];
+    ...(user?.intra_id ? [user?.avatar] : []),
+  ]
+  const [previewImg, setPreviewImg] = useState<string | undefined>(avatars[0]);
 
   const handleAvatar = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
     api
       .post(
         "/set/avatar",
         { id: user?.id, avatar: previewImg },
         { withCredentials: true }
-      ).then(function() {navigate('/')})
-      .catch(function (err) {
-        console.log(err);
+      )
+      .then(function () {
+        navigate("/");
       });
   };
 
@@ -66,13 +66,18 @@ export default function AvatarSelection() {
         <div className="flex justify-center mt-32">
           <button
             type="submit"
-            className="bg-neon text-white text-xl px-28 py-3 rounded-lg font-semibold"
+            className="bg-neon text-white text-xl px-28 py-3 rounded-lg font-bold"
           >
             Continue
           </button>
         </div>
       </form>
-      <div className="flex justify-center items-center mt-8 space-x-2">
+      <div
+        onClick={() => {
+          navigate("/");
+        }}
+        className="flex justify-center items-center mt-8 space-x-2"
+      >
         <h1 className="font-bold text-xl text-white">Skip for now</h1>
         <a href="">
           <img

@@ -112,7 +112,7 @@ function Page2FA() {
       )}
       <form onSubmit={formHandler}>
         <div className="flex justify-center space-x-12">
-          <div className="flex justify-center space-x-3 text-center mt-20">
+          <div className="flex justify-center space-x-4 text-center mt-20">
             {Array(6).fill(null).map((_, i) => (
               <input
                 maxLength={1}

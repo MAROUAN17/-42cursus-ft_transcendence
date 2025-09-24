@@ -18,5 +18,6 @@ export interface ProfileUserInfo
     avatar: string,
     username: string,
     email: string,
-    first_login: boolean
+    first_login: boolean,
+    intra_id: number
 }
