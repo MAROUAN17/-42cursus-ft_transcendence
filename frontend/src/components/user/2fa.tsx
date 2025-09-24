@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { useNavigate, useSearchParams } from "react-router";
 import api from "../../axios";
-import { useWebSocket } from "../chat/websocketContext";
+import { useWebSocket } from "../contexts/websocketContext";
 import type { ProfileUserInfo } from "../../types/user";
 
 function Page2FA() {
@@ -81,7 +81,7 @@ function Page2FA() {
       )
       .then(function (res) {
         console.log(res);
-        navigate("/");
+        navigate("/avatar");
       })
       .catch(function (err) {
         if (err.response.data.error == "INVALID_OTP") {

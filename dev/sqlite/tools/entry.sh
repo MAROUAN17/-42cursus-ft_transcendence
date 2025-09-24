@@ -11,7 +11,7 @@ sqlite3 "$DB_NAME" <<EOF
     CREATE TABLE IF NOT EXISTS players (
         id INTEGER PRIMARY KEY,
         intra_id INTEGER,
-        avatar TEXT DEFAULT '/photo.png',
+        avatar TEXT DEFAULT '/profile1.jpg',
         username TEXT NOT NULL,
         email TEXT NOT NULL,
         password TEXT,
@@ -22,8 +22,8 @@ sqlite3 "$DB_NAME" <<EOF
         online BOOLEAN DEFAULT FALSE,
         twoFA_verify BOOLEAN DEFAULT FALSE,
         friends JSON DEFAULT '[]',
-        block_list JSON DEFAULT '[]'
-        first_login INTEGER DEFAULT 1
+        block_list JSON DEFAULT '[]',
+        first_login BOOLEAN DEFAULT TRUE
     );
     CREATE TABLE IF NOT EXISTS messages (
         id INTEGER PRIMARY KEY,

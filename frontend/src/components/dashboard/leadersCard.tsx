@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { useWebSocket } from "../chat/websocketContext";
+import { useWebSocket } from "../contexts/websocketContext";
 
 interface props {
   rank: number;

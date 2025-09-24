@@ -19,16 +19,24 @@ import { LiaUserClockSolid } from "react-icons/lia";
 import { FaHourglassHalf } from "react-icons/fa";
 import { IoMdClose } from "react-icons/io";
 
-import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import {
+  Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 import HistoryCard from "./historyCard";
 import { useEffect, useState, useRef } from "react";
 import axios, { type AxiosError, type AxiosResponse } from "axios";
 import { useParams, useNavigate } from "react-router";
 import type { ProfileUserInfo } from "../../types/user";
 import type { websocketPacket } from "../../../../backend/src/models/webSocket.model";
-import { useWebSocket } from "../chat/websocketContext";
+import { useWebSocket } from "../contexts/websocketContext";
 import api from "../../axios";
 import { ToastContainer, toast } from "react-toastify";
+import { useUserContext } from "../contexts/userContext";
 
 export default function Profile() {
   const navigate = useNavigate();
@@ -47,12 +55,13 @@ export default function Profile() {
   const [emailErrorMssg, setEmailErrorMssg] = useState<string>("");
   const pictureInput = useRef<HTMLInputElement>(null);
   const [avatar, setAvatar] = useState<string>("");
-  const { user } = useWebSocket();
+  const { user } = useUserContext();
   const [currUser, setCurrUser] = useState<ProfileUserInfo>({
     id: 0,
     avatar: "",
     username: "",
     email: "",
+    first_login: false,
   });
   let usernamePattern = new RegExp("^[a-zA-Z0-9]+$");
   const { send, addHandler } = useWebSocket();
@@ -117,10 +126,12 @@ export default function Profile() {
     // formData.append("email", currEmail);
     formData.append("avatar", pictureInput.current!.files![0]);
 
-    api.post("/upload", formData, { withCredentials: true }).then(function (res) {
-      setCurrAvatar(res.data.file);
-      console.log(res.data.file);
-    });
+    api
+      .post("/upload", formData, { withCredentials: true })
+      .then(function (res) {
+        setCurrAvatar(res.data.file);
+        console.log(res.data.file);
+      });
   }
 
   function editProfile(e: React.FormEvent<HTMLFormElement>) {
@@ -148,7 +159,8 @@ export default function Profile() {
         setSettingsPopup(false);
         toast("Your data changed successfully", {
           closeButton: false,
-          className: "font-poppins border-3 border-neon bg-neon/70 text-white font-bold text-md",
+          className:
+            "font-poppins border-3 border-neon bg-neon/70 text-white font-bold text-md",
         });
       })
       .catch(function (err) {
@@ -206,20 +218,32 @@ export default function Profile() {
               />
             </div>
             <div className="">
-              <h1 className="text-white font-bold text-5xl text-center">Edit Profile</h1>
+              <h1 className="text-white font-bold text-5xl text-center">
+                Edit Profile
+              </h1>
             </div>
             <form onSubmit={editProfile}>
               <div className="flex flex-col items-center mt-12 space-y-8">
                 <div className="w-[150px] h-[150px] mt-4 outline outline-8 outline-neon rounded-full flex items-center justify-center">
-                  <img className="rounded-full" src={currAvatar} alt="" width="150px" height="150px" />
+                  <img
+                    className="rounded-full w-[150px] h-[150px] object-cover"
+                    src={currAvatar}
+                    alt=""
+                  />
                 </div>
                 <div className="flex flex-col space-y-3">
-                  <input ref={pictureInput} onChange={handleImageUpload} type="file" />
+                  <input
+                    ref={pictureInput}
+                    onChange={handleImageUpload}
+                    type="file"
+                  />
                 </div>
                 <div className="flex flex-col space-y-3">
                   {usernameErrorFlag ? (
                     <div>
-                      <h1 className="text-red-700 font-bold">{usernameErrorMssg}</h1>
+                      <h1 className="text-red-700 font-bold">
+                        {usernameErrorMssg}
+                      </h1>
                     </div>
                   ) : null}
                   <label htmlFor="" className="text-white font-bold">
@@ -230,7 +254,9 @@ export default function Profile() {
                     onChange={handleUsernameChange}
                     type="text"
                     className={`bg-transparent px-12 py-4 rounded-lg text-white ${
-                      usernameErrorFlag ? "border-b border-red-700" : "border border-white"
+                      usernameErrorFlag
+                        ? "border-b border-red-700"
+                        : "border border-white"
                     }`}
                   />
                 </div>
@@ -246,24 +272,29 @@ export default function Profile() {
                   />
                 </div>
                 <div className="py-12 flex flex-col gap-3">
-                  <button type="submit" className="bg-neon py-3 px-36 text-white rounded-lg font-bold">
+                  <button
+                    type="submit"
+                    className="bg-neon py-3 px-36 text-white rounded-lg font-bold"
+                  >
                     Save changes
                   </button>
                   <button
                     onClick={(e) => {
                       e.preventDefault();
-                      api.delete("/deleteAccount", { withCredentials: true }).then(() => {
-                        console.log("Account deleted");
-                        api
-                          .post("/logout", {}, { withCredentials: true })
-                          .then(function (res) {
-                            console.log(res);
-                            navigate("/login");
-                          })
-                          .catch(function (err) {
-                            console.log(err.response);
-                          });
-                      });
+                      api
+                        .delete("/deleteAccount", { withCredentials: true })
+                        .then(() => {
+                          console.log("Account deleted");
+                          api
+                            .post("/logout", {}, { withCredentials: true })
+                            .then(function (res) {
+                              console.log(res);
+                              navigate("/login");
+                            })
+                            .catch(function (err) {
+                              console.log(err.response);
+                            });
+                        });
                     }}
                     className="bg-red-600 py-3 px-36 text-white rounded-lg font-bold"
                   >
@@ -275,8 +306,15 @@ export default function Profile() {
           </div>
         </div>
       ) : null}
-      <div className={`flex p-8 h-[50%] space-x-4 ${settingsPopup ? "blur-sm" : ""}`}>
-        <ToastContainer closeOnClick={true} className="bg-green text-green-600" />
+      <div
+        className={`flex p-8 h-[50%] space-x-4 ${
+          settingsPopup ? "blur-sm" : ""
+        }`}
+      >
+        <ToastContainer
+          closeOnClick={true}
+          className="bg-green text-green-600"
+        />
         {/* stats section */}
         <div className="p-14 bg-compBg/20 w-[85%] rounded-[10px] space-y-12">
           <div className="rounded-lg flex space-x-8 h-[25%]">
@@ -331,7 +369,12 @@ export default function Profile() {
               <LineChart width={300} height={100} data={data}>
                 <XAxis dataKey="uv" />
                 <YAxis />
-                <Line type="monotone" dataKey="pv" stroke="#B13BFF" strokeWidth={4} />
+                <Line
+                  type="monotone"
+                  dataKey="pv"
+                  stroke="#B13BFF"
+                  strokeWidth={4}
+                />
                 <Tooltip content={<CustomTooltip />} />
               </LineChart>
             </ResponsiveContainer>
@@ -345,10 +388,16 @@ export default function Profile() {
           </div>
           <div className="text-center flex flex-col items-center space-y-9">
             <div className="w-[100px] h-[100px] mt-4 outline outline-8 outline-neon rounded-full flex items-center justify-center">
-              <img className="rounded-full" src={currAvatar} alt="" width="90px" height="90px" />
+              <img
+                className="rounded-full w-[90px] h-[90px] object-cover"
+                src={currAvatar}
+                alt=""
+              />
             </div>
             <div>
-              <h1 className="text-white text-2xl font-bold">{currUser.username}</h1>
+              <h1 className="text-white text-2xl font-bold">
+                {currUser.username}
+              </h1>
             </div>
             <div>
               {profileStatus == "me" ? (
@@ -371,9 +420,15 @@ export default function Profile() {
                       color="white"
                       size={30}
                       onClick={() => {
-                        api.post("/block/" + currUser.id, {}, { withCredentials: true }).then(function () {
-                          setblockedUser(true);
-                        });
+                        api
+                          .post(
+                            "/block/" + currUser.id,
+                            {},
+                            { withCredentials: true }
+                          )
+                          .then(function () {
+                            setblockedUser(true);
+                          });
                       }}
                     />
                   </div>
@@ -391,9 +446,15 @@ export default function Profile() {
                       <div className="flex justify-center mt-2 outline outline-white outline-2 outline-offset-4 rounded-full w-[25%] items-center">
                         <MdOutlinePersonRemove
                           onClick={() => {
-                            api.post("/unfriend/" + currUser.id, {}, { withCredentials: true }).then(function () {
-                              setIsFriend(false);
-                            });
+                            api
+                              .post(
+                                "/unfriend/" + currUser.id,
+                                {},
+                                { withCredentials: true }
+                              )
+                              .then(function () {
+                                setIsFriend(false);
+                              });
                           }}
                           color="white"
                           size={25}
@@ -428,7 +489,11 @@ export default function Profile() {
                       size={30}
                       onClick={() => {
                         api
-                          .post("/unblock/" + currUser.id, {}, { withCredentials: true })
+                          .post(
+                            "/unblock/" + currUser.id,
+                            {},
+                            { withCredentials: true }
+                          )
                           .then(function (res) {
                             setblockedUser(false);
                           })
@@ -445,7 +510,10 @@ export default function Profile() {
           <div className="flex flex-col space-y-5">
             <div className="flex space-x-5 items-center">
               <div>
-                <MdEmail className="text-neon outline outline-3 outline-offset-8 rounded-full" size={25} />
+                <MdEmail
+                  className="text-neon outline outline-3 outline-offset-8 rounded-full"
+                  size={25}
+                />
               </div>
               <div>
                 <h1 className="text-neon font-bold">Email</h1>
@@ -454,7 +522,10 @@ export default function Profile() {
             </div>
             <div className="flex space-x-5 items-center">
               <div>
-                <FaHistory className="text-neon outline outline-3 outline-offset-8 rounded-full" size={25} />
+                <FaHistory
+                  className="text-neon outline outline-3 outline-offset-8 rounded-full"
+                  size={25}
+                />
               </div>
               <div>
                 <h1 className="text-neon font-bold">Created</h1>

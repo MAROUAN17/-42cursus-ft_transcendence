@@ -31,7 +31,7 @@ import {
 import { requestNewToken } from "../services/newAccessToken.service.js";
 import { addFriend } from "../services/addFriend.service.js";
 import { unfriendUser } from "../services/unfriend.service.js";
-import { editUserInfos } from "../services/edit.service.js";
+import { editUserInfos, setAvatar } from "../services/edit.service.js";
 
 export const authRoutes: FastifyPluginAsync = async () => {
   app.post("/login", loginUser);

@@ -56,18 +56,26 @@ export const setAvatar = async (
   req: FastifyRequest<{ Body: LoginBody }>,
   res: FastifyReply
 ) => {
-  const { id, avatar } = req.body;
+  try {
+    const { id, avatar } = req.body;
 
-  if (!id) {
-    return res.status(401).send({ error: "Id must be provided" });
+    if (!id || !avatar) {
+      return res.status(401).send({ error: "Id and avatar must be provided" });
+    }
+
+    const user = app.db
+      .prepare("SELECT * FROM players WHERE id = ?")
+      .get(id) as User | null;
+    if (!user) {
+      return res.status(404).send({ error: "User not found" });
+    }
+
+    app.db
+      .prepare("UPDATE players SET avatar = ?, first_login = ? WHERE id = ?")
+      .run(avatar, 0, id);
+
+    res.status(200).send({ message: "success" });
+  } catch (error) {
+    res.status(500).send({ error: error });
   }
-
-  const user = app.db
-    .prepare("SELECT * FROM players WHERE id = ?")
-    .get(id) as User | null;
-  if (!user) {
-    return res.status(404).send({ error: "User not found" });
-  }
-
-  
 };

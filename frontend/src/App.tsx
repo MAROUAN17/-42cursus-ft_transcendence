@@ -1,28 +1,28 @@
-
-import './App.css'
-import { Routes, 
-         Route, 
-         BrowserRouter,
-         createBrowserRouter,
-         RouterProvider,
-} from 'react-router';
-import Game from './components/game/game'
-import Login from "./components/user/login"
-import Register from "./components/user/register"
-import Chat from './components/chat/chat';
-import RGame from './components/game/remote/Game';
 import "./App.css";
-import { WebSocketProvider } from './components/chat/websocketContext';
+import {
+  Routes,
+  Route,
+  BrowserRouter,
+  createBrowserRouter,
+  RouterProvider,
+} from "react-router";
+import Game from "./components/game/game";
+import Login from "./components/user/login";
+import Register from "./components/user/register";
+import Chat from "./components/chat/chat";
+import RGame from "./components/game/remote/Game";
+import "./App.css";
+import { WebSocketProvider } from "./components/contexts/websocketContext";
 
 import Dashboard from "./components/dashboard/dashboard";
 import Page2FA from "./components/user/2fa";
 import NewPassword from "./components/user/newPassword";
 import ResetPasswordForm from "./components/user/passwordResetForm";
 import Layout from "./components/layout/layout";
-import Tournament from './components/tournament/tournament';
-import Pairing from './components/match/Match';
-import { Tournaments } from './components/tournament/tournaments';
-import TournamentBracket from './components/tournament/Bracket';
+import Tournament from "./components/tournament/tournament";
+import Pairing from "./components/match/Match";
+import { Tournaments } from "./components/tournament/tournaments";
+import TournamentBracket from "./components/tournament/Bracket";
 import Profile from "./components/user/profile";
 import notFound from "./components/error/404";
 import checkBlockLoader from "./components/loaders/checkBlock";
@@ -30,15 +30,19 @@ import {
   checkAuthLoader,
   checkLoginPageLoader,
 } from "./components/loaders/checkAuthUser";
+import checkFirstLoginLoader from "./components/loaders/checkFirstLogin"
 import { check2FALoader } from "./components/loaders/check2fa";
-import AvatarSelection from './components/user/avatar';
+import AvatarSelection from "./components/user/avatar";
+import { UserProvider } from "./components/contexts/userContext";
 
 export default function App() {
   let router = createBrowserRouter([
     {
       element: (
         <WebSocketProvider>
+        <UserProvider>
           <Layout />
+        </UserProvider>
         </WebSocketProvider>
       ),
       loader: checkAuthLoader,
@@ -82,7 +86,7 @@ export default function App() {
     {
       path: "/verify",
       Component: Page2FA,
-      loader: check2FALoader
+      loader: check2FALoader,
     },
     {
       path: "/reset-password",
@@ -93,32 +97,37 @@ export default function App() {
       Component: NewPassword,
     },
     {
-      path: '/remote_game',
-      Component: RGame
+      path: "/remote_game",
+      Component: RGame,
     },
     {
-      path:'/match',
-      Component: Pairing
+      path: "/match",
+      Component: Pairing,
     },
     {
-      path:'/tournament',
-      Component:Tournament,
+      path: "/tournament",
+      Component: Tournament,
     },
     {
-      path: '/tournaments',
+      path: "/tournaments",
       Component: Tournaments,
     },
     {
-      path: '/avatar',
-      Component: AvatarSelection,
+      path: "/avatar",
+      element: (
+        <UserProvider>
+          <AvatarSelection/>
+        </UserProvider>
+      ),
+      loader: checkFirstLoginLoader
     },
     {
-      path: '/bracket/:id',
+      path: "/bracket/:id",
       element: (
         <WebSocketProvider>
           <TournamentBracket />
         </WebSocketProvider>
-      )
+      ),
     },
     {
       path: "/404",

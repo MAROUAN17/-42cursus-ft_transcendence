@@ -49,8 +49,8 @@ export interface notificationPacketDB {
   updatedAt: string;
 }
 export type websocketPacket = NotificationPacket | ChatPacket | OnlineStatusPacket;
+
 export interface websocketContextType {
   send: (msg: string) => void;
   addHandler: (packetType: string, handler: (data: websocketPacket) => void) => void;
-  user: ProfileUserInfo | null;
 }

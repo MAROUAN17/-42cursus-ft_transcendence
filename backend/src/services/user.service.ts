@@ -18,7 +18,7 @@ export const fetchUser = async (req: FastifyRequest, res: FastifyReply) => {
     if (!user) return;
 
     if (!user.avatar) {
-      app.db.prepare('UPDATE players SET avatar = ? WHERE id = ?').run('photo.png', infos?.id);
+      app.db.prepare('UPDATE players SET avatar = ? WHERE id = ?').run('/profile1.jpg', infos?.id);
     }
     res.status(200).send({ infos: user });
   } catch (error) {
