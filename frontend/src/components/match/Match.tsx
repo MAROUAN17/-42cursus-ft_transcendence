@@ -48,7 +48,7 @@ export default function Pairing() {
     const interval = setInterval(async () => {
       if (loading) {
         try {
-          const response = await axios.get("https://localhost:5000/match/my-game", {
+          const response = await axios.get("https://localhost:4000/match/my-game", {
             headers: {
               "player-id": username + "id",
             },
@@ -86,7 +86,7 @@ export default function Pairing() {
     console.log('entered');
     try {
       setLoading(true);
-      const response = await axios.post('https://localhost:5000/match/pair',
+      const response = await axios.post('https://localhost:4000/match/pair',
       {
         username: username,
       },
@@ -111,7 +111,7 @@ export default function Pairing() {
   };
   const leave_queue = async () => {
     try {
-      const response = await axios.delete('https://localhost:5000/match/leave-queue', {
+      const response = await axios.delete('https://localhost:4000/match/leave-queue', {
         headers: {
           'player-id': 'user-123',
           'Content-Type': 'application/json'

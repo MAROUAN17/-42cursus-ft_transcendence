@@ -19,7 +19,7 @@ export default function NewPassword() {
             setErrorMssg("Password is not matching!");
             return ;
         }
-        axios.post('https://localhost:5000/reset-password/verify', {id: userId, password: newPassword})
+        axios.post('https://localhost:4000/reset-password/verify', {id: userId, password: newPassword})
             .then(function(res) {
                 console.log(res);
                 navigate('/login');
@@ -45,7 +45,7 @@ export default function NewPassword() {
     }
 
     useEffect(() => {
-        axios.post('https://localhost:5000/reset-password/check', {id: userId})
+        axios.post('https://localhost:4000/reset-password/check', {id: userId})
             .then(function (res) {
                 console.log(res);
             })

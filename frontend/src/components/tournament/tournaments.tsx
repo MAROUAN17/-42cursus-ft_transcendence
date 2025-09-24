@@ -26,7 +26,7 @@ export function Tournaments() {
    useEffect(() => {
     const fetchTournaments = async () => {
       try {
-        const res = await fetch("https://localhost:5000/tournament/all");
+        const res = await fetch("https://localhost:4000/tournament/all");
         if (!res.ok) throw new Error("Failed to fetch tournaments");
         const data: Tournament[] = await res.json();
         setTournaments(data);

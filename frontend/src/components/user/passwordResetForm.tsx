@@ -18,7 +18,7 @@ export default function ResetPasswordForm() {
 
     const formHandler = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        axios.post('https://localhost:5000/reset-password', { email: email })
+        axios.post('https://localhost:4000/reset-password', { email: email })
             .then(function(res) {
                 console.log(res);
                 setEmailSent(true);

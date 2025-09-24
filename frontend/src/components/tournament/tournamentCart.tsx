@@ -1,6 +1,7 @@
 import { FaUsers, FaTrophy, FaDollarSign } from "react-icons/fa";
 import type { Tournament } from "./tournaments";
 import { useNavigate } from "react-router";
+import { useWebSocket } from "../chat/websocketContext";
 
 export function TournamentCard({
   id,
@@ -9,6 +10,7 @@ export function TournamentCard({
   createdAt,
   status,
 }: Tournament) {
+  const {user} = useWebSocket();
   const maxParticipants = 4;
   const navigate = useNavigate();
   const handelJoin = async () => {
@@ -16,11 +18,11 @@ export function TournamentCard({
     //     return ;
     console.log("Trying to join ...");
     try {
-      const res = await fetch("https://localhost:5000/tournament/join", {
+      const res = await fetch("https://localhost:4000/tournament/join", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "player-id": "1",
+          "player-id": user?.id.toString() || "1",
         },
         body:JSON.stringify({tournamentId:id})
       });

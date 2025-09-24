@@ -14,7 +14,7 @@ function Login() {
     e.preventDefault();
     axios
       .post(
-        "https://localhost:5000/login",
+        "https://localhost:4000/login",
         { email: email, password: password },
         { withCredentials: true }
       )
@@ -122,7 +122,7 @@ function Login() {
               <hr className="xl:w-[35%] lg:w-[30%]"></hr>
             </div>
             <div className="flex justify-center">
-              <a href="https://localhost:5000/intra42/login">
+              <a href="https://localhost:4000/intra42/login">
                 <img
                   className="w-[32px] h-[32px]"
                   src="/42-icon.png"

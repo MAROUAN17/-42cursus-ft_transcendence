@@ -66,11 +66,11 @@ const Setup2FA: React.FC<UserInfo> = (user) => {
     const formHandler = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const otpNbr = firstNbr + secondNbr + thirdNbr + fourthNbr + fifthNbr + sixthNbr;
-        axios.post('https://localhost:5000/2fa/setup/verify', { token: otpNbr, secret: qrCodeSecret })
+        axios.post('https://localhost:4000/2fa/setup/verify', { token: otpNbr, secret: qrCodeSecret })
             .then(function(res) {
                 console.log(res);
                 navigate('/login');
-                axios.post('https://localhost:5000/register', { username:user.username, email: user.email, password: user.password, secret: qrCodeSecret })
+                axios.post('https://localhost:4000/register', { username:user.username, email: user.email, password: user.password, secret: qrCodeSecret })
                     .then(function(res) {
                         console.log(res.data);
                         navigate('/login');
@@ -86,7 +86,7 @@ const Setup2FA: React.FC<UserInfo> = (user) => {
     }
 
     async function renderQRcode() {
-        axios.post('https://localhost:5000/2fa/setup', 
+        axios.post('https://localhost:4000/2fa/setup', 
             { email: user.email })
             .then(function(res) {
                 setQrCode(res.data[0]);

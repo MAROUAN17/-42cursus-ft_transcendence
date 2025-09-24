@@ -34,7 +34,7 @@ export default function Dashboard() {
   function handleClick(e: React.MouseEvent<HTMLButtonElement>) {
     e.preventDefault();
     axios
-      .get("https://localhost:5000/", { withCredentials: true })
+      .get("https://localhost:4000/", { withCredentials: true })
       .then(function (res) {
         console.log(res.data.data);
         console.log("Authorized!!");

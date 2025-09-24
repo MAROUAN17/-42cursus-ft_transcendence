@@ -18,7 +18,7 @@ export const WebSocketProvider: React.FC<{ children?: React.ReactNode }> = ({ ch
   const handlersRef = useRef<Map<string, (msg: websocketPacket) => void>>(new Map<string, (msg: websocketPacket) => void>());
   function connectWs() {
     if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) return;
-    socketRef.current = new WebSocket("wss://localhost:5000/send-message");
+    socketRef.current = new WebSocket("wss://localhost:4000/send-message");
     socketRef.current.onopen = () => {
       console.log("Socket Created!");
     };

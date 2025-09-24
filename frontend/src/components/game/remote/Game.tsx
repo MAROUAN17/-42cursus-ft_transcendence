@@ -102,7 +102,7 @@ export default function RGame() {
 	}, [leftY, rightY]);
 
 	useEffect(() => {
-		const ws = new WebSocket("wss://localhost:5000/game");
+		const ws = new WebSocket("wss://localhost:4000/game");
 		setWebsocket(ws);
 		console.log('web socket ===== ', ws)
 		ws.onopen = () => {

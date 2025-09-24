@@ -13,7 +13,7 @@ export function CreateTournament({ show, onClose, onCreated }: Props) {
     if (!tournamentName.trim()) return;
 
     try {
-      const res = await fetch("https://localhost:5000/tournament/create", {
+      const res = await fetch("https://localhost:4000/tournament/create", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

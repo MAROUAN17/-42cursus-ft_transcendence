@@ -7,7 +7,7 @@ export default function Tournament() {
 
   const createTournament = async () => {
     try {
-      const res = await fetch("https://localhost:5000/tournament/create", {
+      const res = await fetch("https://localhost:4000/tournament/create", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

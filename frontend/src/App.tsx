@@ -121,14 +121,18 @@ export default function App() {
       Component:Tournament,
     },
     {
-      path: '/tournaments',
-      Component: Tournaments,
-    },
-    {
       path: '/bracket/:id',
       element: (
         <WebSocketProvider>
           <TournamentBracket />
+        </WebSocketProvider>
+      )
+    },
+    {
+      path: '/tournaments',
+      element: (
+        <WebSocketProvider>
+          <Tournaments />
         </WebSocketProvider>
       )
     },

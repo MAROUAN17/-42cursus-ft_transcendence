@@ -75,7 +75,7 @@ function Page2FA() {
       firstNbr + secondNbr + thirdNbr + fourthNbr + fifthNbr + sixthNbr;
     axios
       .post(
-        "https://localhost:5000/2fa/verify-token",
+        "https://localhost:4000/2fa/verify-token",
         { token: otpNbr, email: userEmail },
         { withCredentials: true }
       )

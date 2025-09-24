@@ -6,7 +6,7 @@ services:
     ports:
       - "8191:8191"
     volumes:
-      - ~/goinfre/db_data:/db
+      - /mnt/c/Users/moham/OneDrive/Desktop/goinfre/db_data:/db
   nginx:
     container_name: nginx
     build: nginx/.

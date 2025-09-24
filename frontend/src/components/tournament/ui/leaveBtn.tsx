@@ -15,7 +15,7 @@ const LeaveButton: React.FC<LeaveButtonProps> = ({label, tournamentId, playerId,
   const handleLeave = async () => {
     try {
       setLoading(true);
-      const res = await fetch("https://localhost:5000/tournament/leave", {
+      const res = await fetch("https://localhost:4000/tournament/leave", {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
