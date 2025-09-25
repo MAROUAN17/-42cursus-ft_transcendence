@@ -38,6 +38,7 @@ const TournamentBracket: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const playerId = 1;
   const [loading, setLoading] = useState(true);
+  const [adminLabel, setAdminLabel] = useState("waiting ...");
 
   const {user} = useWebSocket();
   useEffect(() => {
@@ -49,6 +50,8 @@ const TournamentBracket: React.FC = () => {
         }
         const data: Tournament = await res.json();
         setTournament(data);
+        if (tournament?.players.length === 4)
+          setAdminLabel("start");
         console.log("fetched data:", data);
       } catch (err: any) {
         console.error("Error", err.message);
@@ -59,11 +62,12 @@ const TournamentBracket: React.FC = () => {
     fetchTournament();
   }, [id]);
 
+
   if (loading) return <p>Loading tournament...</p>;
   return (
     <div className="bg-[#0a043c] text-white min-h-screen flex flex-col items-center justify-center gap-10">
       <div className="w-full flex justify-end p-4 cursor-pointer">
-        <LeaveButton label={tournament?.admin == playerId ? "start" : "leave"} tournamentId={Number(id)} playerId={1} onLeave={() => navigate("/tournaments")} />
+        <LeaveButton label={tournament?.admin  == user?.id ? adminLabel : "leave"} tournamentId={Number(id)} playerId={1} onLeave={() => navigate("/tournaments")} />
       </div>
 
       <div className="relative h-40 overflow-hidden cursor-pointer  text-white rounded-lg">

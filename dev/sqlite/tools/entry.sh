@@ -59,6 +59,16 @@ sqlite3 "$DB_NAME" <<EOF
         status TEXT NOT NULL,
         admin INTEGER NOT NULL  
     );
+    CREATE TABLE IF NOT EXISTS Round (
+        id INTEGER PRIMARY KEY,
+        tournament_id INTEGER NOT NULL,
+        player1 INTEGER,
+        player2 INTEGER,
+        score1 INTEGER DEFAULT 0,
+        score2 INTEGER DEFAULT 0,
+        winner INTEGER,
+        round_number INTEGER NOT NULL
+    );
 
 EOF
 
