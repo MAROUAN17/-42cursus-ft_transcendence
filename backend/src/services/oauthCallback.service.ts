@@ -13,7 +13,6 @@ export const redirectPath = async (req: FastifyRequest, res: FastifyReply) => {
   );
 };
 
-import util from "util";
 export const oauthCallback = async (req: FastifyRequest, res: FastifyReply) => {
   try {
     const { access, refresh } = req.cookies;
@@ -53,6 +52,10 @@ export const oauthCallback = async (req: FastifyRequest, res: FastifyReply) => {
       app.db
         .prepare("UPDATE players SET avatar = ? WHERE intra_id = ?")
         .run(userData.image.link, intraId);
+
+      user = app.db
+        .prepare("SELECT * from players WHERE intra_id = ?")
+        .get(intraId) as User | undefined;
     }
 
     //sign new JWT tokens
@@ -81,10 +84,9 @@ export const oauthCallback = async (req: FastifyRequest, res: FastifyReply) => {
       sameSite: "lax",
       maxAge: 86400,
     });
-  
+
     return res.redirect("https://localhost:3000/avatar");
   } catch (error) {
-    console.log(util.inspect(error, { depth: 3 }));
-    res.status(401).send({ error: error });
+    res.status(500).send({ error: error });
   }
 };
