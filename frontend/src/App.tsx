@@ -34,6 +34,7 @@ import checkFirstLoginLoader from "./components/loaders/checkFirstLogin"
 import { check2FALoader } from "./components/loaders/check2fa";
 import AvatarSelection from "./components/user/avatar";
 import { UserProvider } from "./components/contexts/userContext";
+import Home from './components/home/home';
 
 export default function App() {
   let router = createBrowserRouter([
@@ -69,6 +70,10 @@ export default function App() {
           loader: checkBlockLoader,
         },
       ],
+    },
+    {
+      path: "/home",
+      Component: Home,
     },
     {
       path: "/game",

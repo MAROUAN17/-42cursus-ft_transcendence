@@ -51,7 +51,15 @@ const LeadersCard = ({ rank, username, name, score }: props) => {
           {score}
         </h2>
       </div>
-      <img src="/src/assets/photo.png" className="h-[60px] w-[60px]" />
+      <img src={`${
+              rank == 3
+                ? "/profile1.jpg"
+                : rank == 2
+                ? "/profile2.jpg"
+                : rank == 1
+                ? "/profile3.jpg"
+                : ""
+            }`} className="h-[60px] w-[60px] rounded-full object" />
     </div>
   );
 };

@@ -187,13 +187,9 @@ export default function Dashboard() {
           <div className="bg-compBg flex flex-row basis-3/5  grow rounded-[30px] p-10">
             <div className="flex flex-col gap-1 p-12 space-y-16">
               <div className="space-y-4">
-                <h2 className="text-white font-bold text-[40px]/10">
-                  Welcome, Watch Streaming Games Anywhere & Anytime! Anywhere &
-                  Anytime!
-                </h2>
+                <h2 className="text-white font-bold text-[40px]/10">Step Into the Ultimate Ping Pong Arena. Match With Players Instantly & Test Your Skills.</h2>
                 <p className="text-[#fff]/[50%] text-[20px]">
-                  Jump into matchmaking and challenge players from around the
-                  world. Serve, smash, and score!
+                  Jump into fast, fair, and exciting ping pong matchmaking. Whether you’re here to warm up, test your skills, our system pairs you instantly with players at your level. Click below and start playing now!
                 </p>
               </div>
               <div>

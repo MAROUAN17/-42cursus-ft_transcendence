@@ -16,7 +16,8 @@ module.exports = {
         'borderColor': '#312F62',
       },
       fontFamily: {
-        'poppins': ['poppins', 'sans-serif']
+        'poppins': ['poppins', 'sans-serif'],
+        'bebas': ['"Bebas Neue"', 'sans-serif'],
       },
       screens: {
         'lg': '1200px',
