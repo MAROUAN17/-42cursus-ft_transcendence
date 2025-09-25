@@ -1,4 +1,4 @@
-import Fastify from "fastify";
+import Fastify, { type onRequestHookHandler } from "fastify";
 import { OAuth2Namespace } from "@fastify/oauth2";
 import fastifyJwt from "@fastify/jwt";
 import type {
@@ -8,39 +8,10 @@ import type {
 } from "@fastify/jwt";
 import type { Transporter } from "nodemailer";
 
-declare const app: Fastify.FastifyInstance<
-  import("http").Server<
-    typeof import("http").IncomingMessage,
-    typeof import("http").ServerResponse
-  >,
-  import("http").IncomingMessage,
-  import("http").ServerResponse<import("http").IncomingMessage>,
-  Fastify.FastifyBaseLogger,
-  Fastify.FastifyTypeProviderDefault
-> &
-  PromiseLike<
-    Fastify.FastifyInstance<
-      import("http").Server<
-        typeof import("http").IncomingMessage,
-        typeof import("http").ServerResponse
-      >,
-      import("http").IncomingMessage,
-      import("http").ServerResponse<import("http").IncomingMessage>,
-      Fastify.FastifyBaseLogger,
-      Fastify.FastifyTypeProviderDefault
-    >
-  > & {
-    __linterBrands: "SafePromiseLike";
-  };
-export default app;
-
 declare module "fastify" {
   export interface FastifyInstance {
     db: DatabaseType;
-    jwtAuth: any;
-    resetCheck: any;
-    jwtLoginCheck: any;
-    jwtRefresh: any;
+    jwtAuth: onRequestHookHandler;
     intra42Oauth: OAuth2Namespace;
     jwt: fastifyJwt.JWT;
     mailer: nodemailer.Transporter;

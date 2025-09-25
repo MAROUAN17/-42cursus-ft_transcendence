@@ -1,7 +1,7 @@
 //this is the file where we start the server
 import fs from "fs";
 import { v4 as uuidv4 } from "uuid";
-import Fastify, { type RequestQuerystringDefault } from "fastify";
+import Fastify, { type FastifyInstance } from "fastify";
 import App from "./app.js";
 import { options } from "./plugins/env.plugin.js";
 import websocketPlugin from "@fastify/websocket";
@@ -25,7 +25,7 @@ const httpsOptions = {
 
 export const pump = util.promisify(pipeline);
 
-const app = Fastify({
+const app: FastifyInstance = Fastify({
   logger: true,
   https: httpsOptions,
 });
