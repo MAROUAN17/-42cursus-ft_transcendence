@@ -259,7 +259,7 @@ export default function Dashboard() {
         logout
       </button> */}
       </div>
-      <div className="h-full flex flex-col">
+      <div className="h-full flex flex-col max-w-[70px]">
         <div className={`bg-compBg flex flex-col rounded-[30px] min-h-[43.4%] mt-5 items-center gap-6 p-5`}>
           <MdGroups className="w-[27px] h-auto text-white mb-1" />
           <div ref={friendOptRef} className={`flex flex-col gap-6 transition-all duration-700 ease-in-out`}>

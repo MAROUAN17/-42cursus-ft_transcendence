@@ -72,7 +72,7 @@ const NotificationElement = ({
       >
         <img
           src={notification.avatar}
-          className="border border-white h-[40px] w-[40px] rounded-full p-[1px]"
+          className="border border-white h-[40px] w-[40px] object-cover rounded-full p-[1px]"
         />
         <div className="flex flex-col w-full">
           <div className="flex flex-row justify-between items-center">

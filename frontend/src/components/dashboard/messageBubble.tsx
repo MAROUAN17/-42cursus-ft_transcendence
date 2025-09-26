@@ -10,7 +10,7 @@ interface props {
 
 const MessageBubble = ({ unreadCount, isOnline, user, onclick }: props) => {
   return (
-    <div key={user.id} onClick={onclick} className="relative w-[55px] h-[55px] bg-[#FFDCB9] rounded-full">
+    <div key={user.id} onClick={onclick} className="relative w-[40px] h-[40px] bg-[#FFDCB9] rounded-full">
       <div
         className={`absolute flex px- items-center justify-center h-[12px] min-w-[12px] max-w-[30px] rounded-full text-[10px] top-0 right-0 ${
           isOnline ? "bg-[#00FF38]" : "bg-[#A5BAA9]"
@@ -18,7 +18,7 @@ const MessageBubble = ({ unreadCount, isOnline, user, onclick }: props) => {
       >
         <span className="truncate">{unreadCount > 0 ? unreadCount : null}</span>
       </div>
-      <img src={user.avatar} className="rounded-full w-[55px] h-[55px] object-cover" />
+      <img src={user.avatar} className="rounded-full w-[40px] h-[40px] object-cover" />
     </div>
   );
 };

@@ -428,6 +428,7 @@ export default function Profile() {
                           )
                           .then(function () {
                             setblockedUser(true);
+                            setIsFriend(false);
                           });
                       }}
                     />
