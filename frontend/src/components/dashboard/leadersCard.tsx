@@ -59,7 +59,7 @@ const LeadersCard = ({ rank, username, name, score }: props) => {
                 : rank == 1
                 ? "/profile3.jpg"
                 : ""
-            }`} className="h-[60px] w-[60px] rounded-full object" />
+            }`} className="h-[60px] w-[60px] rounded-full object-cover" />
     </div>
   );
 };
