@@ -168,7 +168,7 @@ export default function Dashboard() {
                   instantly with players at your level. Click below and start playing now!
                 </p>
               </div>
-              <div>
+              <div className="pt-12">
                 <button className="bg-darkBg/10 p-2 shadow-[0_5px_10px_rgba(0,0,0,0.25)] px-8 flex items-center rounded-full gap-2 w-fit">
                   <p className="text-white font-medium">Play Now</p>
                   <div className=" bg-neon rounded-full">
@@ -182,11 +182,11 @@ export default function Dashboard() {
           <div className="bg-compBg overflow-hidden relative basis-2/5 grow rounded-[30px]">
             <div className="flex flex-col justify-between p-10 relative gap-6 z-10 w-fit">
               <div className="">
-                <h2 className="text-white font-bold text-[90px] h-fit">30</h2>
-                <p className="text-white text-[30px] mt-[-15px]">Games Played</p>
+                <h2 className="text-white font-bold text-[100px] h-fit">30</h2>
+                <p className="text-white font-extralight text-[40px] mt-[-35px]">Games Played</p>
               </div>
-              <button className="bg-darkBg/10 p-2 shadow-[0_5px_10px_rgba(0,0,0,0.25)]  px-8 flex items-center rounded-full gap-2 w-fit">
-                <p className="text-white font-medium">History</p>
+              <button className="bg-neon p-3 shadow-neon shadow-[0_10px_40px_rgba(0,0,0,0.1)]  px-8 flex items-center rounded-full gap-2 w-fit">
+                <p className="text-white font-bold">HISTORY</p>
                 <div className=" bg-neon rounded-full">
                   <GrFormNextLink className="text-white w-7 h-7" />
                 </div>
@@ -220,7 +220,7 @@ export default function Dashboard() {
                   <GrFormNextLink />
                 </div>
               </div>
-              <div className="flex">
+              <div className="flex gap-2">
                 <div className="flex w-2/5 flex-wrap justify-between h-full">
                   <TournamentCard />
                   <TournamentCard />

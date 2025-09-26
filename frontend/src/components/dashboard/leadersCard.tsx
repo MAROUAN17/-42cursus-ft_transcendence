@@ -43,11 +43,12 @@ const LeadersCard = ({ rank, username, name, score }: props) => {
             {rank}
           </div>
           <div className="flex flex-col items-center">
-            <h3 className="font-bold">{name}</h3>
-            <p>@{username}</p>
+            <h3 className="font-bold text-2xl">{name}</h3>
+            <p className="font-extralight">@{username}</p>
           </div>
         </div>
-        <h2 className="font-bold text-shadow-[50px] text-shadow-black text-3xl">
+        <h2 className={`font-bold text-shadow-[50px] text-shadow-black text-3xl
+          ${rank == 3 ? 'text-[#00D95F]' : rank == 2 ? 'text-[#009BD6]' : rank == 1 ? "text-[#FFAA00]" : ''}`}>
           {score}
         </h2>
       </div>

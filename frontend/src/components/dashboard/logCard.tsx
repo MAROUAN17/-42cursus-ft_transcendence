@@ -2,11 +2,11 @@ import { BsPersonFillAdd } from "react-icons/bs";
 
 const LogCard = () => {
   return (
-    <div className="w-full h-fit px-5 py-4 rounded-full bg-compBg flex gap-3 items-center">
+    <div className="px-5 py-4 rounded-full bg-compBg flex gap-3 items-center">
       <img src="/profile1.jpg" className="h-[60px] w-[60px] rounded-full object-cover" />
       <div className="text-white w-full">
         <h2 className="font-bold">Player1</h2>
-        <p className="text-white/80">
+        <p className="text-white/80 font-light">
           Player1 <span className="font-bold">Won</span> The Tournament <span className="font-bold">1337Gang</span>
         </p>
       </div>
