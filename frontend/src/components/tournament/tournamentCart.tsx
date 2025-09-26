@@ -11,6 +11,7 @@ export function TournamentCard({
   status,
 }: Tournament) {
   const {user} = useWebSocket();
+  const label = players.includes(user?.id || 0) ? "joined" : "join";
   const maxParticipants = 4;
   const navigate = useNavigate();
   const handelJoin = async () => {
@@ -71,7 +72,7 @@ export function TournamentCard({
           // disabled={status !== "open"}
           onClick={handelJoin}
         >
-          {status === "full" ? "FULL" : status === "started" ? "STARTED" : "JOIN"}
+          {status === "full" ? "FULL" : status === "started" ? "STARTED" : label}
         </button>
       </div>
     </div>

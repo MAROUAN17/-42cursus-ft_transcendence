@@ -3,10 +3,9 @@ import RBall from "./RBall";
 import RBat from "./Bat";
 import RHeader from "./RHeader";
 import { type GameInfo, type  Game } from "./Types";
-import { useNavigate } from "react-router";
 
 
-export default function RGame() {
+export   default function RGame() {
   const [i, setI] = useState(0);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [dir, setDir] = useState({x:1, y:1});
