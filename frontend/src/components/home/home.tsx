@@ -31,27 +31,27 @@ const Home = () => {
         <div className="text-white z-10 w-full h-fit px-10 py-8 flex justify-between items-center">
           <h1 className="font-bold text-[20px]">Logo</h1>
           <div className="flex font-bebas gap-9">
-            <div className="font-medium text-[30px] flex justify-center items-center gap-1">
+            <div className="hover:scale-105 transition duration-300 font-medium text-[30px] flex justify-center items-center gap-1">
               <FaHome />
               Home
             </div>
-            <div className="font-medium text-[30px] flex justify-center items-center gap-1">
+            <div className="hover:scale-105 transition duration-300 font-medium text-[30px] flex justify-center items-center gap-1">
               <FaInfoCircle />
               About
             </div>
-            <div className="font-medium text-[30px] flex justify-center items-center gap-1">
+            <div className="hover:scale-105 transition duration-300 font-medium text-[30px] flex justify-center items-center gap-1">
               <FaCircleQuestion />
-              Features
+              <a href="">Features</a>
             </div>
           </div>
           <button
             type="button"
-            className="text-white z-10 bg-neon bg-gradient-to-r from-[#B13BFF] to-[#8528FB]/90 shadow-lg shadow-[#B13BFF]/50 font-bold rounded-[16px] px-8 py-2.5 text-center"
+            className="hover:scale-105 transition duration-300 text-white z-10 bg-neon bg-gradient-to-r from-[#B13BFF] to-[#8528FB]/90 shadow-lg shadow-[#B13BFF]/50 font-bold rounded-[16px] px-8 py-2.5 text-center"
           >
             Login
           </button>
         </div>
-        <div className="flex flex-col gap-5 z-10 text-white text-center  w-1/3">
+        <div className="flex flex-col gap-5 z-10 text-white text-center  w-1/3 animate-float">
           <h1 className="mt-10 font-bebas text-[126px] leading-[100px] font-normal">Think You've Got the Fastest Paddle?</h1>
           <p className="text-[25px] break-keep">
             Join the ultimate online Ping Pong arena. Challenge players in real-time 1v1 matches or climb the tournament ladder to prove you're the
@@ -60,7 +60,7 @@ const Home = () => {
           <div className="flex justify-center items-center gap-5">
             <button
               type="button"
-              className="text-white z-10 bg-neon bg-gradient-to-r from-[#B13BFF] text-[30px] to-[#8528FB]/90 shadow-lg shadow-[#B13BFF]/50 font-semibold rounded-[22px] px-8 py-2.5 text-center"
+              className="hover:scale-105 transition duration-300 text-white z-10 bg-neon bg-gradient-to-r from-[#B13BFF] text-[30px] to-[#8528FB]/90 shadow-lg shadow-[#B13BFF]/50 font-semibold rounded-[22px] px-8 py-2.5 text-center"
             >
               Play Now
             </button>
@@ -86,7 +86,7 @@ const Home = () => {
       <div className="relative w-full min-h-full bg-[#14121C] flex flex-col items-center ">
         <img src="/home-bg3.png" className=" object-cover" />
         <img src="/home-bg3.png" className="mt-[-550px] object-cover" />
-        <div className="absolute top-0 flex gap-6 flex-col items-center">
+        <div id="Features" className="absolute top-0 flex gap-6 flex-col items-center">
           <div className="flex flex-col items-center">
             <HiLightningBolt className="text-[#B13BFF] w-[55px] h-[55px]" />
             <h1 className="text-white font-semibold text-[74px]">Features</h1>
@@ -163,17 +163,17 @@ const Home = () => {
             <img src="/Gradient.png" className="absolute top-[-100px] w-3/4" />
             <div className="flex flex-col mt-5 items-center">
               <TbLayoutDashboardFilled className="text-[#B13BFF] w-[55px] h-[55px]" />
-              <h1 className="text-white font-semibold text-[74px]">Player Dashboard</h1>
+              <h1 className="text-white z-10 font-semibold text-[74px]">Player Dashboard</h1>
               <img
                 src="/dashboard.png"
-                className="w-2/3 opacity-60 rounded-[20px] [mask-image:linear-gradient(to_bottom,black_50%,transparent_100%)]"
+                className="hover:scale-[1.02] transition duration-300 w-2/3 opacity-60 rounded-[20px] [mask-image:linear-gradient(to_bottom,black_50%,transparent_100%)]"
               />
-              <h2 className="text-[#F7F8F8]/80 font-semibold text-[40px] w-2/5 text-center">
+              <h2 className="text-[#F7F8F8]/80 z-10 font-semibold text-[40px] w-2/5 text-center">
                 Keep track of your progress in one place. <br /> View your match history, rankings, stats, and customize your player profile with
                 ease.
               </h2>
               <hr className="w-1/3 h-[5px] mt-8 border-none bg-gradient-to-r from-[#000000]/0 via-[#FFFFFF]/10 to-[#000000]/0" />
-              <div className="flex flex-wrap mt-10 justify-between gap-6 w-2/5">
+              <div className="flex flex-wrap mt-10 z-10 justify-between gap-6 w-2/5">
                 <div className="flex flex-col items-center gap-1">
                   <div className="flex text-white items-center gap-1">
                     <LuHistory />
@@ -227,7 +227,7 @@ const Home = () => {
             We've got answers. Here are some quick Frequently Asked Questions to help you get started and make the most of your ping pong experience.
           </p>
           <div className="flex flex-wrap w-full gap-36 items-center justify-center my-10">
-            <div className="relative w-[500px]">
+            <div className="relative hover:scale-[1.02] transition duration-300 w-[500px]">
               <div className="absolute top-0 gap-5 z-10 flex flex-col items-center w-full h-full justify-center">
                 <h1 className="text-white text-[30px] font-bold">Is the game free to play?</h1>
                 <p className="text-[25px] text-center text-[#94969E] font-medium px-16">
@@ -236,7 +236,7 @@ const Home = () => {
               </div>
               <img src="/Card.png" className="w-full opacity-80 border object-cover border-neon/20 rounded-[20px]" />
             </div>
-            <div className="relative w-[500px]">
+            <div className="relative hover:scale-[1.02] transition duration-300 w-[500px]">
               <div className="absolute top-0 gap-5 z-10 flex flex-col items-center w-full h-full justify-center">
                 <h1 className="text-white text-[30px] font-bold">Can I play with friends?</h1>
                 <p className="text-[25px] text-center text-[#94969E] font-medium px-16">
@@ -245,7 +245,7 @@ const Home = () => {
               </div>
               <img src="/Card.png" className="w-full opacity-80 border object-cover border-neon/20 rounded-[20px]" />
             </div>
-            <div className="relative w-[500px]">
+            <div className="relative hover:scale-[1.02] transition duration-300 w-[500px]">
               <div className="absolute top-0 gap-5 z-10 flex flex-col items-center w-full h-full justify-center">
                 <h1 className="text-white text-[30px] font-bold">Is there matchmaking?</h1>
                 <p className="text-[25px] text-center text-[#94969E] font-medium px-16">
