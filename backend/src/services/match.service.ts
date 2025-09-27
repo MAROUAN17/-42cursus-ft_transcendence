@@ -131,7 +131,7 @@ export const get_game = async (req: FastifyRequest, res: FastifyReply) => {
 
 export const get_player_game = async (req: FastifyRequest, res: FastifyReply) => {
   try {
-    const playerId = req.headers['player-id'] as string;
+    const playerId = (req.params as any).playerId;
     const game = activeGames.find(g => 
       g.player1.id === playerId || g.player2.id === playerId
     );

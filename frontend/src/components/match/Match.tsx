@@ -48,11 +48,9 @@ export default function Pairing() {
     const interval = setInterval(async () => {
       if (loading) {
         try {
-          const response = await axios.get("https://localhost:4000/match/my-game", {
-            headers: {
-              "player-id": username + "id",
-            },
-          });
+          const id = username + "id";
+          const response = await axios.get(`https://localhost:4000/match/my-game/${id}`);
+          
   
           if (response.data.game) {
             setGameInfo(response.data.game);

@@ -44,12 +44,12 @@ sqlite3 "$DB_NAME" <<EOF
     );
     CREATE TABLE IF NOT EXISTS Room (
         id INTEGER PRIMARY KEY,
-        player1 TEXT,
-        player2 TEXT,
+        player1 INTEGER,
+        player2 INTEGER,
         startedAt TEXT DEFAULT (datetime('now')),
         scoreLeft INTEGER,
         scoreRight INTEGER,
-        winner TEXT
+        winner INTEGER
     );
     CREATE TABLE IF NOT EXISTS Tournament (
         id INTEGER PRIMARY KEY,

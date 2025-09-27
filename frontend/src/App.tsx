@@ -113,12 +113,16 @@ export default function App() {
       Component: MatchMaking
     },
     {
-      path:'/match',
-      Component: Pairing
-    },
-    {
       path:'/tournament',
       Component:Tournament,
+    },
+    {
+      path: '/pairing',
+      element: (
+        <WebSocketProvider>
+          <Pairing />
+        </WebSocketProvider>
+      )
     },
     {
       path: '/bracket/:id',
