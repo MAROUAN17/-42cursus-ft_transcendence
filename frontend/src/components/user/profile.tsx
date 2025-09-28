@@ -18,6 +18,7 @@ import { MdOutlinePersonRemove } from "react-icons/md";
 import { LiaUserClockSolid } from "react-icons/lia";
 import { FaHourglassHalf } from "react-icons/fa";
 import { IoMdClose } from "react-icons/io";
+import { FaCamera } from "react-icons/fa";
 
 import {
   Line,
@@ -119,9 +120,9 @@ export default function Profile() {
   function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
     e.preventDefault();
 
-    console.log(e.target.value);
     const formData = new FormData();
-
+    
+    setCurrAvatar(e.target.value);
     // formData.append("username", currUsername);
     // formData.append("email", currEmail);
     formData.append("avatar", pictureInput.current!.files![0]);
@@ -225,14 +226,24 @@ export default function Profile() {
             <form onSubmit={editProfile}>
               <div className="flex flex-col items-center mt-12 space-y-8">
                 <div className="w-[150px] h-[150px] mt-4 outline outline-8 outline-neon rounded-full flex items-center justify-center">
-                  <img
-                    className="rounded-full w-[150px] h-[150px] object-cover"
-                    src={currAvatar}
-                    alt=""
-                  />
+                  <label htmlFor="customFile">
+                    <img
+                      className="rounded-full w-[150px] h-[150px] object-cover"
+                      src={currAvatar}
+                      alt="avatar"
+                    />
+                  </label>
                 </div>
-                <div className="flex flex-col space-y-3">
+                <div className="absolute left-[480px] top-[170px] flex items-center justify-center flex-col space-y-3 rounded-full">
+                  {/* <label
+                    htmlFor="customFile"
+                    className="text-white rounded-full w-[50px] h-[50px]"
+                  >
+                    <FaCamera className="w-[30px] h-[30px]" />
+                  </label> */}
                   <input
+                    id="customFile"
+                    className="hidden text-white"
                     ref={pictureInput}
                     onChange={handleImageUpload}
                     type="file"

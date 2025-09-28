@@ -34,7 +34,7 @@ export const registerUser = async (
       .prepare(
         "INSERT INTO players(username, email, password, secret_otp) VALUES (?, ?, ?, ?)"
       )
-      .run(username, email, hash, secret);
+        .run(username, email, hash, secret);
 
     res.status(200).send({ message: "Registered successfully" });
   } catch (error) {

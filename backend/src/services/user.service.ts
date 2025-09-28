@@ -207,6 +207,8 @@ export const uploadUserInfos = async (
 
     const fileData = await req.file();
 
+    console.log(fileData);
+
     if (
       fileData?.mimetype != "image/png" &&
       fileData?.mimetype != "image/jpg" &&

@@ -26,7 +26,7 @@ function Page2FA() {
     if (value && index < inputRefs.current.length - 1) {
       inputRefs.current[index + 1]?.focus();
     }
-  }
+  };
 
   const formHandler = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -113,17 +113,23 @@ function Page2FA() {
       <form onSubmit={formHandler}>
         <div className="flex justify-center space-x-12">
           <div className="flex justify-center space-x-4 text-center mt-20">
-            {Array(6).fill(null).map((_, i) => (
-              <input
-                maxLength={1}
-                onChange={(e) => {handleChange(i, e.target.value)}}
-                ref={(el) => {inputRefs.current[i] = el}}
-                value={numbers[i]}
-                className=" text-white text-4xl text-center w-[90px] h-[139px] bg-gameBg border border-white rounded-lg"
-                required
-                type="text"
-              />
-            ))}
+            {Array(6)
+              .fill(null)
+              .map((_, i) => (
+                <input
+                  maxLength={1}
+                  onChange={(e) => {
+                    handleChange(i, e.target.value);
+                  }}
+                  ref={(el) => {
+                    inputRefs.current[i] = el;
+                  }}
+                  value={numbers[i]}
+                  className=" text-white text-4xl text-center w-[90px] h-[139px] bg-gameBg border border-white rounded-lg"
+                  required
+                  type="text"
+                />
+              ))}
           </div>
         </div>
         <div className="mt-28 text-center">
