@@ -31,6 +31,14 @@ export interface userInfos {
   twoFA_verify: boolean;
 }
 
+export interface userSearch {
+  id: number;
+  username: string;
+  avatar: string;
+  mutualsCount: number;
+  status: "friend" | "sentReq" | "notFriend"
+}
+
 export interface userPass {
   password: string;
 }

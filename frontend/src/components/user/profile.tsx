@@ -94,6 +94,7 @@ export default function Profile() {
       data: {
         id: 0,
         type: "friendReq",
+        avatar: "",
         username: "",
         sender_id: user!.id,
         recipient_id: currUser.id,
