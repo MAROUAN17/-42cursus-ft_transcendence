@@ -44,7 +44,7 @@ const LeadersCard = ({ rank, username, name, score }: props) => {
           </div>
           <div className="flex flex-col items-center">
             <h3 className="font-bold text-2xl">{name}</h3>
-            <p className="font-extralight">@{username}</p>
+            {/* <p className="font-extralight">@{username}</p> */}
           </div>
         </div>
         <h2 className={`font-bold text-shadow-[50px] text-shadow-black text-3xl

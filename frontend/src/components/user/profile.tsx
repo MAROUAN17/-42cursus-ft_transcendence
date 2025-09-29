@@ -393,12 +393,8 @@ export default function Profile() {
           </div>
         </div>
         {/* profile section */}
-        <div className="bg-compBg/20 w-[30%] rounded-[10px] py-10 flex flex-col justify-between items-center">
-          <div className="flex justify-between w-full px-8">
-            <h1 className="text-white font-bold">Your profile</h1>
-            <img src="3dots-icon.png" alt="" />
-          </div>
-          <div className="text-center flex flex-col items-center space-y-9">
+        <div className="bg-compBg/20 w-[30%] rounded-[10px] py-10 flex flex-col justify-around items-center">
+          <div className="text-center flex flex-col justify-center items-center space-y-9">
             <div className="w-[100px] h-[100px] mt-4 outline outline-8 outline-neon rounded-full flex items-center justify-center">
               <img
                 className="rounded-full w-[90px] h-[90px] object-cover"
@@ -529,7 +525,7 @@ export default function Profile() {
               )}
             </div>
           </div>
-          <div className="flex flex-col space-y-5">
+          <div className="flex flex-col space-y-5 justify-center">
             <div className="flex space-x-5 items-center">
               <div>
                 <MdEmail

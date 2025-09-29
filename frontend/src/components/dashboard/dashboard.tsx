@@ -169,7 +169,7 @@ export default function Dashboard() {
                 </p>
               </div>
               <div className="pt-12">
-                <button className="bg-neon shadow-neon shadow-[0_10px_40px_8px_rgba(0,0,0,0.4)] p-2 px-8 flex items-center rounded-full gap-2 w-fit">
+                <button className="bg-neon shadow-neon shadow-[0_5px_40px_5px_rgba(0,0,0,0.4)] p-2 px-8 flex items-center rounded-full gap-2 w-fit">
                   <p className="text-white text-xl font-extrabold">Play Now</p>
                   {/* <div className=" bg-neon rounded-full">
                     <GrFormNextLink className="text-white w-7 h-7" />

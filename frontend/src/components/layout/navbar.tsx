@@ -171,10 +171,9 @@ const Navbar = () => {
 
   return (
     <nav className="w-full bg-darkBg font-poppins">
-      <div className="flex flex-row justify-between items-center w-screen h-fit p-3 bg-compBg/20">
-        <h1 className="text-white font-semibold text-[25px]">Dashboard</h1>
+      <div className="flex flex-row justify-end items-center w-screen h-fit p-3">
         <div className="relative w-fit ">
-          <div className="flex p-4 flex-row bg-neon/[35%] items-center h-[45px] w-[350px] rounded-xl">
+          <div className="flex p-4 flex-row bg-neon/[35%] items-center h-[45px] w-[350px] rounded-full">
             <FaSearch className="text-white w-[15px] h-[15px]" />
             <input
               autoComplete="off"
