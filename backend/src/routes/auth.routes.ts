@@ -34,8 +34,8 @@ import { unfriendUser } from "../services/unfriend.service.js";
 import { editUserInfos, setAvatar } from "../services/edit.service.js";
 
 export const authRoutes: FastifyPluginAsync = async () => {
-  app.post("/login", { onRequest: [app.jwtAuth] }, loginUser);
-  app.get("/login/verify", { onRequest: [app.jwtAuth] }, checkAuth);
+  app.post("/login", loginUser);
+  app.get("/login/verify", checkAuth);
   app.post("/logout", { onRequest: [app.jwtAuth] }, logoutUser);
   app.post("/register/verify", verifyRegisterUser);
   app.post("/register", registerUser);

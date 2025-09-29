@@ -169,11 +169,11 @@ export default function Dashboard() {
                 </p>
               </div>
               <div className="pt-12">
-                <button className="bg-darkBg/10 p-2 shadow-[0_5px_10px_rgba(0,0,0,0.25)] px-8 flex items-center rounded-full gap-2 w-fit">
-                  <p className="text-white font-medium">Play Now</p>
-                  <div className=" bg-neon rounded-full">
+                <button className="bg-neon shadow-neon shadow-[0_10px_40px_8px_rgba(0,0,0,0.4)] p-2 px-8 flex items-center rounded-full gap-2 w-fit">
+                  <p className="text-white text-xl font-extrabold">Play Now</p>
+                  {/* <div className=" bg-neon rounded-full">
                     <GrFormNextLink className="text-white w-7 h-7" />
-                  </div>
+                  </div> */}
                 </button>
               </div>
             </div>
@@ -185,7 +185,7 @@ export default function Dashboard() {
                 <h2 className="text-white font-bold text-[100px] h-fit">30</h2>
                 <p className="text-white font-extralight text-[40px] mt-[-35px]">Games Played</p>
               </div>
-              <button className="bg-neon p-3 shadow-neon shadow-[0_10px_40px_rgba(0,0,0,0.1)]  px-8 flex items-center rounded-full gap-2 w-fit">
+              <button className="p-3 border-2 border-neon px-8 flex items-center rounded-full gap-2 w-fit">
                 <p className="text-white font-bold">HISTORY</p>
                 <div className=" bg-neon rounded-full">
                   <GrFormNextLink className="text-white w-7 h-7" />
