@@ -315,7 +315,7 @@ const Chat = () => {
             className="w-full pl-3 h-[45px] placeholder-[#fff]/[40%] focus:outline-none rounded-full bg-transparent text-white"
           />
         </div>
-        <div className="overflow-y-auto max-h-[1050px] pr-4 p-3 scrollbar-thin scrollbar scrollbar-thumb-neon/80 scrollbar-track-white/10 ">
+        <div className="overflow-y-auto max-h-[1030px] pr-4 p-3 scrollbar-thin scrollbar scrollbar-thumb-neon/80 scrollbar-track-white/10 ">
           {users
             .filter((user) => user.user.username.includes(searchInput))
             .map((user, i, arr) => (
