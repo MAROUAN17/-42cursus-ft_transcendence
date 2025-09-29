@@ -265,7 +265,7 @@ export default function Dashboard() {
           <div ref={friendOptRef} className={`flex flex-col gap-6 transition-all duration-700 ease-in-out`}>
             {friends
               .filter((friend) => friend.user.username != "Deleted User")
-              .slice(0, 6)
+              .slice(0, 7)
               .map((friend) => (
                 <FriendBubble
                   friendOpt={friendOpt}
@@ -284,7 +284,7 @@ export default function Dashboard() {
           <div className={`flex flex-col gap-6 transition-all duration-700 ease-in-out`}>
             {friendsMessages
               .filter((friend) => friend.user.username != "Deleted User")
-              .slice(0, 7)
+              .slice(0, 8)
               .map((friend) => (
                 <MessageBubble
                   onclick={() => {

@@ -1,8 +1,5 @@
 import { TiDelete } from "react-icons/ti";
-import type {
-  notificationPacket,
-  websocketPacket,
-} from "../../../../backend/src/models/webSocket.model";
+import type { notificationPacket, websocketPacket } from "../../../../backend/src/models/webSocket.model";
 import { useNavigate } from "react-router";
 import { useState } from "react";
 import { FaCheck } from "react-icons/fa";
@@ -24,19 +21,9 @@ function passedTime(createdAt: string) {
   const minutes: number = Math.floor(seconds / 60);
   const hours: number = Math.floor(minutes / 60);
   const days: number = Math.floor(hours / 24);
-  return days
-    ? days + " days"
-    : hours
-    ? hours + " hours"
-    : minutes
-    ? minutes + " minutes"
-    : seconds + " seconds";
+  return days ? days + " days" : hours ? hours + " hours" : minutes ? minutes + " minutes" : seconds + " seconds";
 }
-const NotificationElement = ({
-  notification,
-  deleteFunc,
-  markNotifSeen,
-}: props) => {
+const NotificationElement = ({ notification, deleteFunc, markNotifSeen }: props) => {
   const { send } = useWebSocket();
   const navigate = useNavigate();
   const [removeNotif, setRemoveNotif] = useState<boolean>(false);
@@ -58,9 +45,7 @@ const NotificationElement = ({
     send(JSON.stringify(packet));
   }
   return (
-    <li
-      className={`${removeNotif ? "duration-500 opacity-0 translate-x-5" : ""}`}
-    >
+    <li className={`${removeNotif ? "duration-500 opacity-0 translate-x-5" : ""}`}>
       <button
         onClick={() => {
           if (notification.type == "message") {
@@ -70,26 +55,17 @@ const NotificationElement = ({
         }}
         className="flex group gap-3 w-full flex-row hover:bg-compBg/20 hover:rounded-xl  px-4 py-3 text-white text-left"
       >
-        <img
-          src={notification.avatar}
-          className="border border-white h-[40px] w-[40px] object-cover rounded-full p-[1px]"
-        />
+        <img src={notification.avatar} className="border shrink-0 border-white h-[40px] w-[40px] object-cover rounded-full p-[1px]" />
         <div className="flex flex-col w-full">
           <div className="flex flex-row justify-between items-center">
             <h3 className="font-medium text-[14px]">{notification.username}</h3>
-            <p className="text-[#fff]/[40%] text-[11px]">
-              {passedTime(notification.createdAt) + " ago"}
-            </p>
+            <p className="text-[#fff]/[40%] text-[11px]">{passedTime(notification.createdAt) + " ago"}</p>
           </div>
           <div className="flex flex-row justify-between items-center">
-            <p className="text-[#fff]/[50%] truncate text-ellipsis w-40 text-[11px]">
-              {notification.message}
-            </p>
+            <p className="text-[#fff]/[50%] truncate text-ellipsis w-40 text-[11px]">{notification.message}</p>
             {notification.type == "message" && notification.unreadCount ? (
               <div className="bg-red-600 w-fit px-1 h-[16px] flex justify-center items-center rounded-full text-[#fff]/[60%] text-[11px]">
-                <p className="text-[#fff]/[50%] truncate text-ellipsis max-w-8 text-[11px]">
-                  {notification.unreadCount}
-                </p>
+                <p className="text-[#fff]/[50%] truncate text-ellipsis max-w-8 text-[11px]">{notification.unreadCount}</p>
               </div>
             ) : null}
           </div>
@@ -100,11 +76,7 @@ const NotificationElement = ({
               color="green"
               onClick={() => {
                 api
-                  .post(
-                    "/add-friend/" + notification.sender_id,
-                    {},
-                    { withCredentials: true }
-                  )
+                  .post("/add-friend/" + notification.sender_id, {}, { withCredentials: true })
                   .then(function (res) {
                     console.log(res);
                   })
