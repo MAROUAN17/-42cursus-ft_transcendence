@@ -3,7 +3,7 @@ import { BsPersonFillAdd } from "react-icons/bs";
 const LogCard = () => {
   return (
     <div className="px-5 py-4 rounded-full bg-compBg flex gap-3 items-center">
-      <img src="/profile1.jpg" className="h-[60px] w-[60px] rounded-full object-cover" />
+      <img src="/profile1.jpg" className="shrink-0 h-[60px] w-[60px] rounded-full object-cover" />
       <div className="text-white w-full">
         <h2 className="font-bold">Player1</h2>
         <p className="text-white/80 font-light">
