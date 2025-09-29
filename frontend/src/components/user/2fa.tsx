@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import axios from "axios";
-import { useNavigate, useSearchParams } from "react-router";
+import { useLocation, useNavigate, useSearchParams } from "react-router";
 import api from "../../axios";
 import { useWebSocket } from "../contexts/websocketContext";
 import type { ProfileUserInfo } from "../../types/user";
@@ -8,6 +8,8 @@ import type { ProfileUserInfo } from "../../types/user";
 function Page2FA() {
   const [searchParams, setSearchParams] = useSearchParams();
   const userEmail = searchParams.get("email");
+  const location = useLocation();
+  const { rememberMe } = location.state;
   const [errorMssg, setErrorMssg] = useState<string>("");
   const [errorFlag, setErrorFlag] = useState<boolean>(false);
   const [timerVerify, setTimerVerify] = useState<number>(60);
@@ -34,7 +36,7 @@ function Page2FA() {
     axios
       .post(
         "https://localhost:5000/2fa/verify-token",
-        { token: otpNbr, email: userEmail },
+        { token: otpNbr, email: userEmail, rememberMe: rememberMe },
         { withCredentials: true }
       )
       .then(function (res) {
@@ -60,6 +62,7 @@ function Page2FA() {
   };
 
   useEffect(() => {
+    console.log('rememer me -> ', rememberMe);
     inputRefs.current[0]?.focus();
     const intervId = setInterval(() => {
       setTimerVerify((prevTime) => {

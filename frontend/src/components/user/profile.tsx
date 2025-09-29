@@ -121,7 +121,7 @@ export default function Profile() {
     e.preventDefault();
 
     const formData = new FormData();
-    
+
     setCurrAvatar(e.target.value);
     // formData.append("username", currUsername);
     // formData.append("email", currEmail);
@@ -428,6 +428,7 @@ export default function Profile() {
                 <div className="flex space-x-5 w-[130px] justify-center">
                   <div className="flex justify-center mt-2 outline outline-white outline-2 outline-offset-4 rounded-full w-[25%] items-center">
                     <MdBlock
+                      className="hover:scale-110"
                       color="white"
                       size={30}
                       onClick={() => {
@@ -448,6 +449,7 @@ export default function Profile() {
                     <>
                       <div className=" flex justify-center mt-2 outline outline-white outline-2 outline-offset-4 rounded-full w-[25%] items-center">
                         <FiMessageCircle
+                          className="hover:scale-110"
                           onClick={() => {
                             navigate("/chat/" + currUser.username);
                           }}
@@ -457,6 +459,7 @@ export default function Profile() {
                       </div>
                       <div className="flex justify-center mt-2 outline outline-white outline-2 outline-offset-4 rounded-full w-[25%] items-center">
                         <MdOutlinePersonRemove
+                          className="hover:scale-110"
                           onClick={() => {
                             api
                               .post(
@@ -477,11 +480,16 @@ export default function Profile() {
                     <>
                       {friendReqSent ? (
                         <div className="flex justify-center mt-2 outline outline-white outline-2 outline-offset-4 rounded-full w-[25%] items-center">
-                          <FaHourglassHalf color="white" size={20} />
+                          <FaHourglassHalf
+                            className="hover:scale-110"
+                            color="white"
+                            size={20}
+                          />
                         </div>
                       ) : (
                         <div className="flex justify-center mt-2 outline outline-white outline-2 outline-offset-4 rounded-full w-[25%] items-center">
                           <BsPersonFillAdd
+                            className="hover:scale-110"
                             onClick={() => {
                               sendFriendReq();
                             }}
@@ -497,6 +505,7 @@ export default function Profile() {
                 <div className="flex w-[120px] justify-center">
                   <div className="flex justify-center mt-2 outline outline-white outline-2 outline-offset-4 rounded-full w-[25%] items-center">
                     <CgUnblock
+                      className="hover:scale-110"
                       color="white"
                       size={30}
                       onClick={() => {

@@ -5,21 +5,25 @@ import api from "../../axios";
 
 function Login() {
   const navigate = useNavigate();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [errorMssg, setErrorMssg] = useState("");
-  const [errorFlag, setErrorFlag] = useState(false);
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [errorMssg, setErrorMssg] = useState<string>("");
+  const [errorFlag, setErrorFlag] = useState<boolean>(false);
+  const [rememberMe, setRememberMe] = useState<boolean>(false);
+  const rememberRef = useRef<HTMLInputElement>(null);
 
   const handleForm = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     axios
       .post(
         "https://localhost:5000/login",
-        { email: email, password: password },
+        { email: email, password: password, rememberMe: rememberRef.current?.checked },
         { withCredentials: true }
       )
       .then(function (res) {
-        navigate("/verify?email=" + email);
+        navigate("/verify?email=" + email, {
+          state: { rememberMe: rememberRef.current?.checked },
+        });
       })
       .catch(function (err) {
         setErrorFlag(true);
@@ -90,7 +94,12 @@ function Login() {
             {/* login button */}
             <div className="flex justify-between items-center">
               <div className="flex space-x-3">
-                <input type="checkbox" id="remember" />
+                <input
+                  type="checkbox"
+                  id="remember"
+                  ref={rememberRef}
+                  
+                />
                 <p className="text-white text-md rounded-full ">Remember me</p>
               </div>
               <div className="">

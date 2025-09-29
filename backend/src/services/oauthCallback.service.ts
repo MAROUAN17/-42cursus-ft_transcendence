@@ -7,7 +7,8 @@ export const redirectPath = async (req: FastifyRequest, res: FastifyReply) => {
     req,
     res,
     (err, authorizationEndpoint) => {
-      if (err) console.log(err);
+      if (err)
+        res.status(401).redirect("Oauth redirect failed error : ", err.message);
       res.redirect(authorizationEndpoint);
     }
   );
@@ -15,9 +16,9 @@ export const redirectPath = async (req: FastifyRequest, res: FastifyReply) => {
 
 export const oauthCallback = async (req: FastifyRequest, res: FastifyReply) => {
   try {
-    const { access, refresh } = req.cookies;
+    const { accessToken, refreshToken } = req.cookies;
 
-    if (refresh || access)
+    if (refreshToken || accessToken)
       return res.status(401).send({ error: "Unauthorized" });
 
     let user = {} as User | undefined;
@@ -59,34 +60,34 @@ export const oauthCallback = async (req: FastifyRequest, res: FastifyReply) => {
     }
 
     //sign new JWT tokens
-    const accessToken = app.jwt.jwt1.sign(
+    const access = app.jwt.jwt1.sign(
       { id: user?.id, email: user?.email, username: user?.username },
-      { expiresIn: "900s" }
+      { expiresIn: "10s" }
     );
-    const refreshToken = app.jwt.jwt2.sign(
+    const refresh = app.jwt.jwt2.sign(
       { id: user?.id, email: user?.email, username: user?.username },
-      { expiresIn: "1d" }
+      { expiresIn: "30s" }
     );
 
     //set JWT token as cookie
-    res.setCookie("accessToken", accessToken, {
+    res.setCookie("accessToken", access, {
       path: "/",
       secure: true,
       httpOnly: true,
       sameSite: "lax",
-      maxAge: 900,
+      maxAge: 10,
     });
 
-    res.setCookie("refreshToken", refreshToken, {
+    res.setCookie("refreshToken", refresh, {
       path: "/",
       secure: true,
       httpOnly: true,
       sameSite: "lax",
-      maxAge: 86400,
+      maxAge: 30,
     });
 
     return res.redirect("https://localhost:3000/avatar");
-  } catch (error) {
-    res.status(500).send({ error: error });
+  } catch (err) {
+    res.status(500).send({ error: err.data.error });
   }
 };

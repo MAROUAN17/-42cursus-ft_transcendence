@@ -18,6 +18,7 @@ export interface LoginBody {
   password: string;
   token: string;
   secret: string;
+  rememberMe: boolean;
 }
 
 export interface userInfos {

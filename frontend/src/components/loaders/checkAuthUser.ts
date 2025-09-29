@@ -1,5 +1,4 @@
 import { redirect } from "react-router";
-import api from "../../axios";
 import axios from "axios";
 
 export async function checkAuthLoader() {

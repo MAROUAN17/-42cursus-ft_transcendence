@@ -24,22 +24,25 @@ export const logoutUser = async (req: FastifyRequest, res: FastifyReply) => {
     if (updateUserState.changes == 0)
       return res.status(500).send({ error: "Error occured" });
 
-    res.clearCookie("oauth2-redirect-state", {
-      path: "/intra42",
-    });
-    res.clearCookie("refreshToken", {
-      path: "/",
-      secure: true,
-      httpOnly: true,
-      sameSite: "lax",
-    });
-    res.clearCookie("accessToken", {
-      path: "/",
-      secure: true,
-      httpOnly: true,
-      sameSite: "lax",
-    });
-  } catch (error) {
-    res.status(500).send({ error: error });
+    if (user.intra_id)
+      res.clearCookie("oauth2-redirect-state", {
+        path: "/intra42",
+      });
+
+    res
+      .clearCookie("refreshToken", {
+        path: "/",
+        secure: true,
+        httpOnly: true,
+        sameSite: "lax",
+      })
+      .clearCookie("accessToken", {
+        path: "/",
+        secure: true,
+        httpOnly: true,
+        sameSite: "lax",
+      });
+  } catch (err) {
+    res.status(500).send({ error: err.data.error });
   }
 };

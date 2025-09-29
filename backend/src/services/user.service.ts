@@ -9,7 +9,7 @@ import fs, { access } from "fs";
 export const fetchUser = async (req: FastifyRequest, res: FastifyReply) => {
   try {
     const accessToken = req.cookies.accessToken;
-    
+
     const infos = app.jwt.jwt1.decode(accessToken!) as Payload | null;
 
     const user = app.db
@@ -18,9 +18,11 @@ export const fetchUser = async (req: FastifyRequest, res: FastifyReply) => {
     if (!user) return;
 
     if (!user.avatar) {
-      app.db.prepare('UPDATE players SET avatar = ? WHERE id = ?').run('/profile1.jpg', infos?.id);
+      app.db
+        .prepare("UPDATE players SET avatar = ? WHERE id = ?")
+        .run("/profile1.jpg", infos?.id);
     }
-  
+
     res.status(200).send({ infos: user });
   } catch (error) {
     res.status(500).send({ error: error });
@@ -167,15 +169,29 @@ export const checkUserLoginStatus = async (
   res: FastifyReply
 ) => {
   try {
-    const accessToken = req.cookies.accessToken;
     const refreshToken = req.cookies.refreshToken;
 
-    if (accessToken || refreshToken) {
+    if (refreshToken) {
       return res.status(200).send({ message: "LOGGED_IN" });
     }
+
+    res
+      .clearCookie("accessToken", {
+        path: "/",
+        secure: true,
+        httpOnly: true,
+        sameSite: "lax",
+      })
+      .clearCookie("refreshToken", {
+        path: "/",
+        secure: true,
+        httpOnly: true,
+        sameSite: "lax",
+      });
+
     res.status(401).send({ error: "NOT LOGGED_IN" });
   } catch (error) {
-    res.status(500).send({ error: error });
+    res.status(500).send({ error: error.data.error });
   }
 };
 

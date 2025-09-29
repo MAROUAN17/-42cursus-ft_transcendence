@@ -12,7 +12,7 @@ export const loginUser = async (
   res: FastifyReply
 ) => {
   try {
-    let { email, password } = req.body;
+    let { email, password, rememberMe } = req.body;
     let user = {} as User | undefined;
 
     email = email.toLowerCase();
@@ -56,10 +56,7 @@ export const loginUser = async (
         sameSite: "lax",
         maxAge: 60,
       })
-      .send({
-        message: "Logged in",
-        data: { username: user?.username, email: user?.email },
-      });
+      .send({ message: "Logged in" });
   } catch (err) {
     console.log(err);
     return res.status(500).send({ err });

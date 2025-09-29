@@ -7,6 +7,7 @@ import {
 import app from "../server.js";
 import qrcode from "qrcode";
 import { authenticator } from "otplib";
+import type { SerializeOptions } from "@fastify/cookie";
 
 export const setup2FA = async (
   req: FastifyRequest<{ Body: LoginBody }>,
@@ -48,9 +49,11 @@ export const verify2FAToken = async (
   res: FastifyReply
 ) => {
   try {
-    let { token, email } = req.body;
-
+    let { token, email, rememberMe } = req.body;
     let user = {} as User | null;
+
+
+    console.log('remember me -> ', rememberMe);
 
     email = email.toLowerCase();
     //find user
@@ -74,6 +77,25 @@ export const verify2FAToken = async (
 
       if (updatedUser.changes == 0) return;
 
+      const refreshOptions = {
+        path: "/",
+        secure: true,
+        httpOnly: true,
+        sameSite: "lax",
+      } as SerializeOptions;
+
+      const accessOptions = {
+        path: "/",
+        secure: true,
+        httpOnly: true,
+        sameSite: "lax",
+      } as SerializeOptions;
+
+      if (rememberMe) {
+        refreshOptions.maxAge = 86400;
+        accessOptions.maxAge = 900;
+      }
+
       //sign new JWT tokens
       const accessToken = app.jwt.jwt1.sign(
         { id: user.id, email: user.email, username: user.username },
@@ -93,28 +115,13 @@ export const verify2FAToken = async (
       });
 
       //set JWT token as cookie
-      res.setCookie("accessToken", accessToken, {
-        path: "/",
-        secure: true,
-        httpOnly: true,
-        sameSite: "lax",
-        maxAge: 900,
-      });
+      res.setCookie("accessToken", accessToken, accessOptions);
+      res.setCookie("refreshToken", refreshToken, refreshOptions);
 
-      return res
-        .setCookie("refreshToken", refreshToken, {
-          path: "/",
-          secure: true,
-          httpOnly: true,
-          sameSite: "lax",
-          maxAge: 86400,
-        })
-        .status(200)
-        .send({ message: "Valid OTP code" });
+      return res.status(200).send({ message: "Valid OTP code" });
     }
     return res.status(401).send({ error: "INVALID_OTP" });
   } catch (error: any) {
     res.status(500).send({ error: error.message });
   }
 };
-
