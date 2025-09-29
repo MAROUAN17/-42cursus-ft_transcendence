@@ -35,7 +35,6 @@ export const searchUsers = async (req: FastifyRequest<{ Querystring: { query: st
         "SELECT id, username, avatar, friends FROM players WHERE username LIKE '%' || ? || '%' AND id != ? AND NOT EXISTS (SELECT key FROM json_each(block_list) WHERE value = ?)"
       )
       .all(req.query.query, payload.id, JSON.stringify(payload.id)) as dbQuery[];
-    console.log("users -> ", usersDB);
     const users: userSearch[] = usersDB.map((row: dbQuery) => ({
       id: row.id,
       username: row.username,

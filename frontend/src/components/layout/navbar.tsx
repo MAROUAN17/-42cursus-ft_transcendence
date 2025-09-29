@@ -161,7 +161,6 @@ const Navbar = () => {
         return user.id == userId ? { ...user, status: "sentReq" } : user;
       });
     });
-    console.log("users -> ", foundUsers);
   }
 
   function closeSearch() {
