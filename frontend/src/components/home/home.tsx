@@ -27,26 +27,41 @@ import { TbLayoutDashboardFilled } from "react-icons/tb";
 const Home = () => {
   return (
     <div className="bg-[#14121C] font-poppins w-screen min-h-screen flex flex-col">
-      <div className="relative w-full h-screen flex flex-col items-center overflow-hidden">
+      <div id="home" className="relative w-full h-screen flex flex-col items-center overflow-hidden">
         <div className="text-white z-10 w-full h-fit px-10 py-8 flex justify-between items-center">
           <h1 className="font-bold text-[20px]">Logo</h1>
           <div className="flex font-bebas gap-9">
             <div className="hover:scale-105 transition duration-300 font-medium text-[30px] flex justify-center items-center gap-1">
               <FaHome />
-              Home
+              <a
+                href="#home"
+                className="relative after:content-[''] after:absolute after:left-0 after:bottom-2 after:h-[2px] after:w-full after:origin-left after:scale-x-0 after:bg-white after:transition-transform after:duration-300 hover:after:scale-x-100"
+              >
+                Home
+              </a>
             </div>
             <div className="hover:scale-105 transition duration-300 font-medium text-[30px] flex justify-center items-center gap-1">
-              <FaInfoCircle />
-              About
+              <HiLightningBolt />
+              <a
+                href="#features"
+                className="relative after:content-[''] after:absolute after:left-0 after:bottom-2 after:h-[2px] after:w-full after:origin-left after:scale-x-0 after:bg-white after:transition-transform after:duration-300 hover:after:scale-x-100"
+              >
+                Features
+              </a>
             </div>
             <div className="hover:scale-105 transition duration-300 font-medium text-[30px] flex justify-center items-center gap-1">
               <FaCircleQuestion />
-              <a href="">Features</a>
+              <a
+                href="#questions"
+                className="relative after:content-[''] after:absolute after:left-0 after:bottom-2 after:h-[2px] after:w-full after:origin-left after:scale-x-0 after:bg-white after:transition-transform after:duration-300 hover:after:scale-x-100"
+              >
+                Questions
+              </a>
             </div>
           </div>
           <button
             type="button"
-            className="hover:scale-105 transition duration-300 text-white z-10 bg-neon bg-gradient-to-r from-[#B13BFF] to-[#8528FB]/90 shadow-lg shadow-[#B13BFF]/50 font-bold rounded-[16px] px-8 py-2.5 text-center"
+            className="hover:scale-105 cursor-pointer transition duration-300 text-white z-10 bg-neon bg-gradient-to-r from-[#B13BFF] to-[#8528FB]/90 shadow-lg shadow-[#B13BFF]/50 font-bold rounded-[16px] px-8 py-2.5 text-center"
           >
             Login
           </button>
@@ -86,7 +101,7 @@ const Home = () => {
       <div className="relative w-full min-h-full bg-[#14121C] flex flex-col items-center ">
         <img src="/home-bg3.png" className=" object-cover" />
         <img src="/home-bg3.png" className="mt-[-550px] object-cover" />
-        <div id="Features" className="absolute top-0 flex gap-6 flex-col items-center">
+        <div id="features" className="absolute top-0 flex gap-6 flex-col items-center">
           <div className="flex flex-col items-center">
             <HiLightningBolt className="text-[#B13BFF] w-[55px] h-[55px]" />
             <h1 className="text-white font-semibold text-[74px]">Features</h1>
@@ -220,7 +235,7 @@ const Home = () => {
             </div>
           </div>
         </div>
-        <div className="flex flex-col mt-16 gap-2 w-full items-center">
+        <div id="questions" className="flex flex-col mt-16 gap-2 w-full items-center">
           <BsQuestionDiamondFill className="text-[#B13BFF] w-[55px] h-[55px]" />
           <h1 className="text-white font-semibold text-[54px]">Frequently Asked Questions</h1>
           <p className="text-[#94969E] text-[20px]">
@@ -275,16 +290,28 @@ const Home = () => {
               <div className="flex flex-col gap-5 w-fit">
                 <h3 className="font-semibold text-[#A1A1AA] text-[20px] tracking-[3px]">SECTIONS</h3>
                 <div className="flex flex-col gap-5">
-                  <a href="#" className="font-normal text-white text-[20px] w-fit">
+                  <a
+                    href="#"
+                    className="relative after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-[2px] after:w-full after:origin-left after:scale-x-0 after:bg-white after:transition-transform after:duration-300 hover:after:scale-x-100 font-normal text-white text-[20px] w-fit"
+                  >
                     About
                   </a>
-                  <a href="#" className="font-normal text-white text-[20px] w-fit">
+                  <a
+                    href="#"
+                    className="relative after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-[2px] after:w-full after:origin-left after:scale-x-0 after:bg-white after:transition-transform after:duration-300 hover:after:scale-x-100 font-normal text-white text-[20px] w-fit"
+                  >
                     Features
                   </a>
-                  <a href="#" className="font-normal text-white text-[20px] w-fit">
+                  <a
+                    href="#"
+                    className="relative after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-[2px] after:w-full after:origin-left after:scale-x-0 after:bg-white after:transition-transform after:duration-300 hover:after:scale-x-100 font-normal text-white text-[20px] w-fit"
+                  >
                     Dashboard
                   </a>
-                  <a href="#" className="font-normal text-white text-[20px] w-fit">
+                  <a
+                    href="#"
+                    className="relative after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-[2px] after:w-full after:origin-left after:scale-x-0 after:bg-white after:transition-transform after:duration-300 hover:after:scale-x-100 font-normal text-white text-[20px] w-fit"
+                  >
                     F.A.Q
                   </a>
                 </div>
@@ -292,16 +319,16 @@ const Home = () => {
               <div className="flex flex-col gap-5">
                 <h3 className="font-semibold text-[#A1A1AA] text-[20px] tracking-[3px]">LINKS</h3>
                 <div className="flex flex-col gap-5 w-fit">
-                  <a href="#" className="font-normal text-white text-[20px] w-fit">
+                  <a href="#" className="relative after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-[2px] after:w-full after:origin-left after:scale-x-0 after:bg-white after:transition-transform after:duration-300 hover:after:scale-x-100 font-normal text-white text-[20px] w-fit">
                     Home
                   </a>
-                  <a href="#" className="font-normal text-white text-[20px] w-fit">
+                  <a href="#" className="relative after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-[2px] after:w-full after:origin-left after:scale-x-0 after:bg-white after:transition-transform after:duration-300 hover:after:scale-x-100 font-normal text-white text-[20px] w-fit">
                     Log in
                   </a>
-                  <a href="#" className="font-normal text-white text-[20px] w-fit">
+                  <a href="#" className="relative after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-[2px] after:w-full after:origin-left after:scale-x-0 after:bg-white after:transition-transform after:duration-300 hover:after:scale-x-100 font-normal text-white text-[20px] w-fit">
                     Sign up
                   </a>
-                  <a href="#" className="font-normal text-white text-[20px] w-fit">
+                  <a href="#" className="relative after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-[2px] after:w-full after:origin-left after:scale-x-0 after:bg-white after:transition-transform after:duration-300 hover:after:scale-x-100 font-normal text-white text-[20px] w-fit">
                     Reset Password
                   </a>
                 </div>

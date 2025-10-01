@@ -171,7 +171,7 @@ function checkValidPacket(packet: websocketPacket, userId: number): boolean {
     .prepare("SELECT key FROM json_each((SELECT block_list FROM players WHERE id = ?)) WHERE value = ?")
     .get(packet.data.recipient_id.toString(), userId.toString());
   if (
-    (!checkFriend && packet.data.type != "friendReq" && packet.data.type != "friendAccept") || // send friendReq packet if not friend
+    (!checkFriend && packet.data.type != "friendReq" && packet.data.type != "friendAccept" && packet.data.type != "block") || // send friendReq packet if not friend
     (checkFriend && packet.data.type == "friendReq") || // drop friendReq packet if already friend
     ((checkSenderBlock || checkRecipientBlock) && packet.data.type != "block") // let block/unblock packet even if blocked
   )
