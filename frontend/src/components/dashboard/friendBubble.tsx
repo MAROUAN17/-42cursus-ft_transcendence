@@ -19,9 +19,11 @@ const FriendBubble = ({ inGame, isOnline, user, friendOpt, setFriendOpt }: props
       onClick={() => {
         setFriendOpt();
       }}
-      className="relative w-[40px] h-[40px] bg-[#FFDCB9] rounded-full"
+      className="relative w-[40px] h-[40px] rounded-full"
     >
-      <div className={`absolute w-[12px] h-[12px] rounded-full top-0 right-0 ${isOnline ? "bg-[#00FF38]" : "bg-[#A5BAA9]"} border-compBg mt-2`}></div>
+      <div
+        className={`absolute w-[12px] h-[12px] rounded-full top-[-5px] right-[-3px] ${isOnline ? "bg-[#00FF38]" : "bg-[#A5BAA9]"} border-compBg mt-2`}
+      ></div>
       <img title={user.username} src={user.avatar} className="rounded-full w-[40px] h-[40px] object-cover" />
       {friendOpt == user.id ? (
         <div className="absolute overflow-hidden right-20 top-[-20px] mt-2 w-[180px] z-10  bg-[#390a85] bg-compBg rounded-lg shadow-[0_0px_20px_rgba(0,0,0,0.25)]">

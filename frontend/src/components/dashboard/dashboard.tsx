@@ -53,7 +53,6 @@ export default function Dashboard() {
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
-      console.log("clickeed");
       if (friendOptRef.current && !friendOptRef.current.contains(e.target as Node)) setFriendOpt(0);
     }
     document.addEventListener("mousedown", handleClickOutside);
@@ -83,14 +82,14 @@ export default function Dashboard() {
         friendsRef.current.unshift(updatedUser);
       }
       setFriends(friendsRef.current);
-      setFriendsMessages(
-        friendsRef.current.sort(function (a: UsersLastMessage, b: UsersLastMessage) {
-          const x: string = a.lastMessage ? a.lastMessage.createdAt : "";
-          const y: string = b.lastMessage ? b.lastMessage.createdAt : "";
-          if (x > y) return -1;
-          return 1;
-        })
-      );
+      // setFriendsMessages(
+      //   friendsRef.current.sort(function (a: UsersLastMessage, b: UsersLastMessage) {
+      //     const x: string = a.lastMessage ? a.lastMessage.createdAt : "";
+      //     const y: string = b.lastMessage ? b.lastMessage.createdAt : "";
+      //     if (x > y) return -1;
+      //     return 1;
+      //   })
+      // );
     }
   }
   useEffect(() => {
@@ -127,9 +126,20 @@ export default function Dashboard() {
     api
       .get("/users", { withCredentials: true })
       .then(function (res) {
-        setFriendsMessages(res.data.data);
+        setFriendsMessages(
+          res.data.data.sort(function (a: UsersLastMessage, b: UsersLastMessage) {
+            const x: string = a.lastMessage ? a.lastMessage.createdAt : "";
+            const y: string = b.lastMessage ? b.lastMessage.createdAt : "";
+            if (x > y) return -1;
+            return 1;
+          })
+        );
         friendsRef.current = [...res.data.data];
-        setFriends(res.data.data);
+        setFriends(
+          res.data.data.sort((a: UsersLastMessage, b: UsersLastMessage) => {
+            return (b.user.online == true ? 1 : 0) - (a.user.online == true ? 1 : 0);
+          })
+        );
       })
       .catch(function (err) {
         console.log(err);
@@ -283,7 +293,7 @@ export default function Dashboard() {
           <IoChatbubblesSharp className="w-[27px] h-auto text-white mb-2" />
           <div className={`flex flex-col gap-6 transition-all duration-700 ease-in-out`}>
             {friendsMessages
-              .filter((friend) => friend.user.username != "Deleted User")
+              .filter((friend) => friend.user.username != "Deleted User" && friend.unreadCount > 0)
               .slice(0, 8)
               .map((friend) => (
                 <MessageBubble
