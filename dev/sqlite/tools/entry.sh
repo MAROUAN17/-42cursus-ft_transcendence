@@ -61,7 +61,6 @@ sqlite3 "$DB_NAME" <<EOF
         admin INTEGER NOT NULL  
     );
 
-    # pass: Test1234
     INSERT INTO players(username, email, password, secret_otp) VALUES ("user1", "user1@gmail.com", '\$2b\$10\$rqCwxklFfV6lllny4.6WMOIw2yGUyDXGdc7AD6LzUlh.KDe.UJwlu', "GULGAWRACMRFOLBK");
     INSERT INTO players(username, email, password, secret_otp) VALUES ("user2", "user2@gmail.com", '\$2b\$10\$rqCwxklFfV6lllny4.6WMOIw2yGUyDXGdc7AD6LzUlh.KDe.UJwlu', "GULGAWRACMRFOLBK");
     INSERT INTO players(username, email, password, secret_otp) VALUES ("user3", "user3@gmail.com", '\$2b\$10\$rqCwxklFfV6lllny4.6WMOIw2yGUyDXGdc7AD6LzUlh.KDe.UJwlu', "GULGAWRACMRFOLBK");

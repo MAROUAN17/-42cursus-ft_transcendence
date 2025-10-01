@@ -221,6 +221,8 @@ export const uploadUserInfos = async (
     const accessToken = req.cookies.accessToken;
     const payload = app.jwt.jwt1.decode(accessToken) as Payload;
 
+    console.log('---------------------------------')
+
     const fileData = await req.file();
 
     console.log(fileData);
@@ -233,6 +235,8 @@ export const uploadUserInfos = async (
       return res.status(401).send({ error: "File format not supported!" });
     }
 
+
+    
     const uploadDir = path.resolve(
       "/goinfre/maglagal/ft_transcendence/frontend/public/"
     );
