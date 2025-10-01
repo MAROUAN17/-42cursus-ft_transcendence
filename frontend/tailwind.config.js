@@ -21,7 +21,7 @@ module.exports = {
         bat2Color: "#FFCC00",
         darkBg: "#14121C",
         darkBg: "#090040",
-        compBg: "#471396",
+        compBg: "#471396", 
         borderColor: "#312F62",
       },
       fontFamily: {

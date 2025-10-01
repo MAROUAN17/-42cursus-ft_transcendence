@@ -29,7 +29,8 @@ const Home = () => {
     <div className="bg-[#14121C] font-poppins w-screen min-h-screen flex flex-col">
       <div id="home" className="relative w-full h-screen flex flex-col items-center overflow-hidden">
         <div className="text-white z-10 w-full h-fit px-10 py-8 flex justify-between items-center">
-          <h1 className="font-bold text-[20px]">Logo</h1>
+          {/* <h1 className="font-bold text-[20px]">Logo</h1> */}
+          <img src="/Logo_border_purple.png" className="w-[100px]" />
           <div className="flex font-bebas gap-9">
             <div className="hover:scale-105 transition duration-300 font-medium text-[30px] flex justify-center items-center gap-1">
               <FaHome />
@@ -174,7 +175,7 @@ const Home = () => {
               </div>
             </div>
           </div>
-          <div className="relative w-full flex flex-col items-center">
+          <div id="dashboard" className="relative w-full flex flex-col items-center">
             <img src="/Gradient.png" className="absolute top-[-100px] w-3/4" />
             <div className="flex flex-col mt-5 items-center">
               <TbLayoutDashboardFilled className="text-[#B13BFF] w-[55px] h-[55px]" />
@@ -275,7 +276,8 @@ const Home = () => {
           <div className="absolute w-full flex-col h-full top-0 flex justify-around items-center">
             <div className="w-full h-4/5 flex justify-around items-center">
               <div className="flex flex-col gap-5 w-1/5">
-                <h1 className="text-white font-bold text-[40px] w-fit ">Logo</h1>
+                {/* <h1 className="text-white font-bold text-[40px] w-fit ">Logo</h1> */}
+                <img src="/Logo_purple.png" className="w-[100px]" />
                 <p className="text-[#A1A1AA] text-[20px] ">
                   Jump into fast-paced 1v1 matches, compete in tournaments, or train against smart AI, right from your browser. No downloads, just
                   pure table ping pong action.
@@ -297,19 +299,19 @@ const Home = () => {
                     About
                   </a>
                   <a
-                    href="#"
+                    href="#features"
                     className="relative after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-[2px] after:w-full after:origin-left after:scale-x-0 after:bg-white after:transition-transform after:duration-300 hover:after:scale-x-100 font-normal text-white text-[20px] w-fit"
                   >
                     Features
                   </a>
                   <a
-                    href="#"
+                    href="#dashboard"
                     className="relative after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-[2px] after:w-full after:origin-left after:scale-x-0 after:bg-white after:transition-transform after:duration-300 hover:after:scale-x-100 font-normal text-white text-[20px] w-fit"
                   >
                     Dashboard
                   </a>
                   <a
-                    href="#"
+                    href="#questions"
                     className="relative after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-[2px] after:w-full after:origin-left after:scale-x-0 after:bg-white after:transition-transform after:duration-300 hover:after:scale-x-100 font-normal text-white text-[20px] w-fit"
                   >
                     F.A.Q
@@ -319,16 +321,28 @@ const Home = () => {
               <div className="flex flex-col gap-5">
                 <h3 className="font-semibold text-[#A1A1AA] text-[20px] tracking-[3px]">LINKS</h3>
                 <div className="flex flex-col gap-5 w-fit">
-                  <a href="#" className="relative after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-[2px] after:w-full after:origin-left after:scale-x-0 after:bg-white after:transition-transform after:duration-300 hover:after:scale-x-100 font-normal text-white text-[20px] w-fit">
+                  <a
+                    href="#"
+                    className="relative after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-[2px] after:w-full after:origin-left after:scale-x-0 after:bg-white after:transition-transform after:duration-300 hover:after:scale-x-100 font-normal text-white text-[20px] w-fit"
+                  >
                     Home
                   </a>
-                  <a href="#" className="relative after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-[2px] after:w-full after:origin-left after:scale-x-0 after:bg-white after:transition-transform after:duration-300 hover:after:scale-x-100 font-normal text-white text-[20px] w-fit">
+                  <a
+                    href="#"
+                    className="relative after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-[2px] after:w-full after:origin-left after:scale-x-0 after:bg-white after:transition-transform after:duration-300 hover:after:scale-x-100 font-normal text-white text-[20px] w-fit"
+                  >
                     Log in
                   </a>
-                  <a href="#" className="relative after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-[2px] after:w-full after:origin-left after:scale-x-0 after:bg-white after:transition-transform after:duration-300 hover:after:scale-x-100 font-normal text-white text-[20px] w-fit">
+                  <a
+                    href="#"
+                    className="relative after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-[2px] after:w-full after:origin-left after:scale-x-0 after:bg-white after:transition-transform after:duration-300 hover:after:scale-x-100 font-normal text-white text-[20px] w-fit"
+                  >
                     Sign up
                   </a>
-                  <a href="#" className="relative after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-[2px] after:w-full after:origin-left after:scale-x-0 after:bg-white after:transition-transform after:duration-300 hover:after:scale-x-100 font-normal text-white text-[20px] w-fit">
+                  <a
+                    href="#"
+                    className="relative after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-[2px] after:w-full after:origin-left after:scale-x-0 after:bg-white after:transition-transform after:duration-300 hover:after:scale-x-100 font-normal text-white text-[20px] w-fit"
+                  >
                     Reset Password
                   </a>
                 </div>
