@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router";
 
 interface LeaveButtonProps {
   label: string;
@@ -7,11 +8,16 @@ interface LeaveButtonProps {
   onLeave?: () => void;
 }
 
-const LeaveButton: React.FC<LeaveButtonProps> = ({label, tournamentId, playerId, onLeave }) => {
+const LeaveButton: React.FC<LeaveButtonProps> = ({
+  label,
+  tournamentId,
+  playerId,
+  onLeave,
+}) => {
   const [loading, setLoading] = useState(false);
   const handelStart = async () => {
     //
-  }
+  };
   const handleLeave = async () => {
     try {
       setLoading(true);
@@ -38,13 +44,10 @@ const LeaveButton: React.FC<LeaveButtonProps> = ({label, tournamentId, playerId,
       setLoading(false);
     }
   };
-  const handelAction = () =>
-  {
-    if (label === "start")
-        handelStart();
-    else if (label == "leave")
-        handleLeave();
-  }
+  const handelAction = () => {
+    if (label === "start") handelStart();
+    else if (label == "leave") handleLeave();
+  };
 
   return (
     <button

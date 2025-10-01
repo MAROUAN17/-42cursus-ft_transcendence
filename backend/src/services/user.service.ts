@@ -261,3 +261,18 @@ export const uploadUserInfos = async (
     res.status(500).send({ error: error });
   }
 };
+
+export const getUserInfo = async ( req: FastifyRequest<{ Params: { id: string } }>, res: FastifyReply) => {
+  try {
+    const { id } = req.params;
+
+    const user = app.db
+      .prepare("SELECT * FROM players WHERE id = ?")
+      .get(id) as User | null;
+    if (!user) return res.status(404).send({ error: "USER NOT FOUND" });
+
+    res.status(200).send({ infos: user });
+  } catch (error) {
+    res.status(500).send({ error: error });
+  }
+};

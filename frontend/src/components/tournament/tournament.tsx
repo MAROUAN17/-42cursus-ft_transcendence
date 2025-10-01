@@ -35,11 +35,7 @@ export default function Tournament() {
           onChange={(e) => setName(e.target.value)}
         />
 
-        <button
-          onClick={createTournament}
-        >
-          Submit
-        </button>
+        <button onClick={createTournament}>Submit</button>
       </div>
     </div>
   );

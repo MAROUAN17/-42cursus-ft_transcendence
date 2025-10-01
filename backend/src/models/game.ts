@@ -27,6 +27,7 @@ export interface GameInfo {
 }
 
 export interface Room {
+  type?:string;
   gameId: string;
   player1?: string;
   player2?: string;

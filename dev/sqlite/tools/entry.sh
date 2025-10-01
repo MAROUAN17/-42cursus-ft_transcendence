@@ -45,12 +45,12 @@ sqlite3 "$DB_NAME" <<EOF
     );
     CREATE TABLE IF NOT EXISTS Room (
         id INTEGER PRIMARY KEY,
-        player1 TEXT,
-        player2 TEXT,
+        player1 INTEGER,
+        player2 INTEGER,
         startedAt TEXT DEFAULT (datetime('now')),
         scoreLeft INTEGER,
         scoreRight INTEGER,
-        winner TEXT
+        winner INTEGER
     );
     CREATE TABLE IF NOT EXISTS Tournament (
         id INTEGER PRIMARY KEY,
@@ -59,6 +59,16 @@ sqlite3 "$DB_NAME" <<EOF
         createdAt TEXT NOT NULL,
         status TEXT NOT NULL,
         admin INTEGER NOT NULL  
+    );
+    CREATE TABLE IF NOT EXISTS Round (
+        id INTEGER PRIMARY KEY,
+        tournament_id INTEGER NOT NULL,
+        player1 INTEGER,
+        player2 INTEGER,
+        score1 INTEGER DEFAULT 0,
+        score2 INTEGER DEFAULT 0,
+        winner INTEGER,
+        round_number INTEGER NOT NULL
     );
 
     INSERT INTO players(username, email, password, secret_otp) VALUES ("user1", "user1@gmail.com", '\$2b\$10\$rqCwxklFfV6lllny4.6WMOIw2yGUyDXGdc7AD6LzUlh.KDe.UJwlu', "GULGAWRACMRFOLBK");

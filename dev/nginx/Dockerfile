@@ -1,7 +1,7 @@
 FROM debian:stable
 
 RUN apt-get update -y && \
-    apt-get install -y nginx bash openssl make git g++ \
+    apt-get install -y nginx bash openssl make git g++ nginx-extras \
     autoconf automake build-essential \
     libcurl4-openssl-dev libgeoip-dev liblmdb-dev \
     libpcre2-dev libtool libxml2-dev libyajl-dev \

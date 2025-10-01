@@ -21,6 +21,17 @@ function set_random_Info(game_info:GameInfo) {
 }
 
 function saveData (room: Room) {
+  if (!room.winner) return ;
+  if (room.type == "tournament")
+  {
+    try {
+      app.db.prepare("INSERT INTO ROUND ( tournament_id, player1, player2, winner) VALUES ( (SELECT id FROM TOURNAMENT WHERE game_id = ?), ?, ?, ?)")
+      .run( room.gameId, room.player1, room.player2, room.winner);
+      console.log("-- Round registred successfully");
+    } catch (err) {
+      console.log(err);
+    }
+  }
   try {
     app.db
       .prepare("INSERT INTO Room( player1, player2, startedAt, scoreLeft, scoreRight, winner) VALUES (?, ?, ?, ?, ?, ?)")

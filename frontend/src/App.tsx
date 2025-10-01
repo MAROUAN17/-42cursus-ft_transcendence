@@ -106,16 +106,36 @@ export default function App() {
       Component: RGame,
     },
     {
-      path: "/match",
-      Component: Pairing,
+      path: '/pairing',
+      element: (
+        <WebSocketProvider>
+          <Pairing />
+        </WebSocketProvider>
+      )
     },
     {
-      path: "/tournament",
-      Component: Tournament,
+      path:'/tournament',
+      Component:Tournament,
     },
     {
-      path: "/tournaments",
+      path: '/tournaments',
       Component: Tournaments,
+    },
+    {
+      path: "/bracket/:id",
+      element: (
+        <WebSocketProvider>
+          <TournamentBracket />
+        </WebSocketProvider>
+      ),
+    },
+    {
+      path: '/tournaments',
+      element: (
+        <WebSocketProvider>
+          <Tournaments />
+        </WebSocketProvider>
+      )
     },
     {
       path: "/avatar",
@@ -125,14 +145,6 @@ export default function App() {
         </UserProvider>
       ),
       loader: checkFirstLoginLoader
-    },
-    {
-      path: "/bracket/:id",
-      element: (
-        <WebSocketProvider>
-          <TournamentBracket />
-        </WebSocketProvider>
-      ),
     },
     {
       path: "/404",

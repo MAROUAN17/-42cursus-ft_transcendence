@@ -6,6 +6,7 @@ import { blockUser } from "../services/blockUser.service.js";
 import { unblockUser } from "../services/unblockUser.service.js";
 import { deleteAccount } from "../services/deleteAccount.service.js";
 import { searchUsers } from "../services/searchUsers.service.js";
+import { getUserInfo } from "../services/user.service.js";
 
 export const homeRoutes: FastifyPluginAsync = async (fastify) => {
   app.get("/notifications", { onRequest: [app.jwtAuth] }, getNotifications);
@@ -14,4 +15,5 @@ export const homeRoutes: FastifyPluginAsync = async (fastify) => {
   app.post("/block/:id", { onRequest: [app.jwtAuth] }, blockUser);
   app.post("/unblock/:id", { onRequest: [app.jwtAuth] }, unblockUser);
   app.delete("/deleteAccount", { onRequest: [app.jwtAuth] }, deleteAccount);
+  app.get("/user/:id", {  }, getUserInfo);
 };

@@ -39,7 +39,9 @@ export function CreateTournament({ show, onClose, onCreated }: Props) {
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black/60 z-50">
       <div className="bg-gradient-to-br from-purple-800 to-indigo-900 p-6 rounded-2xl shadow-xl w-full max-w-md">
-        <h2 className="text-2xl font-bold text-white mb-4">Create Tournament</h2>
+        <h2 className="text-2xl font-bold text-white mb-4">
+          Create Tournament
+        </h2>
 
         <input
           type="text"

@@ -17,7 +17,11 @@ function Login() {
     axios
       .post(
         "https://localhost:5000/login",
-        { email: email, password: password, rememberMe: rememberRef.current?.checked },
+        {
+          email: email,
+          password: password,
+          rememberMe: rememberRef.current?.checked,
+        },
         { withCredentials: true }
       )
       .then(function (res) {
@@ -94,12 +98,7 @@ function Login() {
             {/* login button */}
             <div className="flex justify-between items-center">
               <div className="flex space-x-3">
-                <input
-                  type="checkbox"
-                  id="remember"
-                  ref={rememberRef}
-                  
-                />
+                <input type="checkbox" id="remember" ref={rememberRef} />
                 <p className="text-white text-md rounded-full ">Remember me</p>
               </div>
               <div className="">

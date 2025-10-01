@@ -8,7 +8,7 @@ export interface Tournament {
   name: string;
   players: number[];
   createdAt: string;
-  status: "open" | "started" | "full" ;
+  status: "open" | "started" | "full";
   admin: number;
 }
 
@@ -16,14 +16,11 @@ export function Tournaments() {
   const [showModal, setShowModal] = useState(false);
 
   const handleCreated = (newTournament: any) => {
-    setTournaments((prev) => [
-      ...prev,
-      { id: Date.now(), ...newTournament },
-    ]);
+    setTournaments((prev) => [...prev, { id: Date.now(), ...newTournament }]);
   };
   const [tournaments, setTournaments] = useState<Tournament[]>([]);
   const [loading, setLoading] = useState(true);
-   useEffect(() => {
+  useEffect(() => {
     const fetchTournaments = async () => {
       try {
         const res = await fetch("https://localhost:5000/tournament/all");

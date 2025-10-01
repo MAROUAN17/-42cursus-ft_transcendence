@@ -10,8 +10,13 @@ import {
   leave_queue, 
   get_player_game 
 } from "../services/match.service.js";
-import { create_tournament, delete_tournament, get_tournament_by_id, get_tournaments, join_tournament, leave_tournament } from "../services/tournament.service.js";
-
+import { create_tournament, delete_tournament,
+            get_tournament_by_id, get_tournaments, 
+            join_tournament, leave_tournament ,
+            get_tournament_winner, get_rounds, 
+            report_match_result} 
+            from "../services/tournament.service.js";
+import { get_profile, get_player_rooms, get_player_week_activity } from "../services/states.service.js";
 const clients = new Map<string, websocketPlugin.WebSocket>();
 
 interface MessagePacket {
@@ -26,8 +31,8 @@ export const gameRoutes: FastifyPluginAsync = async (fastify) => {
   fastify.get("/match/queue-status",  get_queue_status);
   fastify.delete("/match/leave-queue", leave_queue);
   fastify.get("/match/game/:gameId", get_game);
-  
-  fastify.get("/match/my-game", get_player_game);
+
+  fastify.get("/match/my-game/:playerId", get_player_game);
 
   fastify.get("/game/rooms", getData);
 
@@ -37,5 +42,12 @@ export const gameRoutes: FastifyPluginAsync = async (fastify) => {
   fastify.delete("/tournament/delete", delete_tournament);
   fastify.delete("/tournament/leave", leave_tournament);
   fastify.get("/tournament/:tournamentId", get_tournament_by_id);
+  fastify.get("/tournament/rounds/:tournamentId", get_rounds);
+  fastify.get("/tournament/winner/:tournamentId", get_tournament_winner);
 
-}
+  //states
+  fastify.get("/states/profile/:playerId", get_profile);
+  fastify.get("/states/player-rooms/:playerId", get_player_rooms);
+  fastify.get("/states/player-week-activity/:playerId", get_player_week_activity);
+
+};

@@ -1,6 +1,7 @@
 import { FaUsers, FaTrophy, FaDollarSign } from "react-icons/fa";
 import type { Tournament } from "./tournaments";
 import { useNavigate } from "react-router";
+import { useWebSocket } from "../contexts/websocketContext";
 
 export function TournamentCard({
   id,
@@ -9,6 +10,8 @@ export function TournamentCard({
   createdAt,
   status,
 }: Tournament) {
+  const { user } = useWebSocket();
+  const label = players.includes(user?.id || 0) ? "joined" : "join";
   const maxParticipants = 4;
   const navigate = useNavigate();
   const handelJoin = async () => {
@@ -20,9 +23,9 @@ export function TournamentCard({
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "player-id": "1",
+          "player-id": user?.id.toString() || "1",
         },
-        body:JSON.stringify({tournamentId:id})
+        body: JSON.stringify({ tournamentId: id }),
       });
 
       const data = await res.json();
@@ -30,13 +33,13 @@ export function TournamentCard({
     } catch (err) {
       console.error("Error joining tournament", err);
     }
-  }
+  };
   return (
-    <div className="rounded-2xl overflow-hidden bg-gradient-to-b from-purple-600/90 to-purple-800/90 border border-purple-500/20 shadow-lg hover:shadow-purple-500/30 hover:scale-105 transition-transform duration-300"
-      
-    >
-      <div className="h-40 relative overflow-hidden cursor-pointer"
-        onClick={() => navigate(`/bracket/${id}`)}>
+    <div className="rounded-2xl overflow-hidden bg-gradient-to-b from-purple-600/90 to-purple-800/90 border border-purple-500/20 shadow-lg hover:shadow-purple-500/30 hover:scale-105 transition-transform duration-300">
+      <div
+        className="h-40 relative overflow-hidden cursor-pointer"
+        onClick={() => navigate(`/bracket/${id}`)}
+      >
         <img
           src={"/img.jpg"}
           alt={name}
@@ -69,7 +72,11 @@ export function TournamentCard({
           // disabled={status !== "open"}
           onClick={handelJoin}
         >
-          {status === "full" ? "FULL" : status === "started" ? "STARTED" : "JOIN"}
+          {status === "full"
+            ? "FULL"
+            : status === "started"
+            ? "STARTED"
+            : label}
         </button>
       </div>
     </div>
