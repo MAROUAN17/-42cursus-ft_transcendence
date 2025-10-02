@@ -20,7 +20,7 @@ export const get_profile = async (req: FastifyRequest, res: FastifyReply) => {
     `);
     const totalWins = winsStmt.get(playerId)?.total || 0;
 
-    const winRatio = matchesPlayed > 0 ? (totalWins / matchesPlayed) : 0;
+    const winRatio = matchesPlayed > 0 ? totalWins / matchesPlayed : 0;
 
     const tournamentsStmt = app.db.prepare(`
       SELECT COUNT(*) as total 
@@ -60,20 +60,20 @@ export const get_profile = async (req: FastifyRequest, res: FastifyReply) => {
 
     const leaderboard = leaderboardStmt.all();
     const rank = leaderboard.findIndex((p: any) => p.id === playerId) + 1;
-
+    const friends = app.db.prepare("SELECT friends FROM players WHERE id = ?").get(playerId).friends;
     return res.status(200).send({
       playerId,
       matchesPlayed,
       winRatio,
       tournamentsWon,
-      rank
+      rank,
+      friendsCount: JSON.parse(friends).length,
     });
   } catch (err: any) {
     console.error(err);
     return res.status(500).send({ error: "Failed to fetch profile data" });
   }
 };
-
 
 export const get_player_rooms = async (req: FastifyRequest, res: FastifyReply) => {
   try {
@@ -106,14 +106,13 @@ export const get_player_rooms = async (req: FastifyRequest, res: FastifyReply) =
 
     return res.status(200).send({
       playerId,
-      rooms
+      rooms,
     });
   } catch (err: any) {
     console.error(err);
     return res.status(500).send({ error: "Failed to fetch rooms" });
   }
 };
-
 
 export const get_leaderboard = async (req: FastifyRequest, res: FastifyReply) => {
   try {
@@ -151,7 +150,7 @@ export const get_leaderboard = async (req: FastifyRequest, res: FastifyReply) =>
 
     const ranked = leaderboard.map((player: any, index: number) => ({
       rank: index + 1,
-      ...player
+      ...player,
     }));
 
     return res.status(200).send({ leaderboard: ranked });
@@ -160,7 +159,6 @@ export const get_leaderboard = async (req: FastifyRequest, res: FastifyReply) =>
     return res.status(500).send({ error: "Failed to fetch leaderboard" });
   }
 };
-
 
 export const get_player_week_activity = async (req: FastifyRequest, res: FastifyReply) => {
   try {
@@ -191,7 +189,7 @@ export const get_player_week_activity = async (req: FastifyRequest, res: Fastify
       const found = dailyMatches.find((m: any) => m.day === dayStr);
       last7Days.push({
         day: dayStr,
-        matches: found ? found.matches : 0
+        matches: found ? found.matches : 0,
       });
     }
 
@@ -200,7 +198,7 @@ export const get_player_week_activity = async (req: FastifyRequest, res: Fastify
     return res.status(200).send({
       playerId,
       totalMatchesLast7Days: totalMatches,
-      last7Days
+      last7Days,
     });
   } catch (err: any) {
     console.error(err);
