@@ -27,6 +27,7 @@ export interface GameInfo {
 }
 
 export interface Room {
+  tournamentId?:number;
   type?:string;
   gameId: string;
   player1?: string;
@@ -38,6 +39,7 @@ export interface Room {
   scoreLeft?:number;
   scoreRight?:number;
   winner?:string | undefined;
+  round?:number;
 }
 
 export interface Player {

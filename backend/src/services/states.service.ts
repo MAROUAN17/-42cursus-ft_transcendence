@@ -1,6 +1,7 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
 import app from "../server.js";
 
+
 export const get_profile = async (req: FastifyRequest, res: FastifyReply) => {
   try {
     const playerId = Number((req.params as any)?.playerId);
@@ -121,6 +122,7 @@ export const get_leaderboard = async (req: FastifyRequest, res: FastifyReply) =>
       SELECT 
         p.id,
         p.username,
+        p.score, 
         COALESCE(m.matches, 0) as matchesPlayed,
         COALESCE(w.wins, 0) as totalWins,
         CASE 
@@ -160,6 +162,7 @@ export const get_leaderboard = async (req: FastifyRequest, res: FastifyReply) =>
     return res.status(500).send({ error: "Failed to fetch leaderboard" });
   }
 };
+
 
 
 export const get_player_week_activity = async (req: FastifyRequest, res: FastifyReply) => {
