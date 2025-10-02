@@ -24,6 +24,7 @@ import type { websocketPacket } from "../../../../backend/src/models/webSocket.m
 import { useUserContext } from "../contexts/userContext";
 import { BsPersonFillAdd } from "react-icons/bs";
 import LogCard from "./logCard";
+import type { Tournament } from "../../types/tournament";
 
 export default function Dashboard() {
   const data = useRef([
@@ -39,7 +40,10 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const { user } = useUserContext();
   const [show, setShow] = useState<boolean>(false);
-  const [friendOpt, setFriendOpt] = useState<Number>(0);
+  const [friendOpt, setFriendOpt] = useState<number>(0);
+  const [gamesPlayed, setGamesPlayed] = useState<number>(0);
+  const [tournaments, setTournaments] = useState<Tournament[]>();
+  const [leaders, setLeaders] = useState({});
   const [friends, setFriends] = useState<UsersLastMessage[]>([]);
   const friendsRef = useRef(friends);
   const friendOptRef = useRef<HTMLDivElement>(null);
@@ -165,9 +169,24 @@ export default function Dashboard() {
       .catch(function (err) {
         console.log(err);
       });
+
     const addedHandler = addHandler("onlineStatus", handleOnlineNotif);
     return addedHandler;
   }, []);
+
+  useEffect(() => {
+    api("/states/player-rooms/" + user?.id, { withCredentials: true }).then(
+      function (res) {
+        setGamesPlayed(res.data.rooms.length);
+      }
+    );
+
+    api("/tournament/all", { withCredentials: true }).then(function (res) {
+      // setLeaders(res.data.rooms.length());
+      setTournaments(res.data);
+      tournaments?.sort((a, b) => b.players.length - a.players.length);
+    });
+  }, [user]);
 
   function CustomTooltip({ payload, label, active }: any) {
     if (active) {
@@ -220,7 +239,9 @@ export default function Dashboard() {
           <div className="bg-compBg overflow-hidden relative basis-2/5 grow rounded-[30px]">
             <div className="flex flex-col justify-between p-10 relative gap-6 z-10 w-fit">
               <div className="">
-                <h2 className="text-white font-bold text-[100px] h-fit">30</h2>
+                <h2 className="text-white font-bold text-[100px] h-fit">
+                  {gamesPlayed}
+                </h2>
                 <p className="text-white font-extralight text-[40px] mt-[-35px]">
                   Games Played
                 </p>
@@ -268,10 +289,9 @@ export default function Dashboard() {
               </div>
               <div className="flex gap-2">
                 <div className="flex w-2/5 flex-wrap justify-between h-full">
-                  <TournamentCard />
-                  <TournamentCard />
-                  <TournamentCard />
-                  <TournamentCard />
+                  {tournaments?.slice(0,4).map((tournament) => (
+                    <TournamentCard tournament={tournament} />
+                  ))}
                 </div>
                 <div className="flex flex-col gap-5 w-3/5 p-2 pl-5">
                   <LogCard />

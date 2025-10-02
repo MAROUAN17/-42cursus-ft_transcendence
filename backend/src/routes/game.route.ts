@@ -16,7 +16,7 @@ import { create_tournament, delete_tournament,
             get_tournament_winner, get_rounds, 
             report_match_result} 
             from "../services/tournament.service.js";
-import { get_profile, get_player_rooms, get_player_week_activity } from "../services/states.service.js";
+import { get_profile, get_player_rooms, get_player_week_activity, get_leaderboard } from "../services/states.service.js";
 const clients = new Map<string, websocketPlugin.WebSocket>();
 
 interface MessagePacket {
@@ -46,6 +46,7 @@ export const gameRoutes: FastifyPluginAsync = async (fastify) => {
   fastify.get("/tournament/winner/:tournamentId", get_tournament_winner);
 
   //states
+  fastify.get("/states/leaders", get_leaderboard);
   fastify.get("/states/profile/:playerId", get_profile);
   fastify.get("/states/player-rooms/:playerId", get_player_rooms);
   fastify.get("/states/player-week-activity/:playerId", get_player_week_activity);

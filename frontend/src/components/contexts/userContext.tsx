@@ -18,6 +18,7 @@ export const UserProvider: React.FC<{ children?: React.ReactNode }> = ({
     username: "",
     email: "",
     first_login: false,
+    intra_id: 0,
   });
 
   useEffect(() => {
