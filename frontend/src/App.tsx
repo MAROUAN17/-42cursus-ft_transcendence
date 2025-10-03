@@ -13,7 +13,6 @@ import Chat from "./components/chat/chat";
 import RGame from "./components/game/remote/Game";
 import "./App.css";
 import { WebSocketProvider } from "./components/contexts/websocketContext";
-
 import Dashboard from "./components/dashboard/dashboard";
 import Page2FA from "./components/user/2fa";
 import NewPassword from "./components/user/newPassword";

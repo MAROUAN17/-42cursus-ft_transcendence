@@ -12,8 +12,6 @@ export async function dbConnection () {
 
     const db = new Database(dbFile);
 
-    console.log(db);
-
     app.decorate("db", db);
     app.addHook("onClose", (fastify, done) => {
         db.close();

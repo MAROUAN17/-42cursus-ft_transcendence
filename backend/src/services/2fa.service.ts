@@ -52,9 +52,6 @@ export const verify2FAToken = async (
     let { token, email, rememberMe } = req.body;
     let user = {} as User | null;
 
-
-    console.log('remember me -> ', rememberMe);
-
     email = email.toLowerCase();
     //find user
     if (email.includes("@")) {

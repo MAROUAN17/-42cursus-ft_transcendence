@@ -8,7 +8,7 @@ export const redirectPath = async (req: FastifyRequest, res: FastifyReply) => {
     res,
     (err, authorizationEndpoint) => {
       if (err)
-        res.status(401).redirect("Oauth redirect failed error : ", err.message);
+        res.status(500).send({ error: "Oauth redirect failed error : " });
       res.redirect(authorizationEndpoint);
     }
   );
@@ -19,7 +19,7 @@ export const oauthCallback = async (req: FastifyRequest, res: FastifyReply) => {
     const { accessToken, refreshToken } = req.cookies;
 
     if (refreshToken || accessToken)
-      return res.status(401).send({ error: "Unauthorized" });
+      return res.status(400).send({ error: "Unauthorized" });
 
     let user = {} as User | undefined;
 
@@ -87,7 +87,7 @@ export const oauthCallback = async (req: FastifyRequest, res: FastifyReply) => {
     });
 
     return res.redirect("https://localhost:3000/avatar");
-  } catch (err) {
-    res.status(500).send({ error: err.data.error });
+  } catch (err: any) {
+    res.status(500).send({ error: "Failed to register using intra42" });
   }
 };
