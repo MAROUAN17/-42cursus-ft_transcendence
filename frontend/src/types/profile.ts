@@ -10,6 +10,11 @@ export interface MatchHistory {
   winner: number;
   winner_name: string;
 }
+export interface ChartData {
+  uv: number;
+  pv: number;
+}
+
 export interface UserHistory {
   playerId: number;
   rooms: MatchHistory[];
