@@ -1,7 +1,4 @@
 import { type FastifyPluginAsync } from "fastify";
-import websocketPlugin from "@fastify/websocket";
-import { v4 as uuidv4 } from "uuid";
-import type { GameInfo } from "../models/game.js";
 import { getData, handleGameConnection } from "../services/game.service.js";
 import { 
   pair_players, 
@@ -10,19 +7,13 @@ import {
   leave_queue, 
   get_player_game 
 } from "../services/match.service.js";
+
 import { create_tournament, delete_tournament,
             get_tournament_by_id, get_tournaments, 
             join_tournament, leave_tournament ,
-            get_tournament_winner, get_rounds, 
-            report_match_result} 
+            get_tournament_winner, get_rounds, } 
             from "../services/tournament.service.js";
 import { get_profile, get_player_rooms, get_player_week_activity, get_leaderboard } from "../services/states.service.js";
-const clients = new Map<string, websocketPlugin.WebSocket>();
-
-interface MessagePacket {
-  to: string;
-  game_info: GameInfo;
-}
 
 export const gameRoutes: FastifyPluginAsync = async (fastify) => {
   fastify.get("/game", { websocket: true }, handleGameConnection);
@@ -50,5 +41,6 @@ export const gameRoutes: FastifyPluginAsync = async (fastify) => {
   fastify.get("/states/profile/:playerId", get_profile);
   fastify.get("/states/player-rooms/:playerId", get_player_rooms);
   fastify.get("/states/player-week-activity/:playerId", get_player_week_activity);
+  fastify.get("/states/leaderboard/:playerId", get_leaderboard);
 
 };

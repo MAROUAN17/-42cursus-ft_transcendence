@@ -25,6 +25,7 @@ import { useUserContext } from "../contexts/userContext";
 import { BsPersonFillAdd } from "react-icons/bs";
 import LogCard from "./logCard";
 import type { Tournament } from "../../types/tournament";
+import type { Leader } from "../../types/leader";
 
 export default function Dashboard() {
   const data = useRef([
@@ -42,8 +43,8 @@ export default function Dashboard() {
   const [show, setShow] = useState<boolean>(false);
   const [friendOpt, setFriendOpt] = useState<number>(0);
   const [gamesPlayed, setGamesPlayed] = useState<number>(0);
-  const [tournaments, setTournaments] = useState<Tournament[]>();
-  const [leaders, setLeaders] = useState({});
+  const [tournaments, setTournaments] = useState<Tournament[]>([]);
+  const [leaders, setLeaders] = useState<Leader[]>([]);
   const [friends, setFriends] = useState<UsersLastMessage[]>([]);
   const friendsRef = useRef(friends);
   const friendOptRef = useRef<HTMLDivElement>(null);
@@ -170,23 +171,31 @@ export default function Dashboard() {
         console.log(err);
       });
 
+    api("/tournament/all", { withCredentials: true }).then(function (res) {
+      setTournaments(res.data);
+      tournaments?.sort((a, b) => b.players.length - a.players.length);
+    });
+
+    api("/states/leaders", { withCredentials: true }).then(function (res) {
+      setLeaders(res.data.leaderboard);
+      console.log(res.data.leaderboard);
+    });
+
     const addedHandler = addHandler("onlineStatus", handleOnlineNotif);
     return addedHandler;
   }, []);
 
   useEffect(() => {
+    if (!user) return;
+
     api("/states/player-rooms/" + user?.id, { withCredentials: true }).then(
       function (res) {
         setGamesPlayed(res.data.rooms.length);
       }
     );
 
-    api("/tournament/all", { withCredentials: true }).then(function (res) {
-      // setLeaders(res.data.rooms.length());
-      setTournaments(res.data);
-      tournaments?.sort((a, b) => b.players.length - a.players.length);
-    });
   }, [user]);
+
 
   function CustomTooltip({ payload, label, active }: any) {
     if (active) {
@@ -289,7 +298,7 @@ export default function Dashboard() {
               </div>
               <div className="flex gap-2">
                 <div className="flex w-2/5 flex-wrap justify-between h-full">
-                  {tournaments?.slice(0,4).map((tournament) => (
+                  {tournaments?.slice(0, 4).map((tournament) => (
                     <TournamentCard tournament={tournament} />
                   ))}
                 </div>
@@ -312,24 +321,14 @@ export default function Dashboard() {
               </div>
             </div>
             <div className="flex pb-8 flex-wrap w-full justify-between h-full">
-              <LeadersCard
-                rank={2}
-                username="username"
-                name="Jackson"
-                score={2000}
+              {leaders.slice(0, 3).map((leader) => (
+                <LeadersCard
+                rank={leader.rank}
+                username={leader.username}
+                score={leader.score}
+                avatar={leader.avatar}
               />
-              <LeadersCard
-                rank={1}
-                username="username"
-                name="Jackson"
-                score={2000}
-              />
-              <LeadersCard
-                rank={3}
-                username="username"
-                name="Jackson"
-                score={2000}
-              />
+              ))}
             </div>
           </div>
         </div>

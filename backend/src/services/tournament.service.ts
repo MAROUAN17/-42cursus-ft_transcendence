@@ -87,11 +87,23 @@ export const get_tournaments = async (
   try {
     const tournaments = app.db.prepare("SELECT * FROM Tournament").all();
 
-    const resData = tournaments.map((t: any) => ({
-      ...t,
-      players: JSON.parse(t.players),
-      createdAt: new Date(t.createdAt),
-    }));
+    const resData = tournaments.map((t: any) => {
+      const playerIds: number[] = JSON.parse(t.players);
+
+      const players = playerIds.map((id) => {
+        return app.db
+          .prepare("SELECT id, username, score, avatar FROM players WHERE id = ?")
+          .get(id);
+      });
+
+
+
+      return {
+        ...t,
+        players,
+        createdAt: new Date(t.createdAt)
+      };
+    });
 
     return res.send(resData);
   } catch (err) {
@@ -100,10 +112,8 @@ export const get_tournaments = async (
   }
 };
 
-export const get_tournament_by_id = async (
-  req: FastifyRequest,
-  res: FastifyReply
-) => {
+
+export const get_tournament_by_id = async (req: FastifyRequest, res: FastifyReply) => {
   try {
     const tournamentId = Number((req.params as any)?.tournamentId);
 

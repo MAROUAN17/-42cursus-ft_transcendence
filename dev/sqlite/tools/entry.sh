@@ -3,10 +3,8 @@
 DB_PATH="$HOME/goinfre/db_data/"
 DB_NAME="app.db"
 
-# mkdir -p $DB_PATH
-# cd $DB_PATH
 touch $DB_NAME
-#chmod 777 $DB_PATH$DB_NAME
+
 sqlite3 "$DB_NAME" <<EOF 
     CREATE TABLE IF NOT EXISTS players (
         id INTEGER PRIMARY KEY,
@@ -23,7 +21,8 @@ sqlite3 "$DB_NAME" <<EOF
         twoFA_verify BOOLEAN DEFAULT FALSE,
         friends JSON DEFAULT '[]',
         block_list JSON DEFAULT '[]',
-        first_login BOOLEAN DEFAULT TRUE
+        first_login BOOLEAN DEFAULT TRUE,
+        score INTEGER DEFAULT 0
     );
     CREATE TABLE IF NOT EXISTS messages (
         id INTEGER PRIMARY KEY,
@@ -71,19 +70,11 @@ sqlite3 "$DB_NAME" <<EOF
         round_number INTEGER NOT NULL
     );
 
-    INSERT INTO players(username, email, password, secret_otp) VALUES ("user1", "user1@gmail.com", '$2b$10$rqCwxklFfV6lllny4.6WMOIw2yGUyDXGdc7AD6LzUlh.KDe.UJwlu', "GULGAWRACMRFOLBK");
-    INSERT INTO players(username, email, password, secret_otp) VALUES ("user2", "user2@gmail.com", '$2b$10$rqCwxklFfV6lllny4.6WMOIw2yGUyDXGdc7AD6LzUlh.KDe.UJwlu', "GULGAWRACMRFOLBK");
-    INSERT INTO players(username, email, password, secret_otp) VALUES ("user3", "user3@gmail.com", '$2b$10$rqCwxklFfV6lllny4.6WMOIw2yGUyDXGdc7AD6LzUlh.KDe.UJwlu', "GULGAWRACMRFOLBK");
-    INSERT INTO players(username, email, password, secret_otp) VALUES ("user4", "user4@gmail.com", '$2b$10$rqCwxklFfV6lllny4.6WMOIw2yGUyDXGdc7AD6LzUlh.KDe.UJwlu', "GULGAWRACMRFOLBK");
-
-    # Random match history data
-    INSERT INTO Room(player1, player2, scoreLeft, scoreRight, winner) VALUES (1, 2, 30, 11, 1);
-    INSERT INTO Room(player1, player2, scoreLeft, scoreRight, winner) VALUES (1, 3, 20, 11, 3);
-    INSERT INTO Room(player1, player2, scoreLeft, scoreRight, winner) VALUES (2, 1, 25, 11, 2);
-    INSERT INTO Room(player1, player2, scoreLeft, scoreRight, winner) VALUES (4, 1, 25, 11, 4);
-    INSERT INTO Room(player1, player2, scoreLeft, scoreRight, winner) VALUES (3, 1, 22, 15, 1);
-
-
 EOF
+
+# INSERT INTO players(username, email, password, secret_otp) VALUES ("user1", "user1@gmail.com", '\$2b\$10\$rqCwxklFfV6lllny4.6WMOIw2yGUyDXGdc7AD6LzUlh.KDe.UJwlu', "GULGAWRACMRFOLBK");
+#     INSERT INTO players(username, email, password, secret_otp) VALUES ("user2", "user2@gmail.com", '\$2b\$10\$rqCwxklFfV6lllny4.6WMOIw2yGUyDXGdc7AD6LzUlh.KDe.UJwlu', "GULGAWRACMRFOLBK");
+#     INSERT INTO players(username, email, password, secret_otp) VALUES ("user3", "user3@gmail.com", '\$2b\$10\$rqCwxklFfV6lllny4.6WMOIw2yGUyDXGdc7AD6LzUlh.KDe.UJwlu', "GULGAWRACMRFOLBK");
+#     INSERT INTO players(username, email, password, secret_otp) VALUES ("user4", "user4@gmail.com", '\$2b\$10\$rqCwxklFfV6lllny4.6WMOIw2yGUyDXGdc7AD6LzUlh.KDe.UJwlu', "GULGAWRACMRFOLBK");
 
 tail -f /dev/null;

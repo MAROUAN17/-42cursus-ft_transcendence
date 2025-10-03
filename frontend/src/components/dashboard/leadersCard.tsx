@@ -5,11 +5,11 @@ import { useWebSocket } from "../contexts/websocketContext";
 interface props {
   rank: number;
   username: string;
-  name: string;
   score: number;
+  avatar: string;
 }
 
-const LeadersCard = ({ rank, username, name, score }: props) => {
+const LeadersCard = ({ rank, username, score, avatar }: props) => {
   const [show, setShow] = useState<boolean>(false);
 
   useEffect(() => {
@@ -22,7 +22,7 @@ const LeadersCard = ({ rank, username, name, score }: props) => {
     <div className="flex basis-1/3 h-full flex-col-reverse items-center gap-4 p-2">
       <div
         className={`bg-compBg transition-all duration-700 ease-in-out flex flex-col p-5 justify-between items-center text-white ${
-          rank == 3 ? "h-3/5" : rank == 2 ? "h-4/5" : rank == 1 ? "h-full" : ""
+          rank == 3 ? "h-2/5" : rank == 2 ? "h-3/5" : rank == 1 ? "h-4/5" : ""
         } ${
           show ? "overflow-hidden" : "h-5 overflow-hidden"
         } w-full rounded-[30px]`}
@@ -43,7 +43,7 @@ const LeadersCard = ({ rank, username, name, score }: props) => {
             {rank}
           </div>
           <div className="flex flex-col items-center">
-            <h3 className="font-bold text-2xl">{name}</h3>
+            <h3 className="font-bold text-2xl">{username}</h3>
             {/* <p className="font-extralight">@{username}</p> */}
           </div>
         </div>
@@ -52,15 +52,7 @@ const LeadersCard = ({ rank, username, name, score }: props) => {
           {score}
         </h2>
       </div>
-      <img src={`${
-              rank == 3
-                ? "/profile1.jpg"
-                : rank == 2
-                ? "/profile2.jpg"
-                : rank == 1
-                ? "/profile3.jpg"
-                : ""
-            }`} className="h-[60px] w-[60px] rounded-full object-cover" />
+      <img src={avatar} className="h-[60px] w-[60px] rounded-full object-cover" />
     </div>
   );
 };

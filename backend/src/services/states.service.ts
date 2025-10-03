@@ -60,7 +60,9 @@ export const get_profile = async (req: FastifyRequest, res: FastifyReply) => {
 
     const leaderboard = leaderboardStmt.all();
     const rank = leaderboard.findIndex((p: any) => p.id === playerId) + 1;
-    const friends = app.db.prepare("SELECT friends FROM players WHERE id = ?").get(playerId).friends;
+    const friends = app.db
+      .prepare("SELECT friends FROM players WHERE id = ?")
+      .get(playerId).friends;
     return res.status(200).send({
       playerId,
       matchesPlayed,
@@ -75,7 +77,10 @@ export const get_profile = async (req: FastifyRequest, res: FastifyReply) => {
   }
 };
 
-export const get_player_rooms = async (req: FastifyRequest, res: FastifyReply) => {
+export const get_player_rooms = async (
+  req: FastifyRequest,
+  res: FastifyReply
+) => {
   try {
     const playerId = Number((req.params as any)?.playerId);
     if (!playerId) {
@@ -114,12 +119,17 @@ export const get_player_rooms = async (req: FastifyRequest, res: FastifyReply) =
   }
 };
 
-export const get_leaderboard = async (req: FastifyRequest, res: FastifyReply) => {
+export const get_leaderboard = async (
+  req: FastifyRequest,
+  res: FastifyReply
+) => {
   try {
     const stmt = app.db.prepare(`
       SELECT 
         p.id,
         p.username,
+        p.score, 
+        p.avatar, 
         COALESCE(m.matches, 0) as matchesPlayed,
         COALESCE(w.wins, 0) as totalWins,
         CASE 
@@ -143,7 +153,7 @@ export const get_leaderboard = async (req: FastifyRequest, res: FastifyReply) =>
         WHERE winner IS NOT NULL
         GROUP BY winner
       ) w ON p.id = w.id
-      ORDER BY winRatio DESC, totalWins DESC
+      ORDER BY p.score DESC
     `);
 
     const leaderboard = stmt.all();
@@ -160,7 +170,10 @@ export const get_leaderboard = async (req: FastifyRequest, res: FastifyReply) =>
   }
 };
 
-export const get_player_week_activity = async (req: FastifyRequest, res: FastifyReply) => {
+export const get_player_week_activity = async (
+  req: FastifyRequest,
+  res: FastifyReply
+) => {
   try {
     const playerId = Number((req.params as any)?.playerId);
     if (!playerId) {
@@ -202,6 +215,8 @@ export const get_player_week_activity = async (req: FastifyRequest, res: Fastify
     });
   } catch (err: any) {
     console.error(err);
-    return res.status(500).send({ error: "Failed to fetch player weekly activity" });
+    return res
+      .status(500)
+      .send({ error: "Failed to fetch player weekly activity" });
   }
 };

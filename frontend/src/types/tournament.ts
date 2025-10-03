@@ -1,8 +1,10 @@
-export interface Tournament
-{
-    name: string,
-    players: number[],
-    createdAt: string,
-    status: string,
-    admin: number
+import type { ProfileUserInfo } from "./user";
+
+export interface Tournament {
+  id: number;
+  name: string;
+  players: ProfileUserInfo[];
+  createdAt: string;
+  status: "open" | "started" | "full";
+  admin: number;
 }

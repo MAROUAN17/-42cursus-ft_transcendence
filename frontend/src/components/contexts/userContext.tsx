@@ -12,14 +12,7 @@ export const UserProvider: React.FC<{ children?: React.ReactNode }> = ({
   children,
 }) => {
   const navigate = useNavigate();
-  const [user, setUser] = useState<ProfileUserInfo | undefined>({
-    id: 0,
-    avatar: "",
-    username: "",
-    email: "",
-    first_login: false,
-    intra_id: 0,
-  });
+  const [user, setUser] = useState<ProfileUserInfo | null>(null);
 
   useEffect(() => {
     api("/user", { withCredentials: true })

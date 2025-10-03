@@ -1,6 +1,10 @@
 import type { Tournament } from "../tournament/tournaments";
 
-const TournamentCard: React.FC<Tournament> = ({ tournament }) => {
+interface props {
+  tournament: Tournament;
+}
+
+const TournamentCard = ({ tournament } : props) => {
   return (
     <div className="h-1/2 p-2 overflow-hidden box-border">
       <div className="flex text-white  flex-col bg-compBg max-w-[253px] max-h-[264px] rounded-[30px] overflow-hidden">
@@ -34,7 +38,7 @@ const TournamentCard: React.FC<Tournament> = ({ tournament }) => {
                 {tournament?.players.map((player) => (
                   <img
                     className="rounded-full object-cover w-[20px] h-[20px]"
-                    src="/profile1.jpg"
+                    src={player?.avatar}
                     alt=""
                   />
                 ))}

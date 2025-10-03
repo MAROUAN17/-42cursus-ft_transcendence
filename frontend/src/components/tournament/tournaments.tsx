@@ -2,11 +2,12 @@ import { useEffect, useState } from "react";
 import { TournamentCard } from "./tournamentCart";
 import { FaSearch, FaPlus } from "react-icons/fa";
 import { CreateTournament } from "./CreateTournament";
+import type { ProfileUserInfo } from "../../types/user";
 
 export interface Tournament {
   id: number;
   name: string;
-  players: number[];
+  players: ProfileUserInfo[];
   createdAt: string;
   status: "open" | "started" | "full";
   admin: number;

@@ -22,11 +22,19 @@ function set_random_Info(game_info:GameInfo) {
 
 function saveData (room: Room) {
   if (!room.winner) return ;
+  if (room.tournamentId){
+    room.round = app.db.prepare("SELECT COUNT(*) as total FROM ROUND WHERE tournament_id = ?")
+      .get(room.tournamentId)?.total;
+    room.type = "tournament";
+  }
   if (room.type == "tournament")
   {
     try {
       app.db.prepare("INSERT INTO ROUND ( tournament_id, player1, player2, winner) VALUES ( (SELECT id FROM TOURNAMENT WHERE game_id = ?), ?, ?, ?)")
       .run( room.gameId, room.player1, room.player2, room.winner);
+      const score = room.round == 2 ? 300 : 100;
+      app.db.prepare ("UPDATE players SET score = score + ? WHERE id = ?")
+      .run(score, room.winner);
       console.log("-- Round registred successfully");
     } catch (err) {
       console.log(err);
@@ -36,7 +44,10 @@ function saveData (room: Room) {
     app.db
       .prepare("INSERT INTO Room( player1, player2, startedAt, scoreLeft, scoreRight, winner) VALUES (?, ?, ?, ?, ?, ?)")
       .run( room.player1, room.player2, room.startedAt?.toString(), room.scoreLeft, room.scoreRight, room.winner)
-    console.log("-- Room registred successfully");
+
+    app.db.prepare("UPDATE players SET score = score + ? WHERE id = ?")
+      .run(100, room.winner);
+      console.log("-- Room registred successfully");
     }catch (err){
     console.log(err);
   }
