@@ -10,10 +10,7 @@ export default function HistoryCard({ match, userId }: props) {
     <div className="bg-compBg/20 px-12 py-5 text-white flex justify-between items-center">
       <div className="flex justify-center items-center space-x-3 w-[200px]">
         <img src="/photo.png" className="object-cover rounded-full" width="40px" height="40px" />
-        {/* <div className=""> */}
         <h1 className="font-bold">{userId == match.player1 ? match.player2_name : match.player1_name}</h1>
-        {/* <p className="text-sm font-light">Player player</p> */}
-        {/* </div> */}
       </div>
       <div className="flex justify-center w-[200px]">
         <h1 className="font-bold">Player vs Player</h1>

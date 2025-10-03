@@ -31,7 +31,7 @@ import { useWebSocket } from "../contexts/websocketContext";
 import api from "../../axios";
 import { ToastContainer, toast } from "react-toastify";
 import { useUserContext } from "../contexts/userContext";
-import type { MatchHistory, UserHistory, UserStats } from "../../types/profile";
+import type { ChartData, MatchHistory, UserHistory, UserStats } from "../../types/profile";
 
 export default function Profile() {
   const navigate = useNavigate();
@@ -64,15 +64,35 @@ export default function Profile() {
   });
   let usernamePattern = new RegExp("^[a-zA-Z0-9]+$");
   const { send, addHandler } = useWebSocket();
+  const [data, setData] = useState<ChartData[]>([]);
 
-  const data = [
-    { uv: 12, pv: 55 },
-    { uv: 13, pv: 30 },
-    { uv: 14, pv: 45 },
-    { uv: 15, pv: 50 },
-    { uv: 16, pv: 60 },
-  ];
+  function getWeekHistory(historyData: MatchHistory[]) {
+    const tmpData: ChartData[] = [
+      { uv: 0, pv: 0 },
+      { uv: 0, pv: 0 },
+      { uv: 0, pv: 0 },
+      { uv: 0, pv: 0 },
+      { uv: 0, pv: 0 },
+    ];
+    for (let index = 0; index < historyData.length && index < 5; index++) {
+      tmpData[4 - index] = {
+        pv: Number(
+          ((historyData.slice(index).filter((match) => match.winner == currUser.id).length / historyData.slice(index).length) * 100).toFixed(1)
+        ),
+        uv: historyData.slice(index).length,
+      };
+      console.log(
+        "match -> ",
+        historyData.slice(index).length,
+        " count -> ",
+        (historyData.slice(index).filter((match) => match.winner == currUser.id).length / historyData.slice(index).length) * 100
+      );
+    }
+    setData(tmpData);
+    // historyData.map((match, index) => {
 
+    // });
+  }
   function CustomTooltip({ payload, label, active }: any) {
     if (active) {
       return (
@@ -183,6 +203,8 @@ export default function Profile() {
     api.get("/states/player-rooms/" + currUser.id, { withCredentials: true }).then(function (res: AxiosResponse) {
       console.log("history -> ", res.data);
       setHistory(res.data);
+      const tmp = [...res.data.rooms];
+      getWeekHistory(tmp);
     });
     api.get("/states/profile/" + currUser.id, { withCredentials: true }).then(function (res: AxiosResponse) {
       console.log("stats -> ", res.data);
@@ -365,7 +387,7 @@ export default function Profile() {
             <ResponsiveContainer width="100%" height="100%">
               <LineChart width={300} height={100} data={data}>
                 <XAxis dataKey="uv" />
-                <YAxis />
+                <YAxis domain={[0, 100]} tickFormatter={(value) => `${value}%`} />
                 <Line type="monotone" isAnimationActive={!hasAnimated} dataKey="pv" stroke="#B13BFF" strokeWidth={4} />
                 <Tooltip content={<CustomTooltip />} />
               </LineChart>
@@ -507,9 +529,10 @@ export default function Profile() {
             <h1 className="text-white font-bold">History</h1>
             <h1 className="text-white font-bold">
               <span className="text-neon">
-                {currPage * 5 - 4} - {history && (currPage * 5 > history.rooms.length ? history.rooms.length : currPage * 5)}{" "}
+                {currPage * 5 - 4} -{" "}
+                {history && (currPage * 5 > history.rooms.length ? (!history.rooms.length ? 1 : history.rooms.length) : currPage * 5)}{" "}
               </span>
-              of {history?.rooms.length}
+              of {history?.rooms.length == 0 ? 1 : history?.rooms.length}
             </h1>
           </div>
           <div>
@@ -539,21 +562,40 @@ export default function Profile() {
             </div>
           </div>
           {/* values */}
-          {history
-            ? history.rooms.slice(0, 5).map((match: MatchHistory) =>
-                user ? (
+          <ul>
+            {history?.rooms.length ? (
+              history.rooms
+                .slice(currPage * 5 - 5, currPage * 5 > history.rooms.length ? history.rooms.length : currPage * 5)
+                .map((match: MatchHistory) =>
+                  user ? (
+                    <li key={match.id}>
+                      <HistoryCard match={match} userId={currUser.id} />
+                      <hr className="border-1 border-white/20" />
+                    </li>
+                  ) : null
+                )
+            ) : (
+              <li className="bg-compBg/20 p-7 text-white flex flex-col justify-center items-center">
+                <img className="h-[300px] opacity-90" src="/no_history.png" />
+                {user?.id == currUser.id ? (
                   <>
-                    <HistoryCard match={match} userId={user.id} />
-                    <hr className="border-1 border-white/20" />
+                    <h1 className="font-bold text-[30px]">No Matches Found</h1>
+                    <p className="font-normal text-[20px]">Play your first game to start building your history.</p>
                   </>
-                ) : null
-              )
-            : null}
+                ) : (
+                  <>
+                    <h1 className="font-bold text-[30px]">No Matches Found</h1>
+                    <p className="font-normal text-[20px]">This player hasn't played any games yet.</p>
+                  </>
+                )}
+              </li>
+            )}
+          </ul>
         </div>
         <div className="flex mt-3 justify-between">
           <div>
             <h1 className="text-white">
-              Page <span className="text-neon">{currPage}</span> of {history && Math.ceil(history?.rooms.length / 5)}
+              Page <span className="text-neon">{currPage}</span> of {history && (history.rooms.length == 0 ? 1 : Math.ceil(history.rooms.length / 5))}
             </h1>
           </div>
           <div className="flex gap-3">
@@ -573,7 +615,6 @@ export default function Profile() {
                 className="text-white"
               />
             </button>
-            {/* <h1 className="text-white">Rows per page</h1> */}
           </div>
         </div>
       </div>

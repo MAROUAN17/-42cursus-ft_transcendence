@@ -12,7 +12,6 @@ export const get_profile = async (req: FastifyRequest, res: FastifyReply) => {
       WHERE player1 = ? OR player2 = ?
     `);
     const matchesPlayed = matchesStmt.get(playerId, playerId)?.total || 0;
-
     const winsStmt = app.db.prepare(`
       SELECT COUNT(*) as total 
       FROM Room 
