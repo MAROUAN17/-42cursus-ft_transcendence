@@ -1,5 +1,5 @@
 import { useState, createContext, useContext, useEffect, useRef } from "react";
-import { type notificationPacket, type websocketContextType, type websocketPacket } from "../../../../backend/src/models/webSocket.model";
+import type { websocketContextType, websocketPacket } from "../../types/websocket";
 
 const WebsocketContext = createContext<websocketContextType | undefined>(undefined);
 

@@ -1,5 +1,4 @@
 import { TiDelete } from "react-icons/ti";
-import type { notificationPacket, websocketPacket } from "../../../../backend/src/models/webSocket.model";
 import { useNavigate } from "react-router";
 import { useState } from "react";
 import { FaCheck } from "react-icons/fa";
@@ -7,6 +6,7 @@ import { IoClose } from "react-icons/io5";
 import axios from "axios";
 import api from "../../axios";
 import { useWebSocket } from "../contexts/websocketContext";
+import type { notificationPacket, websocketPacket } from "../../types/websocket";
 
 interface props {
   notification: notificationPacket;

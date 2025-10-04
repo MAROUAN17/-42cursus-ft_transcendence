@@ -11,14 +11,11 @@ import { IoChatbubblesSharp } from "react-icons/io5";
 import MessageBubble from "./messageBubble";
 import { useWebSocket } from "../contexts/websocketContext";
 import api from "../../axios";
-import type {
-  messagePacket,
-  UsersLastMessage,
-} from "../../../../backend/src/models/chat";
-import type { websocketPacket } from "../../../../backend/src/models/webSocket.model";
 import { useUserContext } from "../contexts/userContext";
 import LogCard from "./logCard";
 import type { Tournament } from "../../types/tournament";
+import type { UsersLastMessage } from "../../types/chat";
+import type { messagePacket, websocketPacket } from "../../types/websocket";
 import type { Leader } from "../../types/leader";
 
 export default function Dashboard() {
@@ -381,7 +378,6 @@ export default function Dashboard() {
                   }}
                   user={friend.user}
                   unreadCount={friend.unreadCount}
-                  isOnline={friend.user.online}
                 />
               ))}
           </div>

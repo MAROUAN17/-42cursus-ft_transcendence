@@ -2,12 +2,11 @@ import type { UserInfos } from "../../types/user";
 
 interface props {
   unreadCount: number;
-  isOnline: boolean;
   user: UserInfos;
   onclick: () => void;
 }
 
-const MessageBubble = ({ unreadCount, isOnline, user, onclick }: props) => {
+const MessageBubble = ({ unreadCount, user, onclick }: props) => {
   return (
     <div key={user.id} onClick={onclick} className="relative w-[40px] h-[40px] rounded-full">
       <div

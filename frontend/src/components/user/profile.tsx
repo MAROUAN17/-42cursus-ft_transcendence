@@ -29,7 +29,6 @@ import { useEffect, useState, useRef } from "react";
 import { type AxiosResponse } from "axios";
 import { useParams, useNavigate } from "react-router";
 import type { PublicUserInfos } from "../../types/user";
-import type { websocketPacket } from "../../../../backend/src/models/webSocket.model";
 import { useWebSocket } from "../contexts/websocketContext";
 import api from "../../axios";
 import { ToastContainer, toast } from "react-toastify";
@@ -40,6 +39,7 @@ import type {
   UserHistory,
   UserStats,
 } from "../../types/profile";
+import type { websocketPacket } from "../../types/websocket";
 
 export default function Profile() {
   const navigate = useNavigate();
@@ -673,17 +673,12 @@ export default function Profile() {
           <ul>
             {history?.rooms.length ? (
               history.rooms
-                .slice(
-                  currPage * 5 - 5,
-                  currPage * 5 > history.rooms.length
-                    ? history.rooms.length
-                    : currPage * 5
-                )
-                .map((match: MatchHistory) =>
+                .slice(currPage * 5 - 5, currPage * 5 > history.rooms.length ? history.rooms.length : currPage * 5)
+                .map((match: MatchHistory, index, arr) =>
                   user ? (
                     <li key={match.id}>
                       <HistoryCard match={match} userId={currUser.id} />
-                      <hr className="border-1 border-white/20" />
+                      {index + 1 < arr.length ? <hr className="border-1 border-white/20" /> : null}
                     </li>
                   ) : null
                 )
@@ -726,7 +721,7 @@ export default function Profile() {
               }}
               className="bg-compBg/20 h-[40px] w-[40px] flex justify-center items-center rounded-lg"
             >
-              <FaArrowLeft className="text-white" />
+              <FaArrowLeft className={`${currPage > 1 ? "text-white" : "text-white/50"}`} />
             </button>
             <button className="bg-compBg/20 h-[40px] w-[40px] flex justify-center items-center rounded-lg">
               <FaArrowRight
@@ -737,7 +732,7 @@ export default function Profile() {
                       : null
                     : null;
                 }}
-                className="text-white"
+                className={`${history ? (currPage < history.rooms.length / 5 ? "text-white" : "text-white/50") : "text-white/50"}`}
               />
             </button>
           </div>

@@ -1,5 +1,5 @@
 import { IoCheckmark, IoCheckmarkDoneOutline } from "react-icons/io5";
-import type { messagePacket } from "../../../../backend/src/models/chat";
+import type { messagePacket } from "../../types/websocket";
 
 interface props {
   type: "sender" | "recipient";

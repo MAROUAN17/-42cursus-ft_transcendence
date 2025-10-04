@@ -1,8 +1,8 @@
 import { useNavigate } from "react-router";
-import type { userSearch } from "../../../../backend/src/models/user.model";
 import { BsPersonFillAdd } from "react-icons/bs";
 import { AiFillMessage } from "react-icons/ai";
 import { TbClockHour2Filled } from "react-icons/tb";
+import type { userSearch } from "../../types/user";
 
 interface props {
   user: userSearch;

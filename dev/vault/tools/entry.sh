@@ -6,9 +6,17 @@ export VAULT_SKIP_VERIFY=true
 
 vault server -config=/vault/config/vault.hcl &
 
-sleep 5
+until nc -z 127.0.0.1 8200; do
+  echo "Waiting for Vault Server..."
+  sleep 1
+done
 
-vault operator init -key-shares=5 -key-threshold=3 > /vault/init_keys.txt
+if vault status 2>/dev/null | grep 'Initialized.*false'; then
+  echo "Initializing Vault..."
+  vault operator init -key-shares=5 -key-threshold=3 > /vault/init_keys.txt
+else
+  echo "Vault already initialized"
+fi
 
 export TOKEN=$(grep "Root Token" /vault/init_keys.txt | head -1 | awk '{print $4}')
 export KEYS=$(grep "Unseal Key" /vault/init_keys.txt | head -3 | awk '{print $4}')
