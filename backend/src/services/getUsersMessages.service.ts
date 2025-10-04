@@ -1,5 +1,5 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
-import type { User, userInfos } from "../models/user.model.js";
+import type { UserInfos } from "../models/user.model.js";
 import app from "../server.js";
 import type { Payload, UsersLastMessage, messagePacket, messagePacketDB } from "../models/chat.js";
 
@@ -14,7 +14,7 @@ export const getUsersMessages = async (req: FastifyRequest, res: FastifyReply) =
     }
     const currUserId = payload.id;
     let usersAndMessages: UsersLastMessage[] = [];
-    const users: userInfos[] = app.db.prepare("SELECT id, username, email, avatar, online FROM players WHERE id != ?").all(currUserId) as userInfos[];
+    const users: UserInfos[] = app.db.prepare("SELECT id, username, email, avatar, online FROM players WHERE id != ?").all(currUserId) as UserInfos[];
     users.map((user) => {
       const query: messagePacketDB | undefined = app.db
         .prepare(

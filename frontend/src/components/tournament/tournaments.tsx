@@ -2,12 +2,12 @@ import { useEffect, useState } from "react";
 import { TournamentCard } from "./tournamentCart";
 import { FaSearch, FaPlus } from "react-icons/fa";
 import { CreateTournament } from "./CreateTournament";
-import type { ProfileUserInfo } from "../../types/user";
+import type { PublicUserInfos } from "../../types/user";
 
 export interface Tournament {
   id: number;
   name: string;
-  players: ProfileUserInfo[];
+  players: PublicUserInfos[];
   createdAt: string;
   status: "open" | "started" | "full";
   admin: number;
@@ -39,10 +39,10 @@ export function Tournaments() {
   }, []);
   if (loading) return <p>Loading tournaments...</p>;
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900 p-6">
+    <div className="font-poppins min-h-screen w-full from-blue-900 via-purple-900 to-indigo-900 p-6">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-white mb-2 tracking-wider">
+          <h1 className="text-6xl font-bold text-white mb-2 tracking-wider">
             GLOBAL TOURNAMENTS
           </h1>
           <p className="text-purple-200 text-lg">

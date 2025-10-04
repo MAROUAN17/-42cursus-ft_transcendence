@@ -1,13 +1,13 @@
 import { FaUser } from "react-icons/fa";
-import type { userInfos } from "../../../../backend/src/models/user.model";
 import { GiPingPongBat } from "react-icons/gi";
 import { useState } from "react";
 import { useNavigate } from "react-router";
+import type { UserInfos } from "../../types/user";
 
 interface props {
   inGame: boolean;
   isOnline: boolean;
-  user: userInfos;
+  user: UserInfos;
   friendOpt: Number;
   setFriendOpt: () => void;
 }

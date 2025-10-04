@@ -1,12 +1,15 @@
 import { useEffect, useState } from "react";
 import type { Leader } from "../../types/leader";
 import api from "../../axios";
+import { useUserContext } from "../contexts/userContext";
 import { BsPersonFillAdd } from "react-icons/bs";
 import LogCard from "../dashboard/logCard";
+import { UserContext } from "../contexts/userContext";
 
 export const Leaderboard = () => {
   const [leaders, setLeaders] = useState<Leader[]>([]);
   const [show, setShow] = useState<boolean>(false);
+  const {user} = useUserContext();
 
   useEffect(() => {
     setTimeout(() => setShow(true), 100);
@@ -57,7 +60,7 @@ export const Leaderboard = () => {
                   {leader.rank}
                 </div>
                 <div className="flex flex-col items-center">
-                  <h3 className="font-bold text-2xl">{leader.username}</h3>
+                  <h3 className={`font-bold text-2xl ${user?.username === leader.username ? 'text-neon' : null}`}>{leader.username}</h3>
                 </div>
               </div>
               <h2
@@ -88,7 +91,7 @@ export const Leaderboard = () => {
         {leaders.slice(3).map((leader: Leader) => (
           <div
             key={leader.rank}
-            className="px-5 py-4 rounded-full bg-compBg flex gap-3 items-center"
+            className={`px-5 py-4 rounded-full flex gap-3 items-center ${user?.username === leader.username ? 'bg-compBg/60' : 'bg-compBg'}`}
           >
             <h1 className="text-white font-bold text-2xl">{leader.rank}</h1>
             <img

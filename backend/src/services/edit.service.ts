@@ -1,13 +1,13 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
 import app from "../server.js";
-import type { User, LoginBody } from "../models/user.model.js";
+import type { LoginBody, UserInfos } from "../models/user.model.js";
 
 export const editUserInfos = async (
   req: FastifyRequest<{ Body: LoginBody }>,
   res: FastifyReply
 ) => {
   try {
-    let user = {} as User | undefined;
+    let user = {} as UserInfos | undefined;
     let { id, username, email } = req.body;
 
     if (!id) return;
@@ -32,13 +32,13 @@ export const editUserInfos = async (
     //check if username user exists
     user = app.db
       .prepare("SELECT * from players WHERE username = ? AND id <> ?")
-      .get(username, id) as User | undefined;
+      .get(username, id) as UserInfos | undefined;
     if (user) return res.status(401).send({ error: "Username already exists" });
 
     //check if user email already exists
     user = app.db
       .prepare("SELECT * from players WHERE email = ? AND id <> ?")
-      .get(email, id) as User | undefined;
+      .get(email, id) as UserInfos | undefined;
     if (user) return res.status(401).send({ error: "Email already exist!" });
 
     const updatedUser = app.db
@@ -65,7 +65,7 @@ export const setAvatar = async (
 
     const user = app.db
       .prepare("SELECT * FROM players WHERE id = ?")
-      .get(id) as User | null;
+      .get(id) as UserInfos | null;
     if (!user) {
       return res.status(404).send({ error: "User not found" });
     }

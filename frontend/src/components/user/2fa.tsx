@@ -1,9 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { useLocation, useNavigate, useSearchParams } from "react-router";
-import api from "../../axios";
-import { useWebSocket } from "../contexts/websocketContext";
-import type { ProfileUserInfo } from "../../types/user";
 
 function Page2FA() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -62,7 +59,7 @@ function Page2FA() {
   };
 
   useEffect(() => {
-    console.log('rememer me -> ', rememberMe);
+    console.log("rememer me -> ", rememberMe);
     inputRefs.current[0]?.focus();
     const intervId = setInterval(() => {
       setTimerVerify((prevTime) => {

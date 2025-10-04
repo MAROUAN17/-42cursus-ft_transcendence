@@ -11,7 +11,7 @@ export function TournamentCard({
   status,
 }: Tournament) {
   const { user } = useWebSocket();
-  const label = players.includes(user?.id || 0) ? "joined" : "join";
+  const label = players.includes(user?.id || 0) ? "JOINED" : "JOIN";
   const maxParticipants = 4;
   const navigate = useNavigate();
   const handelJoin = async () => {
@@ -35,7 +35,7 @@ export function TournamentCard({
     }
   };
   return (
-    <div className="rounded-2xl overflow-hidden bg-gradient-to-b from-purple-600/90 to-purple-800/90 border border-purple-500/20 shadow-lg hover:shadow-purple-500/30 hover:scale-105 transition-transform duration-300">
+    <div className="font-poppins rounded-2xl overflow-hidden bg-gradient-to-b from-purple-600/90 to-purple-800/90 border border-purple-500/20 shadow-lg hover:shadow-purple-500/30 hover:scale-105 transition-transform duration-300">
       <div
         className="h-40 relative overflow-hidden cursor-pointer"
         onClick={() => navigate(`/bracket/${id}`)}

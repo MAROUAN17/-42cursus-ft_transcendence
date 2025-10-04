@@ -1,8 +1,6 @@
 import type { FastifyRequest, FastifyReply } from "fastify";
 import {
-  type User,
-  type LoginBody,
-  type userInfos,
+  type UserInfos
 } from "../models/user.model.js";
 import app from "../server.js";
 
@@ -15,7 +13,7 @@ export const requestNewToken = async (
     await app.jwt.jwt2.verify(refreshToken);
 
     const infos = (await app.jwt.jwt2.verify(refreshToken)) as
-      | userInfos
+      | UserInfos
       | undefined;
 
     const newAccessToken = app.jwt.jwt1.sign(

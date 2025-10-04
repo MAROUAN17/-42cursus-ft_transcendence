@@ -1,7 +1,6 @@
 import axios from "axios";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
-import type { PUserInfo } from "../../types/user";
 import { GrFormNextLink } from "react-icons/gr";
 import TournamentCard from "./tournamentCard";
 import { AreaChart, Area, ResponsiveContainer, Tooltip } from "recharts";
@@ -10,10 +9,6 @@ import { MdGroups } from "react-icons/md";
 import FriendBubble from "./friendBubble";
 import { IoChatbubblesSharp } from "react-icons/io5";
 import MessageBubble from "./messageBubble";
-import type {
-  User,
-  userInfos,
-} from "../../../../backend/src/models/user.model";
 import { useWebSocket } from "../contexts/websocketContext";
 import api from "../../axios";
 import type {
@@ -22,7 +17,6 @@ import type {
 } from "../../../../backend/src/models/chat";
 import type { websocketPacket } from "../../../../backend/src/models/webSocket.model";
 import { useUserContext } from "../contexts/userContext";
-import { BsPersonFillAdd } from "react-icons/bs";
 import LogCard from "./logCard";
 import type { Tournament } from "../../types/tournament";
 import type { Leader } from "../../types/leader";
@@ -315,7 +309,7 @@ export default function Dashboard() {
           <div className="flex flex-col basis-2/5 h-full gap-2">
             <div className="text-white flex justify-between items-center">
               <h3 className="font-bold text-[35px]">Leaders</h3>
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1" onClick={() => navigate('/leaderboard')}>
                 <h4>View All</h4>
                 <GrFormNextLink />
               </div>

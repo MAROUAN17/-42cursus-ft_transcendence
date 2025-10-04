@@ -1,8 +1,6 @@
 import type { FastifyRequest, FastifyReply } from "fastify";
 import {
-  type User,
   type LoginBody,
-  type userInfos,
 } from "../models/user.model.js";
 import app from "../server.js";
 import qrcode from "qrcode";

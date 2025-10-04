@@ -1,10 +1,9 @@
-import { useNavigate } from "react-router";
-import type { userInfos } from "../../../../backend/src/models/user.model";
+import type { UserInfos } from "../../types/user";
 
 interface props {
   unreadCount: number;
   isOnline: boolean;
-  user: userInfos;
+  user: UserInfos;
   onclick: () => void;
 }
 

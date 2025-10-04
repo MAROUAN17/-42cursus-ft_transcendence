@@ -1,7 +1,6 @@
 import {
   type User,
   type LoginBody,
-  type userPass,
 } from "../models/user.model.js";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import bcrypt from "bcrypt";

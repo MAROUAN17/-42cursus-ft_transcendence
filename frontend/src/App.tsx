@@ -29,21 +29,21 @@ import {
   checkAuthLoader,
   checkLoginPageLoader,
 } from "./components/loaders/checkAuthUser";
-import checkFirstLoginLoader from "./components/loaders/checkFirstLogin"
+import checkFirstLoginLoader from "./components/loaders/checkFirstLogin";
 import { check2FALoader } from "./components/loaders/check2fa";
 import AvatarSelection from "./components/user/avatar";
 import { UserProvider } from "./components/contexts/userContext";
-import Home from './components/home/home';
-import {Leaderboard} from "./components/game/leaderboard";
+import Home from "./components/home/home";
+import { Leaderboard } from "./components/game/leaderboard";
 
 export default function App() {
   let router = createBrowserRouter([
     {
       element: (
         <WebSocketProvider>
-        <UserProvider>
-          <Layout />
-        </UserProvider>
+          <UserProvider>
+            <Layout />
+          </UserProvider>
         </WebSocketProvider>
       ),
       loader: checkAuthLoader,
@@ -72,6 +72,10 @@ export default function App() {
         {
           path: "/leaderboard",
           Component: Leaderboard,
+        },
+        {
+          path: "/tournaments",
+          Component: Tournaments,
         },
       ],
     },
@@ -110,20 +114,16 @@ export default function App() {
       Component: RGame,
     },
     {
-      path: '/pairing',
+      path: "/pairing",
       element: (
         <WebSocketProvider>
           <Pairing />
         </WebSocketProvider>
-      )
+      ),
     },
     {
-      path:'/tournament',
-      Component:Tournament,
-    },
-    {
-      path: '/tournaments',
-      Component: Tournaments,
+      path: "/tournament",
+      Component: Tournament,
     },
     {
       path: "/bracket/:id",
@@ -134,21 +134,13 @@ export default function App() {
       ),
     },
     {
-      path: '/tournaments',
-      element: (
-        <WebSocketProvider>
-          <Tournaments />
-        </WebSocketProvider>
-      )
-    },
-    {
       path: "/avatar",
       element: (
         <UserProvider>
-          <AvatarSelection/>
+          <AvatarSelection />
         </UserProvider>
       ),
-      loader: checkFirstLoginLoader
+      loader: checkFirstLoginLoader,
     },
     {
       path: "/404",

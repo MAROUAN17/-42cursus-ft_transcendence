@@ -221,8 +221,6 @@ export const uploadUserInfos = async (
     const accessToken = req.cookies.accessToken;
     const payload = app.jwt.jwt1.decode(accessToken) as Payload;
 
-    console.log('---------------------------------')
-
     const fileData = await req.file();
 
     console.log(fileData);

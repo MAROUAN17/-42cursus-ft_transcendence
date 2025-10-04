@@ -1,11 +1,5 @@
 import type { messagePacket } from "./chat.js";
 
-export interface ProfileUserInfo {
-  id: number;
-  username: string;
-  email: string;
-}
-
 export interface ChatPacket {
   type: "chat";
   data: messagePacket;

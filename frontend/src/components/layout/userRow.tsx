@@ -1,10 +1,7 @@
 import { useNavigate } from "react-router";
-import type { userInfos, userSearch } from "../../../../backend/src/models/user.model";
+import type { userSearch } from "../../../../backend/src/models/user.model";
 import { BsPersonFillAdd } from "react-icons/bs";
 import { AiFillMessage } from "react-icons/ai";
-import { FaUserClock } from "react-icons/fa";
-import type { websocketPacket } from "../../../../backend/src/models/webSocket.model";
-import { useWebSocket } from "../contexts/websocketContext";
 import { TbClockHour2Filled } from "react-icons/tb";
 
 interface props {

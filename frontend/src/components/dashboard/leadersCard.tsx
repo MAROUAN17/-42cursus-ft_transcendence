@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useWebSocket } from "../contexts/websocketContext";
+import { useUserContext } from "../contexts/userContext";
 
 interface props {
   rank: number;
@@ -11,6 +12,7 @@ interface props {
 
 const LeadersCard = ({ rank, username, score, avatar }: props) => {
   const [show, setShow] = useState<boolean>(false);
+  const { user } = useUserContext();
 
   useEffect(() => {
     setTimeout(() => {
@@ -43,16 +45,29 @@ const LeadersCard = ({ rank, username, score, avatar }: props) => {
             {rank}
           </div>
           <div className="flex flex-col items-center">
-            <h3 className="font-bold text-2xl">{username}</h3>
+            <h3 className={`font-bold text-2xl ${user?.username === username ? 'text-neon' : null}`}>{username}</h3>
             {/* <p className="font-extralight">@{username}</p> */}
           </div>
         </div>
-        <h2 className={`font-bold text-shadow-[50px] text-shadow-black text-3xl
-          ${rank == 3 ? 'text-[#00D95F]' : rank == 2 ? 'text-[#009BD6]' : rank == 1 ? "text-[#FFAA00]" : ''}`}>
+        <h2
+          className={`font-bold text-shadow-[50px] text-shadow-black text-3xl
+          ${
+            rank == 3
+              ? "text-[#00D95F]"
+              : rank == 2
+              ? "text-[#009BD6]"
+              : rank == 1
+              ? "text-[#FFAA00]"
+              : ""
+          }`}
+        >
           {score}
         </h2>
       </div>
-      <img src={avatar} className="h-[60px] w-[60px] rounded-full object-cover" />
+      <img
+        src={avatar}
+        className="h-[60px] w-[60px] rounded-full object-cover"
+      />
     </div>
   );
 };

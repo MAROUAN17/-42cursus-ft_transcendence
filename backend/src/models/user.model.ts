@@ -1,14 +1,3 @@
-export interface User {
-  id: number;
-  avatar: string;
-  username: string;
-  email: string;
-  password: string;
-  secret_otp: string;
-  logged_in: boolean;
-  twoFA_verify: boolean;
-}
-
 export interface LoginBody {
   id: number;
   username: string;
@@ -21,14 +10,22 @@ export interface LoginBody {
   rememberMe: boolean;
 }
 
-export interface userInfos {
+export interface UserInfos {
   id: number;
-  email: string;
-  username: string;
   avatar: string;
+  username: string;
+  email: string;
+  first_login: boolean;
+  intra_id: number;
   online: boolean;
-  logged_in: boolean;
-  twoFA_verify: boolean;
+}
+
+export interface PublicUserInfos {
+  avatar: string;
+  username: string;
+  email: string;
+  first_login: boolean;
+  online: boolean;
 }
 
 export interface userSearch {
@@ -36,9 +33,5 @@ export interface userSearch {
   username: string;
   avatar: string;
   mutualsCount: number;
-  status: "friend" | "sentReq" | "notFriend"
-}
-
-export interface userPass {
-  password: string;
+  status: "friend" | "sentReq" | "notFriend";
 }

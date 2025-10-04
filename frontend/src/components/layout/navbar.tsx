@@ -1,9 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { FaSearch } from "react-icons/fa";
 import { IoNotifications } from "react-icons/io5";
-import axios from "axios";
-import type { User, userInfos, userSearch } from "../../../../backend/src/models/user.model";
-import { IoIosArrowDropdown } from "react-icons/io";
+import type { userSearch } from "../../../../backend/src/models/user.model";
 import { RiArrowDropDownLine } from "react-icons/ri";
 import { TiDelete } from "react-icons/ti";
 import type { notificationPacket, websocketPacket } from "../../../../backend/src/models/webSocket.model";
@@ -13,7 +11,6 @@ import { useNavigate } from "react-router";
 import api from "../../axios";
 import { FiLogOut } from "react-icons/fi";
 import { useUserContext } from "../contexts/userContext";
-import type { UserInfo } from "../../types/user";
 import UserRow from "./userRow";
 
 const Navbar = () => {

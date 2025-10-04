@@ -1,23 +1,19 @@
-export interface UserInfo
+export interface UserInfos
 {
-    username: string,
-    email: string,
-    password: string
+    id: number;
+    avatar: string;
+    username: string;
+    email: string;
+    first_login: boolean;
+    intra_id: number;
+    online: boolean;
 }
 
-export interface PUserInfo
+export interface PublicUserInfos
 {
-    id: number,
-    username: string,
-    email: string,
-}
-
-export interface ProfileUserInfo
-{
-    id: number,
-    avatar: string,
-    username: string,
-    email: string,
-    first_login: boolean,
-    intra_id: number
+    avatar: string;
+    username: string;
+    email: string;
+    first_login: boolean;
+    online: boolean;
 }

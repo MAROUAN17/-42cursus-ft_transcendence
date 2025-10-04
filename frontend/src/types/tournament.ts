@@ -1,9 +1,9 @@
-import type { ProfileUserInfo } from "./user";
+import type { PublicUserInfos } from "./user";
 
 export interface Tournament {
   id: number;
   name: string;
-  players: ProfileUserInfo[];
+  players: PublicUserInfos[];
   createdAt: string;
   status: "open" | "started" | "full";
   admin: number;
