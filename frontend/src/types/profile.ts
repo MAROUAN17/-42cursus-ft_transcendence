@@ -4,6 +4,8 @@ export interface MatchHistory {
   player2: number;
   player1_name: string;
   player2_name: string;
+  p1_avatar: string;
+  p2_avatar: string;
   scoreLeft: number;
   scoreRight: number;
   startedAt: string;

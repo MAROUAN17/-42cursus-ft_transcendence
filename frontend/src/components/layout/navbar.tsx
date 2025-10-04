@@ -1,10 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
 import { FaSearch } from "react-icons/fa";
 import { IoNotifications } from "react-icons/io5";
-import type { userSearch } from "../../../../backend/src/models/user.model";
+import axios from "axios";
+import { IoIosArrowDropdown } from "react-icons/io";
 import { RiArrowDropDownLine } from "react-icons/ri";
 import { TiDelete } from "react-icons/ti";
-import type { notificationPacket, websocketPacket } from "../../../../backend/src/models/webSocket.model";
 import { useWebSocket } from "../contexts/websocketContext";
 import NotificationElement from "./notificationElement";
 import { useNavigate } from "react-router";
@@ -12,6 +12,8 @@ import api from "../../axios";
 import { FiLogOut } from "react-icons/fi";
 import { useUserContext } from "../contexts/userContext";
 import UserRow from "./userRow";
+import type { userSearch } from "../../types/user";
+import type { notificationPacket, websocketPacket } from "../../types/websocket";
 
 const Navbar = () => {
   const navigate = useNavigate();

@@ -7,14 +7,14 @@ import UserBubble from "./UserBubble";
 import { IoCheckmark } from "react-icons/io5";
 import type { UserInfos } from "../../types/user";
 import { useState, useEffect, useRef } from "react";
-import type { UsersLastMessage, messagePacket } from "../../../../backend/src/models/chat";
 import ChatBubble from "./chatBubble";
 import { v4 as uuidv4 } from "uuid";
 import { useWebSocket } from "../contexts/websocketContext";
-import type { notificationPacket, websocketPacket } from "../../../../backend/src/models/webSocket.model";
 import { useParams, useNavigate } from "react-router";
 import { MdBlock } from "react-icons/md";
 import api from "../../axios";
+import type { messagePacket, websocketPacket } from "../../types/websocket";
+import type { UsersLastMessage } from "../../types/chat";
 
 const Chat = () => {
   const { username } = useParams<{ username?: string }>();
