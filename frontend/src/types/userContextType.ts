@@ -1,5 +1,5 @@
-import type { PublicUserInfos } from "./user";
+import type { UserInfos } from "./user";
 
 export interface userContextType {
-  user: PublicUserInfos | undefined;
+  user: UserInfos | undefined;
 }

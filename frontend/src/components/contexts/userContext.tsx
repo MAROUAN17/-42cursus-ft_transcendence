@@ -1,5 +1,5 @@
 import { createContext, useEffect, useState, useContext } from "react";
-import type { PublicUserInfos } from "../../types/user";
+import type { UserInfos } from "../../types/user";
 import type { userContextType } from "../../types/userContextType";
 import api from "../../axios";
 import { useNavigate } from "react-router";
@@ -12,7 +12,7 @@ export const UserProvider: React.FC<{ children?: React.ReactNode }> = ({
   children,
 }) => {
   const navigate = useNavigate();
-  const [user, setUser] = useState<PublicUserInfos | undefined>(undefined);
+  const [user, setUser] = useState<UserInfos | undefined>(undefined);
 
   useEffect(() => {
     api("/user", { withCredentials: true })

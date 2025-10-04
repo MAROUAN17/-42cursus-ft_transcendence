@@ -131,7 +131,7 @@ export default function Pairing() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-indigo-800 flex flex-col items-center justify-center p-8">
+    <div className="w-full min-h-screen from-indigo-900 via-purple-900 to-indigo-800 flex flex-col items-center justify-center p-8">
       <h1 className="text-4xl md:text-6xl font-bold text-white mb-20 tracking-widest">
         MATCHMAKING
       </h1>

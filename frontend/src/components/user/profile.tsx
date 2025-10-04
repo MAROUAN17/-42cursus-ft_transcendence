@@ -28,7 +28,7 @@ import HistoryCard from "./historyCard";
 import { useEffect, useState, useRef } from "react";
 import { type AxiosResponse } from "axios";
 import { useParams, useNavigate } from "react-router";
-import type { PublicUserInfos } from "../../types/user";
+import type { UserInfos } from "../../types/user";
 import type { websocketPacket } from "../../../../backend/src/models/webSocket.model";
 import { useWebSocket } from "../contexts/websocketContext";
 import api from "../../axios";
@@ -63,12 +63,14 @@ export default function Profile() {
   const pictureInput = useRef<HTMLInputElement>(null);
   const [avatar, setAvatar] = useState<string>("");
   const { user } = useUserContext();
-  const [currUser, setCurrUser] = useState<PublicUserInfos>({
+  const [currUser, setCurrUser] = useState<UserInfos>({
     id: 0,
     avatar: "",
     username: "",
     email: "",
     first_login: false,
+    intra_id: 0,
+    online: false,
   });
   let usernamePattern = new RegExp("^[a-zA-Z0-9]+$");
   const { send, addHandler } = useWebSocket();

@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router";
 import LeaveButton from "./ui/leaveBtn";
 import type { Tournament } from "./tournaments";
 import { useEffect, useState } from "react";
-import { useWebSocket } from "../contexts/websocketContext";
+import { useUserContext } from "../contexts/userContext";
 
 const TournamentBracket: React.FC = () => {
   async function fetchUsername(playerId: number) {

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useWebSocket } from "../contexts/websocketContext";
 import { useUserContext } from "../contexts/userContext";
+import { FaCrown } from "react-icons/fa";
 
 interface props {
   rank: number;
@@ -45,7 +46,11 @@ const LeadersCard = ({ rank, username, score, avatar }: props) => {
             {rank}
           </div>
           <div className="flex flex-col items-center">
-            <h3 className={`font-bold text-2xl ${user?.username === username ? 'text-neon' : null}`}>{username}</h3>
+            <h3
+              className='font-bold text-2xl'
+            >
+              {username}
+            </h3>
             {/* <p className="font-extralight">@{username}</p> */}
           </div>
         </div>
@@ -64,10 +69,13 @@ const LeadersCard = ({ rank, username, score, avatar }: props) => {
           {score}
         </h2>
       </div>
-      <img
-        src={avatar}
-        className="h-[60px] w-[60px] rounded-full object-cover"
-      />
+      <div className="flex flex-col items-center gap-1">
+        {rank == 1 ? <FaCrown className="text-[#FFAA00] w-[20px] h-[20px]" /> : null}
+        <img
+          src={avatar}
+          className="h-[60px] w-[60px] rounded-full object-cover"
+        />
+      </div>
     </div>
   );
 };

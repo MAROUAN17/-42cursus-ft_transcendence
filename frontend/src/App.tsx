@@ -77,6 +77,10 @@ export default function App() {
           path: "/tournaments",
           Component: Tournaments,
         },
+        {
+          path: "/pairing",
+          Component: Pairing,
+        },
       ],
     },
     {
@@ -112,14 +116,6 @@ export default function App() {
     {
       path: "/remote_game",
       Component: RGame,
-    },
-    {
-      path: "/pairing",
-      element: (
-        <WebSocketProvider>
-          <Pairing />
-        </WebSocketProvider>
-      ),
     },
     {
       path: "/tournament",

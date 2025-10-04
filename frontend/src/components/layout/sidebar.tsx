@@ -33,7 +33,7 @@ const Sidebar = () => {
             className="text-white w-7 h-7 shadow-[0_0px_30px_rgba(0,0,0,0.25)] hover:shadow-neon transform hover:scale-150 transition hover:bg-neon p-1 rounded-full duration-300"
           />
           <IoGameController
-            onClick={() => navigate("/match")}
+            onClick={() => navigate("/pairing")}
             className="text-white w-7 h-7 shadow-[0_0px_30px_rgba(0,0,0,0.25)] hover:shadow-neon transform hover:scale-150 hover:bg-neon p-1 rounded-full transition duration-300"
           />
         </div>

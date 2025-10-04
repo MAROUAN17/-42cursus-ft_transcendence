@@ -5,11 +5,14 @@ import { useUserContext } from "../contexts/userContext";
 import { BsPersonFillAdd } from "react-icons/bs";
 import LogCard from "../dashboard/logCard";
 import { UserContext } from "../contexts/userContext";
+import { FaCrown } from "react-icons/fa";
+import { useNavigate } from "react-router";
 
 export const Leaderboard = () => {
   const [leaders, setLeaders] = useState<Leader[]>([]);
   const [show, setShow] = useState<boolean>(false);
-  const {user} = useUserContext();
+  const { user } = useUserContext();
+  const navigate = useNavigate();
 
   useEffect(() => {
     setTimeout(() => setShow(true), 100);
@@ -23,7 +26,9 @@ export const Leaderboard = () => {
 
   return (
     <div className=" font-poppins w-full px-24 pb-[70px] flex flex-col gap-10">
-      <div className="text-white font-bold text-6xl text-center">LEADERBOARD</div>
+      <div className="text-white font-bold text-6xl text-center">
+        LEADERBOARD
+      </div>
       {/* Top 3 horizontally */}
       <div className="flex justify-center gap-6 h-1/2">
         {leaders.slice(0, 3).map((leader: Leader) => (
@@ -42,7 +47,11 @@ export const Leaderboard = () => {
                   : ""
               } ${
                 show ? "overflow-hidden" : "h-5 overflow-hidden"
-              } w-full rounded-[30px]`}
+              } w-full rounded-[30px] ${
+                user?.username === leader.username
+                  ? "border-2 border-neon"
+                  : null
+              }`}
             >
               <div className="relative flex flex-col items-center w-[24px] h-[24px] gap-6">
                 <div
@@ -59,8 +68,8 @@ export const Leaderboard = () => {
                 <div className="relative flex items-center justify-center w-full h-full text-white font-bold">
                   {leader.rank}
                 </div>
-                <div className="flex flex-col items-center">
-                  <h3 className={`font-bold text-2xl ${user?.username === leader.username ? 'text-neon' : null}`}>{leader.username}</h3>
+                <div className='flex flex-col items-center' onClick={() => navigate(`/profile/${leader.username}`)}>
+                  <h3 className='font-bold text-2xl'>{leader.username}</h3>
                 </div>
               </div>
               <h2
@@ -78,10 +87,15 @@ export const Leaderboard = () => {
                 {leader.score}
               </h2>
             </div>
-            <img
-              src={leader.avatar}
-              className="h-[120px] w-[120px] rounded-full object-cover"
-            />
+            <div className="flex flex-col items-center gap-1">
+              {leader.rank == 1 ? (
+                <FaCrown className="text-[#FFAA00] w-[30px] h-[30px]" />
+              ) : null}
+              <img
+                src={leader.avatar}
+                className="h-[120px] w-[120px] rounded-full object-cover"
+              />
+            </div>
           </div>
         ))}
       </div>
@@ -91,14 +105,16 @@ export const Leaderboard = () => {
         {leaders.slice(3).map((leader: Leader) => (
           <div
             key={leader.rank}
-            className={`px-5 py-4 rounded-full flex gap-3 items-center ${user?.username === leader.username ? 'bg-compBg/60' : 'bg-compBg'}`}
+            className={`bg-compBg px-5 py-4 rounded-full flex gap-3 items-center ${
+              user?.username === leader.username ? "border-2 border-neon" : ""
+            }`}
           >
             <h1 className="text-white font-bold text-2xl">{leader.rank}</h1>
             <img
               src={leader.avatar}
               className="shrink-0 h-[60px] w-[60px] rounded-full object-cover"
             />
-            <div className="text-white w-full flex justify-between px-4 items-center">
+            <div className="text-white w-full flex justify-between px-4 items-center" onClick={() => navigate(`/profile/${leader.username}`)}>
               <h2 className="font-bold text-2xl">{leader.username}</h2>
               <p className="font-bold text-3xl items-center">{leader.score}</p>
             </div>

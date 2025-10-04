@@ -20,17 +20,11 @@ import { useUserContext } from "../contexts/userContext";
 import LogCard from "./logCard";
 import type { Tournament } from "../../types/tournament";
 import type { Leader } from "../../types/leader";
+import type { ChartData } from "../../types/profile";
 
 export default function Dashboard() {
-  const data = useRef([
-    { name: "Page A", uv: 400, pv: 2400, amt: 2400 },
-    { name: "Page A", uv: 300, pv: 2400, amt: 2400 },
-    { name: "Page A", uv: 500, pv: 2400, amt: 2400 },
-    { name: "Page A", uv: 900, pv: 2400, amt: 2400 },
-    { name: "Page A", uv: 1000, pv: 2400, amt: 2400 },
-    { name: "Page A", uv: 900, pv: 2400, amt: 2400 },
-    { name: "Page A", uv: 1200, pv: 2400, amt: 2400 },
-  ]).current;
+  // const [chartData, setChartData] = useState(tmpData);
+
   const { addHandler } = useWebSocket();
   const navigate = useNavigate();
   const { user } = useUserContext();
@@ -39,6 +33,8 @@ export default function Dashboard() {
   const [gamesPlayed, setGamesPlayed] = useState<number>(0);
   const [tournaments, setTournaments] = useState<Tournament[]>([]);
   const [leaders, setLeaders] = useState<Leader[]>([]);
+  const [last7daysGames, setLast7daysGames] = useState<gameChart[]>([]);
+  const [data, setData] = useState<ChartData[]>([]);
   const [friends, setFriends] = useState<UsersLastMessage[]>([]);
   const friendsRef = useRef(friends);
   const friendOptRef = useRef<HTMLDivElement>(null);
@@ -172,7 +168,6 @@ export default function Dashboard() {
 
     api("/states/leaders", { withCredentials: true }).then(function (res) {
       setLeaders(res.data.leaderboard);
-      console.log(res.data.leaderboard);
     });
 
     const addedHandler = addHandler("onlineStatus", handleOnlineNotif);
@@ -188,14 +183,28 @@ export default function Dashboard() {
       }
     );
 
-  }, [user]);
+    api("/states/player-week-activity/" + user?.id, {
+      withCredentials: true,
+    }).then(function (res) {
+      setLast7daysGames(res.data.last7Days);
 
+      const tmpData: ChartData[] = Array(7)
+        .fill(null)
+        .map((_, i) => ({
+          uv: res.data.last7Days[i]?.matches,
+          pv: res.data.last7Days[i]?.day,
+        }));
+
+      setData(tmpData);
+    });
+  }, [user]);
 
   function CustomTooltip({ payload, label, active }: any) {
     if (active) {
       return (
         <div className="bg-white p-3 rounded-md">
-          <p>{`Day ${label} : ${payload[0].value} Matchs Played`}</p>
+          <p>{`${payload[0].payload.pv}`}</p>
+          <p className=""><span className='font-bold'>{`${payload[0].value} Matchs Played`}</span></p>
         </div>
       );
     }
@@ -309,7 +318,10 @@ export default function Dashboard() {
           <div className="flex flex-col basis-2/5 h-full gap-2">
             <div className="text-white flex justify-between items-center">
               <h3 className="font-bold text-[35px]">Leaders</h3>
-              <div className="flex items-center gap-1" onClick={() => navigate('/leaderboard')}>
+              <div
+                className="flex items-center gap-1"
+                onClick={() => navigate("/leaderboard")}
+              >
                 <h4>View All</h4>
                 <GrFormNextLink />
               </div>
@@ -317,11 +329,11 @@ export default function Dashboard() {
             <div className="flex pb-8 flex-wrap w-full justify-between h-full">
               {leaders.slice(0, 3).map((leader) => (
                 <LeadersCard
-                rank={leader.rank}
-                username={leader.username}
-                score={leader.score}
-                avatar={leader.avatar}
-              />
+                  rank={leader.rank}
+                  username={leader.username}
+                  score={leader.score}
+                  avatar={leader.avatar}
+                />
               ))}
             </div>
           </div>
