@@ -39,7 +39,6 @@ vault kv put secret/jwt JWT_TMP_LOGIN="$JWT_TMP_LOGIN" JWT_ACCESS_TOKEN="$JWT_AC
 vault kv put secret/nodemailer GMAIL_USERNAME="$GMAIL_USERNAME" GMAIL_PASS="$GMAIL_PASS"
 vault kv put secret/oauth CLIENT_UUID="$CLIENT_UUID" CLIENT_SECRET="$CLIENT_SECRET"
 
-cp /vault/cert/certificate.pem /vault/shared/
 vault token create -policy readonly -ttl=24h | grep "token" | head -1 | awk '{print $2}' > /vault/shared/token.txt
 
 tail -f /dev/null;

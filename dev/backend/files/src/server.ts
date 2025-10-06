@@ -19,8 +19,8 @@ import { pipeline } from "stream";
 import vault from "node-vault";
 
 const httpsOptions = {
-  key: fs.readFileSync("../ssl/server.key"),
-  cert: fs.readFileSync("../ssl/server.crt"),
+  key: fs.readFileSync("./ssl/server.key"),
+  cert: fs.readFileSync("./ssl/server.crt"),
 };
 
 export const pump = util.promisify(pipeline);
@@ -33,7 +33,7 @@ const app: FastifyInstance = Fastify({
 const vaultToken: string = fs.readFileSync("./vault/token.txt", "utf8").trim();
 const vaultCert: string = fs.readFileSync("./vault/certificate.pem", "utf8");
 export const vaultClient = vault({
-  endpoint: "https://localhost:8200",
+  endpoint: "https://vault:8200",
   token: vaultToken,
   requestOptions: {
     ca: vaultCert,

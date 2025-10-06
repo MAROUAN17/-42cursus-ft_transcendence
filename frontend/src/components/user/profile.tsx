@@ -16,14 +16,7 @@ import { MdOutlinePersonRemove } from "react-icons/md";
 import { FaHourglassHalf } from "react-icons/fa";
 import { IoMdClose } from "react-icons/io";
 
-import {
-  Line,
-  LineChart,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts";
+import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import HistoryCard from "./historyCard";
 import { useEffect, useState, useRef } from "react";
 import { type AxiosResponse } from "axios";
@@ -33,12 +26,7 @@ import { useWebSocket } from "../contexts/websocketContext";
 import api from "../../axios";
 import { ToastContainer, toast } from "react-toastify";
 import { useUserContext } from "../contexts/userContext";
-import type {
-  ChartData,
-  MatchHistory,
-  UserHistory,
-  UserStats,
-} from "../../types/profile";
+import type { ChartData, MatchHistory, UserHistory, UserStats } from "../../types/profile";
 import type { websocketPacket } from "../../types/websocket";
 
 export default function Profile() {
@@ -87,30 +75,12 @@ export default function Profile() {
     for (let index = 0; index < historyData.length && index < 5; index++) {
       tmpData[4 - index] = {
         pv: Number(
-          (
-            (historyData
-              .slice(index)
-              .filter((match) => match.winner == currUser.id).length /
-              historyData.slice(index).length) *
-            100
-          ).toFixed(1)
+          ((historyData.slice(index).filter((match) => match.winner == currUser.id).length / historyData.slice(index).length) * 100).toFixed(1)
         ),
         uv: historyData.slice(index).length,
       };
-      console.log(
-        "match -> ",
-        historyData.slice(index).length,
-        " count -> ",
-        (historyData.slice(index).filter((match) => match.winner == currUser.id)
-          .length /
-          historyData.slice(index).length) *
-          100
-      );
     }
     setData(tmpData);
-    // historyData.map((match, index) => {
-
-    // });
   }
   function CustomTooltip({ payload, label, active }: any) {
     if (active) {
@@ -165,12 +135,10 @@ export default function Profile() {
     // formData.append("email", currEmail);
     formData.append("avatar", pictureInput.current!.files![0]);
 
-    api
-      .post("/upload", formData, { withCredentials: true })
-      .then(function (res) {
-        setCurrAvatar(res.data.file);
-        console.log(res.data.file);
-      });
+    api.post("/upload", formData, { withCredentials: true }).then(function (res) {
+      setCurrAvatar(res.data.file);
+      console.log(res.data.file);
+    });
   }
 
   function editProfile(e: React.FormEvent<HTMLFormElement>) {
@@ -198,8 +166,7 @@ export default function Profile() {
         setSettingsPopup(false);
         toast("Your data changed successfully", {
           closeButton: false,
-          className:
-            "font-poppins border-3 border-neon bg-neon/70 text-white font-bold text-md",
+          className: "font-poppins border-3 border-neon bg-neon/70 text-white font-bold text-md",
         });
       })
       .catch(function (err) {
@@ -222,20 +189,16 @@ export default function Profile() {
   }, []);
 
   useEffect(() => {
-    api
-      .get("/states/player-rooms/" + currUser.id, { withCredentials: true })
-      .then(function (res: AxiosResponse) {
-        console.log("history -> ", res.data);
-        setHistory(res.data);
-        const tmp = [...res.data.rooms];
-        getWeekHistory(tmp);
-      });
-    api
-      .get("/states/profile/" + currUser.id, { withCredentials: true })
-      .then(function (res: AxiosResponse) {
-        console.log("stats -> ", res.data);
-        setUserStats(res.data);
-      });
+    api.get("/states/player-rooms/" + currUser.id, { withCredentials: true }).then(function (res: AxiosResponse) {
+      console.log("history -> ", res.data);
+      setHistory(res.data);
+      const tmp = [...res.data.rooms];
+      getWeekHistory(tmp);
+    });
+    api.get("/states/profile/" + currUser.id, { withCredentials: true }).then(function (res: AxiosResponse) {
+      console.log("stats -> ", res.data);
+      setUserStats(res.data);
+    });
   }, [currUser]);
 
   useEffect(() => {
@@ -281,19 +244,13 @@ export default function Profile() {
               />
             </div>
             <div className="">
-              <h1 className="text-white font-bold text-5xl text-center">
-                Edit Profile
-              </h1>
+              <h1 className="text-white font-bold text-5xl text-center">Edit Profile</h1>
             </div>
             <form onSubmit={editProfile}>
               <div className="flex flex-col items-center mt-12 space-y-8">
                 <div className="w-[150px] h-[150px] mt-4 outline outline-8 outline-neon rounded-full flex items-center justify-center">
                   <label htmlFor="customFile">
-                    <img
-                      className="rounded-full w-[150px] h-[150px] object-cover"
-                      src={currAvatar}
-                      alt="avatar"
-                    />
+                    <img className="rounded-full w-[150px] h-[150px] object-cover" src={currAvatar} alt="avatar" />
                   </label>
                 </div>
                 <div className="absolute left-[480px] top-[170px] flex items-center justify-center flex-col space-y-3 rounded-full">
@@ -303,20 +260,12 @@ export default function Profile() {
                   >
                     <FaCamera className="w-[30px] h-[30px]" />
                   </label> */}
-                  <input
-                    id="customFile"
-                    className="hidden text-white"
-                    ref={pictureInput}
-                    onChange={handleImageUpload}
-                    type="file"
-                  />
+                  <input id="customFile" className="hidden text-white" ref={pictureInput} onChange={handleImageUpload} type="file" />
                 </div>
                 <div className="flex flex-col space-y-3">
                   {usernameErrorFlag ? (
                     <div>
-                      <h1 className="text-red-700 font-bold">
-                        {usernameErrorMssg}
-                      </h1>
+                      <h1 className="text-red-700 font-bold">{usernameErrorMssg}</h1>
                     </div>
                   ) : null}
                   <label htmlFor="" className="text-white font-bold">
@@ -327,9 +276,7 @@ export default function Profile() {
                     onChange={handleUsernameChange}
                     type="text"
                     className={`bg-transparent px-12 py-4 rounded-lg text-white ${
-                      usernameErrorFlag
-                        ? "border-b border-red-700"
-                        : "border border-white"
+                      usernameErrorFlag ? "border-b border-red-700" : "border border-white"
                     }`}
                   />
                 </div>
@@ -345,29 +292,24 @@ export default function Profile() {
                   />
                 </div>
                 <div className="py-12 flex flex-col gap-3">
-                  <button
-                    type="submit"
-                    className="bg-neon py-3 px-36 text-white rounded-lg font-bold"
-                  >
+                  <button type="submit" className="bg-neon py-3 px-36 text-white rounded-lg font-bold">
                     Save changes
                   </button>
                   <button
                     onClick={(e) => {
                       e.preventDefault();
-                      api
-                        .delete("/deleteAccount", { withCredentials: true })
-                        .then(() => {
-                          console.log("Account deleted");
-                          api
-                            .post("/logout", {}, { withCredentials: true })
-                            .then(function (res) {
-                              console.log(res);
-                              navigate("/login");
-                            })
-                            .catch(function (err) {
-                              console.log(err.response);
-                            });
-                        });
+                      api.delete("/deleteAccount", { withCredentials: true }).then(() => {
+                        console.log("Account deleted");
+                        api
+                          .post("/logout", {}, { withCredentials: true })
+                          .then(function (res) {
+                            console.log(res);
+                            navigate("/login");
+                          })
+                          .catch(function (err) {
+                            console.log(err.response);
+                          });
+                      });
                     }}
                     className="bg-red-600 py-3 px-36 text-white rounded-lg font-bold"
                   >
@@ -379,15 +321,8 @@ export default function Profile() {
           </div>
         </div>
       ) : null}
-      <div
-        className={`flex p-8 h-[50%] space-x-4 ${
-          settingsPopup ? "blur-sm" : ""
-        }`}
-      >
-        <ToastContainer
-          closeOnClick={true}
-          className="bg-green text-green-600"
-        />
+      <div className={`flex p-8 h-[50%] space-x-4 ${settingsPopup ? "blur-sm" : ""}`}>
+        <ToastContainer closeOnClick={true} className="bg-green text-green-600" />
         {/* stats section */}
         <div className="py-14 bg-compBg/20 w-[85%] rounded-[10px] space-y-12">
           <div className="rounded-lg px-14 flex space-x-8 h-[25%]">
@@ -396,9 +331,7 @@ export default function Profile() {
                 <FaTableTennisPaddleBall color="white" size={35} />
               </div>
               <div>
-                <h1 className="text-white font-bold text-4xl">
-                  {userStats?.matchesPlayed}
-                </h1>
+                <h1 className="text-white font-bold text-4xl">{userStats?.matchesPlayed}</h1>
                 <p className="text-white font-light text-sm">Matches played</p>
               </div>
             </div>
@@ -407,9 +340,7 @@ export default function Profile() {
                 <RiSwordLine className="text-gray-500" size={35} />
               </div>
               <div>
-                <h1 className="text-white font-bold text-4xl">
-                  {userStats && (userStats.winRatio * 100).toFixed(2)}%
-                </h1>
+                <h1 className="text-white font-bold text-4xl">{userStats && (userStats.winRatio * 100).toFixed(2)}%</h1>
                 <p className="text-white font-light text-sm">Win ratio %</p>
               </div>
             </div>
@@ -418,9 +349,7 @@ export default function Profile() {
                 <FaAward className="text-gray-500" size={35} />
               </div>
               <div>
-                <h1 className="text-white font-bold text-4xl">
-                  {userStats?.tournamentsWon}
-                </h1>
+                <h1 className="text-white font-bold text-4xl">{userStats?.tournamentsWon}</h1>
                 <p className="text-white font-light text-sm">Tournaments Won</p>
               </div>
             </div>
@@ -429,9 +358,7 @@ export default function Profile() {
                 <MdLeaderboard className="text-gray-500" size={35} />
               </div>
               <div>
-                <h1 className="text-white font-bold text-4xl">
-                  #{userStats?.rank}
-                </h1>
+                <h1 className="text-white font-bold text-4xl">#{userStats?.rank}</h1>
                 <p className="text-white font-light text-sm">Current Rank</p>
               </div>
             </div>
@@ -440,9 +367,7 @@ export default function Profile() {
                 <MdLeaderboard className="text-gray-500" size={35} />
               </div>
               <div>
-                <h1 className="text-white font-bold text-4xl">
-                  {userStats?.friendsCount}
-                </h1>
+                <h1 className="text-white font-bold text-4xl">{userStats?.friendsCount}</h1>
                 <p className="text-white font-light text-sm">Friends</p>
               </div>
             </div>
@@ -451,17 +376,8 @@ export default function Profile() {
             <ResponsiveContainer width="100%" height="100%">
               <LineChart width={300} height={100} data={data}>
                 <XAxis dataKey="uv" />
-                <YAxis
-                  domain={[0, 100]}
-                  tickFormatter={(value) => `${value}%`}
-                />
-                <Line
-                  type="monotone"
-                  isAnimationActive={!hasAnimated}
-                  dataKey="pv"
-                  stroke="#B13BFF"
-                  strokeWidth={4}
-                />
+                <YAxis domain={[0, 100]} tickFormatter={(value) => `${value}%`} />
+                <Line type="monotone" isAnimationActive={!hasAnimated} dataKey="pv" stroke="#B13BFF" strokeWidth={4} />
                 <Tooltip content={<CustomTooltip />} />
               </LineChart>
             </ResponsiveContainer>
@@ -471,16 +387,10 @@ export default function Profile() {
         <div className="bg-compBg/20 w-[30%] rounded-[10px] py-10 flex flex-col justify-around items-center">
           <div className="text-center flex flex-col justify-center items-center space-y-9">
             <div className="w-[100px] h-[100px] mt-4 outline outline-8 outline-neon rounded-full flex items-center justify-center">
-              <img
-                className="rounded-full w-[90px] h-[90px] object-cover"
-                src={currAvatar}
-                alt=""
-              />
+              <img className="rounded-full w-[90px] h-[90px] object-cover" src={currAvatar} alt="" />
             </div>
             <div>
-              <h1 className="text-white text-2xl font-bold">
-                {currUser.username}
-              </h1>
+              <h1 className="text-white text-2xl font-bold">{currUser.username}</h1>
             </div>
             <div>
               {profileStatus == "me" ? (
@@ -504,16 +414,10 @@ export default function Profile() {
                       color="white"
                       size={30}
                       onClick={() => {
-                        api
-                          .post(
-                            "/block/" + currUser.id,
-                            {},
-                            { withCredentials: true }
-                          )
-                          .then(function () {
-                            setblockedUser(true);
-                            setIsFriend(false);
-                          });
+                        api.post("/block/" + currUser.id, {}, { withCredentials: true }).then(function () {
+                          setblockedUser(true);
+                          setIsFriend(false);
+                        });
                       }}
                     />
                   </div>
@@ -533,15 +437,9 @@ export default function Profile() {
                         <MdOutlinePersonRemove
                           className="hover:scale-110"
                           onClick={() => {
-                            api
-                              .post(
-                                "/unfriend/" + currUser.id,
-                                {},
-                                { withCredentials: true }
-                              )
-                              .then(function () {
-                                setIsFriend(false);
-                              });
+                            api.post("/unfriend/" + currUser.id, {}, { withCredentials: true }).then(function () {
+                              setIsFriend(false);
+                            });
                           }}
                           color="white"
                           size={25}
@@ -552,11 +450,7 @@ export default function Profile() {
                     <>
                       {friendReqSent ? (
                         <div className="flex justify-center mt-2 outline outline-white outline-2 outline-offset-4 rounded-full w-[25%] items-center">
-                          <FaHourglassHalf
-                            className="hover:scale-110"
-                            color="white"
-                            size={20}
-                          />
+                          <FaHourglassHalf className="hover:scale-110" color="white" size={20} />
                         </div>
                       ) : (
                         <div className="flex justify-center mt-2 outline outline-white outline-2 outline-offset-4 rounded-full w-[25%] items-center">
@@ -582,11 +476,7 @@ export default function Profile() {
                       size={30}
                       onClick={() => {
                         api
-                          .post(
-                            "/unblock/" + currUser.id,
-                            {},
-                            { withCredentials: true }
-                          )
+                          .post("/unblock/" + currUser.id, {}, { withCredentials: true })
                           .then(function (res) {
                             setblockedUser(false);
                           })
@@ -603,10 +493,7 @@ export default function Profile() {
           <div className="flex flex-col space-y-5 justify-center">
             <div className="flex space-x-5 items-center">
               <div>
-                <MdEmail
-                  className="text-neon outline outline-3 outline-offset-8 rounded-full"
-                  size={25}
-                />
+                <MdEmail className="text-neon outline outline-3 outline-offset-8 rounded-full" size={25} />
               </div>
               <div>
                 <h1 className="text-neon font-bold">Email</h1>
@@ -615,10 +502,7 @@ export default function Profile() {
             </div>
             <div className="flex space-x-5 items-center">
               <div>
-                <FaHistory
-                  className="text-neon outline outline-3 outline-offset-8 rounded-full"
-                  size={25}
-                />
+                <FaHistory className="text-neon outline outline-3 outline-offset-8 rounded-full" size={25} />
               </div>
               <div>
                 <h1 className="text-neon font-bold">Created</h1>
@@ -635,12 +519,7 @@ export default function Profile() {
             <h1 className="text-white font-bold">
               <span className="text-neon">
                 {currPage * 5 - 4} -{" "}
-                {history &&
-                  (currPage * 5 > history.rooms.length
-                    ? !history.rooms.length
-                      ? 1
-                      : history.rooms.length
-                    : currPage * 5)}{" "}
+                {history && (currPage * 5 > history.rooms.length ? (!history.rooms.length ? 1 : history.rooms.length) : currPage * 5)}{" "}
               </span>
               of {history?.rooms.length == 0 ? 1 : history?.rooms.length}
             </h1>
@@ -690,16 +569,12 @@ export default function Profile() {
                 {user?.id == currUser.id ? (
                   <>
                     <h1 className="font-bold text-[30px]">No Matches Found</h1>
-                    <p className="font-normal text-[20px]">
-                      Play your first game to start building your history.
-                    </p>
+                    <p className="font-normal text-[20px]">Play your first game to start building your history.</p>
                   </>
                 ) : (
                   <>
                     <h1 className="font-bold text-[30px]">No Matches Found</h1>
-                    <p className="font-normal text-[20px]">
-                      This player hasn't played any games yet.
-                    </p>
+                    <p className="font-normal text-[20px]">This player hasn't played any games yet.</p>
                   </>
                 )}
               </li>
@@ -709,11 +584,7 @@ export default function Profile() {
         <div className="flex mt-3 justify-between">
           <div>
             <h1 className="text-white">
-              Page <span className="text-neon">{currPage}</span> of{" "}
-              {history &&
-                (history.rooms.length == 0
-                  ? 1
-                  : Math.ceil(history.rooms.length / 5))}
+              Page <span className="text-neon">{currPage}</span> of {history && (history.rooms.length == 0 ? 1 : Math.ceil(history.rooms.length / 5))}
             </h1>
           </div>
           <div className="flex gap-3">
@@ -728,11 +599,7 @@ export default function Profile() {
             <button className="bg-compBg/20 h-[40px] w-[40px] flex justify-center items-center rounded-lg">
               <FaArrowRight
                 onClick={() => {
-                  history
-                    ? currPage < history.rooms.length / 5
-                      ? setCurrPage(currPage + 1)
-                      : null
-                    : null;
+                  history ? (currPage < history.rooms.length / 5 ? setCurrPage(currPage + 1) : null) : null;
                 }}
                 className={`${history ? (currPage < history.rooms.length / 5 ? "text-white" : "text-white/50") : "text-white/50"}`}
               />

@@ -14,7 +14,7 @@ const MessageBubble = ({ unreadCount, user, onclick }: props) => {
       >
         <span className="truncate">{unreadCount > 0 ? unreadCount : null}</span>
       </div>
-      <img src={user.avatar} className="rounded-full w-[40px] h-[40px] object-cover" />
+      <img src={user.avatar} className="rounded-full w-[40px] h-[40px] object-cover shrink-0" />
     </div>
   );
 };
