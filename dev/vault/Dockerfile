@@ -7,7 +7,7 @@ RUN apk update && apk add wget bash unzip openssl && \
     chmod +x /usr/local/bin/vault && \
     rm vault_1.20.3_linux_amd64.zip && mkdir -p /vault/data /vault/config
 
-RUN mkdir -p /vault/cert/ && \
+RUN mkdir -p /vault/cert/ /vault/shared/ && \
     openssl req -x509 -nodes -newkey rsa:4096 \
     -keyout /vault/cert/key.pem \
     -out /vault/shared/certificate.pem \

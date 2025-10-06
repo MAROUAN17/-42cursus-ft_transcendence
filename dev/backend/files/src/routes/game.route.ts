@@ -13,7 +13,7 @@ import { create_tournament, delete_tournament,
             join_tournament, leave_tournament ,
             get_tournament_winner, get_rounds, } 
             from "../services/tournament.service.js";
-import { get_profile, get_player_rooms, get_player_week_activity, get_leaderboard } from "../services/states.service.js";
+import { get_profile, get_player_rooms, get_player_week_activity, get_leaderboard, get_leaderboard_dashboard } from "../services/states.service.js";
 
 export const gameRoutes: FastifyPluginAsync = async (fastify) => {
   fastify.get("/game", { websocket: true }, handleGameConnection);
@@ -38,6 +38,7 @@ export const gameRoutes: FastifyPluginAsync = async (fastify) => {
 
   //states
   fastify.get("/states/leaders", get_leaderboard);
+  fastify.get("/states/dashboard/leaders", get_leaderboard_dashboard);
   fastify.get("/states/profile/:playerId", get_profile);
   fastify.get("/states/player-rooms/:playerId", get_player_rooms);
   fastify.get("/states/player-week-activity/:playerId", get_player_week_activity);

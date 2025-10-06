@@ -12,6 +12,8 @@ services:
       - /app/node_modules           # keep deps inside the container
     environment:
       - CHOKIDAR_USEPOLLING=true    # makes hot reload more reliable in Docker
+    depends_on:
+      - backend
   sqlite:
     image: sqlite
     container_name: sqlite
@@ -19,7 +21,9 @@ services:
     ports:
       - "8191:8191"
     volumes:
-      - ~/goinfre/db_data:/db
+      - sqlite-db:/db
+      # - ~/goinfre/db_data:/db
+      
   nginx:
     container_name: nginx
     build: nginx/.
@@ -45,6 +49,7 @@ services:
       - ./backend/files:/app
       - vault-token:/app/vault
       - /app/node_modules
+      - sqlite-db:/app/db
     restart: always
     depends_on:
       - vault
@@ -52,3 +57,4 @@ services:
 
 volumes:
   vault-token:
+  sqlite-db:
