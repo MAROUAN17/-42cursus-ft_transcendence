@@ -18,6 +18,7 @@ const UserRow = ({ user, sendReq, close }: props) => {
       <button
         onClick={() => {
           navigate(`/profile/${user.username}`);
+          close();
         }}
         className="flex  gap-2  w-full flex-row hover:bg-compBg/20 hover:rounded-xl items-center justify-center px-4 py-3 text-white text-left"
       >

@@ -35,9 +35,7 @@ export default function Dashboard() {
   const [friends, setFriends] = useState<UsersLastMessage[]>([]);
   const friendsRef = useRef(friends);
   const friendOptRef = useRef<HTMLDivElement>(null);
-  const [friendsMessages, setFriendsMessages] = useState<UsersLastMessage[]>(
-    []
-  );
+  const [friendsMessages, setFriendsMessages] = useState<UsersLastMessage[]>([]);
   function handleClick(e: React.MouseEvent<HTMLButtonElement>) {
     e.preventDefault();
     axios
@@ -53,11 +51,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
-      if (
-        friendOptRef.current &&
-        !friendOptRef.current.contains(e.target as Node)
-      )
-        setFriendOpt(0);
+      if (friendOptRef.current && !friendOptRef.current.contains(e.target as Node)) setFriendOpt(0);
     }
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
@@ -69,17 +63,13 @@ export default function Dashboard() {
     if (packet.data.type == "singleFriend") {
       setFriends((prev: UsersLastMessage[]) => {
         return prev.map((user) => {
-          return user.user.id == packet.data.friend_id
-            ? { ...user, user: { ...user.user, online: packet.data.online } }
-            : user;
+          return user.user.id == packet.data.friend_id ? { ...user, user: { ...user.user, online: packet.data.online } } : user;
         });
       });
     } else if (packet.data.type == "friendsList") {
       if (!packet.data.friends_list) return;
       for (const friendId of packet.data.friends_list) {
-        const index = friendsRef.current.findIndex(
-          (u) => u.user.id === friendId
-        );
+        const index = friendsRef.current.findIndex((u) => u.user.id === friendId);
         if (index == -1) continue;
         const updatedUser: UsersLastMessage = {
           ...friendsRef.current[index],
@@ -135,10 +125,7 @@ export default function Dashboard() {
       .get("/users", { withCredentials: true })
       .then(function (res) {
         setFriendsMessages(
-          res.data.data.sort(function (
-            a: UsersLastMessage,
-            b: UsersLastMessage
-          ) {
+          res.data.data.sort(function (a: UsersLastMessage, b: UsersLastMessage) {
             const x: string = a.lastMessage ? a.lastMessage.createdAt : "";
             const y: string = b.lastMessage ? b.lastMessage.createdAt : "";
             if (x > y) return -1;
@@ -148,9 +135,7 @@ export default function Dashboard() {
         friendsRef.current = [...res.data.data];
         setFriends(
           res.data.data.sort((a: UsersLastMessage, b: UsersLastMessage) => {
-            return (
-              (b.user.online == true ? 1 : 0) - (a.user.online == true ? 1 : 0)
-            );
+            return (b.user.online == true ? 1 : 0) - (a.user.online == true ? 1 : 0);
           })
         );
       })
@@ -174,25 +159,8 @@ export default function Dashboard() {
   useEffect(() => {
     if (!user) return;
 
-    api("/states/player-rooms/" + user?.id, { withCredentials: true }).then(
-      function (res) {
-        setGamesPlayed(res.data.rooms.length);
-      }
-    );
-
-    api("/states/player-week-activity/" + user?.id, {
-      withCredentials: true,
-    }).then(function (res) {
-      setLast7daysGames(res.data.last7Days);
-
-      const tmpData: ChartData[] = Array(7)
-        .fill(null)
-        .map((_, i) => ({
-          uv: res.data.last7Days[i]?.matches,
-          pv: res.data.last7Days[i]?.day,
-        }));
-
-      setData(tmpData);
+    api("/states/player-rooms/" + user?.id, { withCredentials: true }).then(function (res) {
+      setGamesPlayed(res.data.rooms.length);
     });
   }, [user]);
 
@@ -210,11 +178,7 @@ export default function Dashboard() {
   }
 
   return (
-    <div
-      className={`w-full h-full pr-5 pb-10 flex flex-row transition-all duration-700 ease-in-out ${
-        show ? "opacity-100" : "opacity-0"
-      }`}
-    >
+    <div className={`w-full h-full pr-5 pb-10 flex flex-row transition-all duration-700 ease-in-out ${show ? "opacity-100" : "opacity-0"}`}>
       <div className={`font-poppins w-full h-full flex flex-col gap-3 px-10`}>
         <h1 className="text-white font-bold text-[30px]">
           Hi, <span className="text-neon">{user?.username}</span>
@@ -224,14 +188,11 @@ export default function Dashboard() {
             <div className="flex flex-col gap-1 p-12 space-y-1">
               <div className="space-y-4">
                 <h2 className="text-white font-bold text-[40px]/10">
-                  Step Into the Ultimate Ping Pong Arena. Match With Players
-                  Instantly & Test Your Skills.
+                  Step Into the Ultimate Ping Pong Arena. Match With Players Instantly & Test Your Skills.
                 </h2>
                 <p className="text-[#fff]/[50%] text-[20px]">
-                  Jump into fast, fair, and exciting ping pong matchmaking.
-                  Whether you're here to warm up, test your skills, our system
-                  pairs you instantly with players at your level. Click below
-                  and start playing now!
+                  Jump into fast, fair, and exciting ping pong matchmaking. Whether you're here to warm up, test your skills, our system pairs you
+                  instantly with players at your level. Click below and start playing now!
                 </p>
               </div>
               <div className="pt-12">
@@ -248,12 +209,8 @@ export default function Dashboard() {
           <div className="bg-compBg overflow-hidden relative basis-2/5 grow rounded-[30px]">
             <div className="flex flex-col justify-between p-10 relative gap-6 z-10 w-fit">
               <div className="">
-                <h2 className="text-white font-bold text-[100px] h-fit">
-                  {gamesPlayed}
-                </h2>
-                <p className="text-white font-extralight text-[40px] mt-[-35px]">
-                  Games Played
-                </p>
+                <h2 className="text-white font-bold text-[100px] h-fit">{gamesPlayed}</h2>
+                <p className="text-white font-extralight text-[40px] mt-[-35px]">Games Played</p>
               </div>
               <button className="p-3 border-2 border-neon px-8 flex items-center rounded-full gap-2 w-fit">
                 <p className="text-white font-bold">HISTORY</p>
@@ -274,13 +231,7 @@ export default function Dashboard() {
                   }}
                 >
                   <Tooltip content={<CustomTooltip />} />
-                  <Area
-                    type="monotone"
-                    dataKey="uv"
-                    stroke="#8884d8"
-                    animationDuration={1100}
-                    fill="#8884d8"
-                  />
+                  <Area type="monotone" dataKey="uv" stroke="#8884d8" animationDuration={1100} fill="#8884d8" />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
@@ -342,25 +293,20 @@ export default function Dashboard() {
         logout
       </button> */}
       </div>
-      <div className="h-full flex flex-col max-w-[70px]">
-        <div
-          className={`bg-compBg flex flex-col rounded-[30px] min-h-[43.4%] mt-5 items-center gap-6 p-5`}
-        >
+      <div className="h-full flex flex-col w-[70px]">
+        <div className={`bg-compBg flex w-full flex-col rounded-[30px] min-h-[43.4%] mt-5 items-center gap-6 py-5`}>
           <MdGroups className="w-[27px] h-auto text-white mb-1" />
           <div
             ref={friendOptRef}
-            className={`flex flex-col gap-6 transition-all duration-700 ease-in-out`}
+            className={`flex w-full items-center scrollbar-thin scrollbar-w-5 scrollbar-thumb-neon/80 scrollbar-track-white/10 overflow-y-auto overflow-x-hidden h-full flex-col gap-6 transition-all duration-700 ease-in-out`}
           >
             {friends
               .filter((friend) => friend.user.username != "Deleted User")
-              .slice(0, 7)
               .map((friend) => (
                 <FriendBubble
                   friendOpt={friendOpt}
                   setFriendOpt={() => {
-                    friendOpt == friend.user.id
-                      ? setFriendOpt(0)
-                      : setFriendOpt(friend.user.id);
+                    friendOpt == friend.user.id ? setFriendOpt(0) : setFriendOpt(friend.user.id);
                   }}
                   inGame={false}
                   user={friend.user}
@@ -369,19 +315,13 @@ export default function Dashboard() {
               ))}
           </div>
         </div>
-        <div
-          className={`bg-compBg flex flex-col rounded-[30px] h-full my-7 items-center gap-6 p-5`}
-        >
+        <div className={`bg-compBg flex flex-col w-full rounded-[30px] h-full my-7 items-center gap-6 py-5`}>
           <IoChatbubblesSharp className="w-[27px] h-auto text-white mb-2" />
           <div
-            className={`flex flex-col gap-6 transition-all duration-700 ease-in-out`}
+            className={`flex w-full flex-col items-center scrollbar-thin scrollbar-w-5 scrollbar-thumb-neon/80 scrollbar-track-white/10 overflow-y-auto overflow-x-hidden gap-6 transition-all duration-700 ease-in-out`}
           >
             {friendsMessages
-              .filter(
-                (friend) =>
-                  friend.user.username != "Deleted User" &&
-                  friend.unreadCount > 0
-              )
+              .filter((friend) => friend.user.username != "Deleted User" && friend.unreadCount > 0)
               .slice(0, 8)
               .map((friend) => (
                 <MessageBubble
