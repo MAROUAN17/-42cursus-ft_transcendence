@@ -171,6 +171,58 @@ export const get_leaderboard = async (
   }
 };
 
+export const get_leaderboard_dashboard = async (
+  req: FastifyRequest,
+  res: FastifyReply
+) => {
+  try {
+    const stmt = app.db.prepare(`
+      SELECT 
+        p.id,
+        p.username,
+        p.score, 
+        p.avatar, 
+        COALESCE(m.matches, 0) as matchesPlayed,
+        COALESCE(w.wins, 0) as totalWins,
+        CASE 
+          WHEN COALESCE(m.matches, 0) > 0 
+          THEN CAST(COALESCE(w.wins, 0) AS FLOAT) / m.matches
+          ELSE 0 
+        END as winRatio
+      FROM players p
+      LEFT JOIN (
+        SELECT player_id as id, COUNT(*) as matches
+        FROM (
+          SELECT player1 as player_id FROM Room
+          UNION ALL
+          SELECT player2 as player_id FROM Room
+        )
+        GROUP BY player_id
+      ) m ON p.id = m.id
+      LEFT JOIN (
+        SELECT winner as id, COUNT(*) as wins
+        FROM Room
+        WHERE winner IS NOT NULL
+        GROUP BY winner
+      ) w ON p.id = w.id
+      ORDER BY p.score DESC 
+      LIMIT 3
+    `);
+
+    const leaderboard = stmt.all();
+
+    const ranked = leaderboard.map((player: any, index: number) => ({
+      rank: index + 1,
+      ...player,
+    }));
+
+    return res.status(200).send({ leaderboard: ranked });
+  } catch (err: any) {
+    console.error(err);
+    return res.status(500).send({ error: "Failed to fetch leaderboard" });
+  }
+};
+
 export const get_player_week_activity = async (
   req: FastifyRequest,
   res: FastifyReply

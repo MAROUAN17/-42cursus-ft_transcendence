@@ -1,4 +1,17 @@
 services:
+  frontend:
+    image: frontend
+    container_name: frontend
+    build:
+      context: ./frontend    # build context is the folder with your frontend code
+      dockerfile: Dockerfile       
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app         # live mount of your local code
+      - /app/node_modules           # keep deps inside the container
+    environment:
+      - CHOKIDAR_USEPOLLING=true    # makes hot reload more reliable in Docker
   sqlite:
     image: sqlite
     container_name: sqlite

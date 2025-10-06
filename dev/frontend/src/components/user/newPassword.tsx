@@ -1,0 +1,135 @@
+import { useState, useEffect } from "react";
+import { useSearchParams, useNavigate } from "react-router";
+import axios from "axios";
+
+export default function NewPassword() {
+  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const userId = searchParams.get("id");
+  const [newPassword, setNewPassword] = useState<string>("");
+  const [confirmPassword, setConfirmPassword] = useState<string>("");
+  const [errorFlag, setErrorFlag] = useState<boolean>(false);
+  const [errorMssg, setErrorMssg] = useState<string>("");
+
+  const submitPassReset = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (newPassword != confirmPassword) {
+      setErrorFlag(true);
+      setErrorMssg("Password is not matching!");
+      return;
+    }
+    axios
+      .post("https://localhost:5000/reset-password/verify", {
+        id: userId,
+        password: newPassword,
+        confirmPassword: confirmPassword
+      })
+      .then(function (res) {
+        navigate("/login");
+      })
+      .catch(function (err) {
+        setErrorFlag(true);
+        setErrorMssg(err.response.data.error);
+      });
+  };
+
+  const passInput = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    setErrorFlag(false);
+    setErrorMssg("");
+    setNewPassword(e.target.value);
+  };
+
+  const passConfirmInput = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    setErrorFlag(false);
+    setErrorMssg("");
+    setConfirmPassword(e.target.value);
+  };
+
+  useEffect(() => {
+    axios
+      .post("https://localhost:5000/reset-password/check", { id: userId })
+      .then(function (res) {
+        console.log(res);
+      })
+      .catch(function (err) {
+        console.log(err);
+        navigate("/login");
+      });
+  }, []);
+
+  return (
+    <div className="flex justify-between font-poppins h-screen bg-gameBg items-center overflow-hidden">
+      <div className="xl:py-[260px] xl:px-[300px] xl:mt-32 lg:mt-18 lg:w-1/2 lg:px-[220px] space-y-12">
+        <div className="my-24 space-y-12">
+          <div>
+            <div className="flex justify-center">
+              <img
+                src="/reset-password.png"
+                alt="email-icon"
+                width="92px"
+                height="86px"
+              />
+            </div>
+          </div>
+          <div>
+            <h1 className="text-white xl:text-5xl lg:text-4xl font-bold text-center">
+              SET YOUR NEW PASSWORD
+            </h1>
+            <p className="text-white text-center text-md py-2 font-light">
+              Your new password should be different from passwords previously
+              used.
+            </p>
+          </div>
+          {/* this is the password input */}
+          <form onSubmit={submitPassReset}>
+            <div className="space-y-16">
+              <div>
+                <label className="flex text-gray-300">Password</label>
+                <div className="flex items-center mt-5">
+                  <input
+                    value={newPassword}
+                    onChange={passInput}
+                    required
+                    className={`text-white bg-transparent border-b border-white py-4 w-full`}
+                    type="password"
+                    placeholder="Password"
+                  />
+                </div>
+                {errorFlag && <p className="mt-3 text-red-500">{errorMssg}</p>}
+              </div>
+              <div className="">
+                <label className="flex text-gray-300">
+                  Confirm your new password
+                </label>
+                <div className="">
+                  <input
+                    value={confirmPassword}
+                    onChange={passConfirmInput}
+                    required
+                    className={`text-white bg-transparent border-b border-white py-4 w-full`}
+                    type="password"
+                    placeholder="Confirm Password"
+                  />
+                </div>
+                {errorFlag && <p className="mt-3 text-red-500">{errorMssg}</p>}
+              </div>
+              <div>
+                <button
+                  type="submit"
+                  className="px-56 py-4 rounded-xl text-white bg-neon font-bold shadow-neon shadow-[0_10px_40px_rgba(0,0,0,0.1)]"
+                >
+                  Continue
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div className="">
+        <img src="/login-page.png" alt="" />
+      </div>
+    </div>
+  );
+}

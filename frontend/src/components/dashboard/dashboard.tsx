@@ -163,7 +163,7 @@ export default function Dashboard() {
       tournaments?.sort((a, b) => b.players.length - a.players.length);
     });
 
-    api("/states/leaders", { withCredentials: true }).then(function (res) {
+    api("/states/dashboard/leaders", { withCredentials: true }).then(function (res) {
       setLeaders(res.data.leaderboard);
     });
 
@@ -201,7 +201,9 @@ export default function Dashboard() {
       return (
         <div className="bg-white p-3 rounded-md">
           <p>{`${payload[0].payload.pv}`}</p>
-          <p className=""><span className='font-bold'>{`${payload[0].value} Matchs Played`}</span></p>
+          <p className="">
+            <span className="font-bold">{`${payload[0].value} Matchs Played`}</span>
+          </p>
         </div>
       );
     }
@@ -291,7 +293,7 @@ export default function Dashboard() {
             <div className="h-full">
               <div className="text-white flex justify-between items-center">
                 <h3 className="font-bold text-[35px]">Tournaments</h3>
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-1" onClick={() => navigate('/tournaments')}>
                   <h4>View All</h4>
                   <GrFormNextLink />
                 </div>

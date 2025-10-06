@@ -96,8 +96,6 @@ export const get_tournaments = async (
           .get(id);
       });
 
-
-
       return {
         ...t,
         players,
