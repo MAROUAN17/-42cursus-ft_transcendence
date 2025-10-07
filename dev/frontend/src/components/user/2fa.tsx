@@ -59,7 +59,6 @@ function Page2FA() {
   };
 
   useEffect(() => {
-    console.log("rememer me -> ", rememberMe);
     inputRefs.current[0]?.focus();
     const intervId = setInterval(() => {
       setTimerVerify((prevTime) => {

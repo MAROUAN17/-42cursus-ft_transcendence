@@ -11,7 +11,7 @@ export function TournamentCard({
   status,
 }: Tournament) {
   const { user } = useWebSocket();
-  const label = players.includes(user?.id || 0) ? "JOINED" : "JOIN";
+  const label = players?.includes(user?.id || 0) ? "JOINED" : "JOIN";
   const maxParticipants = 4;
   const navigate = useNavigate();
   const handelJoin = async () => {
@@ -55,7 +55,7 @@ export function TournamentCard({
           <div className="flex items-center gap-2 text-purple-200">
             <FaUsers className="w-4 h-4 text-green-400" />
             <span>
-              {players.length}/{maxParticipants} players
+              {players?.length}/{maxParticipants} players
             </span>
           </div>
         </div>

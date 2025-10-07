@@ -16,6 +16,7 @@ sqlite3 "$DB_NAME" <<EOF
         secret_otp TEXT,
         reset_flag BOOLEAN,
         reset_time INTEGER,
+        reset_token TEXT,
         logged_in BOOLEAN DEFAULT FALSE,
         online BOOLEAN DEFAULT FALSE,
         twoFA_verify BOOLEAN DEFAULT FALSE,
