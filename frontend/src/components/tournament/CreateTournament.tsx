@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useWebSocket } from "../chat/websocketContext";
 
 interface Props {
   show: boolean;
@@ -9,6 +10,7 @@ interface Props {
 export function CreateTournament({ show, onClose, onCreated }: Props) {
   const [tournamentName, setTournamentName] = useState("");
 
+  const {user} = useWebSocket();
   const handleCreate = async () => {
     if (!tournamentName.trim()) return;
 
@@ -17,15 +19,15 @@ export function CreateTournament({ show, onClose, onCreated }: Props) {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "player-id": "1",
+          "player-id": user?.id ? user.id.toString() : "",
         },
         body: JSON.stringify({ name: tournamentName }),
       });
 
       const data = await res.json();
-      console.log("Created:", data);
+      console.log("Created:", data.tournament);
 
-      onCreated(data);
+      onCreated(data.tournament);
 
       setTournamentName("");
       onClose();

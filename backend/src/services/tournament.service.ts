@@ -32,7 +32,7 @@ export const create_tournament = async (req: FastifyRequest, res: FastifyReply) 
     );
     console.log(`Tournament ${tournament} created sucessfully`);
 
-    res.status(200).send({msg:`Tournament ${tournament} created sucessfully`});
+    res.status(200).send({tournament});
   } catch (err: any) {
     console.error(err);
     return res.status(500).send({ error: "Failed to create tournament" });

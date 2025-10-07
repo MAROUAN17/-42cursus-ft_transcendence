@@ -14,15 +14,15 @@ export interface Tournament {
 
 export function Tournaments() {
   const [showModal, setShowModal] = useState(false);
-
+  const [tournaments, setTournaments] = useState<Tournament[]>([]);
+  const [loading, setLoading] = useState(true);
+  
   const handleCreated = (newTournament: any) => {
     setTournaments((prev) => [
       ...prev,
       { id: Date.now(), ...newTournament },
     ]);
   };
-  const [tournaments, setTournaments] = useState<Tournament[]>([]);
-  const [loading, setLoading] = useState(true);
    useEffect(() => {
     const fetchTournaments = async () => {
       try {

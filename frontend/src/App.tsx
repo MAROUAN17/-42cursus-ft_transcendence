@@ -70,8 +70,12 @@ export default function App() {
       ],
     },
     {
-      path: "/game",
-      Component: Game,
+      path: '/remote_game',
+      element: (
+        <WebSocketProvider>
+          <RGame />
+        </WebSocketProvider>
+      )
     },
     {
       path: "/login",

@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import im1 from "./imgs/user1.png"
 import axios from 'axios';
 import { useNavigate } from 'react-router';
+import { useWebSocket } from '../chat/websocketContext';
 
 
 export default function Pairing() {
@@ -11,12 +12,14 @@ export default function Pairing() {
   const [error, setError] = useState(null);
   const [dots, setDots] = useState("");
   const [gameInfo, setGameInfo] = useState(null);
-  const [username, setUsername] = useState("");
+  // const [username, setUsername] = useState("");
   const [paired, setPaired] = useState(false);
   const [countdown, setCountdown] = useState(2);
 
 
   const navigate = useNavigate();
+  const {user} = useWebSocket();
+  const id = user?.id ? user.id.toString() : "";
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -48,7 +51,6 @@ export default function Pairing() {
     const interval = setInterval(async () => {
       if (loading) {
         try {
-          const id = username + "id";
           const response = await axios.get(`https://localhost:4000/match/my-game/${id}`);
           
   
@@ -77,7 +79,7 @@ export default function Pairing() {
     }, 1000); 
   
     return () => clearInterval(interval);
-  }, [loading, username, navigate]);
+  }, [loading,navigate]);
   
 
   const fetchData = async () => {
@@ -86,12 +88,12 @@ export default function Pairing() {
       setLoading(true);
       const response = await axios.post('https://localhost:4000/match/pair',
       {
-        username: username,
+        username: user?.username,
       },
       {
         headers: {
           'Content-Type': 'application/json',
-          'player-id': username + "id",
+          'player-id': id,
         }
       }
     );
@@ -111,7 +113,7 @@ export default function Pairing() {
     try {
       const response = await axios.delete('https://localhost:4000/match/leave-queue', {
         headers: {
-          'player-id': 'user-123',
+          'player-id': id,
           'Content-Type': 'application/json'
         }
       });
@@ -135,14 +137,14 @@ export default function Pairing() {
       
 
       <div className="flex flex-col items-center gap-4">
-      <input
+      {/* <input
         type="text"
         placeholder="Enter your username"
         value={username}
         onChange={(e) => setUsername(e.target.value)}
         className="w-full max-w-xs px-4 py-2 border border-gray-300 rounded-lg shadow-sm 
                    focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
-      />
+      /> */}
 
     </div>
       <div className="flex items-center justify-center mb-20 w-full max-w-4xl">

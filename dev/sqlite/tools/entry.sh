@@ -1,6 +1,6 @@
 #! /bin/bash
 
-DB_PATH="/mnt/c/Users/moham/OneDrive/Desktop/goinfre/db_data/"
+DB_PATH="$HOME/goinfre/db_data/"
 DB_NAME="app.db"
 
 # mkdir -p $DB_PATH
@@ -23,7 +23,7 @@ sqlite3 "$DB_NAME" <<EOF
         twoFA_verify BOOLEAN DEFAULT FALSE,
         friends JSON DEFAULT '[]',
         block_list JSON DEFAULT '[]',
-        score INTEGER DEFAULT 0,
+        score INTEGER DEFAULT 0
     );
     CREATE TABLE IF NOT EXISTS messages (
         id INTEGER PRIMARY KEY,

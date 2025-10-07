@@ -3,6 +3,7 @@ import RBall from "./RBall";
 import RBat from "./Bat";
 import RHeader from "./RHeader";
 import { type GameInfo, type  Game } from "./Types";
+import { useWebSocket } from "../../chat/websocketContext";
 
 
 export   default function RGame() {
@@ -21,6 +22,8 @@ export   default function RGame() {
   const paddleLeft = { x: 24, y: leftY, width: PADDLE_WIDTH, height: PADDLE_HEIGHT };
   const paddleRight = { x:  600 - 24 - PADDLE_WIDTH, y: rightY, width: PADDLE_WIDTH, height: PADDLE_HEIGHT };
 
+  const {user} = useWebSocket();
+const id = user?.id ? user.id.toString() : "";
   useEffect(() => {
 	const storedGame = sessionStorage.getItem("currentGame");
 	if (!storedGame) {
@@ -38,7 +41,7 @@ export   default function RGame() {
 		websocket.send(
 		  JSON.stringify({
 			type: "newGame",
-			userId: sessionGame.you.id,
+			userId: id,
 			gameId: sessionGame.id,
 		  })
 		);

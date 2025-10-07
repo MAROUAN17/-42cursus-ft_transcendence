@@ -16,7 +16,7 @@ interface HeaderProps {
 export default function RHeader({ scoreLeft, scoreRight, you, opponent, side }: HeaderProps) {
   const navigate = useNavigate();
   function leave_game(){
-	  navigate("/match");
+	  navigate("/pairing");
   }
   //console.log(you?.username)
   return (
