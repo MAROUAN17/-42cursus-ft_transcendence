@@ -5,25 +5,56 @@ import LeaveButton from "./ui/leaveBtn";
 import type { Tournament } from "./tournaments";
 import { useEffect, useState } from "react";
 import { useWebSocket } from "../chat/websocketContext";
+import type { Round } from "../game/remote/Types";
+
+//todo
+//setup first round betwen player1 and player2
+//displays the winners in the final
+//plays the final round 
 
 const TournamentBracket: React.FC = () => {
-  async function fetchUsername(playerId: number) {
-  const response = await fetch(`https://localhost:4000/user/${playerId}`, { method: 'GET' });
-    if (!response.ok) throw new Error("Failed to fetch user");
-    const data = await response.json();
-    console.log("fetched username:", data.infos.username);
-    return data.infos.username;
-  }
 
   const [tournament, setTournament] = useState<Tournament | null>(null);
   const [usernames, setUsernames] = useState<string[]>([]);
+  const [started, setStarted] = useState(false);
+  const [rounds, setRounds] = useState<Round[] | null>();
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+
+  useEffect (() => {
+    // if (!started)
+    //   return
+    const fetchROunds = async () => {
+      const response = await fetch(`https://localhost:4000/tournament/rounds/${id}`, { method: 'GET' });
+      if (!response.ok) throw new Error("Failed to fetch rounds");
+      const data = await response.json();
+      console.log("fetched rounds:", JSON.stringify(data));
+      sessionStorage.setItem("currentRound", JSON.stringify(data));
+      setRounds(data);
+
+      return ;
+    }
+    fetchROunds();
+    navigate("/remote_game");
+  }, [started])
+  async function fetchUsername(playerId: number) {
+    const response = await fetch(`https://localhost:4000/user/${playerId}`, { method: 'GET' });
+    if (!response.ok) throw new Error("Failed to fetch user");
+    const data = await response.json();
+    
+    return data.infos.username;
+  }
+  useEffect(() => {
+    console.log("rounds seted: " , rounds)
+  }, [rounds])
+
 
   useEffect(() => {
     if (tournament) {
-      console.log("Tournament players:", tournament.players);
+      // console.log("Tournament players:", tournament.players);
       Promise.all(tournament.players.map((id) => fetchUsername(id)))
       .then((names) => {
-          console.log("Fetched usernames:", names, id);
+          // console.log("Fetched usernames:", names, id);
           setUsernames(names);
         })
         .catch((err) => console.error(err));
@@ -34,9 +65,6 @@ const TournamentBracket: React.FC = () => {
     avatar: `https://i.pravatar.cc/40?img=${index + 1}`,
   }));
 
-  const navigate = useNavigate();
-  const { id } = useParams<{ id: string }>();
-  const playerId = 1;
   const [loading, setLoading] = useState(true);
   const [adminLabel, setAdminLabel] = useState("waiting ...");
 
@@ -50,9 +78,9 @@ const TournamentBracket: React.FC = () => {
         }
         const data: Tournament = await res.json();
         setTournament(data);
-        if (tournament?.players.length === 4)
+        if (data.players.length === 4)
           setAdminLabel("start");
-        console.log("fetched data:", data);
+        // console.log("fetched data:", tournament?.players);
       } catch (err: any) {
         console.error("Error", err.message);
       } finally {
@@ -62,12 +90,13 @@ const TournamentBracket: React.FC = () => {
     fetchTournament();
   }, [id]);
 
+  
 
   if (loading) return <p>Loading tournament...</p>;
   return (
     <div className="bg-[#0a043c] text-white min-h-screen flex flex-col items-center justify-center gap-10">
       <div className="w-full flex justify-end p-4 cursor-pointer">
-        <LeaveButton label={tournament?.admin  == user?.id ? adminLabel : "leave"} tournamentId={Number(id)} playerId={1} onLeave={() => navigate("/tournaments")} />
+        <LeaveButton setStarted={setStarted} label={tournament?.admin  == user?.id ? adminLabel : "leave"} tournamentId={Number(id)} playerId={1} onLeave={() => navigate("/tournaments")} />
       </div>
 
       <div className="relative h-40 overflow-hidden cursor-pointer  text-white rounded-lg">

@@ -11,7 +11,8 @@ import {
 import { create_tournament, delete_tournament,
             get_tournament_by_id, get_tournaments, 
             join_tournament, leave_tournament ,
-            get_tournament_winner, get_rounds, } 
+            get_tournament_winner, get_rounds,
+            start_tournament, } 
             from "../services/tournament.service.js";
 import { get_profile, get_player_rooms, get_player_week_activity, get_leaderboard } from "../services/states.service.js";
 
@@ -34,6 +35,7 @@ export const gameRoutes: FastifyPluginAsync = async (fastify) => {
   fastify.delete("/tournament/leave", leave_tournament);
   fastify.get("/tournament/:tournamentId", get_tournament_by_id);
   fastify.get("/tournament/rounds/:tournamentId", get_rounds);
+  fastify.post("/tournament/start/:tournamentId", start_tournament);
   fastify.get("/tournament/winner/:tournamentId", get_tournament_winner);
 
   //states

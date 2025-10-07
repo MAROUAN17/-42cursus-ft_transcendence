@@ -43,3 +43,10 @@ export interface Game {
   side: string;
   gameInfo: GameInfo;
 }
+
+export interface Round {
+  tournament_id: string;
+  player1: number;
+  player2: number;
+  round_number: number;
+}

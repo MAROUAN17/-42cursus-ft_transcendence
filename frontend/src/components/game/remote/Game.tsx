@@ -25,32 +25,39 @@ export   default function RGame() {
   const {user} = useWebSocket();
 const id = user?.id ? user.id.toString() : "";
   useEffect(() => {
-	const storedGame = sessionStorage.getItem("currentGame");
+	var storedGame = null;
+	//for testing round
+	sessionStorage.removeItem('currentGame');
+	if (sessionStorage.getItem("currentGame") )
+		storedGame = sessionStorage.getItem("currentGame") ;
+	else
+		storedGame = sessionStorage.getItem("currentRound") ;
 	if (!storedGame) {
 	  console.log("No game found in sessionStorage.");
 	  return;
 	}
+	console.log("current game", storedGame)
   
 	const sessionGame = JSON.parse(storedGame);
 	setGame(sessionGame);
   
 	let interval: NodeJS.Timeout;
   
-	interval = setInterval(() => {
-	  if (websocket && websocket.readyState === WebSocket.OPEN) {
-		websocket.send(
-		  JSON.stringify({
-			type: "newGame",
-			userId: id,
-			gameId: sessionGame.id,
-		  })
-		);
-		console.log("Game sent to server ✅");
-		clearInterval(interval);
-	  } else {
-		console.log("⏳ Waiting for socket...");
-	  }
-	}, 1000);
+	// interval = setInterval(() => {
+	//   if (websocket && websocket.readyState === WebSocket.OPEN) {
+	// 	websocket.send(
+	// 	  JSON.stringify({
+	// 		type: "newGame",
+	// 		userId: id,
+	// 		gameId: sessionGame.id,
+	// 	  })
+	// 	);
+	// 	console.log("Game sent to server ✅");
+	// 	clearInterval(interval);
+	//   } else {
+	// 	console.log("⏳ Waiting for socket...");
+	//   }
+	// }, 1000);
   
 	return () => clearInterval(interval);
   }, [websocket]);

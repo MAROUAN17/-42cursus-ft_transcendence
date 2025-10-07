@@ -192,7 +192,7 @@ export const leave_tournament = async (req: FastifyRequest, res: FastifyReply) =
 
 export const start_tournament = async (req: FastifyRequest, res: FastifyReply) => {
   const playerId = Number(req.headers["player-id"]);
-  const tournamentId = Number((req.body as any)?.tournamentId);
+  const tournamentId = Number((req.params as any)?.tournamentId);
 
   if (!playerId || !tournamentId)
     return res.status(400).send({ error: "Missing player info" });
@@ -203,7 +203,9 @@ export const start_tournament = async (req: FastifyRequest, res: FastifyReply) =
 
   if (!tournament)
     return res.status(404).send({ error: "Tournament not found" });
-
+  console.log("tournament status: ", tournament.status);
+  if (tournament.status == "ongoing")
+      return res.status(404).send({ error: "Tournament already started" });
   const players: number[] = JSON.parse(tournament.players);
 
   if (tournament.admin !== playerId)
