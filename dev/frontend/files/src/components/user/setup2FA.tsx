@@ -1,9 +1,9 @@
 import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router";
-import type { UserInfo } from "../../types/user";
+import type { UserInfos } from "../../types/user";
 
-const Setup2FA: React.FC<UserInfo> = (user) => {
+const Setup2FA: React.FC<UserInfos> = (user) => {
   const [errorMssg, setErrorMssg] = useState<string>("");
   const [errorFlag, setErrorFlag] = useState<boolean>(false);
   const [qrCode, setQrCode] = useState<string>("");
@@ -68,26 +68,29 @@ const Setup2FA: React.FC<UserInfo> = (user) => {
       firstNbr + secondNbr + thirdNbr + fourthNbr + fifthNbr + sixthNbr;
     axios
       .post("https://localhost:5000/2fa/setup/verify", {
+        id: user.id,
         token: otpNbr,
         secret: qrCodeSecret,
       })
       .then(function (res) {
-        console.log(res);
-        navigate("/login");
-        axios
-          .post("https://localhost:5000/register", {
-            username: user.username,
-            email: user.email,
-            password: user.password,
-            secret: qrCodeSecret,
-          })
-          .then(function (res) {
-            console.log(res.data);
-            navigate("/login");
-          })
-          .catch(function (err) {
-            console.log(err);
-          });
+        console.log(res.data);
+        
+        // console.log(res);
+        // navigate("/login");
+        // axios
+        //   .post("https://localhost:5000/register", {
+        //     username: user.username,
+        //     email: user.email,
+        //     password: user.password,
+        //     secret: qrCodeSecret,
+        //   })
+        //   .then(function (res) {
+        //     console.log(res.data);
+        //     navigate("/login");
+        //   })
+        //   .catch(function (err) {
+        //     console.log(err);
+        //   });
       })
       .catch(function (err) {
         setErrorFlag(true);
@@ -113,7 +116,7 @@ const Setup2FA: React.FC<UserInfo> = (user) => {
   }, []);
 
   return (
-    <div className="absolute bg-gameBg border border-white flex left-[300px] top-28 justify-center px-32 py-32 rounded-xl font-poppins">
+    <div className="absolute z-10 inset-x-[850px] inset-y-[180px] bg-gameBg border border-white flex justify-center px-32 py-32 rounded-xl font-poppins">
       <div className="items-center">
         <div className="text-center align-center space-y-6">
           <div className="space-y-5">

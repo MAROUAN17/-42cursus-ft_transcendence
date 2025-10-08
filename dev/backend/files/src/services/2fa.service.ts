@@ -1,16 +1,11 @@
 import type { FastifyRequest, FastifyReply } from "fastify";
-import {
-  type LoginBody,
-} from "../models/user.model.js";
+import { type LoginBody } from "../models/user.model.js";
 import app from "../server.js";
 import qrcode from "qrcode";
 import { authenticator } from "otplib";
 import type { SerializeOptions } from "@fastify/cookie";
 
-export const setup2FA = async (
-  req: FastifyRequest<{ Body: LoginBody }>,
-  res: FastifyReply
-) => {
+export const setup2FA = async (req: FastifyRequest<{ Body: LoginBody }>, res: FastifyReply) => {
   const { email } = req.body;
 
   const secret = authenticator.generateSecret();
@@ -21,19 +16,29 @@ export const setup2FA = async (
   return [qrCode, secret];
 };
 
-export const verifySetup2FA = async (
-  req: FastifyRequest<{ Body: LoginBody }>,
-  res: FastifyReply
-) => {
+export const deleteSetup2FA = async (req: FastifyRequest<{ Body: LoginBody }>, res: FastifyReply) => {
   try {
-    const { token, secret } = req.body;
+    const { id } = req.body;
+
+    if (!id) return res.status(404).send({ error: "User not found" });
+
+    app.db.prepare("UPDATE players SET twoFA_verify = ?, secret_otp = ? WHERE id = ?").run(0, null, id);
+
+    res.status(200).send({ message: "2fa deleted successfully" });
+  } catch (error) {
+    res.status(500).send({ error: "Error while 2fa deletion" });
+  }
+};
+
+export const verifySetup2FA = async (req: FastifyRequest<{ Body: LoginBody }>, res: FastifyReply) => {
+  try {
+    const { id, token, secret } = req.body;
 
     const isValid = authenticator.verify({ token: token, secret: secret });
 
     if (isValid) {
-      return res
-        .status(200)
-        .send({ message: "Valid OTP code And user registered" });
+      app.db.prepare("UPDATE players SET twoFA_verify = ?, secret_otp = ? WHERE id = ?").run(1, secret, id);
+      return res.status(200).send({ message: "Valid OTP code And user registered" });
     }
 
     return res.status(401).send({ error: "Invalid otp code" });
@@ -42,10 +47,7 @@ export const verifySetup2FA = async (
   }
 };
 
-export const verify2FAToken = async (
-  req: FastifyRequest<{ Body: LoginBody }>,
-  res: FastifyReply
-) => {
+export const verify2FAToken = async (req: FastifyRequest<{ Body: LoginBody }>, res: FastifyReply) => {
   try {
     let { token, email, rememberMe } = req.body;
     let user = {} as User | null;
@@ -53,22 +55,16 @@ export const verify2FAToken = async (
     email = email.toLowerCase();
     //find user
     if (email.includes("@")) {
-      user = app.db
-        .prepare("SELECT * FROM PLAYERS WHERE email = ?")
-        .get(email) as User;
+      user = app.db.prepare("SELECT * FROM PLAYERS WHERE email = ?").get(email) as User;
     } else {
-      user = app.db
-        .prepare("SELECT * FROM PLAYERS WHERE username = ?")
-        .get(email) as User;
+      user = app.db.prepare("SELECT * FROM PLAYERS WHERE username = ?").get(email) as User;
     }
 
     const secret = user.secret_otp;
     const isValid = authenticator.verify({ token: token, secret: secret });
 
     if (isValid) {
-      const updatedUser = app.db
-        .prepare("UPDATE players SET twoFA_verify = ? WHERE id = ?")
-        .run(1, user.id);
+      const updatedUser = app.db.prepare("UPDATE players SET twoFA_verify = ? WHERE id = ?").run(1, user.id);
 
       if (updatedUser.changes == 0) return;
 
@@ -92,14 +88,8 @@ export const verify2FAToken = async (
       }
 
       //sign new JWT tokens
-      const accessToken = app.jwt.jwt1.sign(
-        { id: user.id, email: user.email, username: user.username },
-        { expiresIn: "900s" }
-      );
-      const refreshToken = app.jwt.jwt2.sign(
-        { id: user.id, email: user.email, username: user.username },
-        { expiresIn: "1d" }
-      );
+      const accessToken = app.jwt.jwt1.sign({ id: user.id, email: user.email, username: user.username }, { expiresIn: "900s" });
+      const refreshToken = app.jwt.jwt2.sign({ id: user.id, email: user.email, username: user.username }, { expiresIn: "1d" });
 
       //clear login token
       res.clearCookie("loginToken", {

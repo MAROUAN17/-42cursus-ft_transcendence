@@ -1,5 +1,5 @@
 import app from "../server.js";
-import { type User, type LoginBody } from "../models/user.model.js";
+import { type UserInfos, type LoginBody } from "../models/user.model.js";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import bcrypt from "bcrypt";
 
@@ -8,21 +8,20 @@ export const registerUser = async (
   res: FastifyReply
 ) => {
   try {
-    let user = {} as User | undefined;
-    let { username, email, password, secret } = req.body;
+    let user = {} as UserInfos | undefined;
+    let { username, email, password } = req.body;
 
     email = email.toLowerCase();
-
     //check if username user exists
     user = app.db
       .prepare("SELECT * from players WHERE username = ?")
-      .get(username) as User | undefined;
+      .get(username) as UserInfos | undefined;
     if (user) return res.status(401).send({ error: "Username already exists" });
 
     //check if user email already exists
     user = app.db
       .prepare("SELECT * from players WHERE email = ?")
-      .get(email) as User | undefined;
+      .get(email) as UserInfos | undefined;
     if (user) {
       return res.status(401).send({ error: "Email already exist!" });
     }
@@ -32,9 +31,9 @@ export const registerUser = async (
 
     app.db
       .prepare(
-        "INSERT INTO players(username, email, password, secret_otp) VALUES (?, ?, ?, ?)"
+        "INSERT INTO players(username, email, password) VALUES (?, ?, ?)"
       )
-        .run(username, email, hash, secret);
+        .run(username, email, hash);
 
     res.status(200).send({ message: "Registered successfully" });
   } catch (error) {
@@ -48,7 +47,7 @@ export const verifyRegisterUser = async (
   res: FastifyReply
 ) => {
   try {
-    let user = {} as User | undefined;
+    let user = {} as UserInfos | undefined;
     let { username, email, password, secret } = req.body;
 
     //regex check
@@ -85,13 +84,13 @@ export const verifyRegisterUser = async (
     //check if username user exists
     user = app.db
       .prepare("SELECT * from players WHERE username = ?")
-      .get(username) as User | undefined;
+      .get(username) as UserInfos | undefined;
     if (user) return res.status(401).send({ error: "Username already exists" });
 
     //check if user email already exists
     user = app.db
       .prepare("SELECT * from players WHERE email = ?")
-      .get(email) as User | undefined;
+      .get(email) as UserInfos | undefined;
     if (user) {
       return res.status(401).send({ error: "Email already exist!" });
     }

@@ -21,6 +21,7 @@ import {
   verify2FAToken,
   setup2FA,
   verifySetup2FA,
+  deleteSetup2FA
 } from "../services/2fa.service.js";
 import { checkAuth } from "../services/checkAuth.service.js";
 import {
@@ -71,6 +72,7 @@ export const authRoutes: FastifyPluginAsync = async () => {
 
   //2fa
   app.post("/2fa/setup", setup2FA);
+  app.post("/2fa/delete", deleteSetup2FA);
   app.post("/2fa/setup/verify", verifySetup2FA);
   app.post("/2fa/verify-token", verify2FAToken);
 

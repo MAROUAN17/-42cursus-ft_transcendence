@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router";
 import Setup2FA from "./setup2FA";
 import api from "../../axios";
+import axios from "axios";
 
 function Register() {
   const [email, setEmail] = useState("");
@@ -14,6 +15,7 @@ function Register() {
   const [emailErrorMssg, setEmailErrorMssg] = useState<string>("");
   const [emailErrorFlag, setEmailErrorFlag] = useState<boolean>(false);
   const [setup2FA, setSetup2FA] = useState<boolean>(false);
+  const navigate = useNavigate();
 
   const handleForm = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -25,7 +27,18 @@ function Register() {
         password: password,
       })
       .then(function () {
-        setSetup2FA(true);
+        // setSetup2FA(true);
+        axios
+          .post("https://localhost:5000/register", {
+            username: username,
+            email: email,
+            password: password
+          })
+          .then(function (res) {
+            navigate("/login");
+          }).catch(function (err) {
+            console.log(err);
+          });
       })
       .catch(function (err) {
         if (err.response.data.error.includes("Username")) {
