@@ -27,7 +27,6 @@ export const checkResetPass = async (req: FastifyRequest<{ Body: LoginBody }>, r
     if (Date.now() - user.reset_time > 300000) {
       return res.status(401).send({ error: "EXPIRED" });
     }
-  
 
     res.status(200).send({ message: "Authorized" });
   } catch (error) {
@@ -71,7 +70,7 @@ export const resetPassword = async (req: FastifyRequest<{ Body: LoginBody }>, re
       }
     });
 
-    return res.status(200).send({ message: hashedToken });
+    return res.status(200).send({ message: "Reset link sent to the user email successfully" });
   } catch (error) {
     return res.status(500).send({ error: error });
   }
@@ -101,6 +100,7 @@ export const verifyResetPin = async (req: FastifyRequest<{ Body: LoginBody }>, r
       return res.status(401).send({ error: "Unauthorized" });
     }
 
+    //check password regex
     const passwordPattern = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).+$");
     if (password.length < 8 || password.length > 30) {
       return res.status(401).send({
@@ -123,8 +123,9 @@ export const verifyResetPin = async (req: FastifyRequest<{ Body: LoginBody }>, r
       });
     }
 
+    const hashedPassword:string = await bcrypt.hash(password, 10);
     //set new password
-    app.db.prepare("UPDATE players SET password = ?, reset_flag = ?, reset_token = ? WHERE id = ?").run(password, 0, null, user?.id);
+    app.db.prepare("UPDATE players SET password = ?, reset_flag = ?, reset_token = ? WHERE id = ?").run(hashedPassword, 0, null, user?.id);
 
     return res.status(200).send({ message: "Reset password success" });
   } catch (error) {

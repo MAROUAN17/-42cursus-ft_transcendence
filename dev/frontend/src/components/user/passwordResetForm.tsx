@@ -31,18 +31,15 @@ export default function ResetPasswordForm() {
   return (
     <div className="flex justify-between font-poppins h-screen bg-gameBg items-center overflow-hidden">
       {emailSent ? (
-        <div className="xl:py-[260px] xl:px-[300px] xl:mt-32 lg:mt-18 lg:w-[1320px] lg:px-[210px]">
+        <div className="h-full w-full xl:py-[300px] xl:px-[280px] xl:mt-32 lg:mt-18 lg:w-[1320px] lg:px-[210px]">
           <div className="text-center space-y-4">
             <div className="flex justify-center">
-              <img width="80px" height="80px" src="/mail-icon.png" alt="" />
+              <img width="120px" height="92px" src="/mail-icon.png" alt="" />
             </div>
             <div className="space-y-12">
-              <h1 className="text-white font-bold text-6xl">
-                Check your email
-              </h1>
-              <p className="text-white text-xl">
-                we've sent a password reset link to your email. Please check
-                your inbox and follow the steps to reset your password
+              <h1 className="text-white font-bold text-7xl">Check your email</h1>
+              <p className="text-white font-light text-xl">
+                we've sent a password reset link to your email. Please check your inbox and follow the steps to reset your password
               </p>
             </div>
           </div>
@@ -56,53 +53,47 @@ export default function ResetPasswordForm() {
           </div>
         </div>
       ) : (
-        <div className="xl:py-[260px] xl:px-[300px] xl:mt-32 lg:mt-18 lg:w-1/2 lg:px-[210px]">
-          <div className="text-center space-y-6">
+        <div className="font-poppins h-full xl:py-[90px] xl:px-[280px] xl:mt-32 lg:mt-18 lg:w-1/2 lg:px-[210px]">
+          <div className="h-full w-full text-center space-y-6">
             <div className="flex justify-center">
-              <img width="92px" height="86px" src="/mail-icon.png" alt="" />
+              <img width="120px" height="92px" src="/mail-icon.png" alt="" />
             </div>
-            <div>
+            <div className="space-y-4">
               <h1 className="text-white font-bold text-6xl">FORGOT PASSWORD</h1>
               <p className="text-white">
-                Enter the email address you used to create the account, and we
-                will email you with instructions to reset your password
+                Enter the email address you used to create the account, and we will email you with instructions to reset your password
               </p>
             </div>
+            <div className="py-16">
+              <form onSubmit={formHandler}>
+                <div className="mt-20">
+                  <label className="flex text-gray-300">Email</label>
+                  <input
+                    value={email}
+                    onChange={emailInput}
+                    required
+                    className={`text-white bg-transparent ${errorFlag ? "border-b border-red-700" : "border-b border-white"} py-4 mt-5 w-full`}
+                    type="email"
+                    placeholder="Enter your email"
+                  />
+                  {errorFlag && <p className="mt-3 text-red-500">{errorMssg}</p>}
+                </div>
+                <div className="text-center mt-20">
+                  <button type="submit" className="bg-neon text-white text-lg w-full py-3 rounded-lg font-semibold">
+                    Continue
+                  </button>
+                </div>
+                <div className="flex justify-center items-center mt-8">
+                  <a href="/login">
+                    <img width="60px" height="60px" src="arrow-icon.png" alt="" />
+                  </a>
+                  <a href="/login">
+                    <p className="text-xl font-bold text-white">Back to login</p>
+                  </a>
+                </div>
+              </form>
+            </div>
           </div>
-          <form onSubmit={formHandler}>
-            <div className="mt-20">
-              <label className="flex text-gray-300">Email</label>
-              <input
-                value={email}
-                onChange={emailInput}
-                required
-                className={`text-white bg-transparent ${
-                  errorFlag
-                    ? "border-b border-red-700"
-                    : "border-b border-white"
-                } py-4 mt-5 w-full`}
-                type="email"
-                placeholder="Enter your email"
-              />
-              {errorFlag && <p className="mt-3 text-red-500">{errorMssg}</p>}
-            </div>
-            <div className="text-center mt-20">
-              <button
-                type="submit"
-                className="bg-neon text-white text-lg px-[210px] py-3 rounded-lg font-semibold"
-              >
-                Continue
-              </button>
-            </div>
-            <div className="flex justify-center items-center mt-12">
-              <a href="/login">
-                <img width="60px" height="60px" src="arrow-icon.png" alt="" />
-              </a>
-              <a href="/login">
-                <p className="text-xl font-bold text-white">Back to login</p>
-              </a>
-            </div>
-          </form>
         </div>
       )}
       <div className="">

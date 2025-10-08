@@ -15,20 +15,6 @@ export const loginUser = async (
     let user = {} as User | undefined;
 
     email = email.toLowerCase();
-
-    //fetch all users
-    const stmt = app.db.prepare("SELECT * FROM players");
-    const rows = stmt.all();
-    console.log(rows);
-    //--------------
-
-
-    //fetch all user
-    const stmt2 = app.db.prepare("SELECT * FROM players where id = ?");
-    const row = stmt2.get(1);
-    console.log(row);
-    //--------------
-
     //check username
     if (email.includes("@")) {
       user = app.db
@@ -39,9 +25,6 @@ export const loginUser = async (
         .prepare("SELECT * from players WHERE username = ?")
         .get(email) as User | undefined;
     }
-
-    console.log("email -> ", email);
-    console.log("user -> ", user);
 
     if (!user) {
       return res.status(401).send({ error: "Incorrect username or password." });
