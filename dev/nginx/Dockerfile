@@ -1,11 +1,45 @@
-FROM debian:stable
+FROM debian:stable-slim AS main
 
 RUN apt-get update -y && \
-    apt-get install -y nginx bash openssl make git g++ nginx-extras \
+    apt-get install -y make git g++ \
     autoconf automake build-essential \
     libcurl4-openssl-dev libgeoip-dev liblmdb-dev \
     libpcre2-dev libtool libxml2-dev libyajl-dev \
-    pkgconf wget zlib1g-dev
+    pkgconf wget zlib1g-dev netcat-openbsd && rm -rf /var/lib/apt/lists/*
+
+# build ModSecurity
+RUN git clone --recursive https://github.com/owasp-modsecurity/ModSecurity ModSecurity
+WORKDIR /ModSecurity
+
+RUN ./build.sh && \
+    ./configure && \
+    make -j$(nproc) && \
+    make -j$(nproc) install
+
+# build ModSecurity nginx connector with same nginx version to get the module binary
+WORKDIR /opt/
+
+RUN  git clone https://github.com/owasp-modsecurity/ModSecurity-nginx && \
+    wget http://nginx.org/download/nginx-1.26.3.tar.gz && \
+    tar -xvzf nginx-1.26.3.tar.gz && \
+    cd /opt/nginx-1.26.3 && \
+    ./configure --with-compat --add-dynamic-module=/opt/ModSecurity-nginx && \
+    make modules
+
+FROM debian:stable-slim
+
+RUN apt-get update -y && \
+    apt-get install -y nginx openssl bash netcat-openbsd git libcurl4 \
+    libxml2 libyajl2 libgeoip1 liblmdb0 libpcre2-8-0 && \
+    rm -rf /var/lib/apt/lists/* && \
+    mkdir -p /etc/nginx/modules/ /etc/nginx/modsec/
+
+COPY conf/nginx.conf /etc/nginx/nginx.conf
+COPY --from=main /opt/nginx-1.26.3/objs/ngx_http_modsecurity_module.so /etc/nginx/modules/
+COPY --from=main /ModSecurity/modsecurity.conf-recommended /etc/nginx/modsec/modsec.conf
+COPY --from=main /ModSecurity/unicode.mapping /etc/nginx/modsec/
+COPY --from=main /usr/local/modsecurity/lib/libmodsecurity.so* /usr/local/lib/
+RUN ldconfig
 
 RUN mkdir -p /etc/nginx/ssl && \
     openssl req -x509 -nodes -newkey rsa:4096 \
@@ -14,17 +48,27 @@ RUN mkdir -p /etc/nginx/ssl && \
     -days 365 \
     -subj "/CN=localhost"
 
-COPY ./tools/entry.sh /usr/local/bin/entry.sh
-COPY conf/nginx.conf /etc/nginx/nginx.conf
-RUN chmod +x /usr/local/bin/entry.sh
+# configure modsecurity
+RUN sed -i 's/SecRuleEngine DetectionOnly/SecRuleEngine On/' /etc/nginx/modsec/modsec.conf && \
+    sed -i 's/SecAuditLogParts ABIJDEFHZ/SecAuditLogParts ABCEFHJKZ/' /etc/nginx/modsec/modsec.conf && \
+    echo "Include /etc/nginx/modsec/modsec.conf" > /etc/nginx/modsec/main.conf
 
-RUN git clone --recursive https://github.com/owasp-modsecurity/ModSecurity ModSecurity
+# get OWASP standard rules
+RUN git clone https://github.com/coreruleset/coreruleset.git /modsec-rules && \
+    mv /modsec-rules /etc/nginx/modsec/ && \
+    mv /etc/nginx/modsec/modsec-rules/crs-setup.conf.example /etc/nginx/modsec/modsec-rules/crs-setup.conf && \
+    echo "Include /etc/nginx/modsec/modsec-rules/crs-setup.conf" >> /etc/nginx/modsec/main.conf && \
+    echo "Include /etc/nginx/modsec/modsec-rules/rules/*.conf" >> /etc/nginx/modsec/main.conf && \
+    cat <<'EOF' >> /etc/nginx/modsec/modsec-rules/crs-setup.conf
+SecAction \
+    "id:900200,\
+    phase:1,\
+    pass,\
+    t:none,\
+    nolog,\
+    tag:'OWASP_CRS',\
+    ver:'OWASP_CRS/4.19.0-dev',\
+    setvar:'tx.allowed_methods=GET HEAD POST OPTIONS DELETE'"
+EOF
 
-WORKDIR /ModSecurity
-
-RUN ./build.sh && \
-    ./configure && \
-    make -j$(nproc) && \
-    make -j$(nproc) install
-
-ENTRYPOINT /usr/local/bin/entry.sh
+ENTRYPOINT [ "nginx", "-g" , "daemon off;" ]

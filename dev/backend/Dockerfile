@@ -12,4 +12,3 @@ RUN npm install
 COPY ./files /app
 
 CMD ["npm", "run", "dev", "--", "--host"]
-# CMD ["tail", "-f", "/dev/null"]
