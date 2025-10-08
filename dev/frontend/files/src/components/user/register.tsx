@@ -86,11 +86,11 @@ function Register() {
           </p>
         </div>
         {/* render QR code to setup 2FA */}
-        {setup2FA ? (
+        {/* {setup2FA ? (
           <Setup2FA username={username} email={email} password={password} />
         ) : (
           <div></div>
-        )}
+        )} */}
         <form onSubmit={handleForm}>
           <div className="xl:my-20 lg:my-14 space-y-10">
             <div>
