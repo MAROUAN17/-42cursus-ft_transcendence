@@ -14,12 +14,10 @@ function Register() {
   const [passErrorFlag, setPassErrorFlag] = useState<boolean>(false);
   const [emailErrorMssg, setEmailErrorMssg] = useState<string>("");
   const [emailErrorFlag, setEmailErrorFlag] = useState<boolean>(false);
-  const [setup2FA, setSetup2FA] = useState<boolean>(false);
   const navigate = useNavigate();
 
   const handleForm = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
     api
       .post("/register/verify", {
         username: username,
@@ -27,7 +25,6 @@ function Register() {
         password: password,
       })
       .then(function () {
-        // setSetup2FA(true);
         axios
           .post("https://localhost:5000/register", {
             username: username,
@@ -85,12 +82,6 @@ function Register() {
             Join and have fun with your friends
           </p>
         </div>
-        {/* render QR code to setup 2FA */}
-        {/* {setup2FA ? (
-          <Setup2FA username={username} email={email} password={password} />
-        ) : (
-          <div></div>
-        )} */}
         <form onSubmit={handleForm}>
           <div className="xl:my-20 lg:my-14 space-y-10">
             <div>

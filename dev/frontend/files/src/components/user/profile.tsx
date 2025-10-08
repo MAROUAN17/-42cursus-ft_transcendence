@@ -42,8 +42,8 @@ export default function Profile() {
   const [blockedUser, setblockedUser] = useState<boolean>(false);
   const [isFriend, setIsFriend] = useState<boolean>(false);
   const [friendReqSent, setFriendReqSent] = useState<boolean>(false);
-  const [currEmail, setCurrEmail] = useState<string>("");
-  const [currUsername, setCurrUsername] = useState<string>("");
+  const [currEmail, setCurrEmail] = useState<string | undefined>("");
+  const [currUsername, setCurrUsername] = useState<string | undefined>("");
   const [currAvatar, setCurrAvatar] = useState<string>("");
   const [usernameErrorFlag, setUsernameErrorFlag] = useState<boolean>(false);
   const [usernameErrorMssg, setUsernameErrorMssg] = useState<string>("");
@@ -246,8 +246,8 @@ export default function Profile() {
                   setSettingsPopup(false);
                   setUsernameErrorFlag(false);
                   setUsernameErrorMssg("");
-                  setCurrEmail(currUser.email);
-                  setCurrUsername(currUser.username);
+                  setCurrEmail(currUser?.email);
+                  setCurrUsername(currUser?.username);
                 }}
                 color="white"
                 className="w-[30px] h-[30px] hover:scale-110"
@@ -336,7 +336,7 @@ export default function Profile() {
           </div>
         </div>
       ) : null}
-      <div className={`flex p-8 h-[50%] space-x-4 ${settingsPopup ? "blur-sm" : ""}`}>
+      <div className={`flex p-8 h-[50%] space-x-4 ${settingsPopup || setup2FA ? "blur-sm" : ""}`}>
         <ToastContainer closeOnClick={true} className="bg-green text-green-600" />
         {/* stats section */}
         <div className="py-14 bg-compBg/20 w-[85%] rounded-[10px] space-y-12">
