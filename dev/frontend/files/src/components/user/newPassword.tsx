@@ -11,7 +11,7 @@ export default function NewPassword() {
   const [expired, setExpired] = useState<boolean>(false);
   const [errorFlag, setErrorFlag] = useState<boolean>(false);
   const [errorMssg, setErrorMssg] = useState<string>("");
-  const [timerVerify, setTimerVerify] = useState<number>(6);
+  const [timerVerify, setTimerVerify] = useState<number>(10);
 
   const submitPassReset = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

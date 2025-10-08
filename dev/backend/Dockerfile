@@ -9,7 +9,7 @@ COPY ./files/package*.json /app/.
 
 RUN npm install
 
-COPY ./files /app
+# COPY ./files /app
 
 CMD ["npm", "run", "dev", "--", "--host"]
 # CMD ["tail", "-f", "/dev/null"]
