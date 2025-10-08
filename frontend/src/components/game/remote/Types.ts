@@ -19,6 +19,7 @@ export interface GameInfo {
   bounds: { width: number; height: number };
   scoreLeft: number;
   scoreRight: number;
+  roundId?: number;
 }
 
 export interface PaddlY {

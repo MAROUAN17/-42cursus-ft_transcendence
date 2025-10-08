@@ -24,10 +24,12 @@ export interface GameInfo {
   scoreLeft: number;
   scoreRight: number;
   dir:Dir;
+  roundId?:number;
 }
 
 export interface Room {
   tournamentId?:number;
+  roundId?:number;
   type?:string;
   gameId: string;
   player1?: string;

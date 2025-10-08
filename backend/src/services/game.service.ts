@@ -4,8 +4,11 @@ import { DefaultGame, type GameInfo, type Room } from "../models/game.js";
 import { clients, checkPaddleCollision } from "./game.utils.js";
 import app from "../server.js";
 import type { FastifyReply, FastifyRequest } from "fastify";
+import type { Round } from "../generated/prisma/index.js";
+import { v4 as uuidv4 } from 'uuid';
 
 const rooms:Room[] = [];
+// const rounds:Round[] = [];
 
 function set_random_Info(game_info:GameInfo) {
   const ballx = game_info.bounds.width / 2;
@@ -30,11 +33,14 @@ function saveData (room: Room) {
   if (room.type == "tournament")
   {
     try {
-      app.db.prepare("INSERT INTO ROUND ( tournament_id, player1, player2, winner) VALUES ( (SELECT id FROM TOURNAMENT WHERE game_id = ?), ?, ?, ?)")
-      .run( room.gameId, room.player1, room.player2, room.winner);
+      // app.db.prepare("INSERT INTO ROUND ( tournament_id, player1, player2, winner) VALUES ( (SELECT id FROM TOURNAMENT WHERE game_id = ?), ?, ?, ?)")
+      // .run( room.gameId, room.player1, room.player2, room.winner);
       const score = room.round == 2 ? 300 : 100;
       app.db.prepare ("UPDATE players SET score = score + ? WHERE id = ?")
       .run(score, room.winner);
+      app.db.prepare("UPDATE Round SET score1 = ?, score2 = ?, winner = ? WHERE id = ?")
+      .run(room.scoreLeft, room.scoreRight, room.winner, room.roundId);
+
       console.log("-- Round registred successfully");
     } catch (err) {
       console.log(err);
@@ -44,6 +50,7 @@ function saveData (room: Room) {
     app.db
       .prepare("INSERT INTO Room( player1, player2, startedAt, scoreLeft, scoreRight, winner) VALUES (?, ?, ?, ?, ?, ?)")
       .run( room.player1, room.player2, room.startedAt?.toString(), room.scoreLeft, room.scoreRight, room.winner)
+
 
     app.db.prepare("UPDATE players SET score = score + ? WHERE id = ?")
       .run(100, room.winner);
@@ -67,7 +74,9 @@ export const getData = async(req: FastifyRequest, res: FastifyReply)=> {
 function gameLoop (room:Room)
 {
   var game = room.gameInfo;
-    const dt = 1 / 60; 
+  if (room.roundId)
+    room.gameInfo.roundId = room.roundId;
+  const dt = 1 / 60; 
     
 
     const nx = game.ball.x + game.ball.velX * dt
@@ -166,24 +175,29 @@ export function handleGameConnection(connection: any, req: any) {
   connection.on("message", (message: any) => {
     try {
       const msg = JSON.parse(message.toString());
-
-      if (msg.type === "newGame") {
+      console.log("-- msg: ", msg)
+      if (msg.type === "casual") {
         userId = msg.userId;
         clients.set(userId, connection);
         addPlayerToRoom(msg.gameId, userId);
         console.log('-- connectionn established with ', userId);
       }
+      else if (msg.type === "tournament") {
+        userId = msg.userId;
+        clients.set(userId, connection);
+        addPlayerToRound(Number(msg.tournamentId), userId);
+        console.log("data received", msg);
+        return ;
+      }
 
       if (msg.type === "updateY") {
-        const room = getRoom(msg.gameId);
-        // console.log("-- trying to update y for the game:", msg.gameId)
-        // console.log("Before update - Left Y:", room.gameInfo.paddleLeft.y, "Right Y:", room.gameInfo.paddleRight.y);
-        // console.log("Received values - leftY:", msg.leftY, "rightY:", msg.rightY);
-        
+        console.log("--- entred")
+        const room = getRoom(msg.gameId, msg.roundId);
+        if (!room)
+            console.log("room not found");
         room.gameInfo.paddleLeft.y = msg.leftY;
         room.gameInfo.paddleRight.y = msg.rightY;
         
-        // console.log("After update - Left Y:", room.gameInfo.paddleLeft.y, "Right Y:", room.gameInfo.paddleRight.y);
         console.log("Broadcasting to room:", room.gameId, "Players:", room.player1, room.player2);
         
         broadcastToRoom(room, { type: "update", game_info: room.gameInfo });
@@ -199,11 +213,14 @@ export function handleGameConnection(connection: any, req: any) {
   });
 
 }
-function getRoom(gameId: string): Room {
-  let room = rooms.find(r => r.gameId === gameId);
+function getRoom(gameId: string, roundId:number): Room {
+  let room = rooms.find(r => r.roundId === roundId);
+  if (!room)
+    room = rooms.find(r => r.gameId === gameId);
   if (!room) {
-    room = { 
-      gameId, 
+    room = {
+      roundId:roundId, 
+      gameId: uuidv4(), 
       ready: false, 
       gameInfo: set_random_Info(structuredClone(DefaultGame)) 
     };
@@ -213,7 +230,7 @@ function getRoom(gameId: string): Room {
 }
 
 function addPlayerToRoom(gameId: string, playerId: string) {
-  const room = getRoom(gameId);
+  const room = getRoom(gameId, 0);
 
   if (!room.player1) {
     room.player1 = playerId;
@@ -228,6 +245,50 @@ function addPlayerToRoom(gameId: string, playerId: string) {
     console.log(`-- Room ${gameId} ready! Players: ${room.player1}, ${room.player2} at time ${room.startedAt}`);
     startGame(room);
   } else {
-    console.log(`-- Waiting for another player in room ${gameId}`);
+    console.log(`-- Waiting for another player in room gameId: ${gameId} tourId: ${tournamentId}`);
+  }
+}
+
+function addPlayerToRound(tournamentId: number, playerId: string) {
+  
+  // AND (player1 = ? OR player2 = ?)
+  const lastRound = app.db
+  .prepare(`
+    SELECT * FROM Round
+    WHERE tournament_id = ?
+    AND (player1 = ? OR player2 = ?)
+    ORDER BY round_number DESC
+      LIMIT 2
+      `)
+      .get(tournamentId, playerId, playerId);
+  if (!lastRound) {
+    console.log("no round found")
+    return ;
+  }
+  console.log("userId: ", playerId);
+  console.log("----- round Found:", lastRound);
+  // return ;
+  const room = getRoom("", lastRound.id);
+  room.tournamentId = tournamentId;
+  if (!room.player1) {
+    room.player1 = playerId;
+  } else if (!room.player2 && room.player1 !== playerId
+    && (playerId == lastRound.player1  || playerId == lastRound.player2)
+  )
+    {
+    room.player2 = playerId;
+  }
+  else {
+    console.log("--- this is not ur Round: ", playerId);
+  }
+
+  if (room.player1 && room.player2 && !room.ready) {
+    room.ready = true;
+    room.winner = undefined;
+    room.startedAt = new Date();
+    console.log(`-- Round ${tournamentId} ready! Players: ${room.player1}, ${room.player2} at time ${room.startedAt}`);
+    startGame(room);
+  } else {
+    console.log(`-- Waiting for another player in room  tourId: ${tournamentId}`);
   }
 }

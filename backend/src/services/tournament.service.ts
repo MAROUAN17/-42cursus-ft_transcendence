@@ -2,7 +2,18 @@ import type {FastifyReply, FastifyRequest} from "fastify"
 import type { Tournament } from "../models/game.js";
 import app from "../server.js";
 
+const waitingPlayers: number[] = [];
 
+export const start_games = async(req: FastifyRequest, res: FastifyReply) => {
+  const tournamentId = Number((req.params as any)?.tournamentId);
+  const tournament = app.db
+    .prepare("SELECT * FROM Tournament WHERE id = ?")
+    .get(tournamentId);
+  if (tournament.status === "ongoing")
+      return res.status(200).send(tournament)
+  else
+    return res.status(400).send({msg: "waiting for other players"})
+}
 
 export const create_tournament = async (req: FastifyRequest, res: FastifyReply) => {
   try {

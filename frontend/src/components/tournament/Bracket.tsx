@@ -22,8 +22,6 @@ const TournamentBracket: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect (() => {
-    // if (!started)
-    //   return
     const fetchROunds = async () => {
       const response = await fetch(`https://localhost:4000/tournament/rounds/${id}`, { method: 'GET' });
       if (!response.ok) throw new Error("Failed to fetch rounds");
@@ -35,7 +33,26 @@ const TournamentBracket: React.FC = () => {
       return ;
     }
     fetchROunds();
-    navigate("/remote_game");
+
+    const intervalId = setInterval(async () => {
+      try {
+        const response = await fetch(`https://localhost:4000/tournament/start_games/${id}`);
+        if (response.ok) {
+          const tournament = await response.json();
+          if (tournament.status === "ongoing") {
+            clearInterval(intervalId);
+            navigate("/remote_game");
+          }
+        } else {
+          console.log("still waiting for players ...");
+        }
+      } catch (error) {
+        console.error("Error fetching tournament:", error);
+      }
+    }, 1000);
+
+    return () => clearInterval(intervalId);
+
   }, [started])
   async function fetchUsername(playerId: number) {
     const response = await fetch(`https://localhost:4000/user/${playerId}`, { method: 'GET' });
@@ -96,7 +113,7 @@ const TournamentBracket: React.FC = () => {
   return (
     <div className="bg-[#0a043c] text-white min-h-screen flex flex-col items-center justify-center gap-10">
       <div className="w-full flex justify-end p-4 cursor-pointer">
-        <LeaveButton setStarted={setStarted} label={tournament?.admin  == user?.id ? adminLabel : "leave"} tournamentId={Number(id)} playerId={1} onLeave={() => navigate("/tournaments")} />
+        <LeaveButton setStarted={setStarted} label={tournament?.admin  == user?.id ? adminLabel : "leave"} tournamentId={Number(id)} playerId={user?.id || 1} onLeave={() => navigate("/tournaments")} />
       </div>
 
       <div className="relative h-40 overflow-hidden cursor-pointer  text-white rounded-lg">

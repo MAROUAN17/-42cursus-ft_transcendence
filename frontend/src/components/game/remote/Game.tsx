@@ -17,18 +17,19 @@ export   default function RGame() {
   const [rightY, setRightY] = useState(140);
 
   const [websocket, setWebsocket] = useState<WebSocket | null>(null);
+  const [gameType, setGameType] = useState("tournament");
   const PADDLE_WIDTH = 18;
   const PADDLE_HEIGHT = 120;
   const paddleLeft = { x: 24, y: leftY, width: PADDLE_WIDTH, height: PADDLE_HEIGHT };
   const paddleRight = { x:  600 - 24 - PADDLE_WIDTH, y: rightY, width: PADDLE_WIDTH, height: PADDLE_HEIGHT };
 
   const {user} = useWebSocket();
-const id = user?.id ? user.id.toString() : "";
+  const id = user?.id ? user.id.toString() : "";
   useEffect(() => {
 	var storedGame = null;
 	//for testing round
 	sessionStorage.removeItem('currentGame');
-	if (sessionStorage.getItem("currentGame") )
+	if (sessionStorage.getItem("currentGame") && setGameType("casual"))
 		storedGame = sessionStorage.getItem("currentGame") ;
 	else
 		storedGame = sessionStorage.getItem("currentRound") ;
@@ -43,31 +44,40 @@ const id = user?.id ? user.id.toString() : "";
   
 	let interval: NodeJS.Timeout;
   
-	// interval = setInterval(() => {
-	//   if (websocket && websocket.readyState === WebSocket.OPEN) {
-	// 	websocket.send(
-	// 	  JSON.stringify({
-	// 		type: "newGame",
-	// 		userId: id,
-	// 		gameId: sessionGame.id,
-	// 	  })
-	// 	);
-	// 	console.log("Game sent to server ✅");
-	// 	clearInterval(interval);
-	//   } else {
-	// 	console.log("⏳ Waiting for socket...");
-	//   }
-	// }, 1000);
+	interval = setInterval(() => {
+		// console.log("session game: ", sessionGame[0].tournament_id)
+	  if (websocket && websocket.readyState === WebSocket.OPEN) {
+		websocket.send(
+		  JSON.stringify({
+			type: gameType,
+			userId: id,
+			gameId: sessionGame.id || "",
+			tournamentId: sessionGame[0].tournament_id || "",
+		  })
+		);
+		console.log("Game sent to server ✅: ", user?.id);
+		clearInterval(interval);
+	  } else {
+		console.log("⏳ Waiting for socket...");
+	  }
+	}, 1000);
   
 	return () => clearInterval(interval);
   }, [websocket]);
+//   useEffect(() => {
+// 	if (i < 3)
+// 		{
+// 			console.log("session game ", game)
+// 			setI(i + 1);
+// 		}
+//   }, [game])
   useEffect(() => {
 	if (i < 3)
 		{
-			console.log("session game ", game)
+			console.log("game info", gameInfo)
 			setI(i + 1);
 		}
-  }, [game])
+  }, [gameInfo])
   useEffect(() => {
     const down = new Set<string>();
     const onKeyDown = (e: KeyboardEvent) => {
@@ -79,17 +89,12 @@ const id = user?.id ? user.id.toString() : "";
 
     let raf = 0;
     const step = () => {
-	  if (game?.side == "right") {
-		  if (down.has("ArrowUp")) setRightY((y) => Math.max(0, y - 8));
-		  if (down.has("ArrowDown")) setRightY((y) => Math.min((gameInfo?.bounds.height ?? 0) - 120, y + 8));
-	  } else if (game?.side == "left") {
-		if (down.has("ArrowUp")) setLeftY((y) => Math.max(0, y - 8));
-		  if (down.has("ArrowDown")) setLeftY((y) => Math.min((gameInfo?.bounds.height ?? 0) - 120, y + 8));
-	  }
-	//  if (down.has("ArrowUp")) setRightY((y) => Math.max(0, y - 8));
-	//  if (down.has("ArrowDown")) setRightY((y) => Math.min((gameInfo?.bounds.height ?? 0) - 120, y + 8));
-    //  if (down.has("w") || down.has("W")) setLeftY((y) => Math.max(0, y - 8));
-    //  if (down.has("s") || down.has("S")) setLeftY((y) => Math.min((gameInfo?.bounds.height ?? 0) - 120, y + 8));
+      if (down.has("ArrowUp")) setRightY((y) => Math.max(0, y - 8));
+      if (down.has("ArrowDown")) setRightY((y) => Math.min((gameInfo?.bounds.height ?? 0) - 120, y + 8));
+      if (down.has("w") || down.has("W")) setLeftY((y) => Math.max(0, y - 8));
+      if (down.has("s") || down.has("S")) setLeftY((y) => Math.min((gameInfo?.bounds.height ?? 0) - 120, y + 8));
+
+	  
       raf = requestAnimationFrame(step);
     };
 
@@ -104,11 +109,14 @@ const id = user?.id ? user.id.toString() : "";
   }, [gameInfo?.bounds.height]);
 
 	useEffect ( () => {
-		if (websocket && websocket.readyState == WebSocket.OPEN)
-			websocket.send(JSON.stringify({ type: "updateY", leftY, rightY, gameId:game?.id}));
-		else
+		console.log("RoundId :", gameInfo?.roundId);
+		if (websocket && websocket.readyState == WebSocket.OPEN){
+			websocket.send(JSON.stringify({ type: "updateY", leftY, rightY, roundId:gameInfo?.roundId}));
+			//console.log("message sent [DIR]: ", type);
+		} else
 			console.log("there is a proble in socket:", websocket);
 	}, [leftY, rightY]);
+
 
 	useEffect(() => {
 		const ws = new WebSocket("wss://localhost:4000/game");
