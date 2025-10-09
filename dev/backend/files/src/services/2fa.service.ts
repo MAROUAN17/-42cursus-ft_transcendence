@@ -20,6 +20,8 @@ export const deleteSetup2FA = async (req: FastifyRequest<{ Body: LoginBody }>, r
   try {
     const { id } = req.body;
 
+    console.log('id -> ', id);
+    
     if (!id) return res.status(404).send({ error: "User not found" });
 
     app.db.prepare("UPDATE players SET twoFA_verify = ?, secret_otp = ? WHERE id = ?").run(0, null, id);

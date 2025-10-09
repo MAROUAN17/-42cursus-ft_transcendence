@@ -3,14 +3,18 @@ import axios from "axios";
 import { useNavigate } from "react-router";
 import type { UserInfos } from "../../types/user";
 
-const Setup2FA: React.FC<UserInfos> = (user) => {
+interface props {
+  id: number | undefined;
+  email: string | undefined;
+}
+
+const Setup2FA: React.FC<props> = (user) => {
   const [errorMssg, setErrorMssg] = useState<string>("");
   const [errorFlag, setErrorFlag] = useState<boolean>(false);
   const [qrCode, setQrCode] = useState<string>("");
   const [qrCodeSecret, setQrCodeSecret] = useState<string>("");
   const [numbers, setNumbers] = useState<string[]>([]);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
-
   const navigate = useNavigate();
 
   const handleChange = (index: number, value: string) => {
@@ -36,9 +40,7 @@ const Setup2FA: React.FC<UserInfos> = (user) => {
         secret: qrCodeSecret,
       })
       .then(function (res) {
-        console.log(res.data);
-
-        // navigate("/profile");
+        navigate("/");
       })
       .catch(function (err) {
         setErrorFlag(true);
@@ -54,7 +56,7 @@ const Setup2FA: React.FC<UserInfos> = (user) => {
         setQrCodeSecret(res.data[1]);
       })
       .catch(function (err) {
-        navigate("/login");
+        navigate(-1);
       });
   }
 
@@ -77,7 +79,7 @@ const Setup2FA: React.FC<UserInfos> = (user) => {
         </div>
 
         {errorFlag ? (
-          <div className="flex justify-center mt-12">
+          <div className="flex justify-center mt-4">
             <div className="flex text-center rounded-xl bg-red-600 w-[420px] h-[120px] items-center justify-center">
               <p className="text-white font-bold text-2xl align-center">{errorMssg}</p>
             </div>

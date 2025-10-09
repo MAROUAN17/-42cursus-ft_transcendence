@@ -45,7 +45,7 @@ export const fetchProfileUser = async (
     if (!user) return res.status(404).send({ error: "USER NOT FOUND" });
 
     if (!username || username == user.username) {
-      return res.status(200).send({ infos: user, profileType: "me" });
+      return res.status(200).send({ infos: user, profileType: "me", twoFAVerify: user?.twoFA_verify });
     }
 
     if (username) {

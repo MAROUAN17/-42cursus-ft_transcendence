@@ -50,7 +50,7 @@ export default function Profile() {
   const [emailErrorFlag, setEmailErrorFlag] = useState<boolean>(false);
   const [emailErrorMssg, setEmailErrorMssg] = useState<string>("");
   const pictureInput = useRef<HTMLInputElement>(null);
-  const [avatar, setAvatar] = useState<string>("");
+  const [twoFAVerified, setTwoFAVerified] = useState<boolean>(false);
 
   const { user } = useUserContext();
   const [currUser, setCurrUser] = useState<UserInfos>({
@@ -63,7 +63,6 @@ export default function Profile() {
     online: false,
     twoFA_verify: false,
   });
-  let usernamePattern = new RegExp("^[a-zA-Z0-9]+$");
   const { send, addHandler } = useWebSocket();
   const [data, setData] = useState<ChartData[]>([]);
   const twoFACheckRef = useRef<HTMLInputElement>(null);
@@ -168,15 +167,18 @@ export default function Profile() {
         { withCredentials: true }
       )
       .then(function () {
+        console.log('before 2fa -> ', twoFAVerified);
         setSettingsPopup(false);
         toast("Your data changed successfully", {
           closeButton: false,
           className: "font-poppins border-3 border-neon bg-neon/70 text-white font-bold text-md",
         });
-        if (!user?.twoFA_verify) setSetup2FA(twoFACheckRef.current!.checked);
-        else if (user?.twoFA_verify && !twoFACheckRef.current!.checked) {
+        if (!twoFAVerified) setSetup2FA(twoFACheckRef.current!.checked);
+        else if (twoFAVerified && !twoFACheckRef.current!.checked) {
           api.post("/2fa/delete", { id: user?.id }, { withCredentials: true });
         }
+        fetchUserData();
+        console.log('after 2fa -> ', twoFAVerified);
       })
       .catch(function (err) {
         if (err.response.data.error.includes("Username")) {
@@ -210,7 +212,7 @@ export default function Profile() {
     });
   }, [currUser]);
 
-  useEffect(() => {
+  function fetchUserData() {
     api
       .get("/profile/" + username, { withCredentials: true })
       .then(function (res: AxiosResponse) {
@@ -224,10 +226,16 @@ export default function Profile() {
         setCurrEmail(res.data.infos.email);
         setCurrUsername(res.data.infos.username);
         setCurrAvatar(res.data.infos.avatar);
+        console.log('fetched 2fa -> ', res.data.twoFAVerify);
+        setTwoFAVerified(res.data.twoFAVerify);
       })
       .catch(function (err) {
         console.log(err);
       });
+  }
+
+  useEffect(() => {
+    fetchUserData();
 
     return () => {
       setSettingsPopup(false);
@@ -304,7 +312,7 @@ export default function Profile() {
                       Enable 2FA to add an extra layer of security to your account
                     </label>
                   </div>
-                  <input type="checkbox" className="rounded-full" ref={twoFACheckRef} defaultChecked={user?.twoFA_verify} />
+                  <input type="checkbox" className="rounded-full" ref={twoFACheckRef} defaultChecked={twoFAVerified} />
                 </div>
                 <div className="py-12 flex flex-col gap-3">
                   <button type="submit" className="w-[505px] bg-neon py-3 px-36 text-white rounded-lg font-bold">
@@ -527,7 +535,7 @@ export default function Profile() {
           </div>
         </div>
       </div>
-      <div className={`px-8 h-[50%] ${settingsPopup ? "blur-sm" : ""}`}>
+      <div className={`px-8 h-[50%] ${settingsPopup || setup2FA ? "blur-sm" : ""}`}>
         <div className="bg-compBg/20 overflow-hidden flex flex-col justify-center rounded-[20px]">
           <div className="px-8 py-6 flex justify-between">
             <h1 className="text-white font-bold">History</h1>
