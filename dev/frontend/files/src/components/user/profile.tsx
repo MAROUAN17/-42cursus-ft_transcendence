@@ -167,7 +167,6 @@ export default function Profile() {
         { withCredentials: true }
       )
       .then(function () {
-        console.log('before 2fa -> ', twoFAVerified);
         setSettingsPopup(false);
         toast("Your data changed successfully", {
           closeButton: false,
@@ -175,10 +174,9 @@ export default function Profile() {
         });
         if (!twoFAVerified) setSetup2FA(twoFACheckRef.current!.checked);
         else if (twoFAVerified && !twoFACheckRef.current!.checked) {
-          api.post("/2fa/delete", { id: user?.id }, { withCredentials: true });
+          api("/2fa/delete", { withCredentials: true });
         }
         fetchUserData();
-        console.log('after 2fa -> ', twoFAVerified);
       })
       .catch(function (err) {
         if (err.response.data.error.includes("Username")) {
@@ -201,13 +199,11 @@ export default function Profile() {
 
   useEffect(() => {
     api.get("/states/player-rooms/" + currUser.id, { withCredentials: true }).then(function (res: AxiosResponse) {
-      console.log("history -> ", res.data);
       setHistory(res.data);
       const tmp = [...res.data.rooms];
       getWeekHistory(tmp);
     });
     api.get("/states/profile/" + currUser.id, { withCredentials: true }).then(function (res: AxiosResponse) {
-      console.log("stats -> ", res.data);
       setUserStats(res.data);
     });
   }, [currUser]);
@@ -226,7 +222,6 @@ export default function Profile() {
         setCurrEmail(res.data.infos.email);
         setCurrUsername(res.data.infos.username);
         setCurrAvatar(res.data.infos.avatar);
-        console.log('fetched 2fa -> ', res.data.twoFAVerify);
         setTwoFAVerified(res.data.twoFAVerify);
       })
       .catch(function (err) {
@@ -240,17 +235,18 @@ export default function Profile() {
     return () => {
       setSettingsPopup(false);
     };
-  }, [username]);
+  }, [twoFAVerified]);
 
   return (
     <div className="flex flex-col bg-darkBg h-full w-full font-poppins">
-      {setup2FA ? <Setup2FA id={user?.id} email={user?.email} /> : null}
+      {setup2FA ? <Setup2FA id={user?.id} email={user?.email} setSetup2fa={setSetup2FA} setTwoFAverified={setTwoFAVerified} /> : null}
       {settingsPopup ? (
         <div className="absolute z-10 inset-x-[850px] inset-y-[180px] rounded-lg bg-darkBg">
           <div className="justify-end w-full h-full p-6">
             <div className="h-[50px] items-center w-full flex justify-end">
               <IoMdClose
                 onClick={() => {
+                  console.log("2fa verified -> ", twoFAVerified);
                   setSettingsPopup(false);
                   setUsernameErrorFlag(false);
                   setUsernameErrorMssg("");

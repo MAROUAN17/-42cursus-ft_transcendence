@@ -71,10 +71,10 @@ export const authRoutes: FastifyPluginAsync = async () => {
   app.get("/profile/:username", { onRequest: [app.jwtAuth] }, fetchProfileUser);
 
   //2fa
-  app.post("/2fa/setup", setup2FA);
-  app.post("/2fa/delete", deleteSetup2FA);
-  app.post("/2fa/setup/verify", verifySetup2FA);
-  app.post("/2fa/verify-token", verify2FAToken);
+  app.get("/2fa/setup", { onRequest: [app.jwtAuth] }, setup2FA);
+  app.get("/2fa/delete", { onRequest: [app.jwtAuth] }, deleteSetup2FA);
+  app.post("/2fa/setup/verify", { onRequest: [app.jwtAuth] }, verifySetup2FA);
+  app.post("/2fa/verify-token", { onRequest: [app.jwtAuth] }, verify2FAToken);
 
   //remote auth with intra42
   app.get("/intra42/login/callback", oauthCallback);

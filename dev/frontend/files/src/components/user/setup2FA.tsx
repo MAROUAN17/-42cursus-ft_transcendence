@@ -1,14 +1,16 @@
 import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router";
-import type { UserInfos } from "../../types/user";
+import api from "../../axios";
 
 interface props {
   id: number | undefined;
   email: string | undefined;
+  setSetup2fa: React.Dispatch<React.SetStateAction<boolean>>;
+  setTwoFAverified: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const Setup2FA: React.FC<props> = (user) => {
+const Setup2FA: React.FC<props> = (props) => {
   const [errorMssg, setErrorMssg] = useState<string>("");
   const [errorFlag, setErrorFlag] = useState<boolean>(false);
   const [qrCode, setQrCode] = useState<string>("");
@@ -33,14 +35,12 @@ const Setup2FA: React.FC<props> = (user) => {
   const formHandler = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const otpNbr = numbers.join("");
-    axios
-      .post("https://localhost:5000/2fa/setup/verify", {
-        id: user.id,
-        token: otpNbr,
-        secret: qrCodeSecret,
-      })
+    api
+      .post("/2fa/setup/verify", { token: otpNbr, secret: qrCodeSecret }, { withCredentials: true })
       .then(function (res) {
-        navigate("/");
+        // navigate("/");
+        props?.setSetup2fa(false);
+        props?.setTwoFAverified(true);
       })
       .catch(function (err) {
         setErrorFlag(true);
@@ -49,8 +49,7 @@ const Setup2FA: React.FC<props> = (user) => {
   };
 
   async function renderQRcode() {
-    axios
-      .post("https://localhost:5000/2fa/setup", { email: user.email })
+    api("/2fa/setup", { withCredentials: true })
       .then(function (res) {
         setQrCode(res.data[0]);
         setQrCodeSecret(res.data[1]);

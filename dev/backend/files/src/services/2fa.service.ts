@@ -1,30 +1,33 @@
 import type { FastifyRequest, FastifyReply } from "fastify";
-import { type LoginBody } from "../models/user.model.js";
+import { type LoginBody, type UserInfos } from "../models/user.model.js";
 import app from "../server.js";
 import qrcode from "qrcode";
 import { authenticator } from "otplib";
 import type { SerializeOptions } from "@fastify/cookie";
+import type { Payload } from "../models/chat.js";
 
-export const setup2FA = async (req: FastifyRequest<{ Body: LoginBody }>, res: FastifyReply) => {
-  const { email } = req.body;
+export const setup2FA = async (req: FastifyRequest, res: FastifyReply) => {
+  const token = req.cookies.accessToken;
+  const payload = app.jwt.jwt1.verify(token) as Payload;
 
   const secret = authenticator.generateSecret();
-  const otpath = authenticator.keyuri(email!, "OTP APP", secret);
+  const otpath = authenticator.keyuri(payload?.email!, "OTP APP", secret);
 
   const qrCode = await qrcode.toDataURL(otpath);
 
   return [qrCode, secret];
 };
 
-export const deleteSetup2FA = async (req: FastifyRequest<{ Body: LoginBody }>, res: FastifyReply) => {
+export const deleteSetup2FA = async (req: FastifyRequest, res: FastifyReply) => {
   try {
-    const { id } = req.body;
+    const token = req.cookies.accessToken;
+    const payload = app.jwt.jwt1.verify(token) as Payload;
 
-    console.log('id -> ', id);
-    
-    if (!id) return res.status(404).send({ error: "User not found" });
+    console.log('user id -> ', payload?.id);
 
-    app.db.prepare("UPDATE players SET twoFA_verify = ?, secret_otp = ? WHERE id = ?").run(0, null, id);
+    if (!payload.id) return res.status(404).send({ error: "User not found" });
+
+    app.db.prepare("UPDATE players SET twoFA_verify = ?, secret_otp = ? WHERE id = ?").run(0, null, payload?.id);
 
     res.status(200).send({ message: "2fa deleted successfully" });
   } catch (error) {
@@ -34,12 +37,15 @@ export const deleteSetup2FA = async (req: FastifyRequest<{ Body: LoginBody }>, r
 
 export const verifySetup2FA = async (req: FastifyRequest<{ Body: LoginBody }>, res: FastifyReply) => {
   try {
-    const { id, token, secret } = req.body;
+    const { token, secret } = req.body;
+
+    const accessToken = req.cookies.accessToken;
+    const payload = app.jwt.jwt1.verify(accessToken) as Payload;
 
     const isValid = authenticator.verify({ token: token, secret: secret });
 
     if (isValid) {
-      app.db.prepare("UPDATE players SET twoFA_verify = ?, secret_otp = ? WHERE id = ?").run(1, secret, id);
+      app.db.prepare("UPDATE players SET twoFA_verify = ?, secret_otp = ? WHERE id = ?").run(1, secret, payload?.id);
       return res.status(200).send({ message: "Valid OTP code And user registered" });
     }
 
@@ -52,7 +58,7 @@ export const verifySetup2FA = async (req: FastifyRequest<{ Body: LoginBody }>, r
 export const verify2FAToken = async (req: FastifyRequest<{ Body: LoginBody }>, res: FastifyReply) => {
   try {
     let { token, email, rememberMe } = req.body;
-    let user = {} as User | null;
+    let user = {} as UserInfos | null;
 
     email = email.toLowerCase();
     //find user
