@@ -2,8 +2,9 @@ import  { useEffect, useRef, useState } from "react";
 import RBall from "./RBall";
 import RBat from "./Bat";
 import RHeader from "./RHeader";
-import { type GameInfo, type  Game } from "./Types";
+import { type GameInfo, type  Game, type Round } from "./Types";
 import { useWebSocket } from "../../chat/websocketContext";
+import { redirect, Route } from "react-router";
 
 
 export   default function RGame() {
@@ -12,9 +13,11 @@ export   default function RGame() {
   const [dir, setDir] = useState({x:1, y:1});
   const [gameInfo, setGameInfo] = useState<GameInfo>();
   const [game, setGame] = useState<Game>();
+  const [round, setRound] = useState<Round>();
 
   const [leftY, setLeftY] = useState(140);
   const [rightY, setRightY] = useState(140);
+  const [tournamentId, setTournamentId] = useState(1);
 
   const [websocket, setWebsocket] = useState<WebSocket | null>(null);
   const [gameType, setGameType] = useState("tournament");
@@ -31,8 +34,22 @@ export   default function RGame() {
 	sessionStorage.removeItem('currentGame');
 	if (sessionStorage.getItem("currentGame") && setGameType("casual"))
 		storedGame = sessionStorage.getItem("currentGame") ;
-	else
+	else {
 		storedGame = sessionStorage.getItem("currentRound") ;
+		const rounds = JSON.parse(storedGame);
+
+		const userRound = rounds.find(
+			(r:Round) => r.player1 === Number(id) || r.player2 === Number(id)
+		);
+		
+		if (userRound) {
+			setTournamentId(userRound.tournament_id);
+			setRound(userRound);
+			console.log("User Round Found", userRound);
+		} else {
+			console.warn("User is not part of any round.");
+		}
+	}
 	if (!storedGame) {
 	  console.log("No game found in sessionStorage.");
 	  return;
@@ -58,7 +75,7 @@ export   default function RGame() {
 		console.log("Game sent to server ✅: ", user?.id);
 		clearInterval(interval);
 	  } else {
-		console.log("⏳ Waiting for socket...");
+		// console.log("⏳ Waiting for socket...");
 	  }
 	}, 1000);
   
@@ -67,17 +84,19 @@ export   default function RGame() {
 //   useEffect(() => {
 // 	if (i < 3)
 // 		{
-// 			console.log("session game ", game)
+// 			console.log("session game ", round, round?.tournament_id)
 // 			setI(i + 1);
 // 		}
-//   }, [game])
-  useEffect(() => {
-	if (i < 3)
-		{
-			console.log("game info", gameInfo)
-			setI(i + 1);
-		}
-  }, [gameInfo])
+//   }, [round])
+//   useEffect(() => {
+// 	if (i < 3)
+// 		{
+// 			console.log("game info", gameInfo)
+// 			setI(i + 1);
+// 		}
+//   }, [gameInfo])
+
+  // arrow keys
   useEffect(() => {
     const down = new Set<string>();
     const onKeyDown = (e: KeyboardEvent) => {
@@ -89,10 +108,17 @@ export   default function RGame() {
 
     let raf = 0;
     const step = () => {
-      if (down.has("ArrowUp")) setRightY((y) => Math.max(0, y - 8));
-      if (down.has("ArrowDown")) setRightY((y) => Math.min((gameInfo?.bounds.height ?? 0) - 120, y + 8));
-      if (down.has("w") || down.has("W")) setLeftY((y) => Math.max(0, y - 8));
-      if (down.has("s") || down.has("S")) setLeftY((y) => Math.min((gameInfo?.bounds.height ?? 0) - 120, y + 8));
+		if (game?.side == "right" || Number(id) == round?.player1) {
+		  if (down.has("ArrowUp")) setRightY((y) => Math.max(0, y - 8));
+		  if (down.has("ArrowDown")) setRightY((y) => Math.min((gameInfo?.bounds.height ?? 0) - 120, y + 8));
+	  } else if (game?.side == "left" || Number(id) == round?.player2) {
+		if (down.has("ArrowUp")) setLeftY((y) => Math.max(0, y - 8));
+		  if (down.has("ArrowDown")) setLeftY((y) => Math.min((gameInfo?.bounds.height ?? 0) - 120, y + 8));
+	  }
+    //   if (down.has("ArrowUp")) setRightY((y) => Math.max(0, y - 8));
+    //   if (down.has("ArrowDown")) setRightY((y) => Math.min((gameInfo?.bounds.height ?? 0) - 120, y + 8));
+    //   if (down.has("w") || down.has("W")) setLeftY((y) => Math.max(0, y - 8));
+    //   if (down.has("s") || down.has("S")) setLeftY((y) => Math.min((gameInfo?.bounds.height ?? 0) - 120, y + 8));
 
 	  
       raf = requestAnimationFrame(step);
@@ -109,7 +135,11 @@ export   default function RGame() {
   }, [gameInfo?.bounds.height]);
 
 	useEffect ( () => {
-		console.log("RoundId :", gameInfo?.roundId);
+		// console.log("RoundId :", gameInfo?.roundId);
+		// if (Number(id) == round?.player2)
+		// 		setLeftY(gameInfo?.paddleLeft.y || 0)
+		// else
+		// 	setRightY(gameInfo?.paddleRight.y || 0);
 		if (websocket && websocket.readyState == WebSocket.OPEN){
 			websocket.send(JSON.stringify({ type: "updateY", leftY, rightY, roundId:gameInfo?.roundId}));
 			//console.log("message sent [DIR]: ", type);
@@ -117,7 +147,27 @@ export   default function RGame() {
 			console.log("there is a proble in socket:", websocket);
 	}, [leftY, rightY]);
 
-
+	const manageFinalRound = async (winner:number) => {
+		console.log("trying to fetch final round ", round)
+		if (winner != Number(id)){
+			// redirect("/tournaments");
+			alert(`you lose the game winner is :", ${winner}`);
+			return ;
+		}
+		try {
+         const response = await fetch(`https://localhost:4000/tournament/final_round/${tournamentId}`);
+         if (response.ok) {
+           const finalROund = await response.json();
+		   setRound(finalROund)
+           console.log("Final Round fetched: ", finalROund);
+         } else {
+           console.log("still waiting for players ...");
+         }
+      } catch (error) {
+        console.error("Error fetching tournament:", error);
+      }
+	}
+	//receiving game info
 	useEffect(() => {
 		const ws = new WebSocket("wss://localhost:4000/game");
 		setWebsocket(ws);
@@ -128,7 +178,17 @@ export   default function RGame() {
 		ws.onmessage = (event) => {
 			try {
 				const message = JSON.parse(event.data);
+				if (message.type === "end")
+					manageFinalRound(Number(message.winner));
 				setGameInfo(message.game_info);
+				// if (Number(id) == round?.player2)
+				// 		setLefqtY(message.game_info.paddleLeft.y)
+				// else
+				// 	setRightY(message.game_info.paddleRight);q 
+				// setLeftY(message.game_info.paddleLeft.y)
+				// setRightY(message.game_info.paddleRight)
+				// console.log("--- LeftPaddle info", message.game_info.paddleLeft.y)
+				// console.log("--- RightPaddle info", message.game_info.paddleRight.y)
 			} catch (err) {
 				console.error("Invalid message from server:", event.data);
 			}
@@ -144,9 +204,9 @@ export   default function RGame() {
 	  <RHeader
 		scoreLeft={gameInfo?.scoreLeft ?? 0}
 		scoreRight={gameInfo?.scoreRight ?? 0}
-		you = {game?.you }
+		you = {game?.you  || round?.player1}
 		side = {game?.side}
-		opponent = {game?.opponent}
+		opponent = {game?.opponent || round?.player2}
 	  />
 
 	  <div

@@ -363,3 +363,49 @@ export const get_tournament_winner = async (req: FastifyRequest, res: FastifyRep
     return res.status(500).send({ error: "Failed to fetch tournament winner" });
   }
 };
+
+export const get_final_round = async (req: FastifyRequest, res: FastifyReply) => {
+  try {
+    const tournamentId = Number((req.params as any)?.tournamentId);
+    if (!tournamentId) {
+      return res.code(400).send({ error: "Missing tournamentId" });
+    }
+
+    const finalRound = app.db
+      .prepare("SELECT * FROM Round WHERE tournament_id = ? AND round_number = ?")
+      .get(tournamentId, 2);
+
+    if (finalRound) {
+      return res.code(200).send(finalRound);
+    }
+
+    const winners = app.db
+      .prepare("SELECT winner FROM Round WHERE tournament_id = ?")
+      .all(tournamentId);
+
+    if (!winners.length) {
+      return res.code(400).send({ error: "The first rounds have not been played" });
+    }
+
+    if (winners.length < 2) {
+      return res.code(400).send({ error: "Not enough winners to create the final round" });
+    }
+
+    console.log("---- winners are : ", winners[0].winner, winners[1].winner);
+
+    const insertRound = app.db.prepare(`
+      INSERT INTO Round (tournament_id, player1, player2, round_number)
+      VALUES (?, ?, ?, ?)
+    `).run(tournamentId, winners[0].winner, winners[1].winner, 2);
+
+    const newRound = app.db
+      .prepare("SELECT * FROM Round WHERE id = ?")
+      .get(insertRound.lastInsertRowid);
+
+    return res.code(200).send(newRound);
+
+  } catch (err) {
+    console.error("Error fetching final round:", err);
+    return res.code(500).send({ error: "Failed to fetch final round" });
+  }
+};

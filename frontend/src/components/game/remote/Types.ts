@@ -46,8 +46,12 @@ export interface Game {
 }
 
 export interface Round {
-  tournament_id: string;
+  id: number;
+  tournament_id: number;
   player1: number;
   player2: number;
+  score1: number;
+  score2: number;
+  winner: number;
   round_number: number;
 }

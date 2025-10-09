@@ -140,6 +140,7 @@ function gameLoop (room:Room)
     else if (game.scoreRight > 1)
       room.winner = room.player2;
     if (room.winner) {
+      broadcastToRoom(room, { type: "end", winner:room.winner });
       room.scoreLeft = game.scoreLeft;
       room.scoreRight = game.scoreRight;
       saveData(room);

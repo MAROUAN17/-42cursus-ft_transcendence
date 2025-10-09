@@ -8,8 +8,8 @@ import type { Player } from "./Types";
 interface HeaderProps {
   scoreLeft: number;
   scoreRight: number;
-  you: Player | undefined;
-  opponent: Player | undefined;
+  you: Player | undefined | number;
+  opponent: Player | undefined | number;
   side: string | undefined;
 }
 
