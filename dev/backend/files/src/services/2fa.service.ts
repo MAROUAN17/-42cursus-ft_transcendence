@@ -23,8 +23,6 @@ export const deleteSetup2FA = async (req: FastifyRequest, res: FastifyReply) => 
     const token = req.cookies.accessToken;
     const payload = app.jwt.jwt1.verify(token) as Payload;
 
-    console.log('user id -> ', payload?.id);
-
     if (!payload.id) return res.status(404).send({ error: "User not found" });
 
     app.db.prepare("UPDATE players SET twoFA_verify = ?, secret_otp = ? WHERE id = ?").run(0, null, payload?.id);
@@ -50,8 +48,8 @@ export const verifySetup2FA = async (req: FastifyRequest<{ Body: LoginBody }>, r
     }
 
     return res.status(401).send({ error: "Invalid otp code" });
-  } catch (error: any) {
-    res.status(500).send({ error: error.message });
+  } catch (err) {
+    res.status(500).send({ error: 'Error occurred while verifying 2FA setup' });
   }
 };
 
@@ -63,12 +61,14 @@ export const verify2FAToken = async (req: FastifyRequest<{ Body: LoginBody }>, r
     email = email.toLowerCase();
     //find user
     if (email.includes("@")) {
-      user = app.db.prepare("SELECT * FROM PLAYERS WHERE email = ?").get(email) as User;
+      user = app.db.prepare("SELECT * FROM PLAYERS WHERE email = ?").get(email) as UserInfos;
     } else {
-      user = app.db.prepare("SELECT * FROM PLAYERS WHERE username = ?").get(email) as User;
+      user = app.db.prepare("SELECT * FROM PLAYERS WHERE username = ?").get(email) as UserInfos;
     }
 
-    const secret = user.secret_otp;
+    if (!user) return res.status(404).send({ error: "User not found" });
+
+    const secret = user?.secret_otp;
     const isValid = authenticator.verify({ token: token, secret: secret });
 
     if (isValid) {
@@ -114,7 +114,7 @@ export const verify2FAToken = async (req: FastifyRequest<{ Body: LoginBody }>, r
       return res.status(200).send({ message: "Valid OTP code" });
     }
     return res.status(401).send({ error: "INVALID_OTP" });
-  } catch (error: any) {
-    res.status(500).send({ error: error.message });
+  } catch (error) {
+    res.status(500).send({ error: 'Error occurred while verifying 2FA OTP' });
   }
 };

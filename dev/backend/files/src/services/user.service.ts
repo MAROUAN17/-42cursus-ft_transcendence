@@ -43,8 +43,6 @@ export const fetchProfileUser = async (
       .prepare("SELECT * FROM players WHERE id = ?")
       .get(payload?.id) as User | undefined;
     if (!user) return res.status(404).send({ error: "USER NOT FOUND" });
-
-    console.log('user 2fa -> ', user?.twoFA_verify);
     
     if (!username || username == user.username) {
       return res.status(200).send({ infos: user, profileType: "me", twoFAVerify: user?.twoFA_verify });
@@ -224,8 +222,6 @@ export const uploadUserInfos = async (
     const payload = app.jwt.jwt1.decode(accessToken) as Payload;
 
     const fileData = await req.file();
-
-    console.log(fileData);
 
     if (
       fileData?.mimetype != "image/png" &&

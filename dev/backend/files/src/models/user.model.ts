@@ -18,6 +18,7 @@ export interface UserInfos {
   first_login: boolean;
   intra_id: number;
   online: boolean;
+  secret_otp: string;
 }
 
 export interface PublicUserInfos {

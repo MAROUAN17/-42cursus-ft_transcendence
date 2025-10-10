@@ -299,7 +299,7 @@ export default function Profile() {
                     className="bg-transparent px-12 py-4 rounded-lg border border-white text-white"
                   />
                 </div>
-                <div className="bg-neon/50 px-6 py-5 rounded-lg w-[505px] flex justify-between">
+                <div className="bg-neon/50 px-6 py-5 rounded-lg w-[505px] flex justify-between items-center">
                   <div className="flex flex-col">
                     <label htmlFor="" className="text-white font-bold">
                       Multi-factor authentication
@@ -308,7 +308,7 @@ export default function Profile() {
                       Enable 2FA to add an extra layer of security to your account
                     </label>
                   </div>
-                  <input type="checkbox" className="rounded-full" ref={twoFACheckRef} defaultChecked={twoFAVerified} />
+                  <input type="checkbox" className="w-4 h-4 appearance-none border-2 border rounded-full checked:bg-gray-300 transition ease-in-out" ref={twoFACheckRef} defaultChecked={twoFAVerified} />
                 </div>
                 <div className="py-12 flex flex-col gap-3">
                   <button type="submit" className="w-[505px] bg-neon py-3 px-36 text-white rounded-lg font-bold">

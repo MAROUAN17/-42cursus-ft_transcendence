@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router";
 import api from "../../axios";
@@ -123,4 +123,4 @@ const Setup2FA: React.FC<props> = (props) => {
   );
 };
 
-export default Setup2FA;
+export default React.memo(Setup2FA);
