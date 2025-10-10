@@ -194,7 +194,7 @@ export function handleGameConnection(connection: any, req: any) {
       else if (msg.type === "tournament") {
         userId = msg.userId;
         clients.set(userId, connection);
-        addPlayerToRound(Number(msg.tournamentId), userId, Number(msg.limit));
+        addPlayerToRound(Number(msg.tournamentId), userId, Number(msg.roundNumber));
         console.log("data received", msg);
         return ;
       }
@@ -258,7 +258,7 @@ function addPlayerToRoom(gameId: string, playerId: string) {
   }
 }
 
-function addPlayerToRound(tournamentId: number, playerId: string, limit: number) {
+function addPlayerToRound(tournamentId: number, playerId: string, rn: number) {
   
   // AND (player1 = ? OR player2 = ?)
   const lastRound = app.db
@@ -266,10 +266,9 @@ function addPlayerToRound(tournamentId: number, playerId: string, limit: number)
     SELECT * FROM Round
     WHERE tournament_id = ?
     AND (player1 = ? OR player2 = ?)
-    ORDER BY round_number DESC
-      LIMIT ?
+    AND round_number = ?
       `)
-      .get(tournamentId, playerId, playerId, limit);
+      .get(tournamentId, playerId, playerId, rn);
   if (!lastRound) {
     console.log("no round found")
     return ;

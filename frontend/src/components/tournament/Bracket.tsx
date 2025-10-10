@@ -18,6 +18,9 @@ const TournamentBracket: React.FC = () => {
   const [usernames, setUsernames] = useState<string[]>([]);
   const [started, setStarted] = useState(false);
   const [rounds, setRounds] = useState<Round[] | null>();
+  const [finalPlayers, setFinalPlayers] = useState<number[]>([]);
+  const [finalUsernames, setFinalUsernames] = useState<string[]>([]);
+
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
@@ -30,10 +33,16 @@ const TournamentBracket: React.FC = () => {
       sessionStorage.setItem("currentRound", JSON.stringify(data));
       setRounds(data);
 
+      const round2 = data.filter((r: any) => r.round_number === 2);
+      const players = round2.flatMap((r: any) => [r.player1, r.player2]);
+      setFinalPlayers(players);
+
+      console.log("Final round players:", players);
+
       return ;
     }
     fetchROunds();
-
+    return;
     const intervalId = setInterval(async () => {
       try {
         const response = await fetch(`https://localhost:4000/tournament/start_games/${id}`);
@@ -63,6 +72,9 @@ const TournamentBracket: React.FC = () => {
   }
   useEffect(() => {
     console.log("rounds seted: " , rounds)
+    if (finalPlayers){
+      // redirect to remote game
+    }
   }, [rounds])
 
 
@@ -71,13 +83,30 @@ const TournamentBracket: React.FC = () => {
       // console.log("Tournament players:", tournament.players);
       Promise.all(tournament.players.map((id) => fetchUsername(id)))
       .then((names) => {
-          // console.log("Fetched usernames:", names, id);
+          console.log("Fetched usernames:", names, id);
           setUsernames(names);
         })
         .catch((err) => console.error(err));
     }
   }, [tournament]);
+
+  useEffect(() => {
+    if (finalPlayers.length > 0) {
+      Promise.all(finalPlayers.map((id) => fetchUsername(id)))
+        .then((names) => {
+          console.log("Fetched final usernames:", names);
+          setFinalUsernames(names); // 🆕 store them separately
+        })
+        .catch((err) => console.error(err));
+    }
+  }, [finalPlayers]);
+
   const Users = (usernames || []).map((username, index) => ({
+    username,
+    avatar: `https://i.pravatar.cc/40?img=${index + 1}`,
+  }));
+
+  const finalUsers = (finalUsernames || []).map((username, index) => ({
     username,
     avatar: `https://i.pravatar.cc/40?img=${index + 1}`,
   }));
@@ -131,13 +160,13 @@ const TournamentBracket: React.FC = () => {
               </div>
 
               <div className="flex flex-col items-start">
-                <PlayerBox {...Users[5]} />
+                <PlayerBox {...finalUsers[0]} />
               </div>
             </div>
 
             <div className="flex gap-12 items-center">
               <div className="flex flex-col items-start">
-                <PlayerBox {...Users[5]} />
+                <PlayerBox {...finalUsers[1]} />
               </div>
 
               <div className="relative flex flex-col gap-10">
