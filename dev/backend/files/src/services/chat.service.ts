@@ -3,7 +3,14 @@ import app from "../server.js";
 import { WebSocket } from "ws";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import type { RequestQuery, Payload, messagePacket } from "../models/chat.js";
-import type { ChatPacket, NotificationPacket, notificationPacket, notificationPacketDB, websocketPacket } from "../models/webSocket.model.js";
+import type {
+  ChatPacket,
+  LogPacket,
+  NotificationPacket,
+  notificationPacket,
+  notificationPacketDB,
+  websocketPacket,
+} from "../models/webSocket.model.js";
 
 const clients = new Map<number, Set<WebSocket>>();
 const messageQueue: websocketPacket[] = [];
@@ -21,7 +28,7 @@ function sendToClient(clientSockets: Set<WebSocket>, packet: websocketPacket) {
 }
 
 function createNotification(currPacket: websocketPacket) {
-  if (currPacket.type == "onlineStatus") return;
+  if (currPacket.type == "onlineStatus" || currPacket.type == "logNotif") return;
   const savedNotification: rowInserted = app.db
     .prepare("INSERT INTO notifications(type, sender_id, recipient_id,message) VALUES (?, ?, ?, ?)")
     .run(currPacket.data.type, currPacket.data.sender_id, currPacket.data.recipient_id, currPacket.data.message);
@@ -49,7 +56,7 @@ function createNotification(currPacket: websocketPacket) {
 }
 
 function sendNotification(currPacket: websocketPacket) {
-  if (currPacket.type == "onlineStatus") return;
+  if (currPacket.type == "onlineStatus" || currPacket.type == "logNotif") return;
   const notif: notificationPacketDB = app.db
     .prepare("SELECT * FROM notifications WHERE sender_id = ? AND recipient_id = ? AND type = ?")
     .get(currPacket.data.sender_id, currPacket.data.recipient_id, "message");
@@ -74,7 +81,7 @@ function sendNotification(currPacket: websocketPacket) {
 }
 
 function checkNotificationMssg(currPacket: websocketPacket) {
-  if (currPacket.type == "onlineStatus") return;
+  if (currPacket.type == "onlineStatus" || currPacket.type == "logNotif") return;
   const updatedRow: rowInserted = app.db
     .prepare(
       "UPDATE notifications SET isRead = true, unreadCount = unreadCount + 1, updatedAt = (datetime('now')), message = ? WHERE sender_id = ? AND recipient_id = ? AND type = ?"
@@ -88,7 +95,7 @@ function checkNotificationMssg(currPacket: websocketPacket) {
 }
 
 function checkNotificationFriend(currPacket: websocketPacket) {
-  if (currPacket.type == "onlineStatus") return;
+  if (currPacket.type == "onlineStatus" || currPacket.type == "logNotif") return;
   const notif = app.db
     .prepare("SELECT * FROM notifications WHERE sender_id = ? AND recipient_id = ? AND type = ?")
     .get(currPacket.data.sender_id, currPacket.data.recipient_id, "friendReq");
@@ -98,7 +105,7 @@ function checkNotificationFriend(currPacket: websocketPacket) {
 }
 
 function handleBlock(currPacket: websocketPacket) {
-  if (currPacket.type == "onlineStatus") return;
+  if (currPacket.type == "onlineStatus" || currPacket.type == "logNotif") return;
   let client = clients.get(currPacket.data.recipient_id);
   if (client) {
     sendToClient(client, currPacket);
@@ -139,6 +146,15 @@ function handleNotifMarkSeen(currPacket: NotificationPacket) {
   if (client) sendToClient(client, currPacket);
 }
 
+// function broadcastToAll(packet: websocketPacket) {}
+
+function handleLogNotif(packet: LogPacket) {
+  for (const userId of clients) {
+    const client = clients.get(Number(userId[0]));
+    if (client) sendToClient(client, packet);
+  }
+}
+
 async function processMessages() {
   if (isProcessingQueue || messageQueue.length == 0) return;
   isProcessingQueue = true;
@@ -155,7 +171,7 @@ async function processMessages() {
         if (currPacket.data.type == "markSeen") handleNotifMarkSeen(currPacket);
         else if (currPacket.data.type == "friendReq") checkNotificationFriend(currPacket);
         else if (currPacket.data.type == "friendAccept") createNotification(currPacket);
-      }
+      } else if (currPacket.type == "logNotif") handleLogNotif(currPacket);
     } catch (error) {
       console.error("error writing in db -> ", error);
     }
@@ -165,6 +181,7 @@ async function processMessages() {
 
 function checkValidPacket(packet: websocketPacket, userId: number): boolean {
   if (packet.type == "onlineStatus") return false;
+  else if (packet.type == "logNotif") return true;
   if (packet.data.sender_id != userId || packet.data.sender_id == packet.data.recipient_id) return false;
   const checkFriend = app.db
     .prepare("SELECT key FROM json_each((SELECT friends FROM players WHERE id = ?)) WHERE value = ?")

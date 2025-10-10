@@ -15,7 +15,7 @@ export const homeRoutes: FastifyPluginAsync = async (fastify) => {
   app.delete("/notifications/:id", { onRequest: [app.jwtAuth] }, deleteNotification);
   app.post("/block/:id", { onRequest: [app.jwtAuth] }, blockUser);
   app.post("/unblock/:id", { onRequest: [app.jwtAuth] }, unblockUser);
-  app.delete("/getPersonalData", { onRequest: [app.jwtAuth] }, getPersonalData);
+  app.get("/getPersonalData", { onRequest: [app.jwtAuth] }, getPersonalData);
   app.delete("/deleteAccount", { onRequest: [app.jwtAuth] }, deleteAccount);
   app.get("/user/:id", {  }, getUserInfo);
 };

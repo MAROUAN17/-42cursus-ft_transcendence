@@ -237,6 +237,25 @@ export default function Profile() {
     };
   }, [twoFAVerified]);
 
+  async function downloadData(e: React.ChangeEvent<HTMLInputElement>) {
+    e.preventDefault();
+    try {
+      const res = await api.get("/getPersonalData", { withCredentials: true, responseType: "blob" });
+      const blob = new Blob([res.data], { type: "applcation/json" }); // create blob object // blob = Binary Large Object
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      console.log("here");
+      a.href = url;
+      a.download = "userdata.json";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Download Failed: ", error);
+    }
+  }
+
   return (
     <div className="flex flex-col bg-darkBg h-full w-full font-poppins">
       {setup2FA ? <Setup2FA id={user?.id} email={user?.email} setSetup2fa={setSetup2FA} setTwoFAverified={setTwoFAVerified} /> : null}
@@ -308,17 +327,24 @@ export default function Profile() {
                       Enable 2FA to add an extra layer of security to your account
                     </label>
                   </div>
-                  <input type="checkbox" className="w-4 h-4 appearance-none border-2 border rounded-full checked:bg-gray-300 transition ease-in-out" ref={twoFACheckRef} defaultChecked={twoFAVerified} />
+                  <input
+                    type="checkbox"
+                    className="w-4 h-4 appearance-none border-2 border rounded-full checked:bg-gray-300 transition ease-in-out"
+                    ref={twoFACheckRef}
+                    defaultChecked={twoFAVerified}
+                  />
                 </div>
                 <div className="py-12 flex flex-col gap-3">
                   <button type="submit" className="w-[505px] bg-neon py-3 px-36 text-white rounded-lg font-bold">
                     Save changes
                   </button>
+                  <button onClick={downloadData} className="bg-blue-500 py-3 px-36 text-white rounded-lg font-bold">
+                    Download Personal Data
+                  </button>
                   <button
                     onClick={(e) => {
                       e.preventDefault();
                       api.delete("/deleteAccount", { withCredentials: true }).then(() => {
-                        console.log("Account deleted");
                         api
                           .post("/logout", {}, { withCredentials: true })
                           .then(function (res) {

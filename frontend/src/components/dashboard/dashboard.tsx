@@ -244,12 +244,12 @@ export default function Dashboard() {
             <div className="h-full">
               <div className="text-white flex justify-between items-center">
                 <h3 className="font-bold text-[35px]">Tournaments</h3>
-                <div className="flex items-center gap-1" onClick={() => navigate('/tournaments')}>
+                <div className="flex items-center gap-1" onClick={() => navigate("/tournaments")}>
                   <h4>View All</h4>
                   <GrFormNextLink />
                 </div>
               </div>
-              <div className="flex gap-2">
+              <div className="flex  gap-2">
                 <div className="flex w-2/5 flex-wrap justify-between h-full">
                   {tournaments?.slice(0, 4).map((tournament) => (
                     <TournamentCard tournament={tournament} />
@@ -268,22 +268,14 @@ export default function Dashboard() {
           <div className="flex flex-col basis-2/5 h-full gap-2">
             <div className="text-white flex justify-between items-center">
               <h3 className="font-bold text-[35px]">Leaders</h3>
-              <div
-                className="flex items-center gap-1"
-                onClick={() => navigate("/leaderboard")}
-              >
+              <div className="flex items-center gap-1" onClick={() => navigate("/leaderboard")}>
                 <h4>View All</h4>
                 <GrFormNextLink />
               </div>
             </div>
             <div className="flex pb-8 flex-wrap w-full justify-between h-full">
               {leaders.slice(0, 3).map((leader) => (
-                <LeadersCard
-                  rank={leader.rank}
-                  username={leader.username}
-                  score={leader.score}
-                  avatar={leader.avatar}
-                />
+                <LeadersCard rank={leader.rank} username={leader.username} score={leader.score} avatar={leader.avatar} />
               ))}
             </div>
           </div>
