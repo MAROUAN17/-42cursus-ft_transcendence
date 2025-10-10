@@ -9,7 +9,8 @@ services:
       - "3000:3000"
     volumes:
       - ./frontend/files:/app
-      - /app/node_modules           
+      - /app/node_modules
+      - uploads:/app/public
     environment:
       - CHOKIDAR_USEPOLLING=true
     depends_on:
@@ -59,6 +60,7 @@ services:
       - vault-token:/app/vault
       - /app/node_modules
       - sqlite-db:/app/db
+      - uploads:/app/uploads
     restart: always
     depends_on:
       vault:
@@ -67,3 +69,4 @@ services:
 volumes:
   vault-token:
   sqlite-db:
+  uploads:

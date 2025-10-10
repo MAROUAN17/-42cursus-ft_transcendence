@@ -231,14 +231,13 @@ export const uploadUserInfos = async (
       return res.status(401).send({ error: "File format not supported!" });
     }
 
-
-    
     const uploadDir = path.resolve(
-      "/goinfre/maglagal/ft_transcendence/frontend/public/"
+      "/app/uploads/"
     );
 
     const filePath = path.join(uploadDir, fileData!.filename);
 
+    console.log(fileData!.file);
     await pump(fileData!.file, fs.createWriteStream(filePath));
 
     const user = app.db
@@ -254,6 +253,7 @@ export const uploadUserInfos = async (
       .status(200)
       .send({ message: "files uploaded", file: fileData?.filename });
   } catch (error) {
+    console.log(error);
     res.status(500).send({ error: error });
   }
 };

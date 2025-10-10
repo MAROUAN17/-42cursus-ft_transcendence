@@ -150,7 +150,6 @@ export default function Profile() {
 
     api.post("/upload", formData, { withCredentials: true }).then(function (res) {
       setCurrAvatar(res.data.file);
-      console.log(res.data.file);
     });
   }
 
@@ -260,7 +259,7 @@ export default function Profile() {
     <div className="flex flex-col bg-darkBg h-full w-full font-poppins">
       {setup2FA ? <Setup2FA id={user?.id} email={user?.email} setSetup2fa={setSetup2FA} setTwoFAverified={setTwoFAVerified} /> : null}
       {settingsPopup ? (
-        <div className="absolute z-10 inset-x-[850px] inset-y-[180px] rounded-lg bg-darkBg">
+        <div className="absolute z-10 inset-x-[850px] inset-y-[160px] rounded-lg bg-darkBg">
           <div className="justify-end w-full h-full p-6">
             <div className="h-[50px] items-center w-full flex justify-end">
               <IoMdClose
@@ -335,10 +334,16 @@ export default function Profile() {
                   />
                 </div>
                 <div className="py-12 flex flex-col gap-3">
-                  <button type="submit" className="w-[505px] bg-neon py-3 px-36 text-white rounded-lg font-bold">
+                  <button
+                    type="submit"
+                    className="w-[505px] bg-neon py-3 px-36 text-white rounded-lg font-bold hover:scale-[1.05] transition duration-500"
+                  >
                     Save changes
                   </button>
-                  <button onClick={downloadData} className="bg-blue-500 py-3 px-36 text-white rounded-lg font-bold">
+                  <button
+                    onClick={downloadData}
+                    className="bg-blue-500 py-3 px-36 text-white rounded-lg font-bold hover:scale-[1.05] transition duration-500"
+                  >
                     Download Personal Data
                   </button>
                   <button
@@ -356,7 +361,7 @@ export default function Profile() {
                           });
                       });
                     }}
-                    className="bg-red-600 py-3 px-36 text-white rounded-lg font-bold"
+                    className="bg-red-600 py-3 px-36 text-white rounded-lg font-bold hover:scale-[1.05] transition duration-500"
                   >
                     Delete Account
                   </button>
@@ -366,7 +371,7 @@ export default function Profile() {
           </div>
         </div>
       ) : null}
-      <div className={`flex p-8 h-[50%] space-x-4 ${settingsPopup || setup2FA ? "blur-sm" : ""}`}>
+      <div className={`flex p-8 h-[50%] space-x-4 ${settingsPopup || setup2FA ? "blur-sm pointer-events-none" : ""}`}>
         <ToastContainer closeOnClick={true} className="bg-green text-green-600" />
         {/* stats section */}
         <div className="py-14 bg-compBg/20 w-[85%] rounded-[10px] space-y-12">
@@ -557,7 +562,7 @@ export default function Profile() {
           </div>
         </div>
       </div>
-      <div className={`px-8 h-[50%] ${settingsPopup || setup2FA ? "blur-sm" : ""}`}>
+      <div className={`px-8 h-[50%] ${settingsPopup || setup2FA ? "blur-sm pointer-events-none" : ""}`}>
         <div className="bg-compBg/20 overflow-hidden flex flex-col justify-center rounded-[20px]">
           <div className="px-8 py-6 flex justify-between">
             <h1 className="text-white font-bold">History</h1>
