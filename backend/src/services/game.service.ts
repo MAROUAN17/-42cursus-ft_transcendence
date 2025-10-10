@@ -149,6 +149,14 @@ function gameLoop (room:Room)
         clearInterval(room.intervalId);
         room.intervalId = undefined;
       }
+      if (room.type != "tournament"){
+        const index = rooms.findIndex(r => r.gameId === room.gameId);
+        if (index !== -1) {
+          rooms.splice(index, 1);
+          console.log(`Room ${room.gameId} removed from rooms list.`);
+        }
+      }
+      
     }
     broadcastToRoom(room, { type: "update", game_info: room.gameInfo });
 }
@@ -186,7 +194,7 @@ export function handleGameConnection(connection: any, req: any) {
       else if (msg.type === "tournament") {
         userId = msg.userId;
         clients.set(userId, connection);
-        addPlayerToRound(Number(msg.tournamentId), userId);
+        addPlayerToRound(Number(msg.tournamentId), userId, Number(msg.limit));
         console.log("data received", msg);
         return ;
       }
@@ -250,7 +258,7 @@ function addPlayerToRoom(gameId: string, playerId: string) {
   }
 }
 
-function addPlayerToRound(tournamentId: number, playerId: string) {
+function addPlayerToRound(tournamentId: number, playerId: string, limit: number) {
   
   // AND (player1 = ? OR player2 = ?)
   const lastRound = app.db
@@ -259,9 +267,9 @@ function addPlayerToRound(tournamentId: number, playerId: string) {
     WHERE tournament_id = ?
     AND (player1 = ? OR player2 = ?)
     ORDER BY round_number DESC
-      LIMIT 2
+      LIMIT ?
       `)
-      .get(tournamentId, playerId, playerId);
+      .get(tournamentId, playerId, playerId, limit);
   if (!lastRound) {
     console.log("no round found")
     return ;
