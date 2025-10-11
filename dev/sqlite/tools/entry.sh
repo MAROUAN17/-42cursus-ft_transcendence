@@ -71,10 +71,10 @@ sqlite3 "$DB_NAME" <<EOF
         round_number INTEGER NOT NULL
     );
 
-    INSERT INTO players(username, email, password, secret_otp) VALUES ("user1", "user1@gmail.com", '\$2b\$10\$rqCwxklFfV6lllny4.6WMOIw2yGUyDXGdc7AD6LzUlh.KDe.UJwlu', "GULGAWRACMRFOLBK");
-    INSERT INTO players(username, email, password, secret_otp) VALUES ("user2", "user2@gmail.com", '\$2b\$10\$rqCwxklFfV6lllny4.6WMOIw2yGUyDXGdc7AD6LzUlh.KDe.UJwlu', "GULGAWRACMRFOLBK");
-    INSERT INTO players(username, email, password, secret_otp) VALUES ("user3", "user3@gmail.com", '\$2b\$10\$rqCwxklFfV6lllny4.6WMOIw2yGUyDXGdc7AD6LzUlh.KDe.UJwlu', "GULGAWRACMRFOLBK");
-    INSERT INTO players(username, email, password, secret_otp) VALUES ("user4", "user4@gmail.com", '\$2b\$10\$rqCwxklFfV6lllny4.6WMOIw2yGUyDXGdc7AD6LzUlh.KDe.UJwlu', "GULGAWRACMRFOLBK");
+    INSERT INTO players(username, email, password) VALUES ("user1", "user1@gmail.com", '\$2b\$10\$rqCwxklFfV6lllny4.6WMOIw2yGUyDXGdc7AD6LzUlh.KDe.UJwlu');
+    INSERT INTO players(username, email, password) VALUES ("user2", "user2@gmail.com", '\$2b\$10\$rqCwxklFfV6lllny4.6WMOIw2yGUyDXGdc7AD6LzUlh.KDe.UJwlu');
+    INSERT INTO players(username, email, password) VALUES ("user3", "user3@gmail.com", '\$2b\$10\$rqCwxklFfV6lllny4.6WMOIw2yGUyDXGdc7AD6LzUlh.KDe.UJwlu');
+    INSERT INTO players(username, email, password) VALUES ("user4", "user4@gmail.com", '\$2b\$10\$rqCwxklFfV6lllny4.6WMOIw2yGUyDXGdc7AD6LzUlh.KDe.UJwlu');
 
     # Random match history data
     INSERT INTO Room(player1, player2, scoreLeft, scoreRight, winner) VALUES (1, 2, 30, 11, 1);

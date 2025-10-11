@@ -295,7 +295,10 @@ export default function Dashboard() {
                 <h2 className="text-white font-bold text-[100px] h-fit">{gamesPlayed}</h2>
                 <p className="text-white font-extralight text-[40px] mt-[-35px]">Games Played</p>
               </div>
-              <button className="p-3 border-2 border-neon px-8 flex items-center rounded-full gap-2 w-fit">
+              <button
+                onClick={() => navigate("/profile")}
+                className="p-3 border-2 border-neon px-8 flex items-center rounded-full gap-2 w-fit transition-all duration-300 hover:scale-105"
+              >
                 <p className="text-white font-bold">HISTORY</p>
                 <div className=" bg-neon rounded-full">
                   <GrFormNextLink className="text-white w-7 h-7" />

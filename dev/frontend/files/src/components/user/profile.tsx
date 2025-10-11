@@ -34,6 +34,7 @@ export default function Profile() {
   const navigate = useNavigate();
   const { username } = useParams();
   const [hasAnimated, setHasAnimated] = useState(false);
+  const [show, setShow] = useState(false);
   const [currPage, setCurrPage] = useState<number>(1);
   const [history, setHistory] = useState<UserHistory | undefined>(undefined);
   const [userStats, setUserStats] = useState<UserStats | undefined>(undefined);
@@ -84,12 +85,6 @@ export default function Profile() {
         ),
         uv: historyData.slice(index).length,
       };
-      console.log(
-        "match -> ",
-        historyData.slice(index).length,
-        " count -> ",
-        (historyData.slice(index).filter((match) => match.winner == currUser.id).length / historyData.slice(index).length) * 100
-      );
     }
     setData(tmpData);
     // historyData.map((match, index) => {
@@ -206,6 +201,9 @@ export default function Profile() {
         setHasAnimated(true);
       }, 2000);
     }
+    setTimeout(() => {
+      setShow(true);
+    }, 50);
   }, []);
 
   useEffect(() => {
@@ -269,7 +267,9 @@ export default function Profile() {
   }
 
   return (
-    <div className="flex flex-col bg-darkBg h-full w-full font-poppins">
+    <div
+      className={`flex flex-col bg-darkBg h-full w-full font-poppins transition-all duration-700 ease-in-out ${show ? "opacity-100" : "opacity-0"}`}
+    >
       {setup2FA ? <Setup2FA id={user?.id} email={user?.email} setSetup2fa={setSetup2FA} setTwoFAverified={setTwoFAVerified} /> : null}
       {settingsPopup ? (
         <div className="absolute z-10 inset-x-[850px] inset-y-[160px] rounded-lg bg-darkBg">
@@ -367,7 +367,6 @@ export default function Profile() {
                         api
                           .post("/logout", {}, { withCredentials: true })
                           .then(function (res) {
-                            console.log(res);
                             navigate("/login");
                           })
                           .catch(function (err) {
@@ -385,8 +384,8 @@ export default function Profile() {
           </div>
         </div>
       ) : null}
-      <div className={`flex p-8 h-[50%] space-x-4 ${settingsPopup || setup2FA ? "blur-sm pointer-events-none" : ""}`}>
-        <ToastContainer closeOnClick={true} className="bg-green text-green-600" />
+      <ToastContainer closeOnClick={true} className="bg-green text-green-600" />
+      <div className={`flex p-8 h-[50%] space-x-4 ${settingsPopup || setup2FA ? "blur-sm" : ""}`}>
         {/* stats section */}
         <div className="py-14 bg-compBg/20 w-[85%] rounded-[10px] space-y-12">
           <div className="rounded-lg px-14 flex space-x-8 h-[25%]">
