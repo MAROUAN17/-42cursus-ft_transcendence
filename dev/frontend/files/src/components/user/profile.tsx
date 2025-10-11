@@ -49,6 +49,7 @@ export default function Profile() {
   const [usernameErrorMssg, setUsernameErrorMssg] = useState<string>("");
   const [emailErrorFlag, setEmailErrorFlag] = useState<boolean>(false);
   const [emailErrorMssg, setEmailErrorMssg] = useState<string>("");
+  const [previewImg, setPreviewImg] = useState<string>("");
   const pictureInput = useRef<HTMLInputElement>(null);
   const [twoFAVerified, setTwoFAVerified] = useState<boolean>(false);
 
@@ -141,46 +142,53 @@ export default function Profile() {
   function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
     e.preventDefault();
 
-    const formData = new FormData();
-    setCurrAvatar(e.target.value);
+    // const formData = new FormData();
     // formData.append("username", currUsername);
     // formData.append("email", currEmail);
-    formData.append("avatar", pictureInput.current!.files![0]);
+    if (!e.target.files || e.target.files.length === 0) return;
 
-    api.post("/upload", formData, { withCredentials: true }).then(function (res) {
-      setCurrAvatar(res.data.file);
-      console.log(res.data.file);
-    });
+    const fileData = e.target.files[0];
+    if (fileData) {
+      setPreviewImg(URL.createObjectURL(fileData));
+      console.log(URL.createObjectURL(fileData));
+
+      // formData.append("avatar", pictureInput.current!.files![0]);
+      // console.log(pictureInput.current!.files![0]);
+
+      // api.post("/upload", formData, { withCredentials: true }).then(function (res) {
+      //   setCurrAvatar(res.data.file);
+      //   console.log(res.data.file);
+      // });
+    }
   }
 
-  function editProfile(e: React.FormEvent<HTMLFormElement>) {
+  async function editProfile(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+
+    const formData = new FormData();
+    formData.append("data", JSON.stringify({ id: currUser.id, username: currUsername, email: currEmail }));
+    formData.append("avatar", pictureInput.current!.files![0]);
+
     api
-      .post(
-        "/edit-user",
-        {
-          id: currUser.id,
-          username: currUsername,
-          email: currEmail,
-        },
-        { withCredentials: true }
-      )
+      .post("/edit-user", formData, { withCredentials: true })
       .then(function () {
-        setCurrUsername(currUsername);
-        setCurrEmail(currEmail);
         setSettingsPopup(false);
         toast("Your data changed successfully", {
           closeButton: false,
           className: "font-poppins border-3 border-neon bg-neon/70 text-white font-bold text-md",
         });
+
         if (!twoFAVerified) setSetup2FA(twoFACheckRef.current!.checked);
         else if (twoFAVerified && !twoFACheckRef.current!.checked) {
           api("/2fa/delete", { withCredentials: true }).then(function () {
             setTwoFAVerified(false);
           });
         }
+
+        fetchUserData();
       })
       .catch(function (err) {
+        console.log(err);
         if (err.response.data.error.includes("Username")) {
           setUsernameErrorFlag(true);
           setUsernameErrorMssg(err.response.data.error);
@@ -191,6 +199,7 @@ export default function Profile() {
         }
       });
   }
+
   useEffect(() => {
     if (!hasAnimated) {
       setTimeout(() => {
@@ -225,6 +234,7 @@ export default function Profile() {
         setCurrUsername(res.data.infos.username);
         setCurrAvatar(res.data.infos.avatar);
         setTwoFAVerified(res.data.twoFAVerify);
+        setPreviewImg(res.data.infos.avatar);
       })
       .catch(function (err) {
         console.log(err);
@@ -270,6 +280,8 @@ export default function Profile() {
                   setSettingsPopup(false);
                   setUsernameErrorFlag(false);
                   setUsernameErrorMssg("");
+                  setCurrAvatar(currUser?.avatar);
+                  setPreviewImg(currUser?.avatar);
                   // setCurrEmail(currUser?.email);
                   // setCurrUsername(currUser?.username);
                 }}
@@ -284,7 +296,7 @@ export default function Profile() {
               <div className="flex flex-col items-center mt-12 space-y-6">
                 <div className="w-[150px] h-[150px] mt-4 outline outline-8 outline-neon rounded-full flex items-center justify-center">
                   <label htmlFor="customFile">
-                    <img className="rounded-full w-[150px] h-[150px] object-cover" src={currAvatar} alt="avatar" />
+                    <img className="rounded-full w-[150px] h-[150px] object-cover" src={previewImg} alt="avatar" />
                   </label>
                 </div>
                 <div className="absolute left-[480px] top-[170px] flex items-center justify-center flex-col space-y-3 rounded-full">

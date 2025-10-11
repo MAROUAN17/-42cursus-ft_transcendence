@@ -8,6 +8,7 @@ export interface LoginBody {
   token: string;
   secret: string;
   rememberMe: boolean;
+  data: string
 }
 
 export interface UserInfos {
