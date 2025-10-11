@@ -387,7 +387,7 @@ export const get_final_round = async (req: FastifyRequest, res: FastifyReply) =>
       return res.code(400).send({ error: "The first rounds have not been played" });
     }
 
-    if (winners.length < 2) {
+    if (winners.length < 2 || !winners[0].winner || !winners[1].winner) {
       return res.code(400).send({ error: "Not enough winners to create the final round" });
     }
 

@@ -54,4 +54,5 @@ export interface Round {
   score2: number;
   winner: number;
   round_number: number;
+  status:string;
 }

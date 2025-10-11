@@ -4,8 +4,8 @@ import RBat from "./Bat";
 import RHeader from "./RHeader";
 import { type GameInfo, type  Game, type Round } from "./Types";
 import { useWebSocket } from "../../chat/websocketContext";
-import { redirect, Route } from "react-router";
 import type { ProfileUserInfo } from "../../../types/user";
+import { useNavigate } from "react-router";
 
 
 export   default function RGame() {
@@ -18,7 +18,7 @@ export   default function RGame() {
 
   const [leftY, setLeftY] = useState(140);
   const [rightY, setRightY] = useState(140);
-  const [tournamentId, setTournamentId] = useState(2);
+  const [tournamentId, setTournamentId] = useState(0);
 
   const [websocket, setWebsocket] = useState<WebSocket | null>(null);
   const [gameType, setGameType] = useState("tournament");
@@ -27,32 +27,25 @@ export   default function RGame() {
   const paddleLeft = { x: 24, y: leftY, width: PADDLE_WIDTH, height: PADDLE_HEIGHT };
   const paddleRight = { x:  600 - 24 - PADDLE_WIDTH, y: rightY, width: PADDLE_WIDTH, height: PADDLE_HEIGHT };
   const [roundNumber, setRounNumber] = useState(2);
-  const [usr, setUsr] = useState<ProfileUserInfo | null | undefined>();
 //   const [id, setId] = useState(0);
 
   const {user} = useWebSocket();
   const id = user?.id ? user.id.toString() : "";
-	console.log("------ ",user)
-
+	// console.log("------ ",user)
+  const navigate = useNavigate();
   const start_game = (sessionGame:any) =>
   {
 	let interval: NodeJS.Timeout;
   
 	interval = setInterval(() => {
-		// console.log("session game: ", sessionGame[0].tournament_id)
-	//  manageFinalRound(1);
 	  if (websocket && websocket.readyState === WebSocket.OPEN) {
-		let limit = 2;
-		if (round?.round_number == 2)
-			limit = 1;
-		console.log("-- Limit is: ", round)
 		websocket.send(
 		  JSON.stringify({
 			type: gameType,
 			userId: id,
 			gameId: sessionGame.id || "",
 			tournamentId: tournamentId,
-			roundNumber: roundNumber,
+			roundNumber:  sessionGame.round_number,
 		  })
 		);
 		console.log("Game sent to server ✅: ",user, id);
@@ -76,19 +69,8 @@ export   default function RGame() {
 	else {
 		console.log("this game from tournament");
 		storedGame = sessionStorage.getItem("currentRound") ;
-		const rounds = JSON.parse(storedGame);
-
-		const userRound = rounds.find(
-			(r:Round) => r.player1 === Number(id) || r.player2 === Number(id)
-		);
-		
-		if (userRound) {
-			setTournamentId(userRound.tournament_id);
-			setRound(userRound);
-			console.log("User Round Found", userRound);
-		} else {
-			console.warn("User is not part of any round.");
-		}
+		const userRound = JSON.parse(storedGame);
+		setRound(userRound);
 	}
 	if (!storedGame) {
 	  console.log("No game found in sessionStorage.");
@@ -102,7 +84,7 @@ export   default function RGame() {
 	setGame(sessionGame);
 	start_game(sessionGame);
 	
-  }, [websocket, user]);
+  }, [websocket, user, tournamentId]);
 
   useEffect(() => {
     const down = new Set<string>();
@@ -154,31 +136,12 @@ export   default function RGame() {
 			console.log("there is a proble in socket:", websocket);
 	}, [leftY, rightY]);
 
-	const manageFinalRound = async (winner:number) => {
-		if (gameType != "tournament")
-				return ;
-		console.log("trying to fetch final round ", gameType)
-		if (Number(id) && winner != Number(id)){
-			// redirect("/tournaments");
-			alert(`you lose the game winner is :", ${winner}`);
-			return ;
-		}
-		try {
-         const response = await fetch(`https://localhost:4000/tournament/final_round/${tournamentId}`);
-         if (response.ok) {
-           const finalROund = await response.json();
-		   setRound(finalROund)
-           console.log("Final Round fetched: ", finalROund);
-         } else {
-           console.log("still waiting for players ...");
-         }
-      } catch (error) {
-        console.error("Error fetching tournament:", error);
-      }
-	}
+
 	//receiving game info
 	useEffect(() => {
-		console.log('user -> ', user);
+		if (!tournamentId)
+				return ;
+		// console.log('user -> ', user);
 		const ws = new WebSocket("wss://localhost:4000/game");
 		setWebsocket(ws);
 		console.log('web socket ===== ', ws)
@@ -190,10 +153,11 @@ export   default function RGame() {
 				const message = JSON.parse(event.data);
 				if (message.type === "end")
 				{
-					setRounNumber(2);
+					console.log("--- game eneded");
 					sessionStorage.removeItem('currentGame');
-					sessionStorage.removeItem('currentRound');
-					redirect(`/bracket/${tournamentId}`)
+					// sessionStorage.removeItem('currentRound');
+					sessionStorage.setItem("roundNb", "2");
+					navigate(`/bracket/${tournamentId}`)
 					// manageFinalRound(Number(message.winner));
 					// start_game(game);
 				}
@@ -206,7 +170,7 @@ export   default function RGame() {
 		  console.log("Closing WebSocket...");
 		  ws.close();
 		};
-	  }, []);
+	  }, [tournamentId]);
 
   return (
 	<div className="h-screen bg-gameBg flex items-center justify-center">

@@ -1,11 +1,12 @@
 
 import PlayerBox from "./playerBox";
-import { useNavigate, useParams } from "react-router";
+import { redirect, useNavigate, useParams } from "react-router";
 import LeaveButton from "./ui/leaveBtn";
 import type { Tournament } from "./tournaments";
 import { useEffect, useState } from "react";
 import { useWebSocket } from "../chat/websocketContext";
 import type { Round } from "../game/remote/Types";
+import type { ProfileUserInfo } from "../../types/user";
 
 //todo
 //setup first round betwen player1 and player2
@@ -13,36 +14,57 @@ import type { Round } from "../game/remote/Types";
 //plays the final round 
 
 const TournamentBracket: React.FC = () => {
-
+  
   const [tournament, setTournament] = useState<Tournament | null>(null);
   const [usernames, setUsernames] = useState<string[]>([]);
   const [started, setStarted] = useState(false);
   const [rounds, setRounds] = useState<Round[] | null>();
   const [finalPlayers, setFinalPlayers] = useState<number[]>([]);
   const [finalUsernames, setFinalUsernames] = useState<string[]>([]);
-
+  const [loading, setLoading] = useState(true);
+  const [adminLabel, setAdminLabel] = useState("waiting ...");
+  const [round, setRound] = useState<Round>();
+  
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const {user} = useWebSocket();
 
+  
   useEffect (() => {
+    if (!user || !user.id)
+        return ;
     const fetchROunds = async () => {
       const response = await fetch(`https://localhost:4000/tournament/rounds/${id}`, { method: 'GET' });
       if (!response.ok) throw new Error("Failed to fetch rounds");
       const data = await response.json();
       console.log("fetched rounds:", JSON.stringify(data));
-      sessionStorage.setItem("currentRound", JSON.stringify(data));
-      setRounds(data);
+      
+      const maxRound = Math.max(...data.map((r: Round) => r.round_number));
+      const latestRounds = data.filter((r: Round) => r.round_number === maxRound);
 
+      const userRound = latestRounds.find(
+        (r: Round) => r.player1 === Number(user?.id) || r.player2 === Number(user?.id)
+      );
+
+      if (userRound) {
+        setRound(userRound);
+        console.log("User Round Found:", userRound);
+      } else {
+        console.warn("User is not part of any round in the latest round.", Number(user?.id));
+      }
+
+      // sessionStorage.setItem("currentGame", JSON.stringify(data));
+      // setRounds(data);
       const round2 = data.filter((r: any) => r.round_number === 2);
       const players = round2.flatMap((r: any) => [r.player1, r.player2]);
       setFinalPlayers(players);
 
-      console.log("Final round players:", players);
+      // console.log("Final round players:", players);
 
       return ;
     }
     fetchROunds();
-    return;
+    // return;
     const intervalId = setInterval(async () => {
       try {
         const response = await fetch(`https://localhost:4000/tournament/start_games/${id}`);
@@ -50,7 +72,8 @@ const TournamentBracket: React.FC = () => {
           const tournament = await response.json();
           if (tournament.status === "ongoing") {
             clearInterval(intervalId);
-            navigate("/remote_game");
+            
+            // navigate("/remote_game");
           }
         } else {
           console.log("still waiting for players ...");
@@ -62,7 +85,23 @@ const TournamentBracket: React.FC = () => {
 
     return () => clearInterval(intervalId);
 
-  }, [started])
+  }, [started, user]);
+  useEffect (() => {
+    if (!user || !round) return ;
+    sessionStorage.setItem("currentRound", JSON.stringify(round));
+    // const roundNb = sessionStorage.getItem("roundNb");
+    console.log("Round winner :", round.winner);
+    if (!round.winner)
+        navigate("/remote_game");
+    // if (roundNb != "2")
+    //   navigate("/remote_game");
+    // else
+    //   console.log("this is the final round");
+    // if (finalPlayers.length == 2)
+    //   redirect("/remote_game")
+    // else
+    //   console.log("not enough final players");
+  }, [user, round])
   async function fetchUsername(playerId: number) {
     const response = await fetch(`https://localhost:4000/user/${playerId}`, { method: 'GET' });
     if (!response.ok) throw new Error("Failed to fetch user");
@@ -95,7 +134,7 @@ const TournamentBracket: React.FC = () => {
       Promise.all(finalPlayers.map((id) => fetchUsername(id)))
         .then((names) => {
           console.log("Fetched final usernames:", names);
-          setFinalUsernames(names); // 🆕 store them separately
+          setFinalUsernames(names); 
         })
         .catch((err) => console.error(err));
     }
@@ -111,10 +150,7 @@ const TournamentBracket: React.FC = () => {
     avatar: `https://i.pravatar.cc/40?img=${index + 1}`,
   }));
 
-  const [loading, setLoading] = useState(true);
-  const [adminLabel, setAdminLabel] = useState("waiting ...");
 
-  const {user} = useWebSocket();
   useEffect(() => {
     const fetchTournament = async () => {
       try {
@@ -133,7 +169,23 @@ const TournamentBracket: React.FC = () => {
         setLoading(false);
       }
     };
+    const fetchFinalROund = async () => {
+		console.log("trying to fetch final round ")
+		try {
+         const response = await fetch(`https://localhost:4000/tournament/final_round/${id}`);
+         if (response.ok) {
+           const finalROund = await response.json();
+           console.log("Final Round fetched: ", finalROund);
+         } else {
+           console.log("still waiting for players ...");
+         }
+      } catch (error) {
+        console.error("Error fetching tournament:", error);
+      }
+	}
     fetchTournament();
+
+    fetchFinalROund();
   }, [id]);
 
   

@@ -200,14 +200,14 @@ export function handleGameConnection(connection: any, req: any) {
       }
 
       if (msg.type === "updateY") {
-        console.log("--- entred")
+        // console.log("--- entred")
         const room = getRoom(msg.gameId, msg.roundId);
         if (!room)
             console.log("room not found");
         room.gameInfo.paddleLeft.y = msg.leftY;
         room.gameInfo.paddleRight.y = msg.rightY;
         
-        console.log("Broadcasting to room:", room.gameId, "Players:", room.player1, room.player2);
+        // console.log("Broadcasting to room:", room.gameId, "Players:", room.player1, room.player2);
         
         broadcastToRoom(room, { type: "update", game_info: room.gameInfo });
       }
@@ -260,34 +260,39 @@ function addPlayerToRoom(gameId: string, playerId: string) {
 
 function addPlayerToRound(tournamentId: number, playerId: string, rn: number) {
   
-  // AND (player1 = ? OR player2 = ?)
   const lastRound = app.db
   .prepare(`
-    SELECT * FROM Round
-    WHERE tournament_id = ?
-    AND (player1 = ? OR player2 = ?)
-    AND round_number = ?
-      `)
-      .get(tournamentId, playerId, playerId, rn);
+      SELECT * FROM Round
+      WHERE tournament_id = ?
+      AND (player1 = ? OR player2 = ?)
+      AND round_number = ?
+    `)
+    .get(tournamentId, playerId, playerId, rn);
+
   if (!lastRound) {
-    console.log("no round found")
-    return ;
+    console.log("No round found for player:", playerId);
+    return;
   }
-  console.log("userId: ", playerId);
-  console.log("----- round Found:", lastRound);
-  // return ;
+
+  console.log("UserId:", playerId);
+  console.log("Round found:", lastRound);
+
   const room = getRoom("", lastRound.id);
   room.tournamentId = tournamentId;
+
+  if (playerId != lastRound.player1 && playerId != lastRound.player2) {
+    console.log("--- This is not your round:", playerId != lastRound.player1);
+    return;
+  }
+
   if (!room.player1) {
     room.player1 = playerId;
-  } else if (!room.player2 && room.player1 !== playerId
-    && (playerId == lastRound.player1  || playerId == lastRound.player2)
-  )
-    {
+    console.log("Assigned as player1:", playerId);
+  } else if (!room.player2 && room.player1 !== playerId) {
     room.player2 = playerId;
-  }
-  else {
-    console.log("--- this is not ur Round: ", playerId);
+    console.log("Assigned as player2:", playerId);
+  } else {
+    console.log("Player already in room or room full:", playerId);
   }
 
   if (room.player1 && room.player2 && !room.ready) {
