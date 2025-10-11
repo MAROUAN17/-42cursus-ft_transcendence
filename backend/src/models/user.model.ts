@@ -8,6 +8,7 @@ export interface LoginBody {
   token: string;
   secret: string;
   rememberMe: boolean;
+  data: string
 }
 
 export interface UserInfos {
@@ -18,6 +19,7 @@ export interface UserInfos {
   first_login: boolean;
   intra_id: number;
   online: boolean;
+  secret_otp: string;
 }
 
 export interface PublicUserInfos {

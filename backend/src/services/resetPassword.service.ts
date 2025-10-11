@@ -12,16 +12,20 @@ export const checkResetPass = async (req: FastifyRequest<{ Body: LoginBody }>, r
       return res.status(401).send({ error: "Unauthorized" });
     }
 
-    //check if user exists
-    const user = app.db.prepare("SELECT * FROM players WHERE reset_token = ? AND reset_flag = ?").get(token, 1);
+    //hash the incoming token
+    const hashedToken: string = crypto.createHash("sha256").update(token).digest("hex");
 
+    //check if user exists
+    const user = app.db.prepare("SELECT * FROM players WHERE reset_token = ? AND reset_flag = ?").get(hashedToken, 1);
+
+    //check if user requested a reset password or not
     if (!user || !user.reset_flag) {
       return res.status(401).send({ error: "Unauthorized" });
     }
 
     //check expiration of password reset process
-    if (Date.now() - user.reset_time > 120000) {
-      return res.status(401).send({ error: "Password reset link already expired" });
+    if (Date.now() - user.reset_time > 300000) {
+      return res.status(401).send({ error: "EXPIRED" });
     }
 
     res.status(200).send({ message: "Authorized" });
@@ -45,11 +49,9 @@ export const resetPassword = async (req: FastifyRequest<{ Body: LoginBody }>, re
     }
 
     const resetToken = crypto.randomBytes(32).toString("base64url");
-    const hashedToken = bcrypt.hash(resetToken, 10);
+    const hashedToken: string = crypto.createHash("sha256").update(resetToken).digest("hex");
 
-    console.log('token -> ', hashedToken);
-
-    const urlReset = `https://localhost:3000/reset-password/new?token=${hashedToken}`;
+    const urlReset = `https://localhost:3000/reset-password/new?token=${resetToken}`;
 
     app.db.prepare("UPDATE players SET reset_flag = ?, reset_time = ?, reset_token = ? WHERE id = ?").run(1, Date.now(), hashedToken, user?.id);
 
@@ -62,13 +64,13 @@ export const resetPassword = async (req: FastifyRequest<{ Body: LoginBody }>, re
 
     app.mailer.sendMail(mailOptions, function (err: Error, info: any) {
       if (err) {
-        return res.status(401).send({ error: 'Error sending reset email' });
+        return res.status(401).send({ error: "Error sending reset email" });
       } else {
         return res.status(200).send({ message: info.response });
       }
     });
 
-    return res.status(200).send({ message: hashedToken });
+    return res.status(200).send({ message: "Reset link sent to the user email successfully" });
   } catch (error) {
     return res.status(500).send({ error: error });
   }
@@ -85,7 +87,9 @@ export const verifyResetPin = async (req: FastifyRequest<{ Body: LoginBody }>, r
     //check if password is provided
     if (!password || !confirmPassword) return res.status(401).send({ error: "Password or confirm password should be provided" });
 
-    const user = app.db.prepare("SELECT * from players WHERE id = ?").get(id);
+    const resetToken: string = crypto.createHash("sha256").update(token).digest("hex");
+
+    const user = app.db.prepare("SELECT * from players WHERE reset_token = ?").get(resetToken);
 
     //check if user exists
     if (!user) {
@@ -96,6 +100,7 @@ export const verifyResetPin = async (req: FastifyRequest<{ Body: LoginBody }>, r
       return res.status(401).send({ error: "Unauthorized" });
     }
 
+    //check password regex
     const passwordPattern = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).+$");
     if (password.length < 8 || password.length > 30) {
       return res.status(401).send({
@@ -118,12 +123,9 @@ export const verifyResetPin = async (req: FastifyRequest<{ Body: LoginBody }>, r
       });
     }
 
-    const hashedPass: string = await bcrypt.hash(password, 10);
-
+    const hashedPassword:string = await bcrypt.hash(password, 10);
     //set new password
-    app.db.prepare("UPDATE players SET password = ? WHERE id = ?").run(hashedPass, id);
-
-    app.db.prepare("UPDATE players SET reset_flag = ? WHERE id = ?").run(0, id);
+    app.db.prepare("UPDATE players SET password = ?, reset_flag = ?, reset_token = ? WHERE id = ?").run(hashedPassword, 0, null, user?.id);
 
     return res.status(200).send({ message: "Reset password success" });
   } catch (error) {

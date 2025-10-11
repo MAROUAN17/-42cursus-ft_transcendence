@@ -6,6 +6,7 @@ export interface UserInfos {
   first_login: boolean;
   intra_id: number;
   online: boolean;
+  twoFA_verify: boolean;
 }
 
 export interface PublicUserInfos {

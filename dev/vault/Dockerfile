@@ -10,9 +10,9 @@ RUN apk update && apk add wget bash unzip openssl && \
 RUN mkdir -p /vault/cert/ /vault/shared/ && \
     openssl req -x509 -nodes -newkey rsa:4096 \
     -keyout /vault/cert/key.pem \
-    -out /vault/shared/certificate.pem \
+    -out /vault/cert/certificate.pem \
     -days 365 \
-    -subj "/CN=vault"
+    -subj "/CN=localhost"
 
 COPY ./conf/vault.hcl /vault/config/vault.hcl
 COPY ./tools/entry.sh /entry.sh

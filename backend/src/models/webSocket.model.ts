@@ -18,6 +18,20 @@ export interface OnlineStatusPacket {
     online: boolean;
   };
 }
+export interface LogPacket {
+  type: "logNotif";
+  data: {
+    id: string;
+    is_removed: boolean;
+    winner: string;
+    avatar: string;
+    loser?: string;
+    game_type: "1v1" | "tournament";
+    score: number;
+    tournament_name?: string;
+    timestamps: string;
+  };
+}
 
 export interface notificationPacket {
   id: number;
@@ -42,7 +56,7 @@ export interface notificationPacketDB {
   unreadCount: number;
   updatedAt: string;
 }
-export type websocketPacket = NotificationPacket | ChatPacket | OnlineStatusPacket;
+export type websocketPacket = NotificationPacket | ChatPacket | OnlineStatusPacket | LogPacket;
 
 export interface websocketContextType {
   send: (msg: string) => void;

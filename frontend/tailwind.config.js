@@ -11,9 +11,24 @@ module.exports = {
           "50%": { transform: "translateY(20px)" },
           "100%": { transform: "translateY(0px)" },
         },
+        slideDown: {
+          "0%": { transform: "translateY(-90px)", opacity: 0 },
+          "100%": { transform: "translateY(0px)", opacity: 1 },
+        },
+        slideOut: {
+          "0%": { transform: "translateY(0px)", opacity: 1 },
+          "100%": { transform: "translateY(60px)", opacity: 0 },
+        },
+        justSlide: {
+          "0%": { transform: "translateY(-90px)" },
+          "100%": { transform: "translateY(0px)" },
+        },
       },
       animation: {
         float: "float 3s ease-in-out infinite",
+        slideDown: "slideDown 1s ease-in-out forwards",
+        slideOut: "slideOut 1s ease-in-out forwards",
+        justSlide: "justSlide 1s ease-in-out forwards",
       },
       colors: {
         gameBg: "#090040",
@@ -21,7 +36,7 @@ module.exports = {
         bat2Color: "#FFCC00",
         darkBg: "#14121C",
         darkBg: "#090040",
-        compBg: "#471396", 
+        compBg: "#471396",
         borderColor: "#312F62",
       },
       fontFamily: {

@@ -25,9 +25,14 @@ function Login() {
         { withCredentials: true }
       )
       .then(function (res) {
-        navigate("/verify?email=" + email, {
-          state: { rememberMe: rememberRef.current?.checked },
-        });
+        console.log(res.data.twoFA);
+        if (res.data.twoFA) {
+          navigate("/verify?email=" + email, {
+            state: { rememberMe: rememberRef.current?.checked },
+          });
+        } else {
+          navigate("/avatar");
+        }
       })
       .catch(function (err) {
         setErrorFlag(true);
@@ -51,12 +56,8 @@ function Login() {
     <div className="flex justify-between font-poppins h-screen bg-gameBg items-center overflow-hidden">
       <div className="xl:py-[260px] xl:px-[300px] xl:mt-32 lg:mt-24 lg:w-1/2 lg:px-[220px]">
         <div>
-          <h1 className="text-white xl:text-9xl lg:text-8xl font-bold">
-            WELCOME
-          </h1>
-          <p className="text-white text-center text-xl py-2 font-light">
-            We are glad to see you back with us
-          </p>
+          <h1 className="text-white xl:text-9xl lg:text-8xl font-bold">WELCOME</h1>
+          <p className="text-white text-center text-xl py-2 font-light">We are glad to see you back with us</p>
         </div>
         <form onSubmit={handleForm}>
           <div className="my-24 space-y-12">
@@ -66,11 +67,7 @@ function Login() {
                 value={email}
                 onChange={emailInput}
                 required
-                className={`text-white bg-transparent ${
-                  errorFlag
-                    ? "border-b border-red-700"
-                    : "border-b border-white"
-                } py-4 mt-5 w-full`}
+                className={`text-white bg-transparent ${errorFlag ? "border-b border-red-700" : "border-b border-white"} py-4 mt-5 w-full`}
                 type="text"
                 placeholder="Email or username"
               />
@@ -84,11 +81,7 @@ function Login() {
                   value={password}
                   onChange={passInput}
                   required
-                  className={`text-white bg-transparent ${
-                    errorFlag
-                      ? "border-b border-red-700"
-                      : "border-b border-white"
-                  } py-4 w-full`}
+                  className={`text-white bg-transparent ${errorFlag ? "border-b border-red-700" : "border-b border-white"} py-4 w-full`}
                   type="password"
                   placeholder="Password"
                 />
@@ -97,8 +90,8 @@ function Login() {
             </div>
             {/* login button */}
             <div className="flex justify-between items-center">
-              <div className="flex space-x-3">
-                <input type="checkbox" id="remember" ref={rememberRef} />
+              <div className="flex space-x-3 items-center">
+                <input type="checkbox" id="remember" ref={rememberRef} className="w-4 h-4 appearance-none border-2 border rounded-full checked:bg-gray-300 transition ease-in-out" />
                 <p className="text-white text-md rounded-full ">Remember me</p>
               </div>
               <div className="">
@@ -114,10 +107,7 @@ function Login() {
               </div>
             </div>
             <div>
-              <button
-                type="submit"
-                className="xl:px-80 lg:px-56 py-4 rounded-xl text-white bg-neon font-bold shadow-neon"
-              >
+              <button type="submit" className="xl:px-80 lg:px-56 py-4 rounded-xl text-white bg-neon font-bold shadow-neon">
                 Login
               </button>
             </div>
@@ -130,11 +120,7 @@ function Login() {
             </div>
             <div className="flex justify-center">
               <a href="https://localhost:5000/intra42/login">
-                <img
-                  className="w-[32px] h-[32px]"
-                  src="/42-icon.png"
-                  alt="42 icon"
-                />
+                <img className="w-[32px] h-[32px]" src="/42-icon.png" alt="42 icon" />
               </a>
             </div>
             <div className="flex justify-center">

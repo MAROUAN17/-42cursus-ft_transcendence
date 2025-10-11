@@ -21,18 +21,20 @@ import HistoryCard from "./historyCard";
 import { useEffect, useState, useRef } from "react";
 import { type AxiosResponse } from "axios";
 import { useParams, useNavigate } from "react-router";
-import type { PublicUserInfos } from "../../types/user";
 import { useWebSocket } from "../contexts/websocketContext";
 import api from "../../axios";
 import { ToastContainer, toast } from "react-toastify";
 import { useUserContext } from "../contexts/userContext";
 import type { ChartData, MatchHistory, UserHistory, UserStats } from "../../types/profile";
 import type { websocketPacket } from "../../types/websocket";
+import Setup2FA from "../user/setup2FA";
+import type { UserInfos } from "../../types/user";
 
 export default function Profile() {
   const navigate = useNavigate();
   const { username } = useParams();
   const [hasAnimated, setHasAnimated] = useState(false);
+  const [show, setShow] = useState(false);
   const [currPage, setCurrPage] = useState<number>(1);
   const [history, setHistory] = useState<UserHistory | undefined>(undefined);
   const [userStats, setUserStats] = useState<UserStats | undefined>(undefined);
@@ -41,15 +43,17 @@ export default function Profile() {
   const [blockedUser, setblockedUser] = useState<boolean>(false);
   const [isFriend, setIsFriend] = useState<boolean>(false);
   const [friendReqSent, setFriendReqSent] = useState<boolean>(false);
-  const [currEmail, setCurrEmail] = useState<string>("");
-  const [currUsername, setCurrUsername] = useState<string>("");
+  const [currEmail, setCurrEmail] = useState<string | undefined>("");
+  const [currUsername, setCurrUsername] = useState<string | undefined>("");
   const [currAvatar, setCurrAvatar] = useState<string>("");
   const [usernameErrorFlag, setUsernameErrorFlag] = useState<boolean>(false);
   const [usernameErrorMssg, setUsernameErrorMssg] = useState<string>("");
   const [emailErrorFlag, setEmailErrorFlag] = useState<boolean>(false);
   const [emailErrorMssg, setEmailErrorMssg] = useState<string>("");
+  const [previewImg, setPreviewImg] = useState<string>("");
   const pictureInput = useRef<HTMLInputElement>(null);
-  const [avatar, setAvatar] = useState<string>("");
+  const [twoFAVerified, setTwoFAVerified] = useState<boolean>(false);
+
   const { user } = useUserContext();
   const [currUser, setCurrUser] = useState<UserInfos>({
     id: 0,
@@ -59,10 +63,12 @@ export default function Profile() {
     first_login: false,
     intra_id: 0,
     online: false,
+    twoFA_verify: false,
   });
-  let usernamePattern = new RegExp("^[a-zA-Z0-9]+$");
   const { send, addHandler } = useWebSocket();
   const [data, setData] = useState<ChartData[]>([]);
+  const twoFACheckRef = useRef<HTMLInputElement>(null);
+  const [setup2FA, setSetup2FA] = useState<boolean>(false);
 
   function getWeekHistory(historyData: MatchHistory[]) {
     const tmpData: ChartData[] = [
@@ -81,6 +87,9 @@ export default function Profile() {
       };
     }
     setData(tmpData);
+    // historyData.map((match, index) => {
+
+    // });
   }
   function CustomTooltip({ payload, label, active }: any) {
     if (active) {
@@ -128,48 +137,53 @@ export default function Profile() {
   function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
     e.preventDefault();
 
-    const formData = new FormData();
-
-    setCurrAvatar(e.target.value);
+    // const formData = new FormData();
     // formData.append("username", currUsername);
     // formData.append("email", currEmail);
-    formData.append("avatar", pictureInput.current!.files![0]);
+    if (!e.target.files || e.target.files.length === 0) return;
 
-    api.post("/upload", formData, { withCredentials: true }).then(function (res) {
-      setCurrAvatar(res.data.file);
-      console.log(res.data.file);
-    });
+    const fileData = e.target.files[0];
+    if (fileData) {
+      setPreviewImg(URL.createObjectURL(fileData));
+      console.log(URL.createObjectURL(fileData));
+
+      // formData.append("avatar", pictureInput.current!.files![0]);
+      // console.log(pictureInput.current!.files![0]);
+
+      // api.post("/upload", formData, { withCredentials: true }).then(function (res) {
+      //   setCurrAvatar(res.data.file);
+      //   console.log(res.data.file);
+      // });
+    }
   }
 
-  function editProfile(e: React.FormEvent<HTMLFormElement>) {
+  async function editProfile(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    // if (currUsername.length < 3 || currUsername.length > 16) {
-    //   setUsernameErrorFlag(true);
-    //   setUsernameErrorMssg("Username must be between 3 and 16 characters");
-    //   return;
-    // } else if (!usernamePattern.test(currUsername)) {
-    //   setUsernameErrorFlag(true);
-    //   setUsernameErrorMssg("Username must be valid");
-    //   return;
-    // }
+
+    const formData = new FormData();
+    formData.append("data", JSON.stringify({ id: currUser.id, username: currUsername, email: currEmail }));
+    formData.append("avatar", pictureInput.current!.files![0]);
+
     api
-      .post(
-        "/edit-user",
-        {
-          id: currUser.id,
-          username: currUsername,
-          email: currEmail,
-        },
-        { withCredentials: true }
-      )
+      .post("/edit-user", formData, { withCredentials: true })
       .then(function () {
         setSettingsPopup(false);
         toast("Your data changed successfully", {
           closeButton: false,
           className: "font-poppins border-3 border-neon bg-neon/70 text-white font-bold text-md",
         });
+
+        if (!twoFAVerified) setSetup2FA(twoFACheckRef.current!.checked);
+        else if (twoFAVerified && !twoFACheckRef.current!.checked) {
+          api("/2fa/delete", { withCredentials: true }).then(function () {
+            setTwoFAVerified(false);
+          });
+        }
+
+        fetchUserData();
       })
       .catch(function (err) {
+        console.log(err);
         if (err.response.data.error.includes("Username")) {
           setUsernameErrorFlag(true);
           setUsernameErrorMssg(err.response.data.error);
@@ -180,28 +194,30 @@ export default function Profile() {
         }
       });
   }
+
   useEffect(() => {
     if (!hasAnimated) {
       setTimeout(() => {
         setHasAnimated(true);
       }, 2000);
     }
+    setTimeout(() => {
+      setShow(true);
+    }, 50);
   }, []);
 
   useEffect(() => {
     api.get("/states/player-rooms/" + currUser.id, { withCredentials: true }).then(function (res: AxiosResponse) {
-      console.log("history -> ", res.data);
       setHistory(res.data);
       const tmp = [...res.data.rooms];
       getWeekHistory(tmp);
     });
     api.get("/states/profile/" + currUser.id, { withCredentials: true }).then(function (res: AxiosResponse) {
-      console.log("stats -> ", res.data);
       setUserStats(res.data);
     });
   }, [currUser]);
 
-  useEffect(() => {
+  function fetchUserData() {
     api
       .get("/profile/" + username, { withCredentials: true })
       .then(function (res: AxiosResponse) {
@@ -215,20 +231,48 @@ export default function Profile() {
         setCurrEmail(res.data.infos.email);
         setCurrUsername(res.data.infos.username);
         setCurrAvatar(res.data.infos.avatar);
+        setTwoFAVerified(res.data.twoFAVerify);
+        setPreviewImg(res.data.infos.avatar);
       })
       .catch(function (err) {
         console.log(err);
       });
+  }
+
+  useEffect(() => {
+    fetchUserData();
 
     return () => {
       setSettingsPopup(false);
     };
-  }, [username]);
+  }, []);
+
+  async function downloadData(e: React.ChangeEvent<HTMLInputElement>) {
+    e.preventDefault();
+    try {
+      const res = await api.get("/getPersonalData", { withCredentials: true, responseType: "blob" });
+      const blob = new Blob([res.data], { type: "applcation/json" }); // create blob object // blob = Binary Large Object
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      console.log("here");
+      a.href = url;
+      a.download = "userdata.json";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Download Failed: ", error);
+    }
+  }
 
   return (
-    <div className="flex flex-col bg-darkBg h-full w-full font-poppins">
+    <div
+      className={`flex flex-col bg-darkBg h-full w-full font-poppins transition-all duration-700 ease-in-out ${show ? "opacity-100" : "opacity-0"}`}
+    >
+      {setup2FA ? <Setup2FA id={user?.id} email={user?.email} setSetup2fa={setSetup2FA} setTwoFAverified={setTwoFAVerified} /> : null}
       {settingsPopup ? (
-        <div className="absolute z-10 inset-x-[850px] inset-y-[220px] rounded-lg bg-darkBg ">
+        <div className="absolute z-10 inset-x-[850px] inset-y-[160px] rounded-lg bg-darkBg">
           <div className="justify-end w-full h-full p-6">
             <div className="h-[50px] items-center w-full flex justify-end">
               <IoMdClose
@@ -236,8 +280,10 @@ export default function Profile() {
                   setSettingsPopup(false);
                   setUsernameErrorFlag(false);
                   setUsernameErrorMssg("");
-                  setCurrEmail(currUser.email);
-                  setCurrUsername(currUser.username);
+                  setCurrAvatar(currUser?.avatar);
+                  setPreviewImg(currUser?.avatar);
+                  // setCurrEmail(currUser?.email);
+                  // setCurrUsername(currUser?.username);
                 }}
                 color="white"
                 className="w-[30px] h-[30px] hover:scale-110"
@@ -247,22 +293,16 @@ export default function Profile() {
               <h1 className="text-white font-bold text-5xl text-center">Edit Profile</h1>
             </div>
             <form onSubmit={editProfile}>
-              <div className="flex flex-col items-center mt-12 space-y-8">
+              <div className="flex flex-col items-center mt-12 space-y-6">
                 <div className="w-[150px] h-[150px] mt-4 outline outline-8 outline-neon rounded-full flex items-center justify-center">
                   <label htmlFor="customFile">
-                    <img className="rounded-full w-[150px] h-[150px] object-cover" src={currAvatar} alt="avatar" />
+                    <img className="rounded-full w-[150px] h-[150px] object-cover" src={previewImg} alt="avatar" />
                   </label>
                 </div>
                 <div className="absolute left-[480px] top-[170px] flex items-center justify-center flex-col space-y-3 rounded-full">
-                  {/* <label
-                    htmlFor="customFile"
-                    className="text-white rounded-full w-[50px] h-[50px]"
-                  >
-                    <FaCamera className="w-[30px] h-[30px]" />
-                  </label> */}
                   <input id="customFile" className="hidden text-white" ref={pictureInput} onChange={handleImageUpload} type="file" />
                 </div>
-                <div className="flex flex-col space-y-3">
+                <div className="flex flex-col space-y-3 w-[505px]">
                   {usernameErrorFlag ? (
                     <div>
                       <h1 className="text-red-700 font-bold">{usernameErrorMssg}</h1>
@@ -280,7 +320,7 @@ export default function Profile() {
                     }`}
                   />
                 </div>
-                <div className="flex flex-col space-y-3">
+                <div className="flex flex-col space-y-3 w-[505px]">
                   <label htmlFor="" className="text-white font-bold">
                     Email
                   </label>
@@ -291,19 +331,42 @@ export default function Profile() {
                     className="bg-transparent px-12 py-4 rounded-lg border border-white text-white"
                   />
                 </div>
+                <div className="bg-neon/50 px-6 py-5 rounded-lg w-[505px] flex justify-between items-center">
+                  <div className="flex flex-col">
+                    <label htmlFor="" className="text-white font-bold">
+                      Multi-factor authentication
+                    </label>
+                    <label htmlFor="" className="text-white text-sm font-light">
+                      Enable 2FA to add an extra layer of security to your account
+                    </label>
+                  </div>
+                  <input
+                    type="checkbox"
+                    className="w-4 h-4 appearance-none border-2 border rounded-full checked:bg-gray-300 transition ease-in-out"
+                    ref={twoFACheckRef}
+                    defaultChecked={twoFAVerified}
+                  />
+                </div>
                 <div className="py-12 flex flex-col gap-3">
-                  <button type="submit" className="bg-neon py-3 px-36 text-white rounded-lg font-bold">
+                  <button
+                    type="submit"
+                    className="w-[505px] bg-neon py-3 px-36 text-white rounded-lg font-bold hover:scale-[1.05] transition duration-500"
+                  >
                     Save changes
+                  </button>
+                  <button
+                    onClick={downloadData}
+                    className="bg-blue-500 py-3 px-36 text-white rounded-lg font-bold hover:scale-[1.05] transition duration-500"
+                  >
+                    Download Personal Data
                   </button>
                   <button
                     onClick={(e) => {
                       e.preventDefault();
                       api.delete("/deleteAccount", { withCredentials: true }).then(() => {
-                        console.log("Account deleted");
                         api
                           .post("/logout", {}, { withCredentials: true })
                           .then(function (res) {
-                            console.log(res);
                             navigate("/login");
                           })
                           .catch(function (err) {
@@ -311,7 +374,7 @@ export default function Profile() {
                           });
                       });
                     }}
-                    className="bg-red-600 py-3 px-36 text-white rounded-lg font-bold"
+                    className="bg-red-600 py-3 px-36 text-white rounded-lg font-bold hover:scale-[1.05] transition duration-500"
                   >
                     Delete Account
                   </button>
@@ -321,8 +384,8 @@ export default function Profile() {
           </div>
         </div>
       ) : null}
-      <div className={`flex p-8 h-[50%] space-x-4 ${settingsPopup ? "blur-sm" : ""}`}>
-        <ToastContainer closeOnClick={true} className="bg-green text-green-600" />
+      <ToastContainer closeOnClick={true} className="bg-green text-green-600" />
+      <div className={`flex p-8 h-[50%] space-x-4 ${settingsPopup || setup2FA ? "blur-sm" : ""}`}>
         {/* stats section */}
         <div className="py-14 bg-compBg/20 w-[85%] rounded-[10px] space-y-12">
           <div className="rounded-lg px-14 flex space-x-8 h-[25%]">
@@ -390,7 +453,7 @@ export default function Profile() {
               <img className="rounded-full w-[90px] h-[90px] object-cover" src={currAvatar} alt="" />
             </div>
             <div>
-              <h1 className="text-white text-2xl font-bold">{currUser.username}</h1>
+              <h1 className="text-white text-2xl font-bold">{currUsername}</h1>
             </div>
             <div>
               {profileStatus == "me" ? (
@@ -497,7 +560,7 @@ export default function Profile() {
               </div>
               <div>
                 <h1 className="text-neon font-bold">Email</h1>
-                <h1 className="text-white font-bold">{currUser.email}</h1>
+                <h1 className="text-white font-bold">{currEmail}</h1>
               </div>
             </div>
             <div className="flex space-x-5 items-center">
@@ -512,7 +575,7 @@ export default function Profile() {
           </div>
         </div>
       </div>
-      <div className={`px-8 h-[50%] ${settingsPopup ? "blur-sm" : ""}`}>
+      <div className={`px-8 h-[50%] ${settingsPopup || setup2FA ? "blur-sm pointer-events-none" : ""}`}>
         <div className="bg-compBg/20 overflow-hidden flex flex-col justify-center rounded-[20px]">
           <div className="px-8 py-6 flex justify-between">
             <h1 className="text-white font-bold">History</h1>

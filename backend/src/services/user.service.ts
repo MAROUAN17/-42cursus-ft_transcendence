@@ -2,9 +2,10 @@ import type { FastifyReply, FastifyRequest } from "fastify";
 import type { Payload } from "../models/chat.js";
 import app from "../server.js";
 import type { LoginBody } from "../models/user.model.js";
-import type { User } from "../models/user.model.js";
+import type { UserInfos } from "../models/user.model.js";
 import { pump } from "../server.js";
 import fs, { access } from "fs";
+import path from "path";
 
 export const fetchUser = async (req: FastifyRequest, res: FastifyReply) => {
   try {
@@ -41,11 +42,11 @@ export const fetchProfileUser = async (
 
     const user = app.db
       .prepare("SELECT * FROM players WHERE id = ?")
-      .get(payload?.id) as User | undefined;
+      .get(payload?.id) as UserInfos | undefined;
     if (!user) return res.status(404).send({ error: "USER NOT FOUND" });
-
+    
     if (!username || username == user.username) {
-      return res.status(200).send({ infos: user, profileType: "me" });
+      return res.status(200).send({ infos: user, profileType: "me", twoFAVerify: user?.twoFA_verify });
     }
 
     if (username) {
@@ -212,7 +213,6 @@ export const checkUser2faStatus = async (
   }
 };
 
-import path from "path";
 export const uploadUserInfos = async (
   req: FastifyRequest,
   res: FastifyReply
@@ -221,41 +221,30 @@ export const uploadUserInfos = async (
     const accessToken = req.cookies.accessToken;
     const payload = app.jwt.jwt1.decode(accessToken) as Payload;
 
-    const fileData = await req.file();
+    // const fileData = await req.file();
 
-    console.log(fileData);
+    // if (
+    //   fileData?.mimetype != "image/png" &&
+    //   fileData?.mimetype != "image/jpg" &&
+    //   fileData?.mimetype != "image/jpeg"
+    // ) {
+    //   return res.status(401).send({ error: "File format not supported!" });
+    // }
 
-    if (
-      fileData?.mimetype != "image/png" &&
-      fileData?.mimetype != "image/jpg" &&
-      fileData?.mimetype != "image/jpeg"
-    ) {
-      return res.status(401).send({ error: "File format not supported!" });
-    }
+    // const uploadDir = path.resolve(
+    //   "/app/uploads/"
+    // );
 
-
+    // const fileName = Date.now().toString() + "." + fileData?.mimetype.split('/')[1];
+    // const filePath = path.join(uploadDir, fileName);
     
-    const uploadDir = path.resolve(
-      "/goinfre/maglagal/ft_transcendence/frontend/public/"
-    );
-
-    const filePath = path.join(uploadDir, fileData!.filename);
-
-    await pump(fileData!.file, fs.createWriteStream(filePath));
-
-    const user = app.db
-      .prepare("SELECT * FROM players WHERE id = ?")
-      .get(payload.id) as User | null;
-    if (!user) return res.status(404).send({ error: "USER NOT FOUND" });
-
-    app.db
-      .prepare("UPDATE players SET avatar = ? WHERE id = ?")
-      .run(fileData?.filename, payload.id);
+    // await pump(fileData!.file, fs.createWriteStream(filePath));
 
     return res
       .status(200)
-      .send({ message: "files uploaded", file: fileData?.filename });
+      .send({ message: "files uploaded", file: fileName });
   } catch (error) {
+    console.log(error);
     res.status(500).send({ error: error });
   }
 };
@@ -266,7 +255,7 @@ export const getUserInfo = async ( req: FastifyRequest<{ Params: { id: string } 
 
     const user = app.db
       .prepare("SELECT * FROM players WHERE id = ?")
-      .get(id) as User | null;
+      .get(id) as UserInfos | null;
     if (!user) return res.status(404).send({ error: "USER NOT FOUND" });
 
     res.status(200).send({ infos: user });

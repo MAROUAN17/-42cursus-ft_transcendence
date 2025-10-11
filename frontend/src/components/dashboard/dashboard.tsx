@@ -15,20 +15,22 @@ import { useUserContext } from "../contexts/userContext";
 import LogCard from "./logCard";
 import type { Tournament } from "../../types/tournament";
 import type { UsersLastMessage } from "../../types/chat";
-import type { messagePacket, websocketPacket } from "../../types/websocket";
+import type { LogPacket, messagePacket, websocketPacket } from "../../types/websocket";
 import type { Leader } from "../../types/leader";
 import type { ChartData } from "../../types/profile";
+import { v4 as uuidv4 } from "uuid";
 
 export default function Dashboard() {
   // const [chartData, setChartData] = useState(tmpData);
 
-  const { addHandler } = useWebSocket();
+  const { send, addHandler } = useWebSocket();
   const navigate = useNavigate();
   const { user } = useUserContext();
   const [show, setShow] = useState<boolean>(false);
   const [friendOpt, setFriendOpt] = useState<number>(0);
   const [gamesPlayed, setGamesPlayed] = useState<number>(0);
   const [tournaments, setTournaments] = useState<Tournament[]>([]);
+  const [logNotif, setLogNotif] = useState<LogPacket[]>([]);
   const [leaders, setLeaders] = useState<Leader[]>([]);
   const [last7daysGames, setLast7daysGames] = useState<gameChart[]>([]);
   const [data, setData] = useState<ChartData[]>([]);
@@ -97,6 +99,23 @@ export default function Dashboard() {
   // console.log("showFriends -> ", showFriends);
   // console.log("friends -> ", friends);
 
+  function sendLogNotif() {
+    const packet: LogPacket = {
+      type: "logNotif",
+      data: {
+        id: uuidv4(),
+        is_removed: false,
+        winner: "user1",
+        game_type: "tournament",
+        score: 100,
+        avatar: "/profile1.jpg",
+        tournament_name: "1337",
+        timestamps: "2025-10-09 09:11:55",
+      },
+    };
+    send(JSON.stringify(packet));
+  }
+
   function handleChat(packet: websocketPacket) {
     if (packet.type != "chat") return;
     const newMsg: messagePacket = packet.data;
@@ -157,10 +176,72 @@ export default function Dashboard() {
   }, []);
 
   useEffect(() => {
+    const packet: LogPacket = {
+      type: "logNotif",
+      data: {
+        id: uuidv4(),
+        is_removed: false,
+        winner: "user1",
+        game_type: "tournament",
+        score: 100,
+        avatar: "/profile1.jpg",
+        tournament_name: "1337",
+        timestamps: "2025-10-09 09:11:55",
+      },
+    };
+    const packet2: LogPacket = {
+      type: "logNotif",
+      data: {
+        id: uuidv4(),
+        is_removed: false,
+        winner: "user1",
+        loser: "user2",
+        game_type: "1v1",
+        score: 100,
+        avatar: "/profile1.jpg",
+        timestamps: "2025-10-09 09:11:55",
+      },
+    };
+    setLogNotif([packet, packet2, packet, packet2]);
+    const addedHandler = addHandler("logNotif", handleLogNotif);
+    return addedHandler;
+  }, []);
+
+  function handleLogNotif(packet: websocketPacket) {
+    if (packet.type != "logNotif") return;
+    packet.data.is_new = true;
+    setLogNotif((prev) =>
+      prev.map((log, index) => (prev.length >= 6 && index == prev.length - 1 ? { ...log, data: { ...log.data, is_removed: true } } : log))
+    );
+    setTimeout(() => {
+      setLogNotif((prev) => prev.map((log) => ({ ...log, data: { ...log.data, is_new: false } })));
+    }, 1000);
+    setTimeout(() => {
+      setLogNotif((prev) => prev.filter((log, index) => (prev.length >= 6 ? index != prev.length - 1 : true)));
+      setLogNotif((prev) => [packet, ...prev]);
+    }, 1000);
+  }
+
+  useEffect(() => {
     if (!user) return;
 
     api("/states/player-rooms/" + user?.id, { withCredentials: true }).then(function (res) {
       setGamesPlayed(res.data.rooms.length);
+    });
+
+    api("/states/player-week-activity/" + user?.id, {
+      withCredentials: true,
+    }).then(function (res) {
+      setLast7daysGames(res.data.last7Days);
+
+      const tmpData: ChartData[] = Array(7)
+        .fill(null)
+        .map((_, i) => ({
+          uv: res.data.last7Days[i]?.matches,
+          pv: res.data.last7Days[i]?.day,
+        }));
+
+      setData(tmpData);
     });
   }, [user]);
 
@@ -214,7 +295,10 @@ export default function Dashboard() {
                 <h2 className="text-white font-bold text-[100px] h-fit">{gamesPlayed}</h2>
                 <p className="text-white font-extralight text-[40px] mt-[-35px]">Games Played</p>
               </div>
-              <button className="p-3 border-2 border-neon px-8 flex items-center rounded-full gap-2 w-fit">
+              <button
+                onClick={() => navigate("/profile")}
+                className="p-3 border-2 border-neon px-8 flex items-center rounded-full gap-2 w-fit transition-all duration-300 hover:scale-105"
+              >
                 <p className="text-white font-bold">HISTORY</p>
                 <div className=" bg-neon rounded-full">
                   <GrFormNextLink className="text-white w-7 h-7" />
@@ -241,27 +325,27 @@ export default function Dashboard() {
         </div>
         <div className="flex w-full h-3/5 mt-5 gap-10">
           <div className="flex basis-3/5 h-fit">
-            <div className="h-full">
+            <div className="h-full w-full">
               <div className="text-white flex justify-between items-center">
-                <h3 className="font-bold text-[35px]">Tournaments</h3>
+                <h3 className="font-bold text-[35px]" onClick={sendLogNotif}>
+                  Tournaments
+                </h3>
                 <div className="flex items-center gap-1" onClick={() => navigate("/tournaments")}>
                   <h4>View All</h4>
                   <GrFormNextLink />
                 </div>
               </div>
-              <div className="flex  gap-2">
+              <div className="flex w-full gap-2">
                 <div className="flex w-2/5 flex-wrap justify-between h-full">
                   {tournaments?.slice(0, 4).map((tournament) => (
                     <TournamentCard tournament={tournament} />
                   ))}
                 </div>
-                <div className="flex flex-col gap-5 w-3/5 p-2 pl-5">
-                  <LogCard />
-                  <LogCard />
-                  <LogCard />
-                  <LogCard />
-                  <LogCard />
-                </div>
+                <ul className="flex flex-col gap-[20px] overflow-hidden w-3/5 pl-5 ">
+                  {logNotif.map((log: LogPacket) => (
+                    <LogCard log={log} />
+                  ))}
+                </ul>
               </div>
             </div>
           </div>
@@ -287,15 +371,13 @@ export default function Dashboard() {
         logout
       </button> */}
       </div>
-      <div className="h-full flex flex-col w-[70px]">
-        <div className={`bg-compBg flex w-full flex-col rounded-[30px] min-h-[43.4%] mt-5 items-center gap-6 py-5`}>
+      <div className="h-full flex flex-col max-w-[70px]">
+        <div className={`bg-compBg flex flex-col rounded-[30px] min-h-[43.4%] mt-5 items-center gap-6 p-5`}>
           <MdGroups className="w-[27px] h-auto text-white mb-1" />
-          <div
-            ref={friendOptRef}
-            className={`flex w-full items-center scrollbar-thin scrollbar-w-5 scrollbar-thumb-neon/80 scrollbar-track-white/10 overflow-y-auto overflow-x-hidden h-full flex-col gap-6 transition-all duration-700 ease-in-out`}
-          >
+          <div ref={friendOptRef} className={`flex flex-col gap-6 transition-all duration-700 ease-in-out`}>
             {friends
               .filter((friend) => friend.user.username != "Deleted User")
+              .slice(0, 7)
               .map((friend) => (
                 <FriendBubble
                   friendOpt={friendOpt}
@@ -309,11 +391,9 @@ export default function Dashboard() {
               ))}
           </div>
         </div>
-        <div className={`bg-compBg flex flex-col w-full rounded-[30px] h-full my-7 items-center gap-6 py-5`}>
+        <div className={`bg-compBg flex flex-col rounded-[30px] h-full my-7 items-center gap-6 p-5`}>
           <IoChatbubblesSharp className="w-[27px] h-auto text-white mb-2" />
-          <div
-            className={`flex w-full flex-col items-center scrollbar-thin scrollbar-w-5 scrollbar-thumb-neon/80 scrollbar-track-white/10 overflow-y-auto overflow-x-hidden gap-6 transition-all duration-700 ease-in-out`}
-          >
+          <div className={`flex flex-col gap-6 transition-all duration-700 ease-in-out`}>
             {friendsMessages
               .filter((friend) => friend.user.username != "Deleted User" && friend.unreadCount > 0)
               .slice(0, 8)

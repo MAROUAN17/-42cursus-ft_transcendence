@@ -21,6 +21,7 @@ import {
   verify2FAToken,
   setup2FA,
   verifySetup2FA,
+  deleteSetup2FA
 } from "../services/2fa.service.js";
 import { checkAuth } from "../services/checkAuth.service.js";
 import {
@@ -70,8 +71,9 @@ export const authRoutes: FastifyPluginAsync = async () => {
   app.get("/profile/:username", { onRequest: [app.jwtAuth] }, fetchProfileUser);
 
   //2fa
-  app.post("/2fa/setup", setup2FA);
-  app.post("/2fa/setup/verify", verifySetup2FA);
+  app.get("/2fa/setup", { onRequest: [app.jwtAuth] }, setup2FA);
+  app.get("/2fa/delete", { onRequest: [app.jwtAuth] }, deleteSetup2FA);
+  app.post("/2fa/setup/verify", { onRequest: [app.jwtAuth] }, verifySetup2FA);
   app.post("/2fa/verify-token", verify2FAToken);
 
   //remote auth with intra42
