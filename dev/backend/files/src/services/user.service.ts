@@ -235,9 +235,9 @@ export const uploadUserInfos = async (
       "/app/uploads/"
     );
 
-    const filePath = path.join(uploadDir, fileData!.filename);
-
-    console.log(fileData!.file);
+    const fileName = Date.now().toString() + "." + fileData?.mimetype.split('/')[1];
+    const filePath = path.join(uploadDir, fileName);
+    
     await pump(fileData!.file, fs.createWriteStream(filePath));
 
     const user = app.db
@@ -247,11 +247,11 @@ export const uploadUserInfos = async (
 
     app.db
       .prepare("UPDATE players SET avatar = ? WHERE id = ?")
-      .run(fileData?.filename, payload.id);
+      .run(fileName, payload.id);
 
     return res
       .status(200)
-      .send({ message: "files uploaded", file: fileData?.filename });
+      .send({ message: "files uploaded", file: fileName });
   } catch (error) {
     console.log(error);
     res.status(500).send({ error: error });

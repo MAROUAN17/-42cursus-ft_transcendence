@@ -142,7 +142,6 @@ export default function Profile() {
     e.preventDefault();
 
     const formData = new FormData();
-
     setCurrAvatar(e.target.value);
     // formData.append("username", currUsername);
     // formData.append("email", currEmail);
@@ -150,6 +149,7 @@ export default function Profile() {
 
     api.post("/upload", formData, { withCredentials: true }).then(function (res) {
       setCurrAvatar(res.data.file);
+      console.log(res.data.file);
     });
   }
 
@@ -166,6 +166,8 @@ export default function Profile() {
         { withCredentials: true }
       )
       .then(function () {
+        setCurrUsername(currUsername);
+        setCurrEmail(currEmail);
         setSettingsPopup(false);
         toast("Your data changed successfully", {
           closeButton: false,
@@ -173,9 +175,10 @@ export default function Profile() {
         });
         if (!twoFAVerified) setSetup2FA(twoFACheckRef.current!.checked);
         else if (twoFAVerified && !twoFACheckRef.current!.checked) {
-          api("/2fa/delete", { withCredentials: true });
+          api("/2fa/delete", { withCredentials: true }).then(function () {
+            setTwoFAVerified(false);
+          });
         }
-        fetchUserData();
       })
       .catch(function (err) {
         if (err.response.data.error.includes("Username")) {
@@ -234,7 +237,7 @@ export default function Profile() {
     return () => {
       setSettingsPopup(false);
     };
-  }, [twoFAVerified]);
+  }, []);
 
   async function downloadData(e: React.ChangeEvent<HTMLInputElement>) {
     e.preventDefault();
@@ -264,12 +267,11 @@ export default function Profile() {
             <div className="h-[50px] items-center w-full flex justify-end">
               <IoMdClose
                 onClick={() => {
-                  console.log("2fa verified -> ", twoFAVerified);
                   setSettingsPopup(false);
                   setUsernameErrorFlag(false);
                   setUsernameErrorMssg("");
-                  setCurrEmail(currUser?.email);
-                  setCurrUsername(currUser?.username);
+                  // setCurrEmail(currUser?.email);
+                  // setCurrUsername(currUser?.username);
                 }}
                 color="white"
                 className="w-[30px] h-[30px] hover:scale-110"
@@ -440,7 +442,7 @@ export default function Profile() {
               <img className="rounded-full w-[90px] h-[90px] object-cover" src={currAvatar} alt="" />
             </div>
             <div>
-              <h1 className="text-white text-2xl font-bold">{currUser.username}</h1>
+              <h1 className="text-white text-2xl font-bold">{currUsername}</h1>
             </div>
             <div>
               {profileStatus == "me" ? (
@@ -547,7 +549,7 @@ export default function Profile() {
               </div>
               <div>
                 <h1 className="text-neon font-bold">Email</h1>
-                <h1 className="text-white font-bold">{currUser.email}</h1>
+                <h1 className="text-white font-bold">{currEmail}</h1>
               </div>
             </div>
             <div className="flex space-x-5 items-center">
