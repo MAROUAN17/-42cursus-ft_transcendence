@@ -1,0 +1,72 @@
+services:
+  frontend:
+    image: frontend
+    container_name: frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend/files:/app
+      - /app/node_modules
+      - uploads:/app/public
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    depends_on:
+      - backend
+      - nginx
+
+  sqlite:
+    image: sqlite
+    container_name: sqlite
+    build: ./sqlite/
+    ports:
+      - "8191:8191"
+    volumes:
+      - sqlite-db:/db
+      # - ~/goinfre/db_data:/db
+
+  nginx:
+    container_name: nginx
+    build: nginx/.
+    ports:
+      - "5000:5000"
+    restart: always
+    depends_on:
+      - backend
+  vault:
+    container_name: vault
+    build: vault/.
+    ports:
+      - "8200:8200"
+    cap_add:
+      - IPC_LOCK
+    volumes:
+      - vault-token:/vault/shared/
+    env_file:
+      - ./backend/files/.env
+    healthcheck:
+      test: ["CMD", "test", "-f", "/vault/shared/token.txt"]
+      interval: 5s
+      timeout: 2s
+      retries: 20
+    restart: always
+  backend:
+    container_name: backend
+    build: backend/.
+    volumes:
+      - ./backend/files:/app
+      - vault-token:/app/vault
+      - /app/node_modules
+      - sqlite-db:/app/db
+      - uploads:/app/uploads
+    restart: always
+    depends_on:
+      vault:
+        condition: service_healthy
+
+volumes:
+  vault-token:
+  sqlite-db:
+  uploads:
