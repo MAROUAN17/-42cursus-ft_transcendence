@@ -179,7 +179,7 @@ export const checkUser2faStatus = async (req: FastifyRequest, res: FastifyReply)
   }
 };
 
-export const uploadUserInfos = async (req: FastifyRequest, res: FastifyReply) => {
+export const uploadProfilePicture = async (req: FastifyRequest, res: FastifyReply) => {
   try {
     const accessToken = req.cookies.accessToken;
     const payload = app.jwt.jwt1.decode(accessToken) as Payload;
@@ -209,10 +209,9 @@ export const uploadUserInfos = async (req: FastifyRequest, res: FastifyReply) =>
 
     app.db.prepare("UPDATE players SET avatar = ? WHERE id = ?").run(fileName, payload?.id);
 
-    return res.status(200).send({ message: "files uploaded", file: fileName });
-  } catch (error) {
-    console.log(error);
-    res.status(500).send({ error: error });
+    return res.status(200).send({ message: "files uploaded", avatar: fileName });
+  } catch (err) {
+    return res.status(500).send({ error: 'Picture upload failed' });
   }
 };
 

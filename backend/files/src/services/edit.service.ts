@@ -1,10 +1,7 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
-import type { MultipartFile } from "@fastify/multipart";
 import app from "../server.js";
 import type { LoginBody, UserInfos } from "../models/user.model.js";
-import { pump } from "../server.js";
-import fs, { access } from "fs";
-import path from "path";
+import type { Payload } from "../models/chat.js";
 
 export const editUserInfos = async (req: FastifyRequest<{ Body: LoginBody }>, res: FastifyReply) => {
   try {
@@ -28,28 +25,6 @@ export const editUserInfos = async (req: FastifyRequest<{ Body: LoginBody }>, re
 
     user = app.db.prepare("SELECT * FROM players WHERE id = ?").get(payload?.id);
     if (!user) return res.status(404).send({ error: "USER NOT FOUND" });
-
-    // const oldAvatar = user?.avatar;
-
-    // //file upload
-    // if (avatar!.mimetype != "image/png" && avatar!.mimetype != "image/jpg" && avatar!.mimetype != "image/jpeg") {
-    //   return res.status(401).send({ error: "File format not supported!" });
-    // }
-
-    // const uploadDir = path.resolve("/app/uploads/");
-
-    // const fileName = Date.now().toString() + "." + avatar!.mimetype.split("/")[1];
-    // const filePath = path.join(uploadDir, fileName);
-
-    // await pump(avatar!.file, fs.createWriteStream(filePath));
-
-    // fs.unlink("/app/uploads/" + oldAvatar, (err) => {
-    //   if (err) {
-    //     console.log(err);
-    //   }
-    // });
-
-    // app.db.prepare("UPDATE players SET avatar = ? WHERE id = ?").run(fileName, id);
 
     //check if username user exists
     user = app.db.prepare("SELECT * from players WHERE username = ? AND id <> ?").get(username, payload?.id) as UserInfos | undefined;

@@ -14,7 +14,7 @@ interface props {
   unreadCount: number;
 }
 
-function passedTime(createdAt: string) {
+export function passedTime(createdAt: string) {
   if (createdAt) {
     const date = new Date(createdAt + "Z");
     const msDiff: number = new Date().getTime() - date.getTime();

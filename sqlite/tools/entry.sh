@@ -23,7 +23,8 @@ sqlite3 "$DB_NAME" <<EOF
         friends JSON DEFAULT '[]',
         block_list JSON DEFAULT '[]',
         first_login BOOLEAN DEFAULT TRUE,
-        score INTEGER DEFAULT 0
+        score INTEGER DEFAULT 0,
+        createdAt TEXT DEFAULT (datetime('now'))
     );
     CREATE TABLE IF NOT EXISTS messages (
         id INTEGER PRIMARY KEY,

@@ -143,7 +143,7 @@ export default function App() {
       loader: checkFirstLoginLoader,
     },
     {
-      path: "/404",
+      path: "*",
       Component: notFound,
     },
   ]);

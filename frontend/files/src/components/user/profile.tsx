@@ -15,6 +15,8 @@ import { FiMessageCircle } from "react-icons/fi";
 import { MdOutlinePersonRemove } from "react-icons/md";
 import { FaHourglassHalf } from "react-icons/fa";
 import { IoMdClose } from "react-icons/io";
+import { LuUpload } from "react-icons/lu";
+import { IoMdAdd } from "react-icons/io";
 
 import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import HistoryCard from "./historyCard";
@@ -29,6 +31,8 @@ import type { ChartData, MatchHistory, UserHistory, UserStats } from "../../type
 import type { websocketPacket } from "../../types/websocket";
 import Setup2FA from "../user/setup2FA";
 import type { UserInfos } from "../../types/user";
+import { passedTime } from "../chat/UserBubble";
+import { IoGameControllerSharp } from "react-icons/io5";
 
 export default function Profile() {
   const navigate = useNavigate();
@@ -53,6 +57,7 @@ export default function Profile() {
   const [previewImg, setPreviewImg] = useState<string>("");
   const pictureInput = useRef<HTMLInputElement>(null);
   const [twoFAVerified, setTwoFAVerified] = useState<boolean>(false);
+  const [createdAt, setCreatedAt] = useState<string>("");
 
   const { user } = useUserContext();
   const [currUser, setCurrUser] = useState<UserInfos>({
@@ -125,6 +130,8 @@ export default function Profile() {
   function handleEmailChange(e: React.ChangeEvent<HTMLInputElement>) {
     e.preventDefault();
     setCurrEmail(e.target.value);
+    setEmailErrorFlag(false);
+    setEmailErrorMssg("");
   }
 
   function handleUsernameChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -146,14 +153,21 @@ export default function Profile() {
   async function editProfile(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
-    const formData = new FormData();
-    // formData.append("data", JSON.stringify({ id: currUser.id, username: currUsername, email: currEmail }));
-    formData.append("avatar", pictureInput.current!.files![0]);
-
-    api.post("/upload", formData, { withCredentials: true });
+    if (pictureInput.current?.files?.length) {
+      const formData = new FormData();
+      formData.append("avatar", pictureInput.current.files[0]);
+      api
+        .post("/edit-user/upload", formData, { withCredentials: true })
+        .then(function (res) {
+          console.log("EEE -> ", res.data.avatar);
+        })
+        .catch(function (err) {
+          console.log(err);
+        });
+    }
 
     api
-      .post("/edit-user", { username: currUsername, email: currEmail }, { withCredentials: true })
+      .post("/edit-user/infos", { username: currUsername, email: currEmail }, { withCredentials: true })
       .then(function () {
         setSettingsPopup(false);
         toast("Your data changed successfully", {
@@ -219,8 +233,9 @@ export default function Profile() {
         setCurrEmail(res.data.infos.email);
         setCurrUsername(res.data.infos.username);
         setCurrAvatar(res.data.infos.avatar);
-        setTwoFAVerified(res.data.twoFAVerify);
         setPreviewImg(res.data.infos.avatar);
+        setTwoFAVerified(res.data.twoFAVerify);
+        setCreatedAt(res.data.infos.createdAt);
       })
       .catch(function (err) {
         console.log(err);
@@ -270,8 +285,6 @@ export default function Profile() {
                   setUsernameErrorMssg("");
                   setCurrAvatar(currUser?.avatar);
                   setPreviewImg(currUser?.avatar);
-                  // setCurrEmail(currUser?.email);
-                  // setCurrUsername(currUser?.username);
                 }}
                 color="white"
                 className="w-[30px] h-[30px] hover:scale-110"
@@ -287,13 +300,16 @@ export default function Profile() {
                     <img className="rounded-full w-[150px] h-[150px] object-cover" src={previewImg} alt="avatar" />
                   </label>
                 </div>
-                <div className="absolute left-[480px] top-[170px] flex items-center justify-center flex-col space-y-3 rounded-full">
-                  <input id="customFile" className="hidden text-white" ref={pictureInput} onChange={handleImageUpload} type="file" />
+                <div className="absolute left-[480px] top-[240px] flex items-center justify-center flex-col space-y-3 rounded-full">
+                  <input id="customFile" type="file" className="hidden text-white" ref={pictureInput} onChange={handleImageUpload} />
+                  <label htmlFor="customFile">
+                    <LuUpload className="bg-neon text-white w-[45px] h-[45px] rounded-full p-2" />
+                  </label>
                 </div>
                 <div className="flex flex-col space-y-3 w-[505px]">
                   {usernameErrorFlag ? (
                     <div>
-                      <h1 className="text-red-700 font-bold">{usernameErrorMssg}</h1>
+                      <h1 className="text-red-600 font-bold">{usernameErrorMssg}</h1>
                     </div>
                   ) : null}
                   <label htmlFor="" className="text-white font-bold">
@@ -303,12 +319,15 @@ export default function Profile() {
                     value={currUsername}
                     onChange={handleUsernameChange}
                     type="text"
-                    className={`bg-transparent px-12 py-4 rounded-lg text-white ${
-                      usernameErrorFlag ? "border-b border-red-700" : "border border-white"
-                    }`}
+                    className={`bg-transparent px-12 py-4 rounded-lg text-white ${usernameErrorFlag ? "border-b border-red-600" : "border-b"}`}
                   />
                 </div>
                 <div className="flex flex-col space-y-3 w-[505px]">
+                  {emailErrorFlag ? (
+                    <div>
+                      <h1 className="text-red-600 font-bold">{emailErrorMssg}</h1>
+                    </div>
+                  ) : null}
                   <label htmlFor="" className="text-white font-bold">
                     Email
                   </label>
@@ -316,7 +335,7 @@ export default function Profile() {
                     value={currEmail}
                     onChange={handleEmailChange}
                     type="email"
-                    className="bg-transparent px-12 py-4 rounded-lg border border-white text-white"
+                    className={`bg-transparent px-12 py-4 rounded-lg text-white ${emailErrorFlag ? "border-b border-red-600" : "border-b"}`}
                   />
                 </div>
                 <div className="bg-neon/50 px-6 py-5 rounded-lg w-[505px] flex justify-between items-center">
@@ -542,22 +561,34 @@ export default function Profile() {
             </div>
           </div>
           <div className="flex flex-col space-y-5 justify-center">
-            <div className="flex space-x-5 items-center">
-              <div>
-                <MdEmail className="text-neon outline outline-3 outline-offset-8 rounded-full" size={25} />
+            {profileStatus === "me" ? (
+              <div className="flex space-x-5 items-center">
+                <div>
+                  <MdEmail className="text-neon outline outline-3 outline-offset-8 rounded-full" size={25} />
+                </div>
+                <div>
+                  <h1 className="text-neon font-bold">Email</h1>
+                  <h1 className="text-white font-bold">{currEmail}</h1>
+                </div>
               </div>
-              <div>
-                <h1 className="text-neon font-bold">Email</h1>
-                <h1 className="text-white font-bold">{currEmail}</h1>
+            ) : (
+              <div className="flex space-x-5 items-center">
+                <div>
+                  <IoGameControllerSharp className="text-neon outline outline-3 outline-offset-8 rounded-full" size={25} />
+                </div>
+                <div>
+                  <h1 className="text-neon font-bold">Last Game played</h1>
+                  <h1 className="text-white font-bold">{history?.rooms.length ? passedTime(history?.rooms[0].startedAt) + " ago" : "Not played yet"}</h1>
+                </div>
               </div>
-            </div>
+            )}
             <div className="flex space-x-5 items-center">
               <div>
                 <FaHistory className="text-neon outline outline-3 outline-offset-8 rounded-full" size={25} />
               </div>
               <div>
                 <h1 className="text-neon font-bold">Created</h1>
-                <h1 className="text-white font-bold">2 years ago</h1>
+                <h1 className="text-white font-bold">{passedTime(createdAt)} ago</h1>
               </div>
             </div>
           </div>
