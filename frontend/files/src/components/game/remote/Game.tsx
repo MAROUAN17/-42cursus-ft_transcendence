@@ -119,21 +119,15 @@ export default function RGame() {
   }, [gameInfo?.bounds.height]);
 
   useEffect(() => {
-    // console.log("RoundId :", gameInfo?.roundId);
-    // if (Number(id) == round?.player2)
-    // 		setLeftY(gameInfo?.paddleLeft.y || 0)
-    // else
-    // 	setRightY(gameInfo?.paddleRight.y || 0);
     if (websocket && websocket.readyState == WebSocket.OPEN) {
-      websocket.send(JSON.stringify({ type: "updateY", leftY, rightY, roundId: gameInfo?.roundId, gameId:game.id }));
+      websocket.send(JSON.stringify({ type: "updateY", leftY, rightY, roundId: gameInfo?.roundId, gameId:game.id, side:game.side}));
       console.log(`leftY ${leftY} rightY ${rightY}`);
     } else console.log("there is a proble in socket:", websocket);
   }, [leftY, rightY]);
 
-  //receiving game info
   useEffect(() => {
-    // if (!tournamentId) return;
-    // console.log('user -> ');
+    if (gameType == "tournament" && !tournamentId) return;
+    console.log('user -> ');
     const ws = new WebSocket("wss://localhost:5000/game");
     setWebsocket(ws);
     console.log("web socket ===== ", ws);
@@ -150,14 +144,10 @@ export default function RGame() {
           sessionStorage.setItem("roundNb", "2");
           if (tournamentId)
             navigate(`/bracket/${tournamentId}`);
-          // manageFinalRound(Number(message.winner));
-          // start_game(game);
           if (message.type == "updateY") 
               console.log("updateY");
         }
         setGameInfo(message.game_info);
-        // setLeftY(message.game_info.paddleLeft.y);
-        // setRightY(message.game_info.paddleRightt.y);
       } catch (err) {
         console.error("Invalid message from server:", event.data);
       }
@@ -190,17 +180,17 @@ export default function RGame() {
       >
         <RBat
           x={gameInfo?.paddleLeft.x ?? 24}
-          y={gameInfo?.paddleLeft.y ?? 0}
+          y={gameInfo?.paddleLeft.y ?? 120}
           side="left"
-          height={gameInfo?.paddleLeft.height ?? 0}
+          height={gameInfo?.paddleLeft.height ?? 120}
           containerTop={0}
           containerHeight={gameInfo?.bounds.height ?? 400}
         />
         <RBat
-          x={gameInfo?.paddleLeft.x ?? 600 - 24 - 18}
-          y={gameInfo?.paddleRight.y ?? 0}
+          x={gameInfo?.paddleLeft.x ?? 24}
+          y={gameInfo?.paddleRight.y ?? 120}
           side="right"
-          height={gameInfo?.paddleRight.height ?? 0}
+          height={gameInfo?.paddleRight.height ?? 120}
           containerTop={0}
           containerHeight={gameInfo?.bounds.height ?? 400}
         />
@@ -208,7 +198,7 @@ export default function RGame() {
         <RBall
           dir={dir}
           setDir={setDir}
-          ball={gameInfo?.ball ?? { x: 0, y: 0 }}
+          ball={gameInfo?.ball ?? { x: 300, y: 180 }}
           paddleLeft={gameInfo?.paddleLeft ?? paddleLeft}
           paddleRight={gameInfo?.paddleRight ?? paddleRight}
           bounds={gameInfo?.bounds ?? { width: 600, height: 400 }}

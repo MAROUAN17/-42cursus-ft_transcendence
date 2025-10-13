@@ -206,8 +206,10 @@ export function handleGameConnection(connection: any, req: any) {
         if (!room)
           console.log("room not found");
         else {
-          room.gameInfo.paddleLeft.y = msg.leftY;
-          room.gameInfo.paddleRight.y = msg.rightY;
+          if (msg.side == "left")
+            room.gameInfo.paddleLeft.y = msg.leftY;
+          if (msg.side == "right")
+            room.gameInfo.paddleRight.y = msg.rightY;
           console.log("Broadcasting to room:", room.gameId, "Players:", room.player1, room.player2);
           
           broadcastToRoom(room, { type: "updateY", game_info: room.gameInfo });

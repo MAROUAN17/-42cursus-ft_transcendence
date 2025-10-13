@@ -2,6 +2,7 @@ import type { FastifyReply, FastifyRequest } from "fastify";
 import { v4 as uuidv4 } from 'uuid';
 import { DefaultGame, type GameInfo } from "../models/game.js";
 import type {Player, Game} from "../models/game.js"
+import app from "../server.js";
 const waitingPlayers: Player[] = [];
 export const activeGames: Game[] = [];
 
@@ -144,6 +145,12 @@ export const get_player_game = async (req: FastifyRequest, res: FastifyReply) =>
     const side = game.player1.id === playerId ? "left" : "right";
     const opponent = playerRole === game.player1 ? game.player2 : game.player1;
     
+    const avatar1 = app.db.prepare("SELECT avatar from players WHERE id = ? ")
+      .get (game.player1.id);
+    const avatar2 = app.db.prepare("SELECT avatar from players WHERE id = ? ")
+      .get (game.player2.id);
+    game.player1.avatar = avatar1.avatar;
+    game.player2.avatar = avatar2.avatar;
     res.status(200).send({ 
       game: {
         id: game.id,
@@ -151,7 +158,7 @@ export const get_player_game = async (req: FastifyRequest, res: FastifyReply) =>
         you: playerRole,
         side:side,
         gameInfo: game.gameInfo,
-        status: game.status
+        status: game.status,
       }
     });
   } catch (err) {
