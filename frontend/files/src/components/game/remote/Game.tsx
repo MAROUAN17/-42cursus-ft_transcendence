@@ -3,9 +3,8 @@ import RBall from "./RBall";
 import RBat from "./Bat";
 import RHeader from "./RHeader";
 import { type GameInfo, type Game, type Round } from "./Types";
-import { useWebSocket } from "../../contexts/websocketContext";
-import type { ProfileUserInfo } from "../../../types/user";
 import { useNavigate } from "react-router";
+import { useUserContext } from "../../contexts/userContext";
 
 export default function RGame() {
   //   const [i, setI] = useState(0);
@@ -36,7 +35,9 @@ export default function RGame() {
     let interval: NodeJS.Timeout;
 
     interval = setInterval(() => {
+      // console.log("ddddd");
       if (websocket && websocket.readyState === WebSocket.OPEN) {
+        console.log("eeeee");
         websocket.send(
           JSON.stringify({
             type: gameType,
@@ -58,7 +59,7 @@ export default function RGame() {
   useEffect(() => {
     var storedGame = null;
     //for testing round
-    sessionStorage.removeItem("currentGame");
+    // sessionStorage.removeItem("currentGame");
     if (sessionStorage.getItem("currentGame")) {
       storedGame = sessionStorage.getItem("currentGame");
       setGameType("casual");
@@ -124,16 +125,16 @@ export default function RGame() {
     // else
     // 	setRightY(gameInfo?.paddleRight.y || 0);
     if (websocket && websocket.readyState == WebSocket.OPEN) {
-      websocket.send(JSON.stringify({ type: "updateY", leftY, rightY, roundId: gameInfo?.roundId }));
-      //console.log("message sent [DIR]: ", type);
+      websocket.send(JSON.stringify({ type: "updateY", leftY, rightY, roundId: gameInfo?.roundId, gameId:game.id }));
+      console.log(`leftY ${leftY} rightY ${rightY}`);
     } else console.log("there is a proble in socket:", websocket);
   }, [leftY, rightY]);
 
   //receiving game info
   useEffect(() => {
-    if (!tournamentId) return;
-    // console.log('user -> ', user);
-    const ws = new WebSocket("wss://localhost:4000/game");
+    // if (!tournamentId) return;
+    // console.log('user -> ');
+    const ws = new WebSocket("wss://localhost:5000/game");
     setWebsocket(ws);
     console.log("web socket ===== ", ws);
     ws.onopen = () => {
@@ -144,14 +145,19 @@ export default function RGame() {
         const message = JSON.parse(event.data);
         if (message.type === "end") {
           console.log("--- game eneded");
-          sessionStorage.removeItem("currentGame");
+          // sessionStorage.removeItem("currentGame");
           // sessionStorage.removeItem('currentRound');
           sessionStorage.setItem("roundNb", "2");
-          navigate(`/bracket/${tournamentId}`);
+          if (tournamentId)
+            navigate(`/bracket/${tournamentId}`);
           // manageFinalRound(Number(message.winner));
           // start_game(game);
+          if (message.type == "updateY") 
+              console.log("updateY");
         }
         setGameInfo(message.game_info);
+        // setLeftY(message.game_info.paddleLeft.y);
+        // setRightY(message.game_info.paddleRightt.y);
       } catch (err) {
         console.error("Invalid message from server:", event.data);
       }

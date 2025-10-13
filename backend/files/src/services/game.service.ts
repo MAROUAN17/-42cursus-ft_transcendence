@@ -6,6 +6,7 @@ import app from "../server.js";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import type { Round } from "../generated/prisma/index.js";
 import { v4 as uuidv4 } from 'uuid';
+import { get_rounds } from "./tournament.service.js";
 
 const rooms:Room[] = [];
 // const rounds:Round[] = [];
@@ -149,13 +150,13 @@ function gameLoop (room:Room)
         clearInterval(room.intervalId);
         room.intervalId = undefined;
       }
-      if (room.type != "tournament"){
-        const index = rooms.findIndex(r => r.gameId === room.gameId);
-        if (index !== -1) {
-          rooms.splice(index, 1);
-          console.log(`Room ${room.gameId} removed from rooms list.`);
-        }
-      }
+      // if (room.type != "tournament"){
+      //   const index = rooms.findIndex(r => r.gameId === room.gameId);
+      //   if (index !== -1) {
+      //     rooms.splice(index, 1);
+      //     console.log(`Room ${room.gameId} removed from rooms list.`);
+      //   }
+      // }
       
     }
     broadcastToRoom(room, { type: "update", game_info: room.gameInfo });
@@ -200,36 +201,42 @@ export function handleGameConnection(connection: any, req: any) {
       }
 
       if (msg.type === "updateY") {
-        // console.log("--- entred")
+        console.log("--- entred", rooms)
         const room = getRoom(msg.gameId, msg.roundId);
         if (!room)
-            console.log("room not found");
-        room.gameInfo.paddleLeft.y = msg.leftY;
-        room.gameInfo.paddleRight.y = msg.rightY;
+          console.log("room not found");
+        else {
+          room.gameInfo.paddleLeft.y = msg.leftY;
+          room.gameInfo.paddleRight.y = msg.rightY;
+          console.log("Broadcasting to room:", room.gameId, "Players:", room.player1, room.player2);
+          
+          broadcastToRoom(room, { type: "updateY", game_info: room.gameInfo });
+        }
         
-        // console.log("Broadcasting to room:", room.gameId, "Players:", room.player1, room.player2);
-        
-        broadcastToRoom(room, { type: "update", game_info: room.gameInfo });
       }
     } catch (err) {
       console.error("Invalid packet:", err);
     }
   });
-
+  
   connection.on("close", () => {
     console.log("Client disconnected ->", userId);
     if (userId) clients.delete(userId);
   });
-
+}
+function get_game(gameId:string):Room | undefined{
+  const game = rooms.find(r => r.gameId === gameId);
+  return game;
 }
 function getRoom(gameId: string, roundId:number): Room {
   let room = rooms.find(r => r.roundId === roundId);
   if (!room)
     room = rooms.find(r => r.gameId === gameId);
+  const id = gameId ? gameId : uuidv4();
   if (!room) {
     room = {
       roundId:roundId, 
-      gameId: uuidv4(), 
+      gameId: id, 
       ready: false, 
       gameInfo: set_random_Info(structuredClone(DefaultGame)) 
     };
@@ -251,10 +258,10 @@ function addPlayerToRoom(gameId: string, playerId: string) {
     room.ready = true;
     room.winner = undefined;
     room.startedAt = new Date();
-    console.log(`-- Room ${gameId} ready! Players: ${room.player1}, ${room.player2} at time ${room.startedAt}`);
+    console.log(`-- Room ${room.gameId} ready! Players: ${room.player1}, ${room.player2} `);
     startGame(room);
   } else {
-    console.log(`-- Waiting for another player in room gameId: ${gameId} tourId: ${tournamentId}`);
+    console.log(`-- Waiting for another player in room gameId: ${gameId}`);
   }
 }
 
@@ -277,7 +284,7 @@ function addPlayerToRound(tournamentId: number, playerId: string, rn: number) {
   console.log("UserId:", playerId);
   console.log("Round found:", lastRound);
 
-  const room = getRoom("", lastRound.id);
+  const room = getRoom("", lastRound.id, 0);
   room.tournamentId = tournamentId;
 
   if (playerId != lastRound.player1 && playerId != lastRound.player2) {
