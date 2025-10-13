@@ -9,19 +9,10 @@ import path from "path";
 export const editUserInfos = async (req: FastifyRequest<{ Body: LoginBody }>, res: FastifyReply) => {
   try {
     let user = {} as UserInfos | undefined;
+    const accessToken = req.cookies.accessToken;
+    const payload = app.jwt.jwt1.decode(accessToken) as Payload;
 
-    let data, avatar: MultipartFile;
-    for await (const part of req.parts()) {
-      if ((part as any).fieldname === "data") {
-        data = JSON.parse((part as any).value);
-      } else if ((part as MultipartFile).fieldname === "avatar") {
-        avatar = part as MultipartFile;
-      }
-    }
-
-    let { id, username, email } = data;
-
-    if (!id) return;
+    let { username, email } = req.body;
 
     const usernamePattern = new RegExp("^[a-zA-Z0-9]+$");
     if (username.length < 3 || username.length > 16) {
@@ -35,39 +26,40 @@ export const editUserInfos = async (req: FastifyRequest<{ Body: LoginBody }>, re
     email = email.toLowerCase();
     username = username.toLowerCase();
 
-    user = app.db.prepare("SELECT * FROM players WHERE id = ?").get(id);
+    user = app.db.prepare("SELECT * FROM players WHERE id = ?").get(payload?.id);
     if (!user) return res.status(404).send({ error: "USER NOT FOUND" });
-    const oldAvatar = user?.avatar;
 
-    //file upload
-    if (avatar!.mimetype != "image/png" && avatar!.mimetype != "image/jpg" && avatar!.mimetype != "image/jpeg") {
-      return res.status(401).send({ error: "File format not supported!" });
-    }
+    // const oldAvatar = user?.avatar;
 
-    const uploadDir = path.resolve("/app/uploads/");
+    // //file upload
+    // if (avatar!.mimetype != "image/png" && avatar!.mimetype != "image/jpg" && avatar!.mimetype != "image/jpeg") {
+    //   return res.status(401).send({ error: "File format not supported!" });
+    // }
 
-    const fileName = Date.now().toString() + "." + avatar!.mimetype.split("/")[1];
-    const filePath = path.join(uploadDir, fileName);
+    // const uploadDir = path.resolve("/app/uploads/");
 
-    await pump(avatar!.file, fs.createWriteStream(filePath));
+    // const fileName = Date.now().toString() + "." + avatar!.mimetype.split("/")[1];
+    // const filePath = path.join(uploadDir, fileName);
 
-    fs.unlink('/app/uploads/' + oldAvatar, (err) => {
-      if (err) {
-        console.log(err);
-      }
-    });
+    // await pump(avatar!.file, fs.createWriteStream(filePath));
 
-    app.db.prepare("UPDATE players SET avatar = ? WHERE id = ?").run(fileName, id);
+    // fs.unlink("/app/uploads/" + oldAvatar, (err) => {
+    //   if (err) {
+    //     console.log(err);
+    //   }
+    // });
+
+    // app.db.prepare("UPDATE players SET avatar = ? WHERE id = ?").run(fileName, id);
 
     //check if username user exists
-    user = app.db.prepare("SELECT * from players WHERE username = ? AND id <> ?").get(username, id) as UserInfos | undefined;
-    if (user) return res.status(401).send({ error: "Username already exists" });
+    user = app.db.prepare("SELECT * from players WHERE username = ? AND id <> ?").get(username, payload?.id) as UserInfos | undefined;
+    if (user) return res.status(401).send({ error: "Username already exist" });
 
     //check if user email already exists
-    user = app.db.prepare("SELECT * from players WHERE email = ? AND id <> ?").get(email, id) as UserInfos | undefined;
-    if (user) return res.status(401).send({ error: "Email already exist!" });
+    user = app.db.prepare("SELECT * from players WHERE email = ? AND id <> ?").get(email, payload?.id) as UserInfos | undefined;
+    if (user) return res.status(401).send({ error: "Email already exist" });
 
-    const updatedUser = app.db.prepare("UPDATE players SET email = ?, username = ? WHERE id = ?").run(email, username, id);
+    const updatedUser = app.db.prepare("UPDATE players SET email = ?, username = ? WHERE id = ?").run(email, username, payload?.id);
 
     if (updatedUser.changes == 0) return res.status(401).send({ error: "NO UPDATES" });
   } catch (error) {

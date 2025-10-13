@@ -137,35 +137,23 @@ export default function Profile() {
   function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
     e.preventDefault();
 
-    // const formData = new FormData();
-    // formData.append("username", currUsername);
-    // formData.append("email", currEmail);
     if (!e.target.files || e.target.files.length === 0) return;
 
     const fileData = e.target.files[0];
-    if (fileData) {
-      setPreviewImg(URL.createObjectURL(fileData));
-      console.log(URL.createObjectURL(fileData));
-
-      // formData.append("avatar", pictureInput.current!.files![0]);
-      // console.log(pictureInput.current!.files![0]);
-
-      // api.post("/upload", formData, { withCredentials: true }).then(function (res) {
-      //   setCurrAvatar(res.data.file);
-      //   console.log(res.data.file);
-      // });
-    }
+    if (fileData) setPreviewImg(URL.createObjectURL(fileData));
   }
 
   async function editProfile(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
     const formData = new FormData();
-    formData.append("data", JSON.stringify({ id: currUser.id, username: currUsername, email: currEmail }));
+    // formData.append("data", JSON.stringify({ id: currUser.id, username: currUsername, email: currEmail }));
     formData.append("avatar", pictureInput.current!.files![0]);
 
+    api.post("/upload", formData, { withCredentials: true });
+
     api
-      .post("/edit-user", formData, { withCredentials: true })
+      .post("/edit-user", { username: currUsername, email: currEmail }, { withCredentials: true })
       .then(function () {
         setSettingsPopup(false);
         toast("Your data changed successfully", {

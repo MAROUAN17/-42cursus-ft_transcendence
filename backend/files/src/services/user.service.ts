@@ -13,15 +13,11 @@ export const fetchUser = async (req: FastifyRequest, res: FastifyReply) => {
 
     const infos = app.jwt.jwt1.decode(accessToken!) as Payload | null;
 
-    const user = app.db
-      .prepare("SELECT * FROM players WHERE id = ?")
-      .get(infos?.id);
+    const user = app.db.prepare("SELECT * FROM players WHERE id = ?").get(infos?.id);
     if (!user) return;
 
     if (!user.avatar) {
-      app.db
-        .prepare("UPDATE players SET avatar = ? WHERE id = ?")
-        .run("/profile1.jpg", infos?.id);
+      app.db.prepare("UPDATE players SET avatar = ? WHERE id = ?").run("/profile1.jpg", infos?.id);
     }
 
     res.status(200).send({ infos: user });
@@ -30,36 +26,27 @@ export const fetchUser = async (req: FastifyRequest, res: FastifyReply) => {
   }
 };
 
-export const fetchProfileUser = async (
-  req: FastifyRequest<{ Params: { username?: string } }>,
-  res: FastifyReply
-) => {
+export const fetchProfileUser = async (req: FastifyRequest<{ Params: { username?: string } }>, res: FastifyReply) => {
   try {
     const { username } = req.params;
 
     const accessToken = req.cookies.accessToken;
     const payload = app.jwt.jwt1.decode(accessToken!) as Payload | null;
 
-    const user = app.db
-      .prepare("SELECT * FROM players WHERE id = ?")
-      .get(payload?.id) as UserInfos | undefined;
+    const user = app.db.prepare("SELECT * FROM players WHERE id = ?").get(payload?.id) as UserInfos | undefined;
     if (!user) return res.status(404).send({ error: "USER NOT FOUND" });
-    
+
     if (!username || username == user.username) {
       return res.status(200).send({ infos: user, profileType: "me", twoFAVerify: user?.twoFA_verify });
     }
 
     if (username) {
-      const user = app.db
-        .prepare("SELECT * FROM players WHERE username = ?")
-        .get(username);
+      const user = app.db.prepare("SELECT * FROM players WHERE username = ?").get(username);
       if (!user) return res.status(404).send({ message: "User not found" });
 
       //check if the requested user blocked the current user
       const checkBlocked = app.db
-        .prepare(
-          "SELECT key FROM json_each((SELECT block_list FROM players WHERE id = ?)) WHERE value = ?"
-        )
+        .prepare("SELECT key FROM json_each((SELECT block_list FROM players WHERE id = ?)) WHERE value = ?")
         .get(payload?.id, user.id.toString());
 
       if (checkBlocked) {
@@ -74,9 +61,7 @@ export const fetchProfileUser = async (
 
       //check if the requested user is a friend
       const checkFriend = app.db
-        .prepare(
-          "SELECT key FROM json_each((SELECT friends FROM players WHERE id = ?)) WHERE value = ?"
-        )
+        .prepare("SELECT key FROM json_each((SELECT friends FROM players WHERE id = ?)) WHERE value = ?")
         .get(payload?.id, user.id.toString());
 
       if (checkFriend)
@@ -89,9 +74,7 @@ export const fetchProfileUser = async (
 
       //check if friend request already sent
       const checkNotif = app.db
-        .prepare(
-          "SELECT * from notifications WHERE sender_id = ? AND recipient_id = ? AND type = ?"
-        )
+        .prepare("SELECT * from notifications WHERE sender_id = ? AND recipient_id = ? AND type = ?")
         .get(payload?.id, user.id.toString(), "friendReq");
 
       if (checkNotif)
@@ -114,10 +97,7 @@ export const fetchProfileUser = async (
   }
 };
 
-export const checkBlock = async (
-  req: FastifyRequest<{ Params: { username?: string } }>,
-  res: FastifyReply
-) => {
+export const checkBlock = async (req: FastifyRequest<{ Params: { username?: string } }>, res: FastifyReply) => {
   try {
     const { username } = req.params;
 
@@ -125,19 +105,14 @@ export const checkBlock = async (
     const payload = app.jwt.jwt1.decode(accessToken!) as Payload | null;
 
     if (username) {
-      const user = app.db
-        .prepare("SELECT * FROM players WHERE username = ?")
-        .get(username);
+      const user = app.db.prepare("SELECT * FROM players WHERE username = ?").get(username);
 
       if (user) {
         const checkBlocked = app.db
-          .prepare(
-            "SELECT key FROM json_each((SELECT block_list FROM players WHERE id = ?)) WHERE value = ?"
-          )
+          .prepare("SELECT key FROM json_each((SELECT block_list FROM players WHERE id = ?)) WHERE value = ?")
           .get(user.id, payload?.id.toString());
 
-        if (checkBlocked)
-          return res.status(404).send({ error: "User2 Blocked User1" });
+        if (checkBlocked) return res.status(404).send({ error: "User2 Blocked User1" });
 
         res.status(200).send({ message: "you can see user profile" });
       }
@@ -148,10 +123,7 @@ export const checkBlock = async (
   }
 };
 
-export const checkUserLoginPageStatus = async (
-  req: FastifyRequest,
-  res: FastifyReply
-) => {
+export const checkUserLoginPageStatus = async (req: FastifyRequest, res: FastifyReply) => {
   try {
     const accessToken = req.cookies.accessToken;
     const refreshToken = req.cookies.refreshToken;
@@ -165,10 +137,7 @@ export const checkUserLoginPageStatus = async (
   }
 };
 
-export const checkUserLoginStatus = async (
-  req: FastifyRequest,
-  res: FastifyReply
-) => {
+export const checkUserLoginStatus = async (req: FastifyRequest, res: FastifyReply) => {
   try {
     const refreshToken = req.cookies.refreshToken;
 
@@ -196,10 +165,7 @@ export const checkUserLoginStatus = async (
   }
 };
 
-export const checkUser2faStatus = async (
-  req: FastifyRequest,
-  res: FastifyReply
-) => {
+export const checkUser2faStatus = async (req: FastifyRequest, res: FastifyReply) => {
   try {
     const loginToken = req.cookies.loginToken;
 
@@ -213,49 +179,48 @@ export const checkUser2faStatus = async (
   }
 };
 
-export const uploadUserInfos = async (
-  req: FastifyRequest,
-  res: FastifyReply
-) => {
+export const uploadUserInfos = async (req: FastifyRequest, res: FastifyReply) => {
   try {
     const accessToken = req.cookies.accessToken;
     const payload = app.jwt.jwt1.decode(accessToken) as Payload;
 
-    // const fileData = await req.file();
+    const fileData = await req.file();
 
-    // if (
-    //   fileData?.mimetype != "image/png" &&
-    //   fileData?.mimetype != "image/jpg" &&
-    //   fileData?.mimetype != "image/jpeg"
-    // ) {
-    //   return res.status(401).send({ error: "File format not supported!" });
-    // }
+    if (fileData?.mimetype != "image/png" && fileData?.mimetype != "image/jpg" && fileData?.mimetype != "image/jpeg") {
+      return res.status(401).send({ error: "File format not supported!" });
+    }
 
-    // const uploadDir = path.resolve(
-    //   "/app/uploads/"
-    // );
+    const uploadDir = path.resolve("/app/uploads/");
 
-    // const fileName = Date.now().toString() + "." + fileData?.mimetype.split('/')[1];
-    // const filePath = path.join(uploadDir, fileName);
-    
-    // await pump(fileData!.file, fs.createWriteStream(filePath));
+    const fileName = Date.now().toString() + "." + fileData?.mimetype.split("/")[1];
+    const filePath = path.join(uploadDir, fileName);
 
-    return res
-      .status(200)
-      .send({ message: "files uploaded", file: fileName });
+    await pump(fileData!.file, fs.createWriteStream(filePath));
+
+    const user = app.db.prepare("SELECT * FROM players WHERE id = ?").get(payload?.id);
+    if (!user) return res.status(401).send({ error: "USER NOT FOUND" });
+
+    const oldAvatar = user?.avatar;
+    fs.unlink("/app/uploads/" + oldAvatar, (err) => {
+      if (err) {
+        console.log(err);
+      }
+    });
+
+    app.db.prepare("UPDATE players SET avatar = ? WHERE id = ?").run(fileName, payload?.id);
+
+    return res.status(200).send({ message: "files uploaded", file: fileName });
   } catch (error) {
     console.log(error);
     res.status(500).send({ error: error });
   }
 };
 
-export const getUserInfo = async ( req: FastifyRequest<{ Params: { id: string } }>, res: FastifyReply) => {
+export const getUserInfo = async (req: FastifyRequest<{ Params: { id: string } }>, res: FastifyReply) => {
   try {
     const { id } = req.params;
 
-    const user = app.db
-      .prepare("SELECT * FROM players WHERE id = ?")
-      .get(id) as UserInfos | null;
+    const user = app.db.prepare("SELECT * FROM players WHERE id = ?").get(id) as UserInfos | null;
     if (!user) return res.status(404).send({ error: "USER NOT FOUND" });
 
     res.status(200).send({ infos: user });
