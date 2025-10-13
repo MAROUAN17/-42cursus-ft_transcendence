@@ -71,6 +71,18 @@ sqlite3 "$DB_NAME" <<EOF
         winner INTEGER,
         round_number INTEGER NOT NULL
     );
+    CREATE TABLE IF NOT EXISTS Settings (
+        id INTEGER PRIMARY KEY,
+        user_id INTEGER NOT NULL,
+        paddleSpeed INTEGER NOT NULL,
+        background   TEXT,
+        ballCOlor TEXT,
+        ballShadow TEXT,
+        paddleColor TEXT,
+        paddleShadow TEXT,
+        paddleBorder TEXT,
+        gameBorder TEXT,
+    );
 
     INSERT INTO players(username, email, password) VALUES ("user1", "user1@gmail.com", '\$2b\$10\$rqCwxklFfV6lllny4.6WMOIw2yGUyDXGdc7AD6LzUlh.KDe.UJwlu');
     INSERT INTO players(username, email, password) VALUES ("user2", "user2@gmail.com", '\$2b\$10\$rqCwxklFfV6lllny4.6WMOIw2yGUyDXGdc7AD6LzUlh.KDe.UJwlu');

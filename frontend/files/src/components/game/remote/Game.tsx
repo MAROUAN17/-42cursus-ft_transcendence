@@ -3,9 +3,8 @@ import RBall from "./RBall";
 import RBat from "./Bat";
 import RHeader from "./RHeader";
 import { type GameInfo, type Game, type Round } from "./Types";
-import { useWebSocket } from "../../contexts/websocketContext";
-import type { ProfileUserInfo } from "../../../types/user";
 import { useNavigate } from "react-router";
+import { useUserContext } from "../../contexts/userContext";
 
 export default function RGame() {
   //   const [i, setI] = useState(0);
@@ -36,7 +35,9 @@ export default function RGame() {
     let interval: NodeJS.Timeout;
 
     interval = setInterval(() => {
+      // console.log("ddddd");
       if (websocket && websocket.readyState === WebSocket.OPEN) {
+        console.log("eeeee");
         websocket.send(
           JSON.stringify({
             type: gameType,
@@ -58,7 +59,7 @@ export default function RGame() {
   useEffect(() => {
     var storedGame = null;
     //for testing round
-    sessionStorage.removeItem("currentGame");
+    // sessionStorage.removeItem("currentGame");
     if (sessionStorage.getItem("currentGame")) {
       storedGame = sessionStorage.getItem("currentGame");
       setGameType("casual");
@@ -118,22 +119,16 @@ export default function RGame() {
   }, [gameInfo?.bounds.height]);
 
   useEffect(() => {
-    // console.log("RoundId :", gameInfo?.roundId);
-    // if (Number(id) == round?.player2)
-    // 		setLeftY(gameInfo?.paddleLeft.y || 0)
-    // else
-    // 	setRightY(gameInfo?.paddleRight.y || 0);
     if (websocket && websocket.readyState == WebSocket.OPEN) {
-      websocket.send(JSON.stringify({ type: "updateY", leftY, rightY, roundId: gameInfo?.roundId }));
-      //console.log("message sent [DIR]: ", type);
+      websocket.send(JSON.stringify({ type: "updateY", leftY, rightY, roundId: gameInfo?.roundId, gameId:game.id, side:game.side}));
+      console.log(`leftY ${leftY} rightY ${rightY}`);
     } else console.log("there is a proble in socket:", websocket);
   }, [leftY, rightY]);
 
-  //receiving game info
   useEffect(() => {
-    if (!tournamentId) return;
-    // console.log('user -> ', user);
-    const ws = new WebSocket("wss://localhost:4000/game");
+    if (gameType == "tournament" && !tournamentId) return;
+    console.log('user -> ');
+    const ws = new WebSocket("wss://localhost:5000/game");
     setWebsocket(ws);
     console.log("web socket ===== ", ws);
     ws.onopen = () => {
@@ -144,12 +139,13 @@ export default function RGame() {
         const message = JSON.parse(event.data);
         if (message.type === "end") {
           console.log("--- game eneded");
-          sessionStorage.removeItem("currentGame");
+          // sessionStorage.removeItem("currentGame");
           // sessionStorage.removeItem('currentRound');
           sessionStorage.setItem("roundNb", "2");
-          navigate(`/bracket/${tournamentId}`);
-          // manageFinalRound(Number(message.winner));
-          // start_game(game);
+          if (tournamentId)
+            navigate(`/bracket/${tournamentId}`);
+          if (message.type == "updateY") 
+              console.log("updateY");
         }
         setGameInfo(message.game_info);
       } catch (err) {
@@ -184,17 +180,17 @@ export default function RGame() {
       >
         <RBat
           x={gameInfo?.paddleLeft.x ?? 24}
-          y={gameInfo?.paddleLeft.y ?? 0}
+          y={gameInfo?.paddleLeft.y ?? 120}
           side="left"
-          height={gameInfo?.paddleLeft.height ?? 0}
+          height={gameInfo?.paddleLeft.height ?? 120}
           containerTop={0}
           containerHeight={gameInfo?.bounds.height ?? 400}
         />
         <RBat
-          x={gameInfo?.paddleLeft.x ?? 600 - 24 - 18}
-          y={gameInfo?.paddleRight.y ?? 0}
+          x={gameInfo?.paddleLeft.x ?? 24}
+          y={gameInfo?.paddleRight.y ?? 120}
           side="right"
-          height={gameInfo?.paddleRight.height ?? 0}
+          height={gameInfo?.paddleRight.height ?? 120}
           containerTop={0}
           containerHeight={gameInfo?.bounds.height ?? 400}
         />
@@ -202,7 +198,7 @@ export default function RGame() {
         <RBall
           dir={dir}
           setDir={setDir}
-          ball={gameInfo?.ball ?? { x: 0, y: 0 }}
+          ball={gameInfo?.ball ?? { x: 300, y: 180 }}
           paddleLeft={gameInfo?.paddleLeft ?? paddleLeft}
           paddleRight={gameInfo?.paddleRight ?? paddleRight}
           bounds={gameInfo?.bounds ?? { width: 600, height: 400 }}

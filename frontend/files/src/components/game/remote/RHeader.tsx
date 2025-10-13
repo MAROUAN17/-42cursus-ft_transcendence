@@ -35,7 +35,7 @@ export default function RHeader({ scoreLeft, scoreRight, you, opponent, side }: 
       <div className="absolute left-1/2 transform -translate-x-1/2 flex items-center gap-16 text-white font-bold">
         <div className="flex flex-col items-center">
           <img
-            src={av1}
+            src={side === "left" ? you?.avatar : opponent?.avatar}
             className="w-20 h-20 rounded-full border-4 border-purple-500 shadow-[0_0_15px_rgba(168,85,247,0.8)]"
             />
             <span>{side === "left" ? you?.username : opponent?.username}</span>
@@ -46,7 +46,7 @@ export default function RHeader({ scoreLeft, scoreRight, you, opponent, side }: 
 
         <div className="flex flex-col items-center">
           <img
-            src={av2}
+            src={side === "right" ? you?.avatar: opponent?.avatar}
             className="w-20 h-20 rounded-full border-4 border-yellow-400 shadow-[0_0_15px_rgba(250,204,21,0.8)]"
             />
             <span>{side === "right" ? you?.username : opponent?.username}</span>
