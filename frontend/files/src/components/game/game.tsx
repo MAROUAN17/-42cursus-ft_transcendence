@@ -1,4 +1,4 @@
-import  { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Bat from "./Bat";
 import Ball from "./ball";
 import Header from "./Header";
@@ -13,7 +13,6 @@ export default function Game() {
   const [leftY, setLeftY] = useState(140);
   const [rightY, setRightY] = useState(140);
 
-  
   const [ballPos, setBallPos] = useState({ x: 400, y: 200 }); //Ball position
   const [ballVel, setBallVel] = useState({ x: 300, y: 120 }); //Ball velocity
 
@@ -66,7 +65,7 @@ export default function Game() {
     if (who === "left") setScoreLeft((s) => s + 1);
     else setScoreRight((s) => s + 1);
     setBallPos({ x: bounds.width / 2, y: bounds.height / 2 });
-    const angle = (Math.random() * Math.PI / 3) - Math.PI / 6;
+    const angle = (Math.random() * Math.PI) / 3 - Math.PI / 6;
     const dir = who === "left" ? -1 : 1;
     setBallVel({ x: dir * 300 * Math.cos(angle), y: 300 * Math.sin(angle) });
   };
@@ -76,25 +75,21 @@ export default function Game() {
 
   useEffect(() => {
     setBallPos({ x: bounds.width / 2, y: bounds.height / 2 });
-    const angle = (Math.random() * Math.PI / 3) - Math.PI / 6;
+    const angle = (Math.random() * Math.PI) / 3 - Math.PI / 6;
     const dir = Math.random() > 0.5 ? 1 : -1;
     setBallVel({ x: dir * 300 * Math.cos(angle), y: 300 * Math.sin(angle) });
   }, [bounds.width, bounds.height]);
 
   return (
     <div className="h-screen bg-gameBg flex items-center justify-center">
-      <Header
-        scoreLeft={scoreLeft}
-        scoreRight={scoreRight}
-        leftAvatar="/path/to/player1.png"
-        rightAvatar="/path/to/player2.png"
-      />
+      <Header scoreLeft={scoreLeft} scoreRight={scoreRight} leftAvatar="/path/to/player1.png" rightAvatar="/path/to/player2.png" />
 
       <div
         ref={containerRef}
-        className="relative w-[70%] h-[70%] border-2 border-neon rounded-2xl shadow-neon bg-black"
+        className="relative overflow-hidden bg-[url(../assets/gameBg6.jpg)] bg-center bg-cover w-[70%] h-[70%] border-2 border-neon rounded-2xl shadow-neon bg-black"
         style={{ minWidth: 600, minHeight: 360 }}
       >
+        <div className="bg-black/10 w-full h-full"></div>
         <Bat y={leftY} setY={setLeftY} side="left" height={PADDLE_HEIGHT} containerTop={0} containerHeight={bounds.height} />
         <Bat y={rightY} setY={setRightY} side="right" height={PADDLE_HEIGHT} containerTop={0} containerHeight={bounds.height} />
 

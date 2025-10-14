@@ -22,7 +22,6 @@ const Navbar = () => {
   const [isNotificationOpen, setIsNotificationOpen] = useState<boolean>(false);
   const [isSearchOpen, setIsSearchOpen] = useState<boolean>(false);
   const [searchInput, setSearchInput] = useState<string>("");
-  const [isSearchFilled, setIsSearchFilled] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [isUserOptionOpen, setIsUserOptionOpen] = useState<boolean>(false);
   const [hasUnread, setHasUnread] = useState<boolean>(false);
