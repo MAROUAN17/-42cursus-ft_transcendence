@@ -7,9 +7,10 @@ import { replace, useNavigate } from "react-router";
 
 interface props {
   setSettingsOpen: (param: boolean) => void;
+  fetchData: () => void;
 }
 
-const Sidebar = ({ setSettingsOpen }: props) => {
+const Sidebar = ({ setSettingsOpen, fetchData }: props) => {
   const navigate = useNavigate();
   return (
     <div className="ml-3 my-auto h-full py-60">
@@ -42,7 +43,10 @@ const Sidebar = ({ setSettingsOpen }: props) => {
           />
         </div>
         <FaGear
-          onClick={() => setSettingsOpen(true)}
+          onClick={() => {
+            setSettingsOpen(true);
+            fetchData()
+          }}
           className="text-white w-7 h-7 shadow-[0_0px_30px_rgba(0,0,0,0.25)] hover:shadow-neon transform hover:scale-150 hover:bg-neon p-1 rounded-full transition duration-300"
         />
       </div>
