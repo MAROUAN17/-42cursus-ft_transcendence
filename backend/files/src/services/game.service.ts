@@ -162,8 +162,7 @@ function gameLoop (room:Room)
           rooms.splice(index, 1);
           console.log(`Room ${room.gameId} removed from rooms list.`);
         }
-      }
-      
+      } 
     }
     broadcastToRoom(room, { type: "update", game_info: room.gameInfo });
 }

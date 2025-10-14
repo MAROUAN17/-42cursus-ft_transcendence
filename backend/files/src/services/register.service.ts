@@ -22,7 +22,8 @@ export const registerUser = async (req: FastifyRequest<{ Body: LoginBody }>, res
     //hashing the password
     const hash: string = await bcrypt.hash(password, 10);
 
-    app.db.prepare("INSERT INTO players(username, email, password) VALUES (?, ?, ?)").run(username, email, hash);
+    const row = app.db.prepare("INSERT INTO players(username, email, password) VALUES (?, ?, ?)").run(username, email, hash);
+    app.db.prepare("INSERT INTO Settings(userId) VALUES (?)").run(row.lastInsertRowid);
 
     res.status(200).send({ message: "Registered successfully" });
   } catch (error) {

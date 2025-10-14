@@ -66,6 +66,7 @@ const TournamentBracket: React.FC = () => {
         if (response.ok) {
           const tournament = await response.json();
           if (tournament.status === "ongoing") {
+            
             clearInterval(intervalId);
 
             // navigate("/remote_game");
