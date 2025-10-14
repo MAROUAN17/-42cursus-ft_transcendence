@@ -19,7 +19,7 @@ export default function RGame() {
   const [tournamentId, setTournamentId] = useState(0);
 
   const [websocket, setWebsocket] = useState<WebSocket | null>(null);
-  const [gameType, setGameType] = useState("tournament");
+  const [gameType, setGameType] = useState("");
   const PADDLE_WIDTH = 18;
   const PADDLE_HEIGHT = 120;
   const paddleLeft = { x: 24, y: leftY, width: PADDLE_WIDTH, height: PADDLE_HEIGHT };
@@ -67,6 +67,7 @@ export default function RGame() {
     } else {
       console.log("this game from tournament");
       storedGame = sessionStorage.getItem("currentRound");
+      setGameType("tournament")
       const userRound = JSON.parse(storedGame);
       setRound(userRound);
     }
@@ -126,6 +127,7 @@ export default function RGame() {
   }, [leftY, rightY]);
 
   useEffect(() => {
+    // console.log(`id : ${tournamentId}  gameType: ${gameType}`)
     if (gameType == "tournament" && !tournamentId) return;
     console.log('user -> ');
     const ws = new WebSocket("wss://localhost:5000/game");

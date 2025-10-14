@@ -36,6 +36,7 @@ export default function Pairing() {
         setCountdown((prev) => {
           if (prev <= 1) {
             clearInterval(timer);
+            leave_queue();
             navigate("/remote_game");
             return 0;
           }
