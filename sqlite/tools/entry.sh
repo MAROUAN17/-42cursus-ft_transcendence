@@ -23,7 +23,8 @@ sqlite3 "$DB_NAME" <<EOF
         friends JSON DEFAULT '[]',
         block_list JSON DEFAULT '[]',
         first_login BOOLEAN DEFAULT TRUE,
-        score INTEGER DEFAULT 0
+        score INTEGER DEFAULT 0,
+        createdAt TEXT DEFAULT (datetime('now'))
     );
     CREATE TABLE IF NOT EXISTS messages (
         id INTEGER PRIMARY KEY,
@@ -69,6 +70,18 @@ sqlite3 "$DB_NAME" <<EOF
         score2 INTEGER DEFAULT 0,
         winner INTEGER,
         round_number INTEGER NOT NULL
+    );
+    CREATE TABLE IF NOT EXISTS Settings (
+        id INTEGER PRIMARY KEY,
+        user_id INTEGER NOT NULL,
+        paddleSpeed INTEGER NOT NULL,
+        background   TEXT,
+        ballCOlor TEXT,
+        ballShadow TEXT,
+        paddleColor TEXT,
+        paddleShadow TEXT,
+        paddleBorder TEXT,
+        gameBorder TEXT,
     );
 
     INSERT INTO players(username, email, password) VALUES ("user1", "user1@gmail.com", '\$2b\$10\$rqCwxklFfV6lllny4.6WMOIw2yGUyDXGdc7AD6LzUlh.KDe.UJwlu');

@@ -50,6 +50,7 @@ export interface Player {
   joinedAt: Date;
   username?: string;
   rating?: number;
+  avatar:string;
 }
 
 export interface Game {
