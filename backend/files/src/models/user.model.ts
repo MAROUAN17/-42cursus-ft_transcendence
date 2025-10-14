@@ -9,6 +9,7 @@ export interface LoginBody {
   secret: string;
   rememberMe: boolean;
   data: string
+  terms: boolean;
 }
 
 export interface UserInfos {

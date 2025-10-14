@@ -170,10 +170,10 @@ export default function RGame() {
 
       <div
         ref={containerRef}
-        className="relative  border-2 border-neon rounded-2xl shadow-neon bg-black"
+        className="relative  border-2 border-neon shadow-neon shadow-[0_0px_10px_2px_rgba(0,0,0,0.4)] rounded-2xl shadow-neon bg-black"
         style={{
-          minWidth: 600,
-          minHeight: 360,
+          minWidth: 1800,
+          minHeight: 850,
           height: gameInfo?.bounds.height,
           width: gameInfo?.bounds.width,
         }}
