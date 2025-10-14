@@ -5,7 +5,11 @@ import { IoGameController } from "react-icons/io5";
 import { MdHome, MdLeaderboard } from "react-icons/md";
 import { replace, useNavigate } from "react-router";
 
-const Sidebar = () => {
+interface props {
+  setSettingsOpen: (param: boolean) => void;
+}
+
+const Sidebar = ({ setSettingsOpen }: props) => {
   const navigate = useNavigate();
   return (
     <div className="ml-3 my-auto h-full py-60">
@@ -24,9 +28,9 @@ const Sidebar = () => {
             onClick={() => navigate("/chat")}
             className="text-white w-7 h-7 shadow-[0_0px_30px_rgba(0,0,0,0.25)] hover:shadow-neon transform hover:scale-150 transition hover:bg-neon p-1 rounded-full duration-300"
           />
-          <FaUserFriends 
-            onClick={() => navigate('/tournaments')}
-            className="text-white w-7 h-7 shadow-[0_0px_30px_rgba(0,0,0,0.25)] hover:shadow-neon transform hover:scale-150 transition hover:bg-neon p-1 rounded-full duration-300" 
+          <FaUserFriends
+            onClick={() => navigate("/tournaments")}
+            className="text-white w-7 h-7 shadow-[0_0px_30px_rgba(0,0,0,0.25)] hover:shadow-neon transform hover:scale-150 transition hover:bg-neon p-1 rounded-full duration-300"
           />
           <MdLeaderboard
             onClick={() => navigate("/leaderboard")}
@@ -37,7 +41,10 @@ const Sidebar = () => {
             className="text-white w-7 h-7 shadow-[0_0px_30px_rgba(0,0,0,0.25)] hover:shadow-neon transform hover:scale-150 hover:bg-neon p-1 rounded-full transition duration-300"
           />
         </div>
-        <FaGear className="text-white w-7 h-7 shadow-[0_0px_30px_rgba(0,0,0,0.25)] hover:shadow-neon transform hover:scale-150 hover:bg-neon p-1 rounded-full transition duration-300" />
+        <FaGear
+          onClick={() => setSettingsOpen(true)}
+          className="text-white w-7 h-7 shadow-[0_0px_30px_rgba(0,0,0,0.25)] hover:shadow-neon transform hover:scale-150 hover:bg-neon p-1 rounded-full transition duration-300"
+        />
       </div>
     </div>
   );
