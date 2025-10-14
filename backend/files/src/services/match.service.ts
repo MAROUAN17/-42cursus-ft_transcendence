@@ -101,19 +101,44 @@ export const get_queue_status = async (req: FastifyRequest, res: FastifyReply) =
 export const leave_queue = async (req: FastifyRequest, res: FastifyReply) => {
   try {
     const playerId = req.headers['player-id'] as string;
+    let removed = false;
+
     const playerIndex = waitingPlayers.findIndex(p => p.id === playerId);
-    
     if (playerIndex !== -1) {
       waitingPlayers.splice(playerIndex, 1);
-      console.log(`Player ${playerId} left the queue`);
-      return res.status(200).send({ message: 'Left queue successfully' });
+      console.log(`Player ${playerId} left the waiting queue`);
+      removed = true;
     }
-    
-    res.status(404).send({ error: 'Player not found in queue' });
+
+    const gameIndex = activeGames.findIndex(
+      g => g.player1.id === playerId || g.player2.id === playerId
+    );
+
+    if (gameIndex !== -1) {
+      const game = activeGames.splice(gameIndex, 1)[0];
+      console.log(`Player ${playerId} left the active game ${game.id}`);
+
+      return res.status(200).send({
+        message: 'Left active game successfully',
+        removedFrom: 'activeGame',
+        gameId: game?.id
+      });
+    }
+
+    if (removed) {
+      return res.status(200).send({
+        message: 'Left queue successfully',
+        removedFrom: 'queue'
+      });
+    }
+
+    res.status(404).send({ error: 'Player not found in queue or active games' });
   } catch (err) {
+    console.error('Error while leaving queue:', err);
     res.status(500).send({ error: err });
   }
 };
+
 
 export const get_game = async (req: FastifyRequest, res: FastifyReply) => {
   try {

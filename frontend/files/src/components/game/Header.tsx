@@ -9,7 +9,7 @@ interface HeaderProps {
 
 export default function Header({ scoreLeft, scoreRight }: HeaderProps) {
   return (
-    <div className="absolute top-10 left-0 w-full flex items-center justify-between px-6 py-4 z-50">
+    <div className="font-poppins absolute top-5 left-0 w-full flex items-center justify-between px-6 py-4 z-50">
       {/* Left controls */}
       <div className="flex items-center space-x-4">
         <button className="bg-black bg-opacity-60 p-3 rounded-full hover:bg-opacity-80 transition">
@@ -21,26 +21,29 @@ export default function Header({ scoreLeft, scoreRight }: HeaderProps) {
       </div>
 
       {/* Center scores */}
-      <div className="absolute left-1/2 transform -translate-x-1/2 flex items-center gap-16 text-white font-bold">
+      <div className="absolute left-1/2 top-8 transform -translate-x-1/2 flex items-center gap-16 text-white font-bold">
         {/* Left Player */}
-        <div className="flex flex-col items-center">
+        <div className="flex items-center gap-4">
           <img
-            src={av1}
+            src='profile1.jpg'
             className="w-20 h-20 rounded-full border-4 border-purple-500 shadow-[0_0_15px_rgba(168,85,247,0.8)]"
           />
           <span className="text-3xl mt-2">{scoreLeft}</span>
         </div>
 
         {/* VS text */}
-        <span className="text-5xl text-purple-400">VS</span>
+        <div className="flex">
+          <span className="border-neon text-5xl text-white [-webkit-text-stroke:2px_theme(colors.neon)]">V</span>
+          <span className="text-5xl text-white py-3 [-webkit-text-stroke:2px_theme(colors.neon)]">S</span>
+        </div>
 
         {/* Right Player */}
-        <div className="flex flex-col items-center">
+        <div className="flex items-center gap-4">
+          <span className="text-3xl mt-2">{scoreRight}</span>
           <img
-            src={av2}
+            src='profile2.jpg'
             className="w-20 h-20 rounded-full border-4 border-yellow-400 shadow-[0_0_15px_rgba(250,204,21,0.8)]"
           />
-          <span className="text-3xl mt-2">{scoreRight}</span>
         </div>
       </div>
 

@@ -36,6 +36,7 @@ export default function Pairing() {
         setCountdown((prev) => {
           if (prev <= 1) {
             clearInterval(timer);
+            leave_queue();
             navigate("/remote_game");
             return 0;
           }
@@ -126,10 +127,9 @@ export default function Pairing() {
   };
 
   return (
-    <div className="w-full min-h-screen from-indigo-900 via-purple-900 to-indigo-800 flex flex-col items-center justify-center p-8">
-      <h1 className="text-4xl md:text-6xl font-bold text-white mb-20 tracking-widest">MATCHMAKING</h1>
-
-      <div className="flex flex-col items-center gap-4">
+    <div className="font-poppins w-full h-full flex flex-col items-center">
+      <h1 className="text-6xl font-bold text-white">MATCHMAKING</h1>
+      <div className="flex flex-col items-center">
         {/* <input
         type="text"
         placeholder="Enter your username"
@@ -139,77 +139,84 @@ export default function Pairing() {
                    focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
       /> */}
       </div>
-      <div className="flex items-center justify-center mb-20 w-full max-w-4xl">
-        <div className="flex flex-col items-center relative">
-          <div className="relative">
-            <img src={im1} alt="Player 1" className="w-20 h-20 md:w-24 md:h-24 rounded-full border-3 border-purple-400 object-cover" />
-            <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-purple-500 text-white px-4 py-1 rounded-full text-sm font-medium whitespace-nowrap">
-              player1
+      <div className="relative flex flex-col justify-center items-center h-full w-full ">
+        <div className="relative">
+          <div className="space-y-3 absolute left-[80px] top-[225px] z-10">
+            <img
+              src={user?.avatar}
+              alt={`${user?.avatar}-profile`}
+              className="w-[150px] h-[150px] rounded-full border-3 border-purple-400 object-cover"
+            />
+            <div className="text-center relative left-1/2 transform -translate-x-1/2 bg-neon text-white px-4 py-2 rounded-full text-sm font-bold">
+              {user?.username}
             </div>
           </div>
-        </div>
 
-        <div className="flex items-center">
-          <div className="w-8 h-8 md:w-12 md:h-12 rounded-full bg-purple-500 border-2 border-purple-400"></div>
-          <div className="w-20 md:w-32 h-1 bg-purple-500"></div>
-        </div>
+          {/* <div className="flex items-center ">
+            <div className="w-20 md:w-32 h-1 bg-purple-500"></div>
+          </div> */}
 
-        <div className="relative mx-4">
-          <div className="w-24 h-24 md:w-32 md:h-32 rounded-full border-4 border-purple-400 bg-indigo-900 flex items-center justify-center">
-            <span className="text-white text-3xl md:text-4xl font-bold">VS</span>
+          <div className="relative mx-4">
+            {/* <div className="w-24 h-24 md:w-32 md:h-32 rounded-full border-4 border-purple-400 bg-indigo-900 flex items-center justify-center">
+              <span className="text-white text-3xl md:text-4xl font-bold">VS</span>
+            </div> */}
+            <img src="Rectangle.png" alt="rectangle" className="w-[1200px] h-[600px]" />
           </div>
-        </div>
 
-        <div className="flex items-center">
-          <div className="w-20 md:w-32 h-1 bg-purple-500"></div>
-          <div className="w-8 h-8 md:w-12 md:h-12 rounded-full bg-purple-500 border-2 border-purple-400 flex items-center justify-center">
-            <span className="text-white text-xl md:text-2xl font-bold">?</span>
+          <div className="space-y-3 items-center absolute right-[80px] top-[225px]">
+            {/* <div className="md:w-32 h-1 bg-purple-500 "></div> */}
+            <div className="items-center w-[150px] h-[150px] rounded-full bg-purple-500 border-2 border-purple-400 flex items-center justify-center">
+              <span className="text-white text-xl md:text-2xl font-bold ">?</span>
+            </div>
+            <div className="text-center relative left-1/2 transform -translate-x-1/2 bg-neon text-white px-4 py-2 rounded-full text-sm font-bold">
+              ?
+            </div>
           </div>
-        </div>
 
-        <div className="flex flex-col items-center relative opacity-0">
-          <div className="w-20 h-20 md:w-24 md:h-24 rounded-full border-3 border-purple-400 bg-purple-500 flex items-center justify-center">
-            <span className="text-white text-2xl font-bold">?</span>
+          {/* <div className="flex flex-col items-center relative opacity-0">
+            <div className="w-20 h-20 md:w-24 md:h-24 rounded-full border-3 border-purple-400 bg-purple-500 flex items-center justify-center">
+              <span className="text-white text-2xl font-bold">?</span>
+            </div>
+          </div> */}
+        </div>
+        {!paired ? (
+          <div className="flex flex-col gap-4 w-full max-w-xs">
+            <button
+              onClick={() => fetchData()}
+              className="bg-purple-500 hover:bg-purple-600 text-white font-bold py-4 px-8 rounded-full text-lg transition-colors shadow-lg flex items-center justify-center gap-1"
+            >
+              {loading ? (
+                <>
+                  <span>Pairing</span>
+                  <span className="tracking-widest">{dots}</span>
+                </>
+              ) : (
+                "Play Game"
+              )}
+            </button>
+
+            <button
+              onClick={() => leave_queue()}
+              className="bg-white hover:bg-gray-100 text-purple-600 font-bold py-4 px-8 rounded-full text-lg transition-colors shadow-lg"
+            >
+              BACK
+            </button>
           </div>
-        </div>
-      </div>
-      {!paired ? (
-        <div className="flex flex-col gap-4 w-full max-w-xs">
-          <button
-            onClick={() => fetchData()}
-            className="bg-purple-500 hover:bg-purple-600 text-white font-bold py-4 px-8 rounded-full text-lg transition-colors shadow-lg flex items-center justify-center gap-1"
-          >
-            {loading ? (
-              <>
-                <span>Pairing</span>
-                <span className="tracking-widest">{dots}</span>
-              </>
-            ) : (
-              "Play Game"
-            )}
-          </button>
-
-          <button
-            onClick={() => leave_queue()}
-            className="bg-white hover:bg-gray-100 text-purple-600 font-bold py-4 px-8 rounded-full text-lg transition-colors shadow-lg"
-          >
-            BACK
-          </button>
-        </div>
-      ) : (
-        <div className="countdown flex flex-col items-center justify-center mt-6 space-y-4">
-          <p className="text-xl md:text-2xl font-semibold text-gray-200 tracking-wide">
-            Match will <span className="text-purple-400">start</span> in
-          </p>
-          <div
-            className="bg-gradient-to-br from-purple-600 to-indigo-600 text-white 
+        ) : (
+          <div className="countdown flex flex-col items-center justify-center mt-6 space-y-4">
+            <p className="text-xl md:text-2xl font-semibold text-gray-200 tracking-wide">
+              Match will <span className="text-purple-400">start</span> in
+            </p>
+            <div
+              className="bg-gradient-to-br from-purple-600 to-indigo-600 text-white 
                           w-24 h-24 rounded-full flex items-center justify-center 
                           text-4xl font-extrabold shadow-xl animate-pulse"
-          >
-            {countdown}
+            >
+              {countdown}
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }

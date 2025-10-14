@@ -20,7 +20,7 @@ export default function RHeader({ scoreLeft, scoreRight, you, opponent, side }: 
   }
   //console.log(you?.username)
   return (
-    <div className="absolute top-5 left-0 w-full flex items-center justify-between px-6 py-4 z-50">
+    <div className="font-poppins absolute top-5 left-0 w-full flex items-center justify-between px-6 py-4 z-50">
       <div className="flex items-center space-x-4">
         <button 
           onClick={() => leave_game()}
@@ -32,25 +32,28 @@ export default function RHeader({ scoreLeft, scoreRight, you, opponent, side }: 
         </button>
       </div>
 
-      <div className="absolute left-1/2 transform -translate-x-1/2 flex items-center gap-16 text-white font-bold">
-        <div className="flex flex-col items-center">
+      <div className="absolute left-1/2 top-8 transform -translate-x-1/2 flex items-center gap-16 text-white font-bold">
+        <div className="flex flex items-center gap-4">
           <img
             src={side === "left" ? you?.avatar : opponent?.avatar}
             className="w-20 h-20 rounded-full border-4 border-purple-500 shadow-[0_0_15px_rgba(168,85,247,0.8)]"
             />
-            <span>{side === "left" ? you?.username : opponent?.username}</span>
+            {/* <span>{side === "left" ? you?.username : opponent?.username}</span> */}
           <span className="text-3xl mt-2">{scoreLeft}</span>
         </div>
 
-        <span className="text-5xl text-purple-400">VS</span>
+        <div className="flex">
+          <span className="border-neon text-5xl text-white [-webkit-text-stroke:2px_theme(colors.neon)]">V</span>
+          <span className="text-5xl text-white py-3 [-webkit-text-stroke:2px_theme(colors.neon)]">S</span>
+        </div>
 
-        <div className="flex flex-col items-center">
+        <div className="flex flex items-center gap-4">
+          <span className="text-3xl mt-2">{scoreRight}</span>
           <img
             src={side === "right" ? you?.avatar: opponent?.avatar}
             className="w-20 h-20 rounded-full border-4 border-yellow-400 shadow-[0_0_15px_rgba(250,204,21,0.8)]"
             />
-            <span>{side === "right" ? you?.username : opponent?.username}</span>
-          <span className="text-3xl mt-2">{scoreRight}</span>
+            {/* <span>{side === "right" ? you?.username : opponent?.username}</span> */}
         </div>
       </div>
 

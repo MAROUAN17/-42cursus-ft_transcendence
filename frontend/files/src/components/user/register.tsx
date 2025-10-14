@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useNavigate } from "react-router";
 import Setup2FA from "./setup2FA";
 import api from "../../axios";
@@ -15,15 +15,26 @@ function Register() {
   const [passErrorFlag, setPassErrorFlag] = useState<boolean>(false);
   const [emailErrorMssg, setEmailErrorMssg] = useState<string>("");
   const [emailErrorFlag, setEmailErrorFlag] = useState<boolean>(false);
+  const [termsErrorMssg, setTermsErrorMssg] = useState<string>("");
+  const [termsErrorFlag, setTermsErrorFlag] = useState<boolean>(false);
   const navigate = useNavigate();
+  const termsRef = useRef<HTMLInputElement>(null);
 
   const handleForm = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    if (!termsRef.current?.checked) {
+      setTermsErrorFlag(true);
+      setTermsErrorMssg("Please agree on terms and conditions");
+      return;
+    }
+
     api
       .post("/register/verify", {
         username: username,
         email: email,
         password: password,
+        terms: termsRef.current?.checked
       })
       .then(function () {
         axios
@@ -31,6 +42,7 @@ function Register() {
             username: username,
             email: email,
             password: password,
+            terms: termsRef.current?.checked
           })
           .then(function (res) {
             navigate("/login");
@@ -217,7 +229,7 @@ function Register() {
             <p className="text-white text-center text-xl py-2 font-light">Join and have fun with your friends</p>
           </div>
           <form onSubmit={handleForm}>
-            <div className="xl:my-20 lg:my-14 space-y-10">
+            <div className="xl:my-20 lg:my-14 flex flex-col gap-10">
               <div>
                 <label className="flex text-gray-300">Username</label>
                 <input
@@ -261,9 +273,15 @@ function Register() {
                 {passErrorFlag && <p className="mt-3 text-red-500">{passErrorMssg}</p>}
               </div>
               {/* login button */}
-              <div className="flex flex-nowrap justify-between items-center xl:space-x-52 lg:space-x-4">
-                <div className="flex space-x-3 w-full">
-                  <input type="checkbox" />
+              <div className="flex flex-nowrap justify-between">
+                <div className="flex space-x-3 w-full items-center">
+                  <input
+                    type="checkbox"
+                    ref={termsRef}
+                    className={`${
+                      termsErrorFlag ? "border-red-500" : null
+                    } w-4 h-4 appearance-none border-2 border rounded-full checked:bg-gray-300 transition ease-in-out`}
+                  />
                   <p className="text-white xl:text-base lg:text-sm whitespace-nowrap">
                     I accept the{" "}
                     <span onClick={() => setPolicyOpen(true)} className="underline text-blue-500">
@@ -273,6 +291,7 @@ function Register() {
                 </div>
                 <button className="px-12 py-4 rounded-xl text-white bg-neon font-bold shadow-neon">REGISTER</button>
               </div>
+              {termsErrorFlag ? <h1 className="mt-[-40px] text-red-500">{termsErrorMssg}</h1> : null}
 
               {/* login with others section */}
               <div className="flex justify-between items-center">

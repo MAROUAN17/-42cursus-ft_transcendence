@@ -68,10 +68,8 @@ export function Tournaments() {
           <button
             onClick={() => setShowModal(true)}
             className="flex items-center justify-center gap-2 
-                      bg-gradient-to-r from-fuchsia-500 to-pink-500 
-                      hover:from-fuchsia-600 hover:to-pink-600 
+                      bg-neon shadow-neon shadow-[0_5px_40px_5px_rgba(0,0,0,0.4)]                      
                       text-white font-semibold px-6 py-3 rounded-full 
-                      shadow-lg shadow-pink-500/30 
                       transition-all duration-200 hover:scale-105"
           >
             <FaPlus className="w-5 h-5" />
@@ -79,7 +77,7 @@ export function Tournaments() {
           </button>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
+        <div className="mt-24 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
           {tournaments.map((tournament) => (
             <TournamentCard key={tournament.id} {...tournament} />
           ))}

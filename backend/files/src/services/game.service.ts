@@ -29,9 +29,8 @@ function saveData (room: Room) {
   if (room.tournamentId){
     room.round = app.db.prepare("SELECT COUNT(*) as total FROM ROUND WHERE tournament_id = ?")
       .get(room.tournamentId)?.total;
-    room.type = "tournament";
   }
-  if (room.type == "tournament")
+  if (room.tournamentId)
   {
     try {
       // app.db.prepare("INSERT INTO ROUND ( tournament_id, player1, player2, winner) VALUES ( (SELECT id FROM TOURNAMENT WHERE game_id = ?), ?, ?, ?)")
@@ -42,7 +41,7 @@ function saveData (room: Room) {
       app.db.prepare("UPDATE Round SET score1 = ?, score2 = ?, winner = ? WHERE id = ?")
       .run(room.scoreLeft, room.scoreRight, room.winner, room.roundId);
 
-      console.log("-- Round registred successfully");
+      console.log("-- Round registred successfully", room.type);
     } catch (err) {
       console.log(err);
     }
@@ -150,13 +149,20 @@ function gameLoop (room:Room)
         clearInterval(room.intervalId);
         room.intervalId = undefined;
       }
-      // if (room.type != "tournament"){
-      //   const index = rooms.findIndex(r => r.gameId === room.gameId);
-      //   if (index !== -1) {
-      //     rooms.splice(index, 1);
-      //     console.log(`Room ${room.gameId} removed from rooms list.`);
-      //   }
-      // }
+      if (room.tournamentId){
+        const index = rooms.findIndex(r => r.roundId === room.roundId);
+        if (index !== -1) {
+          rooms.splice(index, 1);
+          console.log(`Round ${room.roundId} removed from tournament list. ${room.tournamentId}`);
+        }
+      }
+      else{
+        const index = rooms.findIndex(r => r.gameId === room.gameId);
+        if (index !== -1) {
+          rooms.splice(index, 1);
+          console.log(`Room ${room.gameId} removed from rooms list.`);
+        }
+      }
       
     }
     broadcastToRoom(room, { type: "update", game_info: room.gameInfo });
@@ -196,12 +202,12 @@ export function handleGameConnection(connection: any, req: any) {
         userId = msg.userId;
         clients.set(userId, connection);
         addPlayerToRound(Number(msg.tournamentId), userId, Number(msg.roundNumber));
-        console.log("data received", msg);
+        // console.log("data received", msg);
         return ;
       }
 
       if (msg.type === "updateY") {
-        console.log("--- entred", rooms)
+        // console.log("--- entred", rooms)
         const room = getRoom(msg.gameId, msg.roundId);
         if (!room)
           console.log("room not found");
@@ -210,7 +216,7 @@ export function handleGameConnection(connection: any, req: any) {
             room.gameInfo.paddleLeft.y = msg.leftY;
           if (msg.side == "right")
             room.gameInfo.paddleRight.y = msg.rightY;
-          console.log("Broadcasting to room:", room.gameId, "Players:", room.player1, room.player2);
+          // console.log("Broadcasting to room:", room.gameId, "Players:", room.player1, room.player2, "type: ", room.type);
           
           broadcastToRoom(room, { type: "updateY", game_info: room.gameInfo });
         }
@@ -260,6 +266,7 @@ function addPlayerToRoom(gameId: string, playerId: string) {
     room.ready = true;
     room.winner = undefined;
     room.startedAt = new Date();
+    room.type = "casaul"
     console.log(`-- Room ${room.gameId} ready! Players: ${room.player1}, ${room.player2} `);
     startGame(room);
   } else {
@@ -286,8 +293,9 @@ function addPlayerToRound(tournamentId: number, playerId: string, rn: number) {
   console.log("UserId:", playerId);
   console.log("Round found:", lastRound);
 
-  const room = getRoom("", lastRound.id, 0);
+  const room = getRoom("", lastRound.id);
   room.tournamentId = tournamentId;
+  room.type = "tournament";
 
   if (playerId != lastRound.player1 && playerId != lastRound.player2) {
     console.log("--- This is not your round:", playerId != lastRound.player1);
