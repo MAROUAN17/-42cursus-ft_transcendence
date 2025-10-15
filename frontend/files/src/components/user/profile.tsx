@@ -58,6 +58,7 @@ export default function Profile() {
   const pictureInput = useRef<HTMLInputElement>(null);
   const [twoFAVerified, setTwoFAVerified] = useState<boolean>(false);
   const [createdAt, setCreatedAt] = useState<string>("");
+  const [imgUploadError, setImgUploadError] = useState<string>("");
 
   const { user } = useUserContext();
   const [currUser, setCurrUser] = useState<UserInfos>({
@@ -144,8 +145,16 @@ export default function Profile() {
     e.preventDefault();
 
     if (!e.target.files || e.target.files.length === 0) return;
+    setImgUploadError("");
 
     const fileData = e.target.files[0];
+
+    //check for max file size
+    if (fileData.size > 1000000) {
+      setImgUploadError("File size max reached 1MB");
+      return;
+    }
+
     if (fileData) setPreviewImg(URL.createObjectURL(fileData));
   }
 
@@ -155,7 +164,11 @@ export default function Profile() {
     if (pictureInput.current?.files?.length) {
       const formData = new FormData();
       formData.append("avatar", pictureInput.current.files[0]);
-      api.post("/edit-user/upload", formData, { withCredentials: true });
+      api.post("/edit-user/upload", formData, { withCredentials: true }).catch(function (err) {
+        console.log(err.response.data.error);
+        // setImgUploadError(true);
+        setImgUploadError(err.response.data.error);
+      });
     }
 
     api
@@ -298,6 +311,7 @@ export default function Profile() {
                     <LuUpload className="bg-neon text-white w-[45px] h-[45px] rounded-full p-2" />
                   </label>
                 </div>
+                {imgUploadError.length ? <div className="text-red-500 font-bold">{imgUploadError}</div> : null}
                 <div className="flex flex-col space-y-3 w-[505px]">
                   {usernameErrorFlag ? (
                     <div>
@@ -570,7 +584,9 @@ export default function Profile() {
                 </div>
                 <div>
                   <h1 className="text-neon font-bold">Last Game played</h1>
-                  <h1 className="text-white font-bold">{history?.rooms.length ? passedTime(history?.rooms[0].startedAt) + " ago" : "Not played yet"}</h1>
+                  <h1 className="text-white font-bold">
+                    {history?.rooms.length ? passedTime(history?.rooms[0].startedAt) + " ago" : "Not played yet"}
+                  </h1>
                 </div>
               </div>
             )}
