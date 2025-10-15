@@ -34,3 +34,15 @@ export interface userSearch {
   mutualsCount: number;
   status: "friend" | "sentReq" | "notFriend";
 }
+
+export interface gameCustomization {
+  gameBorder: string;
+  gameShadow: string;
+  ballColor: string;
+  ballShadow: string;
+  paddleColor: string;
+  paddleBorder: string;
+  paddleShadow: string;
+  paddleSpeed: number;
+  selectedBg: string;
+}

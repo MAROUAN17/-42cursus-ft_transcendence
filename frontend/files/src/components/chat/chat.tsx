@@ -15,6 +15,8 @@ import { MdBlock } from "react-icons/md";
 import api from "../../axios";
 import type { messagePacket, websocketPacket } from "../../types/websocket";
 import type { UsersLastMessage } from "../../types/chat";
+import { GiPingPongBat } from "react-icons/gi";
+import { PiPingPongFill } from "react-icons/pi";
 
 const Chat = () => {
   const { username } = useParams<{ username?: string }>();
@@ -494,15 +496,21 @@ const Chat = () => {
                   <p className="text-white/50 text-[15px]">Messaging is unavailable</p>
                 </div>
               ) : (
-                <div className="flex p-1 flex-row bg-neon/[35%] items-center pr-4 w-full rounded-full">
-                  <input
-                    type="text"
-                    id="msg"
-                    onKeyDown={sendMsg}
-                    placeholder="Type your message..."
-                    className="w-full p-4 pr-2 h-[45px] focus:outline-none rounded-full bg-transparent text-white placeholder-[#fff]/[40%]"
-                  />
-                  <RiSendPlaneFill className="text-white w-[20px] h-[20px]" />
+                <div className="w-full gap-3 flex">
+                  <div className="flex p-1 flex-row bg-neon/[35%] items-center pr-4 w-full rounded-full">
+                    <input
+                      type="text"
+                      id="msg"
+                      onKeyDown={sendMsg}
+                      placeholder="Type your message..."
+                      className="w-full p-4 pr-2 h-[45px] focus:outline-none rounded-full bg-transparent text-white placeholder-[#fff]/[40%]"
+                    />
+                    <RiSendPlaneFill className="text-white w-[20px] h-[20px]" />
+                  </div>
+                  <div className="text-white hover:scale-[1.03] transition duration-300 flex justify-center items-center gap-1 font-bold rounded-full px-5 bg-neon/[65%]">
+                    <PiPingPongFill className="w-[20px] h-[20px]" />
+                    Invite
+                  </div>
                 </div>
               )}
             </div>

@@ -45,7 +45,9 @@ function Layout() {
   return (
     <>
       {settingsOpen ? (
-        <div className="absolute p-6 font-poppins flex flex-col justify-center items-center text-white rounded-[20px] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 bg-[#14095c] w-1/3 h-fit">
+        <div
+          className={`absolute p-6 animate-fadeIn font-poppins flex flex-col justify-center items-center text-white rounded-[20px] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 bg-[#14095c] w-1/3 h-fit`}
+        >
           <div className="h-full w-full">
             <h1 className="font-bold text-[25px] mb-2">Game Customizations</h1>
             <hr />
@@ -245,7 +247,11 @@ function Layout() {
           </button>
         </div>
       ) : null}
-      <div className={`flex flex-col bg-darkBg h-screen ${settingsOpen ? "blur-sm shadow-[0_0_20px] pointer-events-none" : ""}`}>
+      <div
+        className={`flex flex-col bg-darkBg h-screen transition-all duration-300 ${
+          settingsOpen ? "blur-sm shadow-[0_0_20px] pointer-events-none" : ""
+        }`}
+      >
         <Navbar />
         <div className="flex flex-row h-screen">
           <Sidebar setSettingsOpen={setSettingsOpen} fetchData={fetchData} />

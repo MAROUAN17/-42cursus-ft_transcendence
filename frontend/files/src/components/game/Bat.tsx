@@ -7,9 +7,12 @@ interface BatProps {
   height: number;
   containerTop: number;
   containerHeight: number;
+  bodyColor: string;
+  borderColor: string;
+  shadowColor: string;
 }
 
-export default function Bat({ y, setY, side, height, containerTop, containerHeight }: BatProps) {
+export default function Bat({ y, setY, side, height, containerTop, containerHeight, bodyColor, borderColor, shadowColor }: BatProps) {
   const ref = useRef<HTMLDivElement | null>(null);
   const handleMouseDown = (e: MouseEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -31,14 +34,26 @@ export default function Bat({ y, setY, side, height, containerTop, containerHeig
     window.addEventListener("mouseup", onUp);
   };
 
-  const sideStyle = side === "left" ? { left: "1.5rem" } : { right: "1.5rem" };
+  const sideStyle = side === "left" ? { "--ball-left": "1.5rem" } : { "--ball-right": "1.5rem" };
 
   return (
     <div
       ref={ref}
       onMouseDown={handleMouseDown}
-      className="w-[18px] border-4 border-neon rounded-xl shadow-neon bg-white absolute cursor-grab"
-      style={{ top: `${y}px`, height: `${height}px`, ...sideStyle }}
+      className={`w-[18px] border-4 top-[var(--ball-top)] h-[var(--ball-height)] border-[var(--borderColor)] bg-[var(--bodyColor)] shadow-[0_0_10px_var(--shadowColor)] ${
+        side === "left" ? "left-[var(--ball-left)]" : "right-[var(--ball-right)]"
+      } rounded-xl absolute cursor-grab`}
+      style={
+        {
+          "--borderColor": borderColor,
+          "--bodyColor": bodyColor,
+          "--shadowColor": shadowColor,
+          "--ball-top": `${y}px`,
+          "--ball-height": `${height}px`,
+          "--ball-left": "1.5rem",
+          "--ball-right": "1.5rem",
+        } as React.CSSProperties
+      }
     />
   );
 }

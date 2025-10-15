@@ -9,9 +9,22 @@ interface BallProps {
   paddleRight: { x: number; y: number; width: number; height: number } | null;
   bounds: { width: number; height: number };
   onScore: (who: "left" | "right") => void;
+  bodyColor: string;
+  shadowColor: string;
 }
 
-export default function Ball({ ballPos, setBallPos, ballVel, setBallVel, paddleLeft, paddleRight, bounds, onScore }: BallProps) {
+export default function Ball({
+  ballPos,
+  bodyColor,
+  shadowColor,
+  setBallPos,
+  ballVel,
+  setBallVel,
+  paddleLeft,
+  paddleRight,
+  bounds,
+  onScore,
+}: BallProps) {
   const ref = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -30,7 +43,6 @@ export default function Ball({ ballPos, setBallPos, ballVel, setBallVel, paddleL
         ny = 10;
         setBallVel({ x: ballVel.x, y: -ballVel.y });
       } else if (ny + 10 >= bounds.height) {
-        
         setBallVel({ x: ballVel.x, y: -ballVel.y });
       }
 
@@ -39,7 +51,12 @@ export default function Ball({ ballPos, setBallPos, ballVel, setBallVel, paddleL
       const checkPaddleCollision = (paddle: any) => {
         if (!paddle) return false;
         const paddleRect = { left: paddle.x, right: paddle.x + paddle.width, top: paddle.y, bottom: paddle.y + paddle.height };
-        return !(ballRect.right < paddleRect.left || ballRect.left > paddleRect.right || ballRect.bottom < paddleRect.top || ballRect.top > paddleRect.bottom);
+        return !(
+          ballRect.right < paddleRect.left ||
+          ballRect.left > paddleRect.right ||
+          ballRect.bottom < paddleRect.top ||
+          ballRect.top > paddleRect.bottom
+        );
       };
 
       if (ballVel.x < 0 && checkPaddleCollision(paddleLeft)) {
@@ -81,8 +98,15 @@ export default function Ball({ ballPos, setBallPos, ballVel, setBallVel, paddleL
   return (
     <div
       ref={ref}
-      className="w-[20px] h-[20px] rounded-full bg-white absolute"
-      style={{ left: `${ballPos.x - 10}px`, top: `${ballPos.y - 10}px` }}
+      className="w-[20px] h-[20px] left-[var(--left)] top-[var(--top)] bg-[var(--bodyColor)] shadow-[0_0_10px_var(--shadowColor)] rounded-full absolute"
+      style={
+        {
+          "--bodyColor": bodyColor,
+          "--shadowColor": shadowColor,
+          "--left": `${ballPos.x - 10}px`,
+          "--top": `${ballPos.y - 10}px`,
+        } as React.CSSProperties
+      }
     />
   );
 }

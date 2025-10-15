@@ -2,11 +2,14 @@ import { useEffect, useRef, useState } from "react";
 import Bat from "./Bat";
 import Ball from "./ball";
 import Header from "./Header";
+import type { gameCustomization } from "../../types/user";
+import api from "../../axios";
 
 export default function Game() {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [bounds, setBounds] = useState({ width: 800, height: 400 });
 
+  const [gameCutomistion, setGameCustomisation] = useState<gameCustomization | undefined>(undefined);
   const PADDLE_WIDTH = 18;
   const PADDLE_HEIGHT = 120;
 
@@ -20,6 +23,13 @@ export default function Game() {
   const [scoreRight, setScoreRight] = useState(0);
 
   useEffect(() => {
+    api
+      .get("/getCustomization", { withCredentials: true })
+      .then((res) => {
+        console.log("data -> ", res.data);
+        setGameCustomisation(res.data);
+      })
+      .catch((err) => console.error(err));
     const update = () => {
       if (!containerRef.current) return;
       const r = containerRef.current.getBoundingClientRect();
@@ -43,10 +53,11 @@ export default function Game() {
 
     let raf = 0;
     const step = () => {
-      if (down.has("ArrowUp")) setRightY((y) => Math.max(0, y - 8));
-      if (down.has("ArrowDown")) setRightY((y) => Math.min(bounds.height - PADDLE_HEIGHT, y + 8));
+      if (!gameCutomistion) return;
+      if (down.has("ArrowUp")) setRightY((y) => Math.max(0, y - gameCutomistion?.paddleSpeed));
+      if (down.has("ArrowDown")) setRightY((y) => Math.min(bounds.height - PADDLE_HEIGHT, y + gameCutomistion?.paddleSpeed));
       if (down.has("w") || down.has("W")) setLeftY((y) => Math.max(0, y - 8));
-      if (down.has("s") || down.has("S")) setLeftY((y) => Math.min(bounds.height - PADDLE_HEIGHT, y + 8));
+      if (down.has("s") || down.has("S")) setLeftY((y) => Math.min(bounds.height - PADDLE_HEIGHT, y + gameCutomistion?.paddleSpeed));
 
       raf = requestAnimationFrame(step);
     };
@@ -59,7 +70,7 @@ export default function Game() {
       window.removeEventListener("keydown", onKeyDown);
       window.removeEventListener("keyup", onKeyUp);
     };
-  }, [bounds.height]);
+  }, [bounds.height, gameCutomistion]);
 
   const handleScore = (who: "left" | "right") => {
     if (who === "left") setScoreLeft((s) => s + 1);
@@ -86,30 +97,62 @@ export default function Game() {
 
       <div
         ref={containerRef}
-        className="relative overflow-hidden bg-[url(../assets/gameBg6.jpg)] bg-center bg-cover w-[70%] h-[70%] border-2 border-neon rounded-2xl shadow-neon bg-black"
-        style={{ minWidth: 600, minHeight: 360 }}
+        className={`relative animate-fadeIn min-w-[800px] min-h-[400px] [background-image:var(--selected-bg)] border-[var(--borderColor)] shadow-[0_0_10px_var(--shadowColor)] overflow-hidden bg-center bg-cover w-[70%] h-[70%] border-2 rounded-2xl bg-black`}
+        style={
+          {
+            "--selected-bg": `url(${gameCutomistion?.selectedBg})`,
+            "--borderColor": gameCutomistion?.gameBorder,
+            "--shadowColor": gameCutomistion?.gameShadow,
+          } as React.CSSProperties
+        }
       >
-        <div className="bg-black/10 w-full h-full"></div>
-        <Bat y={leftY} setY={setLeftY} side="left" height={PADDLE_HEIGHT} containerTop={0} containerHeight={bounds.height} />
-        <Bat y={rightY} setY={setRightY} side="right" height={PADDLE_HEIGHT} containerTop={0} containerHeight={bounds.height} />
+        {gameCutomistion ? (
+          <div className="animate-fadeIn">
+            <div className="bg-black/10 w-full h-full"></div>
+            <Bat
+              bodyColor={gameCutomistion?.paddleColor!}
+              borderColor={gameCutomistion?.paddleBorder!}
+              shadowColor={gameCutomistion?.paddleShadow!}
+              y={leftY}
+              setY={setLeftY}
+              side="left"
+              height={PADDLE_HEIGHT}
+              containerTop={0}
+              containerHeight={bounds.height}
+            />
+            <Bat
+              bodyColor={gameCutomistion?.paddleColor!}
+              borderColor={gameCutomistion?.paddleBorder!}
+              shadowColor={gameCutomistion?.paddleShadow!}
+              y={rightY}
+              setY={setRightY}
+              side="right"
+              height={PADDLE_HEIGHT}
+              containerTop={0}
+              containerHeight={bounds.height}
+            />
 
-        <Ball
-          ballPos={ballPos}
-          setBallPos={setBallPos}
-          ballVel={ballVel}
-          setBallVel={setBallVel}
-          paddleLeft={paddleLeft}
-          paddleRight={paddleRight}
-          bounds={bounds}
-          onScore={handleScore}
-        />
+            <Ball
+              bodyColor={gameCutomistion?.ballColor!}
+              shadowColor={gameCutomistion?.ballShadow!}
+              ballPos={ballPos}
+              setBallPos={setBallPos}
+              ballVel={ballVel}
+              setBallVel={setBallVel}
+              paddleLeft={paddleLeft}
+              paddleRight={paddleRight}
+              bounds={bounds}
+              onScore={handleScore}
+            />
 
-        <div className="absolute top-0 left-1/2 transform -translate-x-1/2 h-full flex flex-col justify-center items-center">
-          <div className="w-0.5 h-8 bg-white opacity-40 mb-6" />
-          <div className="w-0.5 h-8 bg-white opacity-40 mb-6" />
-          <div className="w-0.5 h-8 bg-white opacity-40 mb-6" />
-          <div className="w-0.5 h-8 bg-white opacity-40" />
-        </div>
+            <div className="absolute top-0 left-1/2 transform -translate-x-1/2 h-full flex flex-col justify-center items-center">
+              <div className="w-0.5 h-8 bg-white opacity-40 mb-6" />
+              <div className="w-0.5 h-8 bg-white opacity-40 mb-6" />
+              <div className="w-0.5 h-8 bg-white opacity-40 mb-6" />
+              <div className="w-0.5 h-8 bg-white opacity-40" />
+            </div>
+          </div>
+        ) : null}
       </div>
     </div>
   );
