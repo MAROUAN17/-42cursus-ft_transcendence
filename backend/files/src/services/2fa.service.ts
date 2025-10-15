@@ -25,7 +25,7 @@ export const deleteSetup2FA = async (req: FastifyRequest, res: FastifyReply) => 
 
     if (!payload.id) return res.status(404).send({ error: "User not found" });
 
-    app.db.prepare("UPDATE players SET twoFA_verify = ?, secret_otp = ? WHERE id = ?").run(0, null, payload?.id);
+    app.db.prepare("UPDATE players SET secret_otp = ? WHERE id = ?").run(null, payload?.id);
 
     res.status(200).send({ message: "2fa deleted successfully" });
   } catch (error) {
@@ -43,20 +43,27 @@ export const verifySetup2FA = async (req: FastifyRequest<{ Body: LoginBody }>, r
     const isValid = authenticator.verify({ token: token, secret: secret });
 
     if (isValid) {
-      app.db.prepare("UPDATE players SET twoFA_verify = ?, secret_otp = ? WHERE id = ?").run(1, secret, payload?.id);
+      app.db.prepare("UPDATE players SET secret_otp = ? WHERE id = ?").run(secret, payload?.id);
       return res.status(200).send({ message: "Valid OTP code And user registered" });
     }
 
     return res.status(401).send({ error: "Invalid otp code" });
   } catch (err) {
-    res.status(500).send({ error: 'Error occurred while verifying 2FA setup' });
+    res.status(500).send({ error: "Error occurred while verifying 2FA setup" });
   }
 };
 
 export const verify2FAToken = async (req: FastifyRequest<{ Body: LoginBody }>, res: FastifyReply) => {
   try {
-    let { token, email, rememberMe } = req.body;
     let user = {} as UserInfos | null;
+
+    const loginToken = req.cookies.loginToken;
+    if (!loginToken) return res.status(401).send({ error: "UNAUTHORIZED" });
+
+    const payload = app.jwt.jwt0.verify(loginToken) as Payload;
+
+    let { token, email } = req.body;
+
 
     email = email.toLowerCase();
     //find user
@@ -67,15 +74,14 @@ export const verify2FAToken = async (req: FastifyRequest<{ Body: LoginBody }>, r
     }
 
     if (!user) return res.status(404).send({ error: "User not found" });
+    
 
     const secret = user?.secret_otp;
     const isValid = authenticator.verify({ token: token, secret: secret });
 
+
+
     if (isValid) {
-      const updatedUser = app.db.prepare("UPDATE players SET twoFA_verify = ? WHERE id = ?").run(1, user.id);
-
-      if (updatedUser.changes == 0) return;
-
       const refreshOptions = {
         path: "/",
         secure: true,
@@ -90,7 +96,7 @@ export const verify2FAToken = async (req: FastifyRequest<{ Body: LoginBody }>, r
         sameSite: "lax",
       } as SerializeOptions;
 
-      if (rememberMe) {
+      if (payload.rememberMe) {
         refreshOptions.maxAge = 86400;
         accessOptions.maxAge = 900;
       }
@@ -115,6 +121,6 @@ export const verify2FAToken = async (req: FastifyRequest<{ Body: LoginBody }>, r
     }
     return res.status(401).send({ error: "INVALID_OTP" });
   } catch (error) {
-    res.status(500).send({ error: 'Error occurred while verifying 2FA OTP' });
+    res.status(500).send({ error: "Error occurred while verifying 2FA OTP" });
   }
 };

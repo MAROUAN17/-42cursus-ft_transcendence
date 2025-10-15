@@ -6,6 +6,7 @@ import type { UserInfos } from "../models/user.model.js";
 import { pump } from "../server.js";
 import fs, { access } from "fs";
 import path from "path";
+import type { FastifyMultipartBaseOptions } from "@fastify/multipart";
 
 export const fetchUser = async (req: FastifyRequest, res: FastifyReply) => {
   try {
@@ -37,7 +38,7 @@ export const fetchProfileUser = async (req: FastifyRequest<{ Params: { username?
     if (!user) return res.status(404).send({ error: "USER NOT FOUND" });
 
     if (!username || username == user.username) {
-      return res.status(200).send({ infos: user, profileType: "me", twoFAVerify: user?.twoFA_verify });
+      return res.status(200).send({ infos: user, profileType: "me", twoFAVerify: user?.secret_otp ? true : false });
     }
 
     if (username) {
@@ -184,7 +185,12 @@ export const uploadProfilePicture = async (req: FastifyRequest, res: FastifyRepl
     const accessToken = req.cookies.accessToken;
     const payload = app.jwt.jwt1.decode(accessToken) as Payload;
 
-    const fileData = await req.file();
+    const options = { limits: { filedSize: 1000000 } } as FastifyMultipartBaseOptions;
+    const fileData = await req.file(options);
+
+    fileData?.file.on("limit", () => {
+      return res.status(401).send({ error: "File max size reached 1MB" });
+    });
 
     if (fileData?.mimetype != "image/png" && fileData?.mimetype != "image/jpg" && fileData?.mimetype != "image/jpeg") {
       return res.status(401).send({ error: "File format not supported!" });
@@ -195,7 +201,7 @@ export const uploadProfilePicture = async (req: FastifyRequest, res: FastifyRepl
     const fileName = Date.now().toString() + "." + fileData?.mimetype.split("/")[1];
     const filePath = path.join(uploadDir, fileName);
 
-    await pump(fileData!.file, fs.createWriteStream(filePath));
+    await pump(fileData?.file, fs.createWriteStream(filePath));
 
     const user = app.db.prepare("SELECT * FROM players WHERE id = ?").get(payload?.id);
     if (!user) return res.status(401).send({ error: "USER NOT FOUND" });
@@ -211,7 +217,7 @@ export const uploadProfilePicture = async (req: FastifyRequest, res: FastifyRepl
 
     return res.status(200).send({ message: "files uploaded", avatar: fileName });
   } catch (err) {
-    return res.status(500).send({ error: 'Picture upload failed' });
+    return res.status(500).send({ error: "Picture upload failed" });
   }
 };
 

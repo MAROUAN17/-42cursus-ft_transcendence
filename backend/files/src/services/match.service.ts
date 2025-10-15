@@ -191,6 +191,53 @@ export const get_player_game = async (req: FastifyRequest, res: FastifyReply) =>
   }
 };
 
+export const invite_game = async (req: FastifyRequest, res: FastifyReply) => {
+  try {
+    const { player1, player2 } = req.body as { player1: number; player2: number };
+
+    if (!player1 || !player2) {
+      return res.status(400).send("Missing players info");
+    }
+
+    const info1 = app.db
+      .prepare("SELECT username, avatar FROM players WHERE id = ?")
+      .get(player1);
+    const info2 = app.db
+      .prepare("SELECT username, avatar FROM players WHERE id = ?")
+      .get(player2);
+
+    if (!info1 || !info2) {
+      return res.status(404).send("One or both players not found");
+    }
+
+    const player1Obj: Player = {
+      id: player1,
+      username: info1.username,
+      avatar: info1.avatar,
+    };
+
+    const player2Obj: Player = {
+      id: player2,
+      username: info2.username,
+      avatar: info2.avatar,
+    };
+
+    const game: Game = {
+      id: uuidv4(),
+      player1: player1Obj,
+      player2: player2Obj,
+      status: "active",
+      createdAt: new Date(),
+    };
+
+    activeGames.push(game);
+    return res.status(200).send({ message: "Game created successfully", game });
+  } catch (err) {
+    console.error("Error creating game:", err);
+    return res.status(500).send({ error: "Internal Server Error" });
+  }
+};
+
 export const updateGameForId = (gameId: string, updates: Partial<GameInfo>) => {
   const game = activeGames.find(g => g.id === gameId);
   if (game) {
@@ -204,3 +251,4 @@ export const getGameStateById = (gameId: string) => {
   const game = activeGames.find(g => g.id === gameId);
   return game?.gameInfo || null;
 };
+

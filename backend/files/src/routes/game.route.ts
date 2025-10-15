@@ -5,7 +5,8 @@ import {
   get_game, 
   get_queue_status, 
   leave_queue, 
-  get_player_game 
+  get_player_game, 
+  invite_game
 } from "../services/match.service.js";
 
 import { create_tournament, delete_tournament,
@@ -22,6 +23,7 @@ export const gameRoutes: FastifyPluginAsync = async (fastify) => {
   fastify.get("/game", { websocket: true }, handleGameConnection);
   
   fastify.post("/match/pair", pair_players);
+  fastify.post("/match/invite", invite_game);
   fastify.get("/match/queue-status",  get_queue_status);
   fastify.delete("/match/leave-queue", leave_queue);
   fastify.get("/match/game/:gameId", get_game);

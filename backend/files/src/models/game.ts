@@ -37,6 +37,8 @@ export interface Room {
   ready: boolean;
   gameInfo: GameInfo;
   intervalId?: NodeJS.Timer | undefined;
+  leftPlayer?:number;
+  rightPlayer?:number;
   startedAt?: Date;
   scoreLeft?: number;
   scoreRight?: number;

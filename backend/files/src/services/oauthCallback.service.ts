@@ -42,6 +42,19 @@ export const oauthCallback = async (req: FastifyRequest, res: FastifyReply) => {
       user = app.db.prepare("SELECT * from players WHERE intra_id = ?").get(intraId) as UserInfos | undefined;
     }
 
+    const twoFA_activated = user?.secret_otp ? true : false;
+    if (twoFA_activated) {
+      const loginToken = app.jwt.jwt0.sign({ id: user.id, email: user.email, username: user.username }, { expiresIn: "60s" });
+      res.setCookie("loginToken", loginToken, {
+        path: "/",
+        secure: true,
+        httpOnly: true,
+        sameSite: "lax",
+        maxAge: 60,
+      });
+      return res.redirect("https://localhost:3000/verify?email=" + user?.email);
+    }
+
     //sign new JWT tokens
     const access = app.jwt.jwt1.sign({ id: user?.id, email: user?.email, username: user?.username }, { expiresIn: "900s" });
     const refresh = app.jwt.jwt2.sign({ id: user?.id, email: user?.email, username: user?.username }, { expiresIn: "1d" });

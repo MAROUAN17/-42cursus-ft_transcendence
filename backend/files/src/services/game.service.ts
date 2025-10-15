@@ -194,7 +194,7 @@ export function handleGameConnection(connection: any, req: any) {
       if (msg.type === "casual") {
         userId = msg.userId;
         clients.set(userId, connection);
-        addPlayerToRoom(msg.gameId, userId);
+        addPlayerToRoom(msg.gameId, userId, msg.side);
         console.log('-- connectionn established with ', userId);
       }
       else if (msg.type === "tournament") {
@@ -231,10 +231,6 @@ export function handleGameConnection(connection: any, req: any) {
     if (userId) clients.delete(userId);
   });
 }
-function get_game(gameId:string):Room | undefined{
-  const game = rooms.find(r => r.gameId === gameId);
-  return game;
-}
 function getRoom(gameId: string, roundId:number): Room {
   let room = rooms.find(r => r.roundId === roundId);
   if (!room)
@@ -252,21 +248,21 @@ function getRoom(gameId: string, roundId:number): Room {
   return room;
 }
 
-function addPlayerToRoom(gameId: string, playerId: string) {
+function addPlayerToRoom(gameId: string, playerId: number, side:string) {
   const room = getRoom(gameId, 0);
 
-  if (!room.player1) {
-    room.player1 = playerId;
-  } else if (!room.player2 && room.player1 !== playerId) {
-    room.player2 = playerId;
-  }
-
-  if (room.player1 && room.player2 && !room.ready) {
+  if (!room.leftPlayer && side == "left")
+    room.leftPlayer = playerId;
+  else if (!room.rightPlayer && room.rightPlayer !== playerId && side == "right")
+    room.rightPlayer = playerId;
+  if (room.leftPlayer&& room.rightPlayer && !room.ready) {
+    room.player1 = String (room.leftPlayer),
+    room.player2 = String (room.rightPlayer),
     room.ready = true;
     room.winner = undefined;
     room.startedAt = new Date();
     room.type = "casaul"
-    console.log(`-- Room ${room.gameId} ready! Players: ${room.player1}, ${room.player2} `);
+    console.log(`-- Room ${room.gameId} ready! Players: left : ${room.player1}, right : ${room.player2} `);
     startGame(room);
   } else {
     console.log(`-- Waiting for another player in room gameId: ${gameId}`);

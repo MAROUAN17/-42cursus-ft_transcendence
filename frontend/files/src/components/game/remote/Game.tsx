@@ -19,6 +19,7 @@ export default function RGame() {
   const [tournamentId, setTournamentId] = useState(0);
   const [gameEnded, setGameEnded] = useState<boolean>(false);
   const [winnerId, setWinnerId] = useState<string>("");
+  const navigate = useNavigate();
 
   const [websocket, setWebsocket] = useState<WebSocket | null>(null);
   const [gameType, setGameType] = useState("");
@@ -32,12 +33,12 @@ export default function RGame() {
   const { user } = useUserContext();
   const id = user?.id ? user.id.toString() : "";
   // console.log("------ ",user)
-  const navigate = useNavigate();
   const start_game = (sessionGame: any) => {
     let interval: NodeJS.Timeout;
 
     interval = setInterval(() => {
       // console.log("ddddd");
+      
       if (websocket && websocket.readyState === WebSocket.OPEN) {
         console.log("eeeee");
         websocket.send(
@@ -47,6 +48,7 @@ export default function RGame() {
             gameId: sessionGame.id || "",
             tournamentId: tournamentId,
             roundNumber: sessionGame.round_number,
+            side:game.side,
           })
         );
         console.log("Game sent to server ✅: ", user, id);
@@ -174,9 +176,10 @@ export default function RGame() {
           <img src="lost.png" alt="lost-popup" className="w-[400px]" />
           <div className="flex flex-col items-center gap-3 mt-4">
             <button className="bg-neon text-white text-md text-xl px-12 py-2 rounded-lg font-extrabold">NEW GAME</button>
-            <button className="bg-white text-neon text-xl px-12 py-2 rounded-lg font-extrabold">BACK HOME</button>
+            <button className="bg-white text-neon text-xl px-12 py-2 rounded-lg font-extrabold" onClick={() => navigate('/')}>BACK HOME</button>
           </div>
         </div>)) : null}
+        
       <div className={`font-poppins h-screen bg-gameBg flex items-center justify-center ${gameEnded ? "blur-sm pointer-events-none" : null}`}>
         <RHeader
           scoreLeft={gameInfo?.scoreLeft ?? 0}

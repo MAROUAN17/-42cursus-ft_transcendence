@@ -19,7 +19,6 @@ sqlite3 "$DB_NAME" <<EOF
         reset_token TEXT,
         logged_in BOOLEAN DEFAULT FALSE,
         online BOOLEAN DEFAULT FALSE,
-        twoFA_verify BOOLEAN DEFAULT FALSE,
         friends JSON DEFAULT '[]',
         block_list JSON DEFAULT '[]',
         first_login BOOLEAN DEFAULT TRUE,

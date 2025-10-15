@@ -32,7 +32,7 @@ export default function HistoryCard({ match, userId }: props) {
         </h1>
       </div>
       <div className="flex justify-center w-[200px]">
-        <h1 className="font-bold">{match.startedAt}</h1>
+        <h1 className="font-bold">{match.startedAt.replace('(Coordinated Universal Time)', ' ')}</h1>
       </div>
     </div>
   );
