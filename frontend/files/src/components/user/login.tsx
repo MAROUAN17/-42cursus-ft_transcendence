@@ -25,11 +25,8 @@ function Login() {
         { withCredentials: true }
       )
       .then(function (res) {
-        console.log(res.data.twoFA);
         if (res.data.twoFA) {
-          navigate("/verify?email=" + email, {
-            state: { rememberMe: rememberRef.current?.checked },
-          });
+          navigate("/verify?email=" + email);
         } else {
           navigate("/avatar");
         }

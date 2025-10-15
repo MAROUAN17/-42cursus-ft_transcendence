@@ -17,9 +17,9 @@ export const logoutUser = async (req: FastifyRequest, res: FastifyReply) => {
 
     const updateUserState = app.db
       .prepare(
-        "UPDATE players SET logged_in = ?, twoFA_verify = ? WHERE id = ?"
+        "UPDATE players SET logged_in = ? WHERE id = ?"
       )
-      .run(0, 0, payload.id);
+      .run(0, payload.id);
 
     if (updateUserState.changes == 0)
       return res.status(500).send({ error: "Error occured" });
@@ -43,6 +43,7 @@ export const logoutUser = async (req: FastifyRequest, res: FastifyReply) => {
         sameSite: "lax",
       });
   } catch (err) {
+    console.log(err);
     res.status(500).send({ error: err.data.error });
   }
 };

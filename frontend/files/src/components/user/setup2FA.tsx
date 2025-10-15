@@ -35,10 +35,10 @@ const Setup2FA: React.FC<props> = (props) => {
   const formHandler = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const otpNbr = numbers.join("");
+    
     api
       .post("/2fa/setup/verify", { token: otpNbr, secret: qrCodeSecret }, { withCredentials: true })
-      .then(function (res) {
-        // navigate("/");
+      .then(function () {
         props?.setSetup2fa(false);
         props?.setTwoFAverified(true);
       })

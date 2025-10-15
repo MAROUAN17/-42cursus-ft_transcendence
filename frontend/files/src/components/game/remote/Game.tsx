@@ -177,6 +177,7 @@ export default function RGame() {
             <button className="bg-white text-neon text-xl px-12 py-2 rounded-lg font-extrabold">BACK HOME</button>
           </div>
         </div>)) : null}
+        
       <div className={`font-poppins h-screen bg-gameBg flex items-center justify-center ${gameEnded ? "blur-sm pointer-events-none" : null}`}>
         <RHeader
           scoreLeft={gameInfo?.scoreLeft ?? 0}

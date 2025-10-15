@@ -34,7 +34,7 @@ export const loginUser = async (req: FastifyRequest<{ Body: LoginBody }>, res: F
     const twoFA_activated: boolean = user?.secret_otp ? true : false;
 
     if (twoFA_activated) {
-      const loginToken = app.jwt.jwt0.sign({ id: user.id, email: user.email, username: user.username }, { expiresIn: "60s" });
+      const loginToken = app.jwt.jwt0.sign({ id: user.id, email: user.email, username: user.username, rememberMe: rememberMe }, { expiresIn: "60s" });
       res
         .setCookie("loginToken", loginToken, {
           path: "/",
