@@ -85,11 +85,9 @@ export default function Pairing() {
     return () => clearInterval(interval);
   }, [loading, navigate]);
 
-  // useEffect(() => {
-  //   setTimeout(() => {
-  //     navigate("/remote_game");
-  //   }, 5000);
-  // }, [gameInfo, paired])
+  useEffect(() => {
+    console.log("oppoent", opponent)
+  }, [opponent])
   const fetchData = async () => {
     console.log("entered");
     try {
@@ -176,7 +174,7 @@ export default function Pairing() {
           <div className="space-y-3 items-center absolute right-[80px] top-[225px]">
             {/* <div className="md:w-32 h-1 bg-purple-500 "></div> */}
             <img
-              src={user?.avatar}
+              src={opponent?.avatar}
               alt={`${user?.avatar}-profile`}
               className="w-[150px] h-[150px] rounded-full border-3 border-purple-400 object-cover"
             />
