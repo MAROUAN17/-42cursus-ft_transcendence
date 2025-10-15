@@ -5,14 +5,18 @@ import axios from "axios";
 import { useNavigate } from "react-router";
 import { useWebSocket } from "../contexts/websocketContext";
 import { UserContext, useUserContext } from "../contexts/userContext";
+import {type  Player, type Game } from "../game/remote/Types";
 
 export default function Pairing() {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
   const [dots, setDots] = useState("");
-  const [gameInfo, setGameInfo] = useState(null);
-  // const [username, setUsername] = useState("");
+  const [gameInfo, setGameInfo] = useState<Game>(null);
+  const [opponent, setOpponent] = useState<Player>({
+      username: "?",
+      avatar: "?"
+    });
   const [paired, setPaired] = useState(false);
   const [countdown, setCountdown] = useState(2);
 
@@ -31,7 +35,8 @@ export default function Pairing() {
   useEffect(() => {
     let timer;
     if (paired) {
-      console.log("players are paired");
+      console.log("players are paired", gameInfo);
+      setOpponent(gameInfo.opponent)
       timer = setInterval(() => {
         setCountdown((prev) => {
           if (prev <= 1) {
@@ -54,15 +59,15 @@ export default function Pairing() {
           const response = await axios.get(`https://localhost:5000/match/my-game/${id}`);
 
           if (response.data.game) {
+            console.log("------", response.data.game)
             setGameInfo(response.data.game);
             setLoading(false);
 
             sessionStorage.setItem("currentGame", JSON.stringify(response.data.game));
             setPaired(true);
-            setTimeout(() => {
-              navigate("/remote_game");
-            }, 5000);
-
+            // setTimeout(() => {
+            //   navigate("/remote_game");
+            // }, 5000);
             clearInterval(interval);
           }
         } catch (err) {
@@ -80,6 +85,11 @@ export default function Pairing() {
     return () => clearInterval(interval);
   }, [loading, navigate]);
 
+  // useEffect(() => {
+  //   setTimeout(() => {
+  //     navigate("/remote_game");
+  //   }, 5000);
+  // }, [gameInfo, paired])
   const fetchData = async () => {
     console.log("entered");
     try {
@@ -165,11 +175,13 @@ export default function Pairing() {
 
           <div className="space-y-3 items-center absolute right-[80px] top-[225px]">
             {/* <div className="md:w-32 h-1 bg-purple-500 "></div> */}
-            <div className="items-center w-[150px] h-[150px] rounded-full bg-purple-500 border-2 border-purple-400 flex items-center justify-center">
-              <span className="text-white text-xl md:text-2xl font-bold ">?</span>
-            </div>
+            <img
+              src={user?.avatar}
+              alt={`${user?.avatar}-profile`}
+              className="w-[150px] h-[150px] rounded-full border-3 border-purple-400 object-cover"
+            />
             <div className="text-center relative left-1/2 transform -translate-x-1/2 bg-neon text-white px-4 py-2 rounded-full text-sm font-bold">
-              ?
+              {opponent.username}
             </div>
           </div>
 

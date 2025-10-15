@@ -38,6 +38,7 @@ export default function RGame() {
 
     interval = setInterval(() => {
       // console.log("ddddd");
+      
       if (websocket && websocket.readyState === WebSocket.OPEN) {
         console.log("eeeee");
         websocket.send(
@@ -47,6 +48,7 @@ export default function RGame() {
             gameId: sessionGame.id || "",
             tournamentId: tournamentId,
             roundNumber: sessionGame.round_number,
+            side:game.side,
           })
         );
         console.log("Game sent to server ✅: ", user, id);
