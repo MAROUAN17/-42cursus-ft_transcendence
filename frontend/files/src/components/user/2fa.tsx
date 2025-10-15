@@ -1,12 +1,10 @@
 import { useEffect, useState, useRef } from "react";
 import axios from "axios";
-import { useLocation, useNavigate, useSearchParams } from "react-router";
+import { useNavigate, useSearchParams } from "react-router";
 
 function Page2FA() {
   const [searchParams, setSearchParams] = useSearchParams();
   const userEmail = searchParams.get("email");
-  const location = useLocation();
-  const { rememberMe } = location.state;
   const [errorMssg, setErrorMssg] = useState<string>("");
   const [errorFlag, setErrorFlag] = useState<boolean>(false);
   const [timerVerify, setTimerVerify] = useState<number>(60);
@@ -33,7 +31,7 @@ function Page2FA() {
     axios
       .post(
         "https://localhost:5000/2fa/verify-token",
-        { token: otpNbr, email: userEmail, rememberMe: rememberMe },
+        { token: otpNbr, email: userEmail },
         { withCredentials: true }
       )
       .then(function (res) {

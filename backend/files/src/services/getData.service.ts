@@ -13,8 +13,8 @@ export const deleteAccount = async (req: FastifyRequest, res: FastifyReply) => {
         intra_id = NULL, avatar = './deleted.png', \
         email = '', password = NULL, secret_otp = NULL,\
         reset_flag = FALSE, reset_time = NULL,\
-        logged_in = FALSE, twoFA_verify = FALSE,\
-        friends = '[]', block_list = '[]' WHERE id = ?"
+        logged_in = FALSE, friends = '[]',\
+        block_list = '[]' WHERE id = ?"
       )
       .run(payload.id);
     if (updatedRow.changes == 0) return res.status(404).send({ error: "User Not Found!" });

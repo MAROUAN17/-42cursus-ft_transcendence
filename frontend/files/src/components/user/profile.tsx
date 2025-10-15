@@ -68,7 +68,6 @@ export default function Profile() {
     first_login: false,
     intra_id: 0,
     online: false,
-    twoFA_verify: false,
   });
   const { send, addHandler } = useWebSocket();
   const [data, setData] = useState<ChartData[]>([]);
@@ -156,14 +155,7 @@ export default function Profile() {
     if (pictureInput.current?.files?.length) {
       const formData = new FormData();
       formData.append("avatar", pictureInput.current.files[0]);
-      api
-        .post("/edit-user/upload", formData, { withCredentials: true })
-        .then(function (res) {
-          console.log("EEE -> ", res.data.avatar);
-        })
-        .catch(function (err) {
-          console.log(err);
-        });
+      api.post("/edit-user/upload", formData, { withCredentials: true });
     }
 
     api
