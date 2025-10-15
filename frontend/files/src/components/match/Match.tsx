@@ -86,8 +86,9 @@ export default function Pairing() {
   }, [loading, navigate]);
 
   useEffect(() => {
-    console.log("oppoent", opponent)
-  }, [opponent])
+    opponent.avatar = '9896174.jpg'
+  }, [])
+
   const fetchData = async () => {
     console.log("entered");
     try {

@@ -55,13 +55,14 @@ export const verifySetup2FA = async (req: FastifyRequest<{ Body: LoginBody }>, r
 
 export const verify2FAToken = async (req: FastifyRequest<{ Body: LoginBody }>, res: FastifyReply) => {
   try {
-    let { token, email } = req.body;
     let user = {} as UserInfos | null;
 
     const loginToken = req.cookies.loginToken;
     if (!loginToken) return res.status(401).send({ error: "UNAUTHORIZED" });
 
     const payload = app.jwt.jwt0.verify(loginToken) as Payload;
+
+    let { token, email } = req.body;
 
 
     email = email.toLowerCase();
