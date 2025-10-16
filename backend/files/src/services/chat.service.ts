@@ -113,6 +113,11 @@ function handleBlock(currPacket: websocketPacket) {
 }
 
 function handleMessage(currPacket: ChatPacket) {
+  const updatedRow: rowInserted = app.db
+    .prepare(
+      "UPDATE notifications SET isRead = true, unreadCount = unreadCount + 1, updatedAt = (datetime('now')), message = ? WHERE sender_id = ? AND recipient_id = ? AND type = ?"
+    )
+    .run(currPacket.data.message, currPacket.data.sender_id, currPacket.data.recipient_id, "message");
   const savedMessage: rowInserted = app.db
     .prepare("INSERT INTO messages(sender_id, recipient_id, message) VALUES (?, ?, ?)")
     .run(currPacket.data.sender_id, currPacket.data.recipient_id, currPacket.data.message);
@@ -155,6 +160,43 @@ function handleLogNotif(packet: LogPacket) {
   }
 }
 
+function handleGameInvite(packet: ChatPacket) {
+  const checkInvite: rowInserted = app.db
+    .prepare("SELECT id FROM messages WHERE sender_id = ? AND recipient_id = ? AND type = ?")
+    .get(packet.data.sender_id, packet.data.recipient_id, "gameInvite");
+  // if (checkInvite) return;
+  const savedMessage: rowInserted = app.db
+    .prepare("INSERT INTO messages(sender_id, recipient_id, message, type) VALUES (?, ?, ?, ?)")
+    .run(packet.data.sender_id, packet.data.recipient_id, packet.data.message, "gameInvite");
+  packet.data.id = savedMessage.lastInsertRowid;
+  packet.data.isDelivered = true;
+  packet.data.type = "gameInvite";
+  console.log("sent msg -> ", packet);
+  let client = clients.get(packet.data.recipient_id);
+  if (client) sendToClient(client, packet);
+  if (packet.data.sender_id) {
+    client = clients.get(packet.data.sender_id);
+    packet.data.type = "markDelivered";
+    if (client) sendToClient(client, packet);
+    packet.data.type = "message";
+  }
+  checkNotificationMssg(packet);
+}
+
+function handleGameInviteRes(packet: ChatPacket) {
+  const checkInvite = app.db
+    .prepare("SELECT id FROM messages WHERE sender_id = ? AND recipient_id = ? AND type = ?")
+    .get(packet.data.sender_id, packet.data.recipient_id, "gameInvite");
+  if (checkInvite?.id != packet.data.id) return;
+  const updatedMessage = app.db
+    .prepare("UPDATE messages SET type = ?, message = ? WHERE id = ?")
+    .run(packet.data.type, packet.data.message, packet.data.id);
+  console.log("sent msg res -> ", packet);
+  let client = clients.get(packet.data.recipient_id);
+  if (client) sendToClient(client, packet);
+  checkNotificationMssg(packet);
+}
+
 async function processMessages() {
   if (isProcessingQueue || messageQueue.length == 0) return;
   isProcessingQueue = true;
@@ -167,6 +209,8 @@ async function processMessages() {
         if (currPacket.data.type == "message") handleMessage(currPacket);
         else if (currPacket.data.type == "markSeen") handleMsgMarkSeen(currPacket);
         else if (currPacket.data.type == "block") handleBlock(currPacket);
+        else if (currPacket.data.type == "gameInvite") handleGameInvite(currPacket);
+        else if (currPacket.data.type == "inviteAccepted" || currPacket.data.type == "inviteDeclined") handleGameInviteRes(currPacket);
       } else if (currPacket.type == "notification") {
         if (currPacket.data.type == "markSeen") handleNotifMarkSeen(currPacket);
         else if (currPacket.data.type == "friendReq") checkNotificationFriend(currPacket);

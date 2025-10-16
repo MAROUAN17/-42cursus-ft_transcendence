@@ -16,6 +16,7 @@ RUN mkdir -p /vault/cert/ /vault/shared/ && \
 
 COPY ./conf/vault.hcl /vault/config/vault.hcl
 COPY ./tools/entry.sh /entry.sh
-RUN chmod +x /entry.sh
+
+RUN chmod +x /entry.sh && rm -f /vault/shared/token.txt
 
 ENTRYPOINT ./entry.sh

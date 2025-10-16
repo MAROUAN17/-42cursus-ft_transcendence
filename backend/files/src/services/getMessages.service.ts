@@ -22,8 +22,9 @@ export const getMessages = async (req: FastifyRequest<{ Params: { user: number }
     const messages: messagePacket[] = query.map((row) => ({
       id: row.id,
       sender_id: row.sender_id,
-      type: "message",
+      type: row.type,
       isDelivered: true,
+      isAccepted: row.isAccepted,
       recipient_id: row.recipient_id,
       message: row.message,
       isRead: row.isRead,

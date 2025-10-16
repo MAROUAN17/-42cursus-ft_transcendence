@@ -2,8 +2,6 @@
 set -x
 # set -e
 
-rm -f /vault/shared/token.txt
-
 export VAULT_SKIP_VERIFY=true
 
 vault server -config=/vault/config/vault.hcl &

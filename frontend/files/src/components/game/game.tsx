@@ -26,7 +26,6 @@ export default function Game() {
     api
       .get("/getCustomization", { withCredentials: true })
       .then((res) => {
-        console.log("data -> ", res.data);
         setGameCustomisation(res.data);
       })
       .catch((err) => console.error(err));
@@ -56,7 +55,7 @@ export default function Game() {
       if (!gameCutomistion) return;
       if (down.has("ArrowUp")) setRightY((y) => Math.max(0, y - gameCutomistion?.paddleSpeed));
       if (down.has("ArrowDown")) setRightY((y) => Math.min(bounds.height - PADDLE_HEIGHT, y + gameCutomistion?.paddleSpeed));
-      if (down.has("w") || down.has("W")) setLeftY((y) => Math.max(0, y - 8));
+      if (down.has("w") || down.has("W")) setLeftY((y) => Math.max(0, y - gameCutomistion?.paddleSpeed));
       if (down.has("s") || down.has("S")) setLeftY((y) => Math.min(bounds.height - PADDLE_HEIGHT, y + gameCutomistion?.paddleSpeed));
 
       raf = requestAnimationFrame(step);
@@ -97,7 +96,7 @@ export default function Game() {
 
       <div
         ref={containerRef}
-        className={`relative animate-fadeIn min-w-[800px] min-h-[400px] [background-image:var(--selected-bg)] border-[var(--borderColor)] shadow-[0_0_10px_var(--shadowColor)] overflow-hidden bg-center bg-cover w-[70%] h-[70%] border-2 rounded-2xl bg-black`}
+        className={`relative animate-fadeIn min-w-[800px] min-h-[400px] [background-image:var(--selected-bg)] border-[var(--borderColor)] shadow-[0_0_10px_var(--shadowColor)] overflow-hidden bg-center bg-cover w-[55%] h-[55%] border-2 rounded-2xl bg-black`}
         style={
           {
             "--selected-bg": `url(${gameCutomistion?.selectedBg})`,

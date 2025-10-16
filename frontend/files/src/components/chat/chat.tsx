@@ -164,7 +164,7 @@ const Chat = () => {
     console.log("received msg -> ", packet);
     if (packet.type != "chat") return;
     const newMsg: messagePacket = packet.data;
-    if (newMsg.type === "message") {
+    if (newMsg.type === "message" || newMsg.type == "gameInvite") {
       if (newMsg.recipient_id == currUserRef.current?.id && newMsg.sender_id == targetUserRef.current?.id) {
         setMessages((prev) => [newMsg, ...prev]);
       }
@@ -217,7 +217,60 @@ const Chat = () => {
           return user.user.id == newMsg.sender_id ? { ...user, blockedByOther: !user.blockedByOther } : user;
         });
       });
+    } else if (newMsg.type == "inviteAccepted" || newMsg.type == "inviteDeclined") {
+      setMessages((prev) => {
+        return prev.map((msg: messagePacket) => {
+          return msg.tempId == newMsg.tempId ? { ...msg, id: newMsg.id, type: newMsg.type } : msg;
+        });
+      });
     }
+  }
+
+  function sendGamInviteRes(res: "inviteAccepted" | "inviteDeclined") {
+    if (!currUser || !targetUser) return;
+    const msgPacket: messagePacket = {
+      tempId: uuidv4(),
+      type: res,
+      isDelivered: false,
+      sender_id: currUser.id,
+      recipient_id: targetUser.id,
+      message: res == "inviteAccepted" ? `${currUser.username} Accepted the 1v1 Challenge!` : `${currUser.username} Declined the 1v1 Challenge!`,
+      isRead: false,
+      createdAt: new Date().toISOString().replace("T", " ").split(".")[0],
+    };
+    send(JSON.stringify(msgPacket));
+  }
+
+  function sendGameInvite() {
+    if (!currUser || !targetUser) return;
+    const msgPacket: messagePacket = {
+      tempId: uuidv4(),
+      type: "gameInvite",
+      isDelivered: false,
+      sender_id: currUser.id,
+      recipient_id: targetUser.id,
+      message: `${currUser.username} Sent a 1v1 Challenge!`,
+      isRead: false,
+      createdAt: new Date().toISOString().replace("T", " ").split(".")[0],
+    };
+    setUsers((prev: UsersLastMessage[]) => {
+      const index = prev.findIndex((u) => u.user.id === msgPacket.recipient_id);
+      if (index == -1) return prev;
+      const updatedUser: UsersLastMessage = {
+        ...prev[index],
+        lastMessage: msgPacket,
+      };
+      const copy = [...prev];
+      copy.splice(index, 1);
+      copy.unshift(updatedUser);
+      return copy;
+    });
+    const socketPacket: websocketPacket = {
+      type: "chat",
+      data: msgPacket,
+    };
+    setMessages((prev) => [msgPacket, ...prev]);
+    send(JSON.stringify(socketPacket));
   }
 
   function blockUser() {
@@ -432,21 +485,21 @@ const Chat = () => {
                       key={message.id ?? message.tempId}
                       className="self-start gap-1 break-all wrap-anywhere text-wrap bg-neon/[55%] flex flex-row text-white px-4 py-2 rounded-2xl rounded-tl-sm "
                     >
-                      <ChatBubble type="sender" message={message} />
+                      <ChatBubble type="sender" sendRes={sendGamInviteRes} username={targetUser.username} avatar={currUser?.avatar} message={message} />
                     </div>
                   ) : i + 1 < arr.length && arr[i + 1].recipient_id == targetUser.id ? (
                     <div
                       key={message.id ?? message.tempId}
                       className="self-start gap-1  break-all wrap-anywhere text-wrap flex flex-row bg-neon/[55%] text-white px-4 py-2 rounded-2xl rounded-tl-sm rounded-bl-sm"
                     >
-                      <ChatBubble type="sender" message={message} />
+                      <ChatBubble type="sender" sendRes={sendGamInviteRes} username={targetUser.username} avatar={currUser?.avatar} message={message} />
                     </div>
                   ) : (
                     <div
                       key={message.id ?? message.tempId}
                       className="self-start gap-1  break-all wrap-anywhere text-wrap flex flex-row bg-neon/[55%] text-white px-4 py-2 rounded-2xl rounded-bl-sm"
                     >
-                      <ChatBubble type="sender" message={message} />
+                      <ChatBubble type="sender" sendRes={sendGamInviteRes} username={targetUser.username} avatar={currUser?.avatar} message={message} />
                     </div>
                   )
                 ) : i == 0 || arr[i - 1].recipient_id == targetUser.id ? (
@@ -456,7 +509,7 @@ const Chat = () => {
                     data-message={JSON.stringify(message)}
                     className="bg-neon/[22%] gap-1 self-end break-all wrap-anywhere text-wrap flex flex-row text-white px-4 py-2 rounded-2xl rounded-tr-sm"
                   >
-                    <ChatBubble type="recipient" message={message} />
+                    <ChatBubble type="recipient" sendRes={sendGamInviteRes} username={targetUser.username} avatar={targetUser.avatar} message={message} />
                   </div>
                 ) : i + 1 < arr.length && arr[i + 1].recipient_id != targetUser.id ? (
                   <div
@@ -465,7 +518,7 @@ const Chat = () => {
                     data-message={JSON.stringify(message)}
                     className="self-end break-all wrap-anywhere text-wrap flex flex-row bg-neon/[22%] gap-1 text-white px-4 py-2 rounded-2xl rounded-tr-sm rounded-br-sm"
                   >
-                    <ChatBubble type="recipient" message={message} />
+                    <ChatBubble type="recipient" sendRes={sendGamInviteRes} username={targetUser.username} avatar={targetUser.avatar} message={message} />
                   </div>
                 ) : (
                   <div
@@ -474,7 +527,7 @@ const Chat = () => {
                     data-message={JSON.stringify(message)}
                     className="bg-neon/[22%] gap-1 self-end break-all wrap-anywhere text-wrap flex flex-row text-white px-4 py-2 rounded-2xl rounded-br-sm"
                   >
-                    <ChatBubble type="recipient" message={message} />
+                    <ChatBubble type="recipient" sendRes={sendGamInviteRes} username={targetUser.username} avatar={targetUser.avatar} message={message} />
                   </div>
                 )
               )}
@@ -507,7 +560,10 @@ const Chat = () => {
                     />
                     <RiSendPlaneFill className="text-white w-[20px] h-[20px]" />
                   </div>
-                  <div className="text-white hover:scale-[1.03] transition duration-300 flex justify-center items-center gap-1 font-bold rounded-full px-5 bg-neon/[65%]">
+                  <div
+                    onClick={sendGameInvite}
+                    className="text-white hover:scale-[1.03] transition duration-300 flex justify-center items-center gap-1 font-bold rounded-full px-5 bg-neon/[65%]"
+                  >
                     <PiPingPongFill className="w-[20px] h-[20px]" />
                     Invite
                   </div>
