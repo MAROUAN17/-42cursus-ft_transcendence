@@ -1,11 +1,12 @@
 export interface messagePacket {
   id?: number;
   tempId?: string;
-  type: "message" | "markSeen" | "markDelivered" | "block";
+  type: "message" | "markSeen" | "markDelivered" | "block" | "gameInvite" | "inviteAccepted" | "inviteDeclined";
   isDelivered: boolean;
   sender_id: number;
   recipient_id: number;
   message: string;
+  isAccepted?: boolean;
   createdAt: string;
   isRead: boolean;
 }

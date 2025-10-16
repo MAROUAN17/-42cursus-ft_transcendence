@@ -30,6 +30,8 @@ sqlite3 "$DB_NAME" <<EOF
         sender_id INTEGER NOT NULL,
         recipient_id INTEGER NOT NULL,
         message text NOT NULL,
+        type TEXT DEFAULT "message",
+        isAccepted BOOLEAN DEFAULT FALSE,
         isRead BOOLEAN DEFAULT FALSE,
         createdAt TEXT DEFAULT (datetime('now'))
     );
