@@ -305,10 +305,10 @@ export default function Profile() {
                     <img className="rounded-full w-[150px] h-[150px] object-cover" src={previewImg} alt="avatar" />
                   </label>
                 </div>
-                <div className="absolute left-[480px] top-[240px] flex items-center justify-center flex-col space-y-3 rounded-full">
+                <div className="absolute left-[480px] top-[250px] flex items-center justify-center flex-col space-y-3 rounded-full">
                   <input id="customFile" type="file" className="hidden text-white" ref={pictureInput} onChange={handleImageUpload} />
                   <label htmlFor="customFile">
-                    <LuUpload className="bg-neon text-white w-[45px] h-[45px] rounded-full p-2" />
+                    <LuUpload className="bg-neon text-white w-[35px] h-[35px] rounded-full p-2" />
                   </label>
                 </div>
                 {imgUploadError.length ? <div className="text-red-500 font-bold">{imgUploadError}</div> : null}
@@ -595,7 +595,7 @@ export default function Profile() {
                 <FaHistory className="text-neon outline outline-3 outline-offset-8 rounded-full" size={25} />
               </div>
               <div>
-                <h1 className="text-neon font-bold">Created</h1>
+                <h1 className="text-neon font-bold">Joined</h1>
                 <h1 className="text-white font-bold">{passedTime(createdAt)} ago</h1>
               </div>
             </div>

@@ -28,7 +28,7 @@ export async function checkLoginPageLoader() {
       error.response?.status == 401 &&
       error.response?.data.error == "LOGGED_IN"
     ) {
-      return redirect("/");
+      return redirect("/dashboard");
     }
   }
 }

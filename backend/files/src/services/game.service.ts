@@ -48,8 +48,8 @@ function saveData (room: Room) {
   }
   try {
     app.db
-      .prepare("INSERT INTO Room( player1, player2, startedAt, scoreLeft, scoreRight, winner) VALUES (?, ?, ?, ?, ?, ?)")
-      .run( room.player1, room.player2, room.startedAt?.toString(), room.scoreLeft, room.scoreRight, room.winner)
+      .prepare("INSERT INTO Room(player1, player2, scoreLeft, scoreRight, winner) VALUES (?, ?, ?, ?, ?)")
+      .run( room.player1, room.player2, room.scoreLeft, room.scoreRight, room.winner)
 
 
     app.db.prepare("UPDATE players SET score = score + ? WHERE id = ?")
@@ -113,7 +113,7 @@ function gameLoop (room:Room)
         const intersectY = (ny - (game.paddleRight.y + DefaultGame.paddleRight.height/ 2)) / (DefaultGame.bounds.height / 2);
         const speed = Math.hypot(game.ball.velX, game.ball.velY);
         const newAngle = Math.PI - intersectY * (Math.PI / 3);
-        const newSpeed = Math.min(900, speed * 1.02);
+        const newSpeed = Math.min(900, speed * 1.5);
         game.ball.velX =  Math.cos(newAngle) * newSpeed ;
         game.ball.velY =  -Math.sin(newAngle) * newSpeed ;
         game.dir = {
@@ -215,7 +215,7 @@ export function handleGameConnection(connection: any, req: any) {
             room.gameInfo.paddleLeft.y = msg.leftY;
           if (msg.side == "right")
             room.gameInfo.paddleRight.y = msg.rightY;
-          // console.log("Broadcasting to room:", room.gameId, "Players:", room.player1, room.player2, "type: ", room.type);
+          console.log("Broadcasting to room:", room.gameId, "Players:", room.player1, room.player2, "type: ", room.type);
           
           broadcastToRoom(room, { type: "updateY", game_info: room.gameInfo });
         }

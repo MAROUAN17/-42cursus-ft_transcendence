@@ -5,6 +5,8 @@ import RHeader from "./RHeader";
 import { type GameInfo, type Game, type Round } from "./Types";
 import { useNavigate } from "react-router";
 import { useUserContext } from "../../contexts/userContext";
+import type { gameCustomization } from "../../../types/user";
+import api from "../../../axios";
 
 export default function RGame() {
   //   const [i, setI] = useState(0);
@@ -13,6 +15,7 @@ export default function RGame() {
   const [gameInfo, setGameInfo] = useState<GameInfo>();
   const [game, setGame] = useState<Game>();
   const [round, setRound] = useState<Round>();
+  const [gameCutomistion, setGameCustomisation] = useState<gameCustomization | undefined>(undefined);
 
   const [leftY, setLeftY] = useState(140);
   const [rightY, setRightY] = useState(140);
@@ -33,12 +36,23 @@ export default function RGame() {
   const { user } = useUserContext();
   const id = user?.id ? user.id.toString() : "";
   // console.log("------ ",user)
+
+  useEffect(() => {
+    api
+      .get("/getCustomization", { withCredentials: true })
+      .then((res) => {
+        console.log("data -> ", res.data);
+        setGameCustomisation(res.data);
+      })
+      .catch((err) => console.error(err));
+  }, []);
+
   const start_game = (sessionGame: any) => {
     let interval: NodeJS.Timeout;
 
     interval = setInterval(() => {
-      // console.log("ddddd");
-      
+      console.log("ddddd");
+
       if (websocket && websocket.readyState === WebSocket.OPEN) {
         console.log("eeeee");
         websocket.send(
@@ -48,7 +62,7 @@ export default function RGame() {
             gameId: sessionGame.id || "",
             tournamentId: tournamentId,
             roundNumber: sessionGame.round_number,
-            side:game.side,
+            side: game.side,
           })
         );
         console.log("Game sent to server ✅: ", user, id);
@@ -62,7 +76,7 @@ export default function RGame() {
   };
   useEffect(() => {
     var storedGame = null;
-    //for testing round
+    // for testing round
     // sessionStorage.removeItem("currentGame");
     if (sessionStorage.getItem("currentGame")) {
       storedGame = sessionStorage.getItem("currentGame");
@@ -144,7 +158,7 @@ export default function RGame() {
           console.log("--- game eneded");
           setGameEnded(true);
           setWinnerId(message.winner);
-          // sessionStorage.removeItem("currentGame");
+          sessionStorage.removeItem("currentGame");
           // sessionStorage.removeItem('currentRound');
           sessionStorage.setItem("roundNb", "2");
           if (tournamentId) navigate(`/bracket/${tournamentId}`);
@@ -161,25 +175,34 @@ export default function RGame() {
     };
   }, [tournamentId]);
 
+  useEffect (() => {
+    console.log("-- game : ", game)
+  }, [game])
+
   return (
     <>
-     {gameEnded ? (
-      winnerId === user?.id.toString() ? 
-        (<div className="transition flex flex-col justify-center items-center bg-compBg rounded-lg w-[700px] h-[600px] absolute top-[23%] left-[37%] text-white text-6xl z-10">
-          <img src="victory.png" alt="victory-popup" className="w-[400px]" />
-          <div className="flex flex-col items-center gap-3 mt-4">
-            <button className="bg-neon text-white text-md text-xl px-12 py-2 rounded-lg font-extrabold">NEW GAME</button>
-            <button className="bg-white text-neon text-xl px-12 py-2 rounded-lg font-extrabold">BACK HOME</button>
+      {gameEnded ? (
+        winnerId === user?.id.toString() ? (
+          <div className="transition flex flex-col justify-center items-center bg-compBg rounded-lg w-[700px] h-[600px] absolute top-[23%] left-[37%] text-white text-6xl z-10">
+            <img src="victory.png" alt="victory-popup" className="w-[400px]" />
+            <div className="flex flex-col items-center gap-3 mt-4">
+              <button className="bg-neon text-white text-md text-xl px-12 py-2 rounded-lg font-extrabold" onClick={() => navigate('/pairing')}>NEW GAME</button>
+              <button className="bg-white text-neon text-xl px-12 py-2 rounded-lg font-extrabold" onClick={() => navigate('/dashboard')}>BACK HOME</button>
+            </div>
           </div>
-        </div>) : 
-        (<div className="transition flex flex-col justify-center items-center bg-compBg rounded-lg w-[700px] h-[600px] absolute top-[23%] left-[37%] text-white text-6xl z-10">
-          <img src="lost.png" alt="lost-popup" className="w-[400px]" />
-          <div className="flex flex-col items-center gap-3 mt-4">
-            <button className="bg-neon text-white text-md text-xl px-12 py-2 rounded-lg font-extrabold">NEW GAME</button>
-            <button className="bg-white text-neon text-xl px-12 py-2 rounded-lg font-extrabold" onClick={() => navigate('/')}>BACK HOME</button>
+        ) : (
+          <div className="transition flex flex-col justify-center items-center bg-compBg rounded-lg w-[700px] h-[600px] absolute top-[23%] left-[37%] text-white text-6xl z-10">
+            <img src="lost.png" alt="lost-popup" className="w-[400px]" />
+            <div className="flex flex-col items-center gap-3 mt-4">
+              <button className="bg-neon text-white text-md text-xl px-12 py-2 rounded-lg font-extrabold" onClick={() => navigate('/pairing')}>NEW GAME</button>
+              <button className="bg-white text-neon text-xl px-12 py-2 rounded-lg font-extrabold" onClick={() => navigate("/dashboard")}>
+                BACK HOME
+              </button>
+            </div>
           </div>
-        </div>)) : null}
-        
+        )
+      ) : null}
+
       <div className={`font-poppins h-screen bg-gameBg flex items-center justify-center ${gameEnded ? "blur-sm pointer-events-none" : null}`}>
         <RHeader
           scoreLeft={gameInfo?.scoreLeft ?? 0}
@@ -191,13 +214,16 @@ export default function RGame() {
 
         <div
           ref={containerRef}
-          className="relative border-2 border-neon rounded-2xl shadow-neon bg-black"
-          style={{
-            minWidth: 600,
-            minHeight: 360,
-            height: gameInfo?.bounds.height,
-            width: gameInfo?.bounds.width,
-          }}
+          className={`relative animate-fadeIn [background-image:var(--selected-bg)] border-[var(--borderColor)] shadow-[0_0_10px_var(--shadowColor)] overflow-hidden bg-center bg-cover w-[var(--width)] h-[var(--height)] border-2 rounded-2xl bg-black`}
+          style={
+            {
+              "--selected-bg": `url(${gameCutomistion?.selectedBg})`,
+              "--borderColor": gameCutomistion?.gameBorder,
+              "--shadowColor": gameCutomistion?.gameShadow,
+              "--width": `${game?.gameInfo.bounds.width ?? 1200}px`,
+              "--height":`${game?.gameInfo.bounds.height ?? 700}px`,
+            } as React.CSSProperties
+          }
         >
           <RBat
             x={gameInfo?.paddleLeft.x ?? 24}

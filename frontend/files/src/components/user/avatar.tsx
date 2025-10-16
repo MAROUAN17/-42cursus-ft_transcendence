@@ -26,7 +26,7 @@ export default function AvatarSelection() {
         { withCredentials: true }
       )
       .then(function () {
-        navigate("/");
+        navigate("/dashboard");
       });
   };
 
@@ -74,7 +74,7 @@ export default function AvatarSelection() {
       </form>
       <div
         onClick={() => {
-          navigate("/");
+          navigate("/dashboard");
         }}
         className="flex justify-center items-center mt-8 space-x-2"
       >

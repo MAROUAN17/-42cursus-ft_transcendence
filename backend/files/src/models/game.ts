@@ -72,8 +72,8 @@ export interface Tournament {
   name: string;
 }
 
-const GAME_WIDTH = 600;
-const GAME_HEIGHT = 400;
+const GAME_WIDTH = 1200;
+const GAME_HEIGHT = 700;
 const PADDLE_WIDTH = 18;
 const PADDLE_HEIGHT = 120;
 

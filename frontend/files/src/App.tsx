@@ -47,7 +47,7 @@ export default function App() {
       loader: checkAuthLoader,
       children: [
         {
-          path: "/",
+          path: "/dashboard",
           Component: Dashboard,
         },
         {
@@ -82,7 +82,7 @@ export default function App() {
       ],
     },
     {
-      path: "/home",
+      path: "/",
       Component: Home,
     },
     {

@@ -23,8 +23,10 @@ import { MdLeaderboard } from "react-icons/md";
 import { RiFacebookCircleFill, RiSwordFill } from "react-icons/ri";
 import { SiFacebook } from "react-icons/si";
 import { TbLayoutDashboardFilled } from "react-icons/tb";
+import { useNavigate } from "react-router";
 
 const Home = () => {
+  const navigate = useNavigate();
   return (
     <div className="bg-[#14121C] font-poppins w-screen min-h-screen flex flex-col">
       <div id="home" className="relative w-full h-screen flex flex-col items-center overflow-hidden">
@@ -63,6 +65,7 @@ const Home = () => {
           <button
             type="button"
             className="hover:scale-105 cursor-pointer transition duration-300 text-white z-10 bg-neon bg-gradient-to-r from-[#B13BFF] to-[#8528FB]/90 shadow-lg shadow-[#B13BFF]/50 font-bold rounded-[16px] px-8 py-2.5 text-center"
+            onClick={() => navigate('/login')}
           >
             Login
           </button>

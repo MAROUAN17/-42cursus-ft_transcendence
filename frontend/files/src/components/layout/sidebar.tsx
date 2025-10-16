@@ -18,7 +18,7 @@ const Sidebar = ({ setSettingsOpen, fetchData }: props) => {
         <img src="/src/assets/tmp_logo.png" className="" />
         <div className="flex flex-col gap-7">
           <MdHome
-            onClick={() => navigate("/")}
+            onClick={() => navigate("/dashboard")}
             className="text-white w-7 h-7 shadow-[0_0px_30px_rgba(0,0,0,0.25)] hover:shadow-neon transform hover:scale-150 hover:bg-neon p-1 transition rounded-full duration-300"
           />
           <FaUser
