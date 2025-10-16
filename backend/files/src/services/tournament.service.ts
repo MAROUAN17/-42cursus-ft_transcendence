@@ -35,7 +35,7 @@ export const create_tournament = async (req: FastifyRequest, res: FastifyReply) 
         VALUES (?, ?, ?, ?, ?)
     `);
 
-    stmt.run(
+    const info = stmt.run(
       tournament.name,
       JSON.stringify(tournament.players),
       tournament.createdAt.toISOString(),
@@ -43,11 +43,11 @@ export const create_tournament = async (req: FastifyRequest, res: FastifyReply) 
       tournament.admin
     );
     const tour = app.db.prepare("SELECT * FROM Tournament where id = ?")
-      .get(stmt.lastInsertRowid);
+      .get(info.lastInsertRowid);
 
     console.log(`Tournament ${tour} created sucessfully`);
-
-    res.status(200).send({tour});
+    tour.players = JSON.parse(tour.players);
+    res.status(200).send({tournament:tour});
   } catch (err: any) {
     console.error(err);
     return res.status(500).send({ error: "Failed to create tournament" });
@@ -109,7 +109,6 @@ export const get_tournaments = async (
       return {
         ...t,
         players,
-        createdAt: new Date(t.createdAt)
       };
     });
 
@@ -137,18 +136,26 @@ export const get_tournament_by_id = async (req: FastifyRequest, res: FastifyRepl
       return res.status(404).send({ error: "Tournament not found" });
     }
 
+    const playerIds: number[] = JSON.parse(tournament.players);
+
+    const players = playerIds.map((id) =>
+      app.db
+        .prepare("SELECT id, username, avatar FROM players WHERE id = ?")
+        .get(id)
+    );
+
     const resData = {
       ...tournament,
-      players: JSON.parse(tournament.players),
-      createdAt: new Date(tournament.createdAt),
+      players,
     };
 
-    return res.send(resData);
+    return res.status(200).send(resData);
   } catch (err) {
     console.error("Error fetching tournament:", err);
     return res.status(500).send({ error: "Failed to fetch tournament" });
   }
 };
+
 
 export const delete_tournament = async (
   req: FastifyRequest,

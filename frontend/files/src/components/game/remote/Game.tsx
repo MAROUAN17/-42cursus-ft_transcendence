@@ -30,8 +30,6 @@ export default function RGame() {
   const PADDLE_HEIGHT = 120;
   const paddleLeft = { x: 24, y: leftY, width: PADDLE_WIDTH, height: PADDLE_HEIGHT };
   const paddleRight = { x: 600 - 24 - PADDLE_WIDTH, y: rightY, width: PADDLE_WIDTH, height: PADDLE_HEIGHT };
-  const [roundNumber, setRounNumber] = useState(2);
-  //   const [id, setId] = useState(0);
 
   const { user } = useUserContext();
   const id = user?.id ? user.id.toString() : "";
@@ -81,22 +79,25 @@ export default function RGame() {
     if (sessionStorage.getItem("currentGame")) {
       storedGame = sessionStorage.getItem("currentGame");
       setGameType("casual");
-      console.log("game type seted");
-    } else {
-      console.log("this game from tournament");
-      storedGame = sessionStorage.getItem("currentRound");
-      setGameType("tournament");
-      const userRound = JSON.parse(storedGame);
-      setRound(userRound);
-    }
+      // const userGame = JSON.parse(storedGame);
+      // setRound(userGame.round);
+      // console.log("game type seted");
+    } 
+    // else {
+    //   console.log("this game from tournament");
+    //   storedGame = sessionStorage.getItem("currentRound");
+    //   setGameType("tournament");
+    //   const userGame = JSON.parse(storedGame);
+    //   setRound(userGame.round);
+    // }
     if (!storedGame) {
       console.log("No game found in sessionStorage.");
       return;
     }
-    console.log("current game", storedGame);
+    // console.log("-- current game", storedGame);
 
     const sessionGame = JSON.parse(storedGame);
-    if (sessionGame.tournament_id) setTournamentId(sessionGame.tournament_id);
+    if (sessionGame.round.tournament_id) setTournamentId(sessionGame.tournament_id);
     setGame(sessionGame);
     start_game(sessionGame);
   }, [websocket, user, tournamentId]);
@@ -141,12 +142,11 @@ export default function RGame() {
   }, [leftY, rightY]);
 
   useEffect(() => {
-    // console.log(`id : ${tournamentId}  gameType: ${gameType}`)
-    if (gameType == "tournament" && !tournamentId) return;
-    console.log("user -> ");
+    if ( !gameType || (gameType == "tournament" && !round)) return;
+    // console.log(`id : ${round.tournament_id}  gameType: ${gameType}`)
     const ws = new WebSocket("wss://localhost:5000/game");
     setWebsocket(ws);
-    console.log("web socket ===== ", ws);
+    // console.log("web socket ===== ", ws);
     ws.onopen = () => {
       console.log("WebSocket Connected!");
     };
@@ -158,9 +158,8 @@ export default function RGame() {
           console.log("--- game eneded");
           setGameEnded(true);
           setWinnerId(message.winner);
-          sessionStorage.removeItem("currentGame");
+          // sessionStorage.removeItem("currentGame");
           // sessionStorage.removeItem('currentRound');
-          sessionStorage.setItem("roundNb", "2");
           if (tournamentId) navigate(`/bracket/${tournamentId}`);
           if (message.type == "updateY") console.log("updateY");
         }
@@ -204,7 +203,7 @@ export default function RGame() {
       ) : null}
 
       <div className={`font-poppins h-screen bg-gameBg flex items-center justify-center ${gameEnded ? "blur-sm pointer-events-none" : null}`}>
-        <RHeader
+        <RHeadergit config pull.rebase false
           scoreLeft={gameInfo?.scoreLeft ?? 0}
           scoreRight={gameInfo?.scoreRight ?? 0}
           you={game?.you || round?.player1}
