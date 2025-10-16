@@ -59,7 +59,7 @@ export default function RGame() {
             userId: id,
             gameId: sessionGame.id || "",
             tournamentId: tournamentId,
-            roundNumber: sessionGame.round_number,
+            roundNumber: sessionGame.round_number ?? 0,
             side: game.side,
           })
         );
@@ -82,7 +82,7 @@ export default function RGame() {
       // const userGame = JSON.parse(storedGame);
       // setRound(userGame.round);
       // console.log("game type seted");
-    } 
+    }
     // else {
     //   console.log("this game from tournament");
     //   storedGame = sessionStorage.getItem("currentRound");
@@ -97,7 +97,7 @@ export default function RGame() {
     // console.log("-- current game", storedGame);
 
     const sessionGame = JSON.parse(storedGame);
-    if (sessionGame.round.tournament_id) setTournamentId(sessionGame.tournament_id);
+    // if (sessionGame.round.tournament_id) setTournamentId(sessionGame.tournament_id);
     setGame(sessionGame);
     start_game(sessionGame);
   }, [websocket, user, tournamentId]);
@@ -113,12 +113,13 @@ export default function RGame() {
 
     let raf = 0;
     const step = () => {
+      if (!gameCutomistion) return;
       if (game?.side == "right" || Number(id) == round?.player1) {
-        if (down.has("ArrowUp")) setRightY((y) => Math.max(0, y - 8));
-        if (down.has("ArrowDown")) setRightY((y) => Math.min((gameInfo?.bounds.height ?? 0) - 120, y + 8));
+        if (down.has("ArrowUp")) setRightY((y) => Math.max(0, y - gameCutomistion?.paddleSpeed));
+        if (down.has("ArrowDown")) setRightY((y) => Math.min((gameInfo?.bounds.height ?? 0) - 120, y + gameCutomistion?.paddleSpeed));
       } else if (game?.side == "left" || Number(id) == round?.player2) {
-        if (down.has("ArrowUp")) setLeftY((y) => Math.max(0, y - 8));
-        if (down.has("ArrowDown")) setLeftY((y) => Math.min((gameInfo?.bounds.height ?? 0) - 120, y + 8));
+        if (down.has("ArrowUp")) setLeftY((y) => Math.max(0, y - gameCutomistion?.paddleSpeed));
+        if (down.has("ArrowDown")) setLeftY((y) => Math.min((gameInfo?.bounds.height ?? 0) - 120, y + gameCutomistion?.paddleSpeed));
       }
 
       raf = requestAnimationFrame(step);
@@ -132,21 +133,21 @@ export default function RGame() {
       window.removeEventListener("keydown", onKeyDown);
       window.removeEventListener("keyup", onKeyUp);
     };
-  }, [gameInfo?.bounds.height]);
+  }, [gameInfo?.bounds.height, gameCutomistion]);
 
   useEffect(() => {
     if (websocket && websocket.readyState == WebSocket.OPEN) {
       websocket.send(JSON.stringify({ type: "updateY", leftY, rightY, roundId: gameInfo?.roundId, gameId: game.id, side: game.side }));
-      console.log(`leftY ${leftY} rightY ${rightY}`);
+      console.log(`leftY ${leftY} rightY ${rightY} jj ${gameCutomistion?.paddleSpeed}`);
     } else console.log("there is a proble in socket:", websocket);
   }, [leftY, rightY]);
 
   useEffect(() => {
-    if ( !gameType || (gameType == "tournament" && !round)) return;
+    // if ( !gameType || (gameType == "tournament" && !round)) return;
     // console.log(`id : ${round.tournament_id}  gameType: ${gameType}`)
+    // console.log("web socket ===== ", ws);
     const ws = new WebSocket("wss://localhost:5000/game");
     setWebsocket(ws);
-    // console.log("web socket ===== ", ws);
     ws.onopen = () => {
       console.log("WebSocket Connected!");
     };
@@ -174,9 +175,9 @@ export default function RGame() {
     };
   }, [tournamentId]);
 
-  useEffect (() => {
-    console.log("-- game : ", game)
-  }, [game])
+  useEffect(() => {
+    console.log("-- game : ", game);
+  }, [game]);
 
   return (
     <>
@@ -185,15 +186,21 @@ export default function RGame() {
           <div className="transition flex flex-col justify-center items-center bg-compBg rounded-lg w-[700px] h-[600px] absolute top-[23%] left-[37%] text-white text-6xl z-10">
             <img src="victory.png" alt="victory-popup" className="w-[400px]" />
             <div className="flex flex-col items-center gap-3 mt-4">
-              <button className="bg-neon text-white text-md text-xl px-12 py-2 rounded-lg font-extrabold" onClick={() => navigate('/pairing')}>NEW GAME</button>
-              <button className="bg-white text-neon text-xl px-12 py-2 rounded-lg font-extrabold" onClick={() => navigate('/dashboard')}>BACK HOME</button>
+              <button className="bg-neon text-white text-md text-xl px-12 py-2 rounded-lg font-extrabold" onClick={() => navigate("/pairing")}>
+                NEW GAME
+              </button>
+              <button className="bg-white text-neon text-xl px-12 py-2 rounded-lg font-extrabold" onClick={() => navigate("/dashboard")}>
+                BACK HOME
+              </button>
             </div>
           </div>
         ) : (
           <div className="transition flex flex-col justify-center items-center bg-compBg rounded-lg w-[700px] h-[600px] absolute top-[23%] left-[37%] text-white text-6xl z-10">
             <img src="lost.png" alt="lost-popup" className="w-[400px]" />
             <div className="flex flex-col items-center gap-3 mt-4">
-              <button className="bg-neon text-white text-md text-xl px-12 py-2 rounded-lg font-extrabold" onClick={() => navigate('/pairing')}>NEW GAME</button>
+              <button className="bg-neon text-white text-md text-xl px-12 py-2 rounded-lg font-extrabold" onClick={() => navigate("/pairing")}>
+                NEW GAME
+              </button>
               <button className="bg-white text-neon text-xl px-12 py-2 rounded-lg font-extrabold" onClick={() => navigate("/dashboard")}>
                 BACK HOME
               </button>
@@ -220,11 +227,14 @@ export default function RGame() {
               "--borderColor": gameCutomistion?.gameBorder,
               "--shadowColor": gameCutomistion?.gameShadow,
               "--width": `${game?.gameInfo.bounds.width ?? 1200}px`,
-              "--height":`${game?.gameInfo.bounds.height ?? 700}px`,
+              "--height": `${game?.gameInfo.bounds.height ?? 700}px`,
             } as React.CSSProperties
           }
         >
           <RBat
+            bodyColor={gameCutomistion?.paddleColor!}
+            borderColor={gameCutomistion?.paddleBorder!}
+            shadowColor={gameCutomistion?.paddleShadow!}
             x={gameInfo?.paddleLeft.x ?? 24}
             y={gameInfo?.paddleLeft.y ?? 120}
             side="left"
@@ -233,6 +243,9 @@ export default function RGame() {
             containerHeight={gameInfo?.bounds.height ?? 400}
           />
           <RBat
+            bodyColor={gameCutomistion?.paddleColor!}
+            borderColor={gameCutomistion?.paddleBorder!}
+            shadowColor={gameCutomistion?.paddleShadow!}
             x={gameInfo?.paddleLeft.x ?? 24}
             y={gameInfo?.paddleRight.y ?? 120}
             side="right"
@@ -242,6 +255,8 @@ export default function RGame() {
           />
 
           <RBall
+            bodyColor={gameCutomistion?.ballColor!}
+            shadowColor={gameCutomistion?.ballShadow!}
             dir={dir}
             setDir={setDir}
             ball={gameInfo?.ball ?? { x: 300, y: 180 }}

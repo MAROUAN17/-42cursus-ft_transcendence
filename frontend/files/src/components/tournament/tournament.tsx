@@ -28,12 +28,7 @@ export default function Tournament() {
       <div>
         <h1>Create Tournament</h1>
 
-        <input
-          type="text"
-          placeholder="Tournament Name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
+        <input type="text" placeholder="Tournament Name" value={name} onChange={(e) => setName(e.target.value)} />
 
         <button onClick={createTournament}>Submit</button>
       </div>

@@ -215,7 +215,7 @@ export function handleGameConnection(connection: any, req: any) {
             room.gameInfo.paddleLeft.y = msg.leftY;
           if (msg.side == "right")
             room.gameInfo.paddleRight.y = msg.rightY;
-          console.log("Broadcasting to room:", room.gameId, "Players:", room.player1, room.player2, "type: ", room.type);
+          console.log("Broadcasting to room:", room.gameId, "Players:", room.leftPlayer, room.rightPlayer, "type: ", room.type);
           
           broadcastToRoom(room, { type: "updateY", game_info: room.gameInfo });
         }

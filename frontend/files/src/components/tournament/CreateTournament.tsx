@@ -26,7 +26,7 @@ export function CreateTournament({ show, onClose, onCreated }: Props) {
       });
 
       const data = await res.json();
-      console.log("data: ", data)
+      console.log("data: ", data);
       console.log("Created:", data.tournament);
 
       onCreated(data.tournament);

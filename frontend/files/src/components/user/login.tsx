@@ -88,7 +88,12 @@ function Login() {
             {/* login button */}
             <div className="flex justify-between items-center">
               <div className="flex space-x-3 items-center">
-                <input type="checkbox" id="remember" ref={rememberRef} className="w-4 h-4 appearance-none border-2 border rounded-full checked:bg-gray-300 transition ease-in-out" />
+                <input
+                  type="checkbox"
+                  id="remember"
+                  ref={rememberRef}
+                  className="w-4 h-4 appearance-none border-2 border rounded-full checked:bg-gray-300 transition ease-in-out"
+                />
                 <p className="text-white text-md rounded-full ">Remember me</p>
               </div>
               <div className="">

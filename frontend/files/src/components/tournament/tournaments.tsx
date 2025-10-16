@@ -17,17 +17,17 @@ export function Tournaments() {
   const [showModal, setShowModal] = useState(false);
   const [tournaments, setTournaments] = useState<Tournament[]>([]);
   const [loading, setLoading] = useState(true);
-  
+
   const handleCreated = (newTournament: any) => {
-    setTournaments((prev) => [...prev, {...newTournament }]);
+    setTournaments((prev) => [...prev, { ...newTournament }]);
   };
-   useEffect(() => {
+  useEffect(() => {
     const fetchTournaments = async () => {
       try {
         const res = await fetch("https://localhost:5000/tournament/all");
         if (!res.ok) throw new Error("Failed to fetch tournaments");
         const data: Tournament[] = await res.json();
-        console.log("tournament :  ", data)
+        console.log("tournament :  ", data);
         setTournaments(data);
       } catch (err) {
         console.error(err);
@@ -43,12 +43,8 @@ export function Tournaments() {
     <div className="font-poppins min-h-screen w-full from-blue-900 via-purple-900 to-indigo-900 p-6">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-8">
-          <h1 className="text-6xl font-bold text-white mb-2 tracking-wider">
-            GLOBAL TOURNAMENTS
-          </h1>
-          <p className="text-purple-200 text-lg">
-            {tournaments.length} Available tournaments
-          </p>
+          <h1 className="text-6xl font-bold text-white mb-2 tracking-wider">GLOBAL TOURNAMENTS</h1>
+          <p className="text-purple-200 text-lg">{tournaments.length} Available tournaments</p>
         </div>
 
         <div className="flex flex-col sm:flex-row gap-4 mb-8 max-w-2xl mx-auto">
@@ -84,11 +80,7 @@ export function Tournaments() {
         </div>
       </div>
 
-      <CreateTournament
-        show={showModal}
-        onClose={() => setShowModal(false)}
-        onCreated={handleCreated}
-      />
+      <CreateTournament show={showModal} onClose={() => setShowModal(false)} onCreated={handleCreated} />
     </div>
   );
 }

@@ -7,11 +7,7 @@ export async function checkAuthLoader() {
       withCredentials: true,
     });
   } catch (error) {
-    if (
-      axios.isAxiosError(error) &&
-      error.response?.status == 401 &&
-      error.response?.data.error == "NOT LOGGED_IN"
-    ) {
+    if (axios.isAxiosError(error) && error.response?.status == 401 && error.response?.data.error == "NOT LOGGED_IN") {
       return redirect("/login");
     }
   }
@@ -23,11 +19,7 @@ export async function checkLoginPageLoader() {
       withCredentials: true,
     });
   } catch (error) {
-    if (
-      axios.isAxiosError(error) &&
-      error.response?.status == 401 &&
-      error.response?.data.error == "LOGGED_IN"
-    ) {
+    if (axios.isAxiosError(error) && error.response?.status == 401 && error.response?.data.error == "LOGGED_IN") {
       return redirect("/dashboard");
     }
   }

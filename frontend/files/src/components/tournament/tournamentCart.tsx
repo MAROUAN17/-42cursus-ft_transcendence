@@ -2,7 +2,7 @@ import { FaUsers, FaTrophy, FaDollarSign } from "react-icons/fa";
 import type { Tournament } from "./tournaments";
 import { useNavigate } from "react-router";
 import { useUserContext } from "../contexts/userContext";
-import {useState, useEffect} from "react"
+import { useState, useEffect } from "react";
 
 export function TournamentCard({ id, name, players, createdAt, status }: Tournament) {
   const { user } = useUserContext();
@@ -11,10 +11,9 @@ export function TournamentCard({ id, name, players, createdAt, status }: Tournam
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!players || !user)
-        return ;
-    setLabel(players?.includes(user?.id) ? "JOINED" : "JOIN")
-  }, [players, user])
+    if (!players || !user) return;
+    setLabel(players?.includes(user?.id) ? "JOINED" : "JOIN");
+  }, [players, user]);
   const handelJoin = async () => {
     // if (status != "open")
     //     return ;

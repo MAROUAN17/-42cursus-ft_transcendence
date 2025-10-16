@@ -34,7 +34,7 @@ function Register() {
         username: username,
         email: email,
         password: password,
-        terms: termsRef.current?.checked
+        terms: termsRef.current?.checked,
       })
       .then(function () {
         axios
@@ -42,7 +42,7 @@ function Register() {
             username: username,
             email: email,
             password: password,
-            terms: termsRef.current?.checked
+            terms: termsRef.current?.checked,
           })
           .then(function (res) {
             navigate("/login");

@@ -123,7 +123,7 @@ export const verifyResetPin = async (req: FastifyRequest<{ Body: LoginBody }>, r
       });
     }
 
-    const hashedPassword:string = await bcrypt.hash(password, 10);
+    const hashedPassword: string = await bcrypt.hash(password, 10);
     //set new password
     app.db.prepare("UPDATE players SET password = ?, reset_flag = ?, reset_token = ? WHERE id = ?").run(hashedPassword, 0, null, user?.id);
 
