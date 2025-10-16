@@ -35,7 +35,7 @@ export const create_tournament = async (req: FastifyRequest, res: FastifyReply) 
         VALUES (?, ?, ?, ?, ?)
     `);
 
-    stmt.run(
+    const info = stmt.run(
       tournament.name,
       JSON.stringify(tournament.players),
       tournament.createdAt.toISOString(),
@@ -43,11 +43,11 @@ export const create_tournament = async (req: FastifyRequest, res: FastifyReply) 
       tournament.admin
     );
     const tour = app.db.prepare("SELECT * FROM Tournament where id = ?")
-      .get(stmt.lastInsertRowid);
+      .get(info.lastInsertRowid);
 
     console.log(`Tournament ${tour} created sucessfully`);
-
-    res.status(200).send({tour});
+    tour.players = JSON.parse(tour.players);
+    res.status(200).send({tournament:tour});
   } catch (err: any) {
     console.error(err);
     return res.status(500).send({ error: "Failed to create tournament" });

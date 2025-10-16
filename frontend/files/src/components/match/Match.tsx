@@ -1,10 +1,7 @@
 import React from "react";
 import { useEffect, useState } from "react";
-import im1 from "./imgs/user1.png";
 import axios from "axios";
 import { useNavigate } from "react-router";
-import { useWebSocket } from "../contexts/websocketContext";
-import { UserContext, useUserContext } from "../contexts/userContext";
 import {type  Player, type Game } from "../game/remote/Types";
 
 export default function Pairing() {
@@ -65,9 +62,6 @@ export default function Pairing() {
 
             sessionStorage.setItem("currentGame", JSON.stringify(response.data.game));
             setPaired(true);
-            // setTimeout(() => {
-            //   navigate("/remote_game");
-            // }, 5000);
             clearInterval(interval);
           }
         } catch (err) {
