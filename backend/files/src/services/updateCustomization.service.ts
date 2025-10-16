@@ -37,7 +37,7 @@ export const getCustomization = async (req: FastifyRequest, res: FastifyReply) =
   try {
     const token = req.cookies.accessToken!;
     const payload = app.jwt.jwt1.verify(token) as Payload;
-    const row = app.db
+    const row: gameCustomization = app.db
       .prepare(
         "SELECT gameBorder, gameShadow, ballColor, ballShadow, paddleColor, paddleBorder, paddleShadow, paddleSpeed, selectedBg FROM settings WHERE userId = ?"
       )

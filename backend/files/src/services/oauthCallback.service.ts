@@ -12,7 +12,6 @@ export const redirectPath = async (req: FastifyRequest, res: FastifyReply) => {
 export const oauthCallback = async (req: FastifyRequest, res: FastifyReply) => {
   try {
     const { accessToken, refreshToken } = req.cookies;
-
     if (refreshToken || accessToken) return res.status(400).send({ error: "Unauthorized" });
 
     let user = {} as UserInfos | undefined;
@@ -36,15 +35,14 @@ export const oauthCallback = async (req: FastifyRequest, res: FastifyReply) => {
 
     if (!user) {
       app.db.prepare("INSERT INTO players(intra_id, email, username) VALUES (?, ?, ?)").run(intraId, email, username);
-
       app.db.prepare("UPDATE players SET avatar = ? WHERE intra_id = ?").run(userData.image.link, intraId);
-
       user = app.db.prepare("SELECT * from players WHERE intra_id = ?").get(intraId) as UserInfos | undefined;
+      app.db.prepare("INSERT INTO Settings(userId) VALUES (?)").run(user?.id);
     }
 
     const twoFA_activated = user?.secret_otp ? true : false;
     if (twoFA_activated) {
-      const loginToken = app.jwt.jwt0.sign({ id: user.id, email: user.email, username: user.username }, { expiresIn: "60s" });
+      const loginToken = app.jwt.jwt0.sign({ id: user?.id, email: user?.email, username: user?.username }, { expiresIn: "60s" });
       res.setCookie("loginToken", loginToken, {
         path: "/",
         secure: true,
