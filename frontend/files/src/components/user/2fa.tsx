@@ -29,11 +29,7 @@ function Page2FA() {
     e.preventDefault();
     const otpNbr = numbers.join("");
     axios
-      .post(
-        "https://localhost:5000/2fa/verify-token",
-        { token: otpNbr, email: userEmail },
-        { withCredentials: true }
-      )
+      .post("https://localhost:5000/2fa/verify-token", { token: otpNbr, email: userEmail }, { withCredentials: true })
       .then(function (res) {
         console.log(res);
         navigate("/avatar");
@@ -51,9 +47,7 @@ function Page2FA() {
   const formatTime = (timerVerify: number) => {
     const minutes = Math.floor(timerVerify / 60);
     const seconds = timerVerify % 60;
-    return `${minutes.toString().padStart(2, "0")}:${seconds
-      .toString()
-      .padStart(2, "0")}`;
+    return `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
   };
 
   useEffect(() => {
@@ -83,25 +77,16 @@ function Page2FA() {
       <div className="text-center align-center space-y-9 mt-44">
         <div className="space-y-5">
           <div className="flex justify-center">
-            <img
-              src="/lock-icon.png"
-              alt="email-icon"
-              width="92px"
-              height="86px"
-            />
+            <img src="/lock-icon.png" alt="email-icon" width="92px" height="86px" />
           </div>
           <h1 className="text-white font-bold text-6xl">OTP Code</h1>
-          <p className="text-white text-3xl font-light">
-            Type your secret otp code
-          </p>
+          <p className="text-white text-3xl font-light">Type your secret otp code</p>
         </div>
       </div>
       {errorFlag ? (
         <div className="flex justify-center mt-12">
           <div className="flex text-center rounded-xl bg-red-600 border border-white w-[420px] h-[120px] items-center justify-center">
-            <p className="text-white font-bold text-2xl align-center">
-              {errorMssg}
-            </p>
+            <p className="text-white font-bold text-2xl align-center">{errorMssg}</p>
           </div>
         </div>
       ) : (
@@ -130,18 +115,13 @@ function Page2FA() {
           </div>
         </div>
         <div className="mt-28 text-center">
-          <button
-            type="submit"
-            className="bg-neon text-white text-xl px-[270px] py-3 rounded-lg font-semibold"
-          >
+          <button type="submit" className="bg-neon text-white text-xl px-[270px] py-3 rounded-lg font-semibold">
             Continue
           </button>
         </div>
       </form>
       <div className="text-center mt-12">
-        <p className="text-white font-bold text-2xl">
-          {formatTime(timerVerify)}
-        </p>
+        <p className="text-white font-bold text-2xl">{formatTime(timerVerify)}</p>
       </div>
     </div>
   );

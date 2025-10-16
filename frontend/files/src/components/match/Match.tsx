@@ -2,7 +2,8 @@ import React from "react";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router";
-import {type  Player, type Game } from "../game/remote/Types";
+import { type Player, type Game } from "../game/remote/Types";
+import { useUserContext } from "../contexts/userContext";
 
 export default function Pairing() {
   const [loading, setLoading] = useState(false);
@@ -11,9 +12,9 @@ export default function Pairing() {
   const [dots, setDots] = useState("");
   const [gameInfo, setGameInfo] = useState<Game>(null);
   const [opponent, setOpponent] = useState<Player>({
-      username: "?",
-      avatar: "?"
-    });
+    username: "?",
+    avatar: "?",
+  });
   const [paired, setPaired] = useState(false);
   const [countdown, setCountdown] = useState(2);
 
@@ -33,7 +34,7 @@ export default function Pairing() {
     let timer;
     if (paired) {
       console.log("players are paired", gameInfo);
-      setOpponent(gameInfo.opponent)
+      setOpponent(gameInfo.opponent);
       timer = setInterval(() => {
         setCountdown((prev) => {
           if (prev <= 1) {
@@ -56,7 +57,7 @@ export default function Pairing() {
           const response = await axios.get(`https://localhost:5000/match/my-game/${id}`);
 
           if (response.data.game) {
-            console.log("------", response.data.game)
+            console.log("------", response.data.game);
             setGameInfo(response.data.game);
             setLoading(false);
 
@@ -80,8 +81,8 @@ export default function Pairing() {
   }, [loading, navigate]);
 
   useEffect(() => {
-    opponent.avatar = '9896174.jpg'
-  }, [])
+    opponent.avatar = "9896174.jpg";
+  }, []);
 
   const fetchData = async () => {
     console.log("entered");
