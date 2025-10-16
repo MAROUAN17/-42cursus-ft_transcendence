@@ -203,7 +203,7 @@ export default function RGame() {
       ) : null}
 
       <div className={`font-poppins h-screen bg-gameBg flex items-center justify-center ${gameEnded ? "blur-sm pointer-events-none" : null}`}>
-        <RHeadergit config pull.rebase false
+        <RHeader
           scoreLeft={gameInfo?.scoreLeft ?? 0}
           scoreRight={gameInfo?.scoreRight ?? 0}
           you={game?.you || round?.player1}
