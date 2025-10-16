@@ -39,11 +39,12 @@ export interface Player {
 }
 
 export interface Game {
-  id: string;
-  opponent: Player;
-  you: Player;
+  id?: string;
+  opponent?: Player;
+  you?: Player;
   side: string;
-  gameInfo: GameInfo;
+  gameInfo?: GameInfo;
+  round?:Round;
 }
 
 export interface Round {
