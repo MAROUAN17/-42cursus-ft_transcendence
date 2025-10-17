@@ -83,7 +83,10 @@ const TournamentBracket: React.FC = () => {
       round: round,
     };
     sessionStorage.setItem("currentRound", JSON.stringify(game));
-    if (!round.winner) navigate("/remote_game");
+    if (!round.winner) {
+      // notifying
+      navigate("/remote_game");
+    } 
   }, [user, round]);
 
   useEffect(() => {
@@ -125,13 +128,13 @@ const TournamentBracket: React.FC = () => {
   const Users =
     tournament?.players?.map((p, index) => ({
       username: p.username,
-      avatar: p.avatar || `https://i.pravatar.cc/40?img=${index + 1}`,
+      avatar: p?.avatar,
     })) || [];
 
   const finalUsers =
     finalPlayers?.map((p, index) => ({
       username: p.username,
-      avatar: p.avatar || `https://i.pravatar.cc/40?img=${index + 1}`,
+      avatar: p?.avatar ,
     })) || [];
 
   if (loading) return <p>Loading tournament...</p>;

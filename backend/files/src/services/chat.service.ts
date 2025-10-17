@@ -36,7 +36,7 @@ function createNotification(currPacket: websocketPacket) {
 
   let client = clients.get(currPacket.data.recipient_id);
   if (client) {
-    if (currPacket.data.type == "markDelivered" || currPacket.data.type == "block") return;
+    if (currPacket.data.type != "message" && currPacket.data.type != "markSeen") return;
     const notification: NotificationPacket = {
       type: "notification",
       data: {
@@ -171,7 +171,6 @@ function handleGameInvite(packet: ChatPacket) {
   packet.data.id = savedMessage.lastInsertRowid;
   packet.data.isDelivered = true;
   packet.data.type = "gameInvite";
-  console.log("sent msg -> ", packet);
   let client = clients.get(packet.data.recipient_id);
   if (client) sendToClient(client, packet);
   if (packet.data.sender_id) {
@@ -184,16 +183,37 @@ function handleGameInvite(packet: ChatPacket) {
 }
 
 function handleGameInviteRes(packet: ChatPacket) {
-  const checkInvite = app.db
-    .prepare("SELECT id FROM messages WHERE sender_id = ? AND recipient_id = ? AND type = ?")
-    .get(packet.data.sender_id, packet.data.recipient_id, "gameInvite");
-  if (checkInvite?.id != packet.data.id) return;
+  const checkInvite = app.db.prepare("SELECT id FROM messages WHERE id = ? AND type = ?").get(packet.data.id, "gameInvite");
+  if (!checkInvite) return;
   const updatedMessage = app.db
     .prepare("UPDATE messages SET type = ?, message = ? WHERE id = ?")
-    .run(packet.data.type, packet.data.message, packet.data.id);
-  console.log("sent msg res -> ", packet);
+    .run(packet.data.type, packet.data.message, checkInvite.id);
   let client = clients.get(packet.data.recipient_id);
-  if (client) sendToClient(client, packet);
+  if (client) {
+    sendToClient(client, packet);
+    if (packet.data.type == "inviteAccepted") {
+      const user = app.db.prepare("SELECT username FROM players WHERE id = ?").get(packet.data.recipient_id)
+      if (!user) return;
+      const notification: NotificationPacket = {
+        type: "notification",
+        data: {
+          id: 0,
+          type: "gameAlert",
+          username: user.username,
+          avatar: "",
+          sender_id: packet.data.sender_id,
+          recipient_id: packet.data.recipient_id,
+          unreadCount: 0,
+          createdAt: "",
+        },
+      };
+      sendToClient(client, notification);
+    }
+  }
+  client = clients.get(packet.data.sender_id);
+  if (client) {
+    sendToClient(client, packet);
+  }
   checkNotificationMssg(packet);
 }
 

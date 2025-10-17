@@ -5,6 +5,8 @@ const WebsocketContext = createContext<websocketContextType | undefined>(undefin
 
 export const WebSocketProvider: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
   const socketRef = useRef<WebSocket | null>(null);
+  const [gameInvite, setGameInvite] = useState<"sender" | "recipient" | undefined>(undefined);
+  const [opponentName, setOpponentName] = useState<string | undefined>("PlayerName");
   const handlersRef = useRef<Map<string, (msg: websocketPacket) => void>>(new Map<string, (msg: websocketPacket) => void>());
   function connectWs() {
     socketRef.current = new WebSocket("wss://localhost:5000/send-message");
@@ -46,7 +48,7 @@ export const WebSocketProvider: React.FC<{ children?: React.ReactNode }> = ({ ch
       handlersRef.current.delete(packetType);
     };
   }
-  return <WebsocketContext.Provider value={{ send, addHandler }}>{children}</WebsocketContext.Provider>;
+  return <WebsocketContext.Provider value={{ send, addHandler, gameInvite, setGameInvite, opponentName, setOpponentName }}>{children}</WebsocketContext.Provider>;
 };
 
 export const useWebSocket = () => {

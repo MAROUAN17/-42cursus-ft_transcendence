@@ -226,8 +226,8 @@ export default function RGame() {
               "--selected-bg": `url(${gameCutomistion?.selectedBg})`,
               "--borderColor": gameCutomistion?.gameBorder,
               "--shadowColor": gameCutomistion?.gameShadow,
-              "--width": `${game?.gameInfo.bounds.width ?? 1200}px`,
-              "--height": `${game?.gameInfo.bounds.height ?? 700}px`,
+              "--width": `${game?.gameInfo?.bounds.width ?? 1200}px`,
+              "--height": `${game?.gameInfo?.bounds.height ?? 700}px`,
             } as React.CSSProperties
           }
         >

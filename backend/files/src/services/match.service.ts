@@ -1,28 +1,25 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 import { DefaultGame, type GameInfo } from "../models/game.js";
-import type {Player, Game} from "../models/game.js"
+import type { Player, Game } from "../models/game.js";
 import app from "../server.js";
 const waitingPlayers: Player[] = [];
 export const activeGames: Game[] = [];
 
-
-
-
 export const pair_players = async (req: FastifyRequest, res: FastifyReply) => {
   try {
-    const playerId = req.headers['player-id'] as string ;
+    const playerId = req.headers["player-id"] as string;
     const player: Player = {
       id: playerId,
       joinedAt: new Date(),
       username: req.body?.username,
     };
 
-    const existingPlayerIndex = waitingPlayers.findIndex(p => p.id === player.id);
+    const existingPlayerIndex = waitingPlayers.findIndex((p) => p.id === player.id);
     if (existingPlayerIndex !== -1) {
       return res.status(400).send({
         error: "Player is already in the waiting queue",
-        position: existingPlayerIndex + 1
+        position: existingPlayerIndex + 1,
       });
     }
 
@@ -32,24 +29,24 @@ export const pair_players = async (req: FastifyRequest, res: FastifyReply) => {
     if (waitingPlayers.length >= 2) {
       const player1 = waitingPlayers.shift()!;
       const player2 = waitingPlayers.shift()!;
-      
+
       const gameInfo: GameInfo = {
         ...DefaultGame,
         ball: {
           x: DefaultGame.bounds.width / 2,
           y: DefaultGame.bounds.height / 2,
           velX: (Math.random() > 0.5 ? 1 : -1) * 200,
-          velY: (Math.random() > 0.5 ? 1 : -1) * 200
-        }
+          velY: (Math.random() > 0.5 ? 1 : -1) * 200,
+        },
       };
 
       const game: Game = {
         id: uuidv4(),
         player1,
         player2,
-        status: 'active',
+        status: "active",
         createdAt: new Date(),
-        gameInfo
+        gameInfo,
       };
 
       activeGames.push(game);
@@ -57,28 +54,28 @@ export const pair_players = async (req: FastifyRequest, res: FastifyReply) => {
 
       if (player.id === player1.id || player.id === player2.id) {
         return res.status(200).send({
-          status: 'paired',
-          message: 'Game found!',
-          redirect: '/remote_game',
+          status: "paired",
+          message: "Game found!",
+          redirect: "/remote_game",
           game: {
             id: game.id,
             opponent: player.id === player1.id ? player2 : player1,
-            side : player.id === player1.id ? "left" : "right",
+            side: player.id === player1.id ? "left" : "right",
             you: player.id === player1.id ? player1 : player2,
-            gameInfo: game.gameInfo
-          }
+            gameInfo: game.gameInfo,
+          },
         });
       }
     }
 
     res.status(200).send({
-      status: 'waiting',
-      message: 'Waiting for opponent...',
+      status: "waiting",
+      message: "Waiting for opponent...",
       position: waitingPlayers.length,
-      playerId: player.id
+      playerId: player.id,
     });
   } catch (err) {
-    console.error('Pairing error:', err);
+    console.error("Pairing error:", err);
     res.status(500).send({ error: err });
   }
 };
@@ -88,10 +85,10 @@ export const get_queue_status = async (req: FastifyRequest, res: FastifyReply) =
     res.status(200).send({
       waitingPlayers: waitingPlayers.length,
       activeGames: activeGames.length,
-      queue: waitingPlayers.map(p => ({
+      queue: waitingPlayers.map((p) => ({
         id: p.id,
-        waitTime: Date.now() - p.joinedAt.getTime()
-      }))
+        waitTime: Date.now() - p.joinedAt.getTime(),
+      })),
     });
   } catch (err) {
     res.status(500).send({ error: err });
@@ -100,91 +97,88 @@ export const get_queue_status = async (req: FastifyRequest, res: FastifyReply) =
 
 export const leave_queue = async (req: FastifyRequest, res: FastifyReply) => {
   try {
-    const playerId = req.headers['player-id'] as string;
+    const playerId = req.headers["player-id"] as string;
     let removed = false;
 
-    const playerIndex = waitingPlayers.findIndex(p => p.id === playerId);
+    const playerIndex = waitingPlayers.findIndex((p) => p.id === playerId);
     if (playerIndex !== -1) {
       waitingPlayers.splice(playerIndex, 1);
       console.log(`Player ${playerId} left the waiting queue`);
       removed = true;
     }
 
-    const gameIndex = activeGames.findIndex(
-      g => g.player1.id === playerId || g.player2.id === playerId
-    );
+    const gameIndex = activeGames.findIndex((g) => g.player1.id === playerId || g.player2.id === playerId);
 
     if (gameIndex !== -1) {
       const game = activeGames.splice(gameIndex, 1)[0];
       console.log(`Player ${playerId} left the active game ${game.id}`);
 
       return res.status(200).send({
-        message: 'Left active game successfully',
-        removedFrom: 'activeGame',
-        gameId: game?.id
+        message: "Left active game successfully",
+        removedFrom: "activeGame",
+        gameId: game?.id,
       });
     }
 
     if (removed) {
       return res.status(200).send({
-        message: 'Left queue successfully',
-        removedFrom: 'queue'
+        message: "Left queue successfully",
+        removedFrom: "queue",
       });
     }
 
-    res.status(404).send({ error: 'Player not found in queue or active games' });
+    res.status(404).send({ error: "Player not found in queue or active games" });
   } catch (err) {
-    console.error('Error while leaving queue:', err);
+    console.error("Error while leaving queue:", err);
     res.status(500).send({ error: err });
   }
 };
 
-
 export const get_game = async (req: FastifyRequest, res: FastifyReply) => {
   try {
     const gameId = (req.params as any).gameId;
-    const game = activeGames.find(g => g.id === gameId);
-    
+    const game = activeGames.find((g) => g.id === gameId);
+
     if (!game) {
-      return res.status(404).send({ error: 'Game not found' });
+      return res.status(404).send({ error: "Game not found" });
     }
-    
+
     res.status(200).send({ game });
   } catch (err) {
     res.status(500).send({ error: err });
   }
 };
 
+
 export const get_player_game = async (req: FastifyRequest, res: FastifyReply) => {
   try {
     const playerId = (req.params as any).playerId;
-    const game = activeGames.find(g => 
-      g.player1.id === playerId || g.player2.id === playerId
-    );
-    
+    console.log("inside find game id -> ", playerId);
+    console.log("games -> ", activeGames);
+    const game = activeGames.find((g) => g.player1.id == playerId || g.player2.id == playerId);
+
     if (!game) {
-      return res.status(404).send({ error: 'No active game found for player' });
+      return res.status(404).send({ error: "No active game found for player" });
     }
-    
-    const playerRole = game.player1.id === playerId ? game.player1 : game.player2;
-    const side = game.player1.id === playerId ? "left" : "right";
-    const opponent = playerRole === game.player1 ? game.player2 : game.player1;
-    
-    const avatar1 = app.db.prepare("SELECT avatar from players WHERE id = ? ")
-      .get (game.player1.id);
-    const avatar2 = app.db.prepare("SELECT avatar from players WHERE id = ? ")
-      .get (game.player2.id);
+
+    const playerRole = game.player1.id == playerId ? game.player1 : game.player2;
+    const side = game.player1.id == playerId ? "left" : "right";
+    const opponent = playerRole == game.player1 ? game.player2 : game.player1;
+
+    const avatar1 = app.db.prepare("SELECT avatar from players WHERE id = ? ").get(game.player1.id);
+    const avatar2 = app.db.prepare("SELECT avatar from players WHERE id = ? ").get(game.player2.id);
+    console.log("game --> :", game, "playerid : ", playerId);
     game.player1.avatar = avatar1.avatar;
     game.player2.avatar = avatar2.avatar;
-    res.status(200).send({ 
+    res.status(200).send({
       game: {
         id: game.id,
         opponent,
         you: playerRole,
-        side:side,
+        side: side,
         gameInfo: game.gameInfo,
         status: game.status,
-      }
+      },
     });
   } catch (err) {
     res.status(500).send({ error: err });
@@ -199,12 +193,8 @@ export const invite_game = async (req: FastifyRequest, res: FastifyReply) => {
       return res.status(400).send("Missing players info");
     }
 
-    const info1 = app.db
-      .prepare("SELECT username, avatar FROM players WHERE id = ?")
-      .get(player1);
-    const info2 = app.db
-      .prepare("SELECT username, avatar FROM players WHERE id = ?")
-      .get(player2);
+    const info1 = app.db.prepare("SELECT username, avatar FROM players WHERE id = ?").get(player1);
+    const info2 = app.db.prepare("SELECT username, avatar FROM players WHERE id = ?").get(player2);
 
     if (!info1 || !info2) {
       return res.status(404).send("One or both players not found");
@@ -239,7 +229,7 @@ export const invite_game = async (req: FastifyRequest, res: FastifyReply) => {
 };
 
 export const updateGameForId = (gameId: string, updates: Partial<GameInfo>) => {
-  const game = activeGames.find(g => g.id === gameId);
+  const game = activeGames.find((g) => g.id === gameId);
   if (game) {
     Object.assign(game.gameInfo, updates);
     return game.gameInfo;
@@ -248,7 +238,6 @@ export const updateGameForId = (gameId: string, updates: Partial<GameInfo>) => {
 };
 
 export const getGameStateById = (gameId: string) => {
-  const game = activeGames.find(g => g.id === gameId);
+  const game = activeGames.find((g) => g.id === gameId);
   return game?.gameInfo || null;
 };
-
