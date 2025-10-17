@@ -49,17 +49,17 @@ export default function RGame() {
     let interval: NodeJS.Timeout;
 
     interval = setInterval(() => {
-      console.log("ddddd");
+      // console.log("ddddd");
 
       if (websocket && websocket.readyState === WebSocket.OPEN) {
-        console.log("eeeee");
+        // console.log("eeeee");
         websocket.send(
           JSON.stringify({
             type: gameType,
             userId: id,
             gameId: sessionGame.id || "",
-            tournamentId: tournamentId,
-            roundNumber: sessionGame.round_number ?? 0,
+            tournamentId: round?.tournament_id,
+            roundNumber: round?.round_number ?? 0,
             side: game.side,
           })
         );
@@ -72,25 +72,23 @@ export default function RGame() {
 
     return () => clearInterval(interval);
   };
+
   useEffect(() => {
     var storedGame = null;
-    // for testing round
     // sessionStorage.removeItem("currentGame");
     if (sessionStorage.getItem("currentGame")) {
       storedGame = sessionStorage.getItem("currentGame");
       setGameType("casual");
-      // const userGame = JSON.parse(storedGame);
-      // setRound(userGame.round);
-      // console.log("game type seted");
+      console.log("game type seted");
     }
-    // else {
-    //   console.log("this game from tournament");
-    //   storedGame = sessionStorage.getItem("currentRound");
-    //   setGameType("tournament");
-    //   const userGame = JSON.parse(storedGame);
-    //   setRound(userGame.round);
-    // }
-    if (!storedGame) {
+    else if (sessionStorage.getItem("currentRound")){
+      // console.log("this game from tournament");
+      storedGame = sessionStorage.getItem("currentRound");
+      setGameType("tournament");
+      const userGame = JSON.parse(storedGame);
+      setRound(userGame.round);
+    }
+    else  {
       console.log("No game found in sessionStorage.");
       return;
     }
@@ -143,15 +141,16 @@ export default function RGame() {
   }, [leftY, rightY]);
 
   useEffect(() => {
-    // if ( !gameType || (gameType == "tournament" && !round)) return;
-    // console.log(`id : ${round.tournament_id}  gameType: ${gameType}`)
-    // console.log("web socket ===== ", ws);
+    if ( !gameType || (gameType == "tournament" && !round)) return;
+    // console.log(`round : ${round}  gameType: ${gameType}`)
+
     const ws = new WebSocket("wss://localhost:5000/game");
     setWebsocket(ws);
     ws.onopen = () => {
       console.log("WebSocket Connected!");
     };
     ws.onmessage = (event) => {
+      // console.log("on Message");
       try {
         const message = JSON.parse(event.data);
         if (message.type === "end") {
@@ -159,7 +158,7 @@ export default function RGame() {
           console.log("--- game eneded");
           setGameEnded(true);
           setWinnerId(message.winner);
-          // sessionStorage.removeItem("currentGame");
+          sessionStorage.removeItem("currentGame");
           // sessionStorage.removeItem('currentRound');
           if (tournamentId) navigate(`/bracket/${tournamentId}`);
           if (message.type == "updateY") console.log("updateY");
@@ -173,11 +172,16 @@ export default function RGame() {
       console.log("Closing WebSocket...");
       ws.close();
     };
-  }, [tournamentId]);
+  }, [gameType]);
+
+
 
   useEffect(() => {
+    if (!game && !round)
+        return ;
     console.log("-- game : ", game);
-  }, [game]);
+    console.log("-- round : ", round);
+  }, [game, round]);
 
   return (
     <>
