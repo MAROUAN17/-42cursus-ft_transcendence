@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Outlet } from "react-router";
+import { Outlet, useNavigate } from "react-router";
 import Navbar from "./navbar";
 import Sidebar from "./sidebar";
 import api from "../../axios";
+import { useWebSocket } from "../contexts/websocketContext";
+import { FaSpinner } from "react-icons/fa";
+import { useUserContext } from "../contexts/userContext";
 
 function Layout() {
   const [settingsOpen, setSettingsOpen] = useState<boolean>(false);
@@ -15,6 +18,39 @@ function Layout() {
   const [paddleShadow, setPaddleShadow] = useState("#B13BFF");
   const [paddleSpeed, setPaddleSpeed] = useState("2");
   const [selectedBg, setSelectedBg] = useState("/gameBg1.jpg");
+
+  const [countDown, setCountDown] = useState<number>(10);
+  // delete later
+  const { user } = useUserContext();
+  //////
+  const { gameInvite, setGameInvite, opponentName, setOpponentName } = useWebSocket();
+
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (!gameInvite) return;
+    const timer = setInterval(() => {
+      setCountDown((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          api
+            .get(`https://localhost:5000/match/my-game/${user.id.toString()}`)
+            .then((res) => {
+              sessionStorage.setItem("currentGame", JSON.stringify(res.data.game));
+              navigate("/remote_game");
+            })
+            .catch((err) => {
+              console.error("err getting game ----------------------> ", err);
+            });
+          setCountDown(10);
+          setGameInvite(undefined);
+          setOpponentName(undefined);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [gameInvite]);
 
   function fetchData() {
     api
@@ -44,6 +80,31 @@ function Layout() {
 
   return (
     <>
+      {gameInvite == "recipient" ? (
+        <div
+          className={`absolute gap-3 p-6 animate-fadeIn font-poppins flex flex-col justify-center items-center text-white rounded-[20px] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 bg-[#14095c] w-1/4 h-fit`}
+        >
+          <div className="relative w-fit h-fit">
+            <h1 className="absolute top-1/2 left-1/2 font-bold -translate-x-1/2 -translate-y-1/2 text-[28px]">{countDown}</h1>
+            <FaSpinner className="animate-[spin_1.3s_linear_infinite] w-[60px] h-[60px]" />
+          </div>
+          <h1 className="font-semibold text-[25px]">
+            Your Game with <span className="font-bold text-neon">{opponentName}</span> will Start Soon...
+          </h1>
+        </div>
+      ) : gameInvite == "sender" ? (
+        <div
+          className={`absolute gap-3 p-6 animate-fadeIn font-poppins flex flex-col justify-center items-center text-white rounded-[20px] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 bg-[#14095c] w-1/4 h-fit`}
+        >
+          <div className="relative w-fit h-fit">
+            <h1 className="absolute top-1/2 left-1/2 font-bold -translate-x-1/2 -translate-y-1/2 text-[28px]">{countDown}</h1>
+            <FaSpinner className="animate-[spin_1.3s_linear_infinite] w-[60px] h-[60px]" />
+          </div>
+          <h1 className="font-semibold text-[25px]">
+            Waiting for <span className="font-bold text-neon">{opponentName}</span> to join...
+          </h1>
+        </div>
+      ) : null}
       {settingsOpen ? (
         <div
           className={`absolute p-6 animate-fadeIn font-poppins flex flex-col justify-center items-center text-white rounded-[20px] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 bg-[#14095c] w-1/3 h-fit`}
@@ -249,7 +310,7 @@ function Layout() {
       ) : null}
       <div
         className={`flex flex-col bg-darkBg h-screen transition-all duration-300 ${
-          settingsOpen ? "blur-sm shadow-[0_0_20px] pointer-events-none" : ""
+          settingsOpen || gameInvite ? "blur-sm shadow-[0_0_20px] pointer-events-none" : ""
         }`}
       >
         <Navbar />

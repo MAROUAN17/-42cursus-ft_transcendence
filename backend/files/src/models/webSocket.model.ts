@@ -35,7 +35,7 @@ export interface LogPacket {
 
 export interface notificationPacket {
   id: number;
-  type: "message" | "markSeen" | "friendReq" | "friendAccept";
+  type: "message" | "markSeen" | "friendReq" | "friendAccept" | "gameAlert";
   username: string;
   avatar: string;
   sender_id: number;

@@ -8,6 +8,9 @@ import type { Round } from "../generated/prisma/index.js";
 import { v4 as uuidv4 } from 'uuid';
 import { get_rounds } from "./tournament.service.js";
 
+
+//todo
+//fix the final score in tournament
 const rooms:Room[] = [];
 // const rounds:Round[] = [];
 
@@ -194,13 +197,13 @@ export function handleGameConnection(connection: any, req: any) {
       if (msg.type === "casual") {
         userId = msg.userId;
         clients.set(userId, connection);
-        addPlayerToRoom(msg.gameId, userId, msg.side);
+        addPlayerToRoom(msg.gameId, Number(userId), msg.side);
         console.log('-- connectionn established with ', userId);
       }
       else if (msg.type === "tournament") {
         userId = msg.userId;
         clients.set(userId, connection);
-        addPlayerToRound(Number(msg.tournamentId), userId, Number(msg.roundNumber));
+        addPlayerToRound(Number(msg.tournamentId), userId, Number(msg.roundNumber), msg.side);
         // console.log("data received", msg);
         return ;
       }
@@ -269,8 +272,9 @@ function addPlayerToRoom(gameId: string, playerId: number, side:string) {
   }
 }
 
-function addPlayerToRound(tournamentId: number, playerId: string, rn: number) {
-  
+function addPlayerToRound(tournamentId: number, playerId: string, rn: number, side:string) {
+  //assign left and rightPlayers 
+  console.log(`looking for userId: ${playerId} in tid: ${tournamentId} rn : ${rn} `);
   const lastRound = app.db
   .prepare(`
       SELECT * FROM Round
@@ -296,11 +300,19 @@ function addPlayerToRound(tournamentId: number, playerId: string, rn: number) {
     console.log("--- This is not your round:", playerId != lastRound.player1);
     return;
   }
+  // console.log(`rp ${room.rightPlayer}, lp ${room.leftPlayer}, pid ${playerId},  side ${side}`)
+  // if (!room.leftPlayer && side == "left")
+  //   room.leftPlayer = Number (playerId);
+  // else if (!room.rightPlayer && room.rightPlayer != Number(playerId) && side == "right")
+  //   room.rightPlayer = Number (playerId);
+  // else {
+  //   console.log("Player already in room or room full:", playerId);
+  // }
 
-  if (!room.player1) {
+  if (!room.player1 && side == "left") {
     room.player1 = playerId;
-    console.log("Assigned as player1:", playerId);
-  } else if (!room.player2 && room.player1 !== playerId) {
+    // console.log("Assigned as player1:", playerId);
+  } else if (!room.player2 && room.player1 !== playerId && side == "right") {
     room.player2 = playerId;
     console.log("Assigned as player2:", playerId);
   } else {
@@ -310,6 +322,8 @@ function addPlayerToRound(tournamentId: number, playerId: string, rn: number) {
   if (room.player1 && room.player2 && !room.ready) {
     room.ready = true;
     room.winner = undefined;
+    // room.player1 = String(room.leftPlayer);
+    // room.player2 = String(room.rightPlayer);
     room.startedAt = new Date();
     console.log(`-- Round ${tournamentId} ready! Players: ${room.player1}, ${room.player2} at time ${room.startedAt}`);
     startGame(room);

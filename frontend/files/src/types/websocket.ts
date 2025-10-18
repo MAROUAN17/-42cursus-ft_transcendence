@@ -48,7 +48,7 @@ export interface OnlineStatusPacket {
 
 export interface notificationPacket {
   id: number;
-  type: "message" | "markSeen" | "friendReq" | "friendAccept";
+  type: "message" | "markSeen" | "friendReq" | "friendAccept" | "friendAccept" | "gameAlert";
   username: string;
   avatar: string;
   sender_id: number;
@@ -74,4 +74,8 @@ export type websocketPacket = NotificationPacket | ChatPacket | OnlineStatusPack
 export interface websocketContextType {
   send: (msg: string) => void;
   addHandler: (packetType: string, handler: (data: websocketPacket) => void) => void;
+  gameInvite: "sender" | "recipient" | undefined;
+  setGameInvite: (bool: "sender" | "recipient" | undefined) => void;
+  opponentName: string | undefined;
+  setOpponentName: React.Dispatch<React.SetStateAction<string | undefined>>;
 }

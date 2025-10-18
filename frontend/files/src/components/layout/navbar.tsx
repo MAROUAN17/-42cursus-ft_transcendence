@@ -28,7 +28,7 @@ const Navbar = () => {
   const [notifications, setNotifications] = useState<notificationPacket[]>([]);
   const notificationRef = useRef<HTMLDivElement>(null);
 
-  const { send, addHandler } = useWebSocket();
+  const { send, addHandler, setGameInvite, setOpponentName } = useWebSocket();
 
   function handleLogout(e: React.MouseEvent<HTMLLIElement>) {
     e.preventDefault();
@@ -93,6 +93,13 @@ const Navbar = () => {
       });
     } else if (newNotif.type == "friendReq" || newNotif.type == "friendAccept") {
       setNotifications((prev) => [...prev, newNotif]);
+    } else if ((newNotif.type = "gameAlert")) {
+      api.post("/match/invite", { player1: newNotif.recipient_id, player2: newNotif.sender_id }, { withCredentials: true }).then((res) => {
+        console.log("game -> ", res);
+      });
+      setGameInvite("recipient");
+      setOpponentName((prev: string | undefined) => (prev ? prev : newNotif.username));
+      // setOpponentName(newNotif.username);
     }
   }
 
