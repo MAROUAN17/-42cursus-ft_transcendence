@@ -69,15 +69,22 @@ const LeaveButton: React.FC<LeaveButtonProps> = ({ setStarted, label, tournament
   };
 
   return (
-    <button
-      onClick={handelAction}
-      disabled={loading}
-      className={`absolute top-2 right-2 text-white px-8 py-3 rounded-lg shadow cursor-pointer text-sm font-medium ${
-        label === "start" ? "bg-green-600 hover:bg-green-700" : "bg-red-600 hover:bg-red-700"
-      }`}
-    >
-      {label}
-    </button>
+    <div className="flex flex-col space-y-8 items-center mt-24">
+      {label === "start" ? 
+        <p className="font-bold text-xl">Ready to play, Click 'Start Game' to start the tournament</p>
+      : 
+        <p className="font-bold text-xl">Waiting for tournament to start ...</p>
+      }
+      <button
+        onClick={handelAction}
+        disabled={loading}
+        className={`mt-24 text-white px-8 py-3 rounded-lg shadow cursor-pointer text-sm font-medium ${
+          label === "start" ? "bg-green-700 hover:bg-neon hover:scale-110" : "bg-gray-600"
+        }`}
+      >
+        {label}
+      </button>
+    </div>
   );
 };
 
