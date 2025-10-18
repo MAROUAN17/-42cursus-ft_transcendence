@@ -1,11 +1,12 @@
-
 all:
 	export HOST=$$(hostname -I | awk '{print $$1}') && docker compose up -d
 up:
-	docker compose up -d	
+	docker compose up -d
+
 build:
 	docker compose build --no-cache
 	docker compose up -d
+
 clean:
 	docker compose down --rmi all --volumes --remove-orphans
 	docker builder prune -af

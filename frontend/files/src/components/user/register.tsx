@@ -38,7 +38,7 @@ function Register() {
       })
       .then(function () {
         axios
-          .post("https://localhost:5000/register", {
+          .post(`${import.meta.env.VITE_BACKEND_URL}/register`, {
             username: username,
             email: email,
             password: password,

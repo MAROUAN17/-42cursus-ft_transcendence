@@ -1,7 +1,7 @@
 export const schema = {
   type: 'object',
   properties: {
-    PORT: { type: 'string', default: 5000 }
+    PORT: { type: 'string', default: 6000 }
   }
 }
 

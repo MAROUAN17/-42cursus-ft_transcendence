@@ -26,7 +26,7 @@ const httpsOptions = {
 export const pump = util.promisify(pipeline);
 
 const app: FastifyInstance = Fastify({
-  logger: false,
+  logger: true,
   https: httpsOptions,
 });
 
@@ -41,15 +41,16 @@ export const vaultClient = vault({
 });
 
 async function start(): Promise<void> {
+  console.log(process.env.BACKEND_HOST);
+
   const jwtSecrets = await vaultClient.read("secret/jwt");
   await app.register(cors, {
-    origin: "https://localhost:3000",
+    origin: [`${process.env.VITE_FRONTEND_URL}`, `https://localhost:${process.env.VITE_PORT}`],
     methods: ["GET", "POST", "OPTIONS", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization", "player-id"],
     credentials: true,
     maxAge: 600,
   });
-  await app.register(fastifyEnv, options);
   await app.register(fastifyCookie);
   await app.register(fastifyJwt, {
     secret: jwtSecrets.data.JWT_TMP_LOGIN,
@@ -77,13 +78,14 @@ async function start(): Promise<void> {
   });
   await app.register(oauthPlugin);
   await app.register(multipart, { limits: { fileSize: 1000000 } });
+  await app.register(fastifyEnv, options);
   await app.register(websocketPlugin);
   await app.register(mailTransporter);
   await app.register(App);
 
   await app.listen({
-    host: "0.0.0.0",
-    port: Number(process.env.PORT) || 8080,
+    host: process.env.BACKEND_HOST as string,
+    port: Number(process.env.BACKEND_PORT) || 8080,
   });
 }
 

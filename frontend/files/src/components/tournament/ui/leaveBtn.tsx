@@ -14,7 +14,7 @@ const LeaveButton: React.FC<LeaveButtonProps> = ({ setStarted, label, tournament
   const handelStart = async () => {
     try {
       setLoading(true);
-      const res = await fetch(`https://localhost:5000/tournament/start/${tournamentId}`, {
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/tournament/start/${tournamentId}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -40,7 +40,7 @@ const LeaveButton: React.FC<LeaveButtonProps> = ({ setStarted, label, tournament
   const handleLeave = async () => {
     try {
       setLoading(true);
-      const res = await fetch("https://localhost:5000/tournament/leave", {
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/tournament/leave`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",

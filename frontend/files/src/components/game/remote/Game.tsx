@@ -146,7 +146,7 @@ export default function RGame() {
     // if ( !gameType || (gameType == "tournament" && !round)) return;
     // console.log(`id : ${round.tournament_id}  gameType: ${gameType}`)
     // console.log("web socket ===== ", ws);
-    const ws = new WebSocket("wss://localhost:5000/game");
+    const ws = new WebSocket(`${import.meta.env.VITE_SOCKET_BACKEND_URL}/game`);
     setWebsocket(ws);
     ws.onopen = () => {
       console.log("WebSocket Connected!");

@@ -31,7 +31,7 @@ const TournamentBracket: React.FC = () => {
     if (!user || !user.id) return;
 
     const fetchRounds = async () => {
-      const response = await fetch(`https://localhost:5000/tournament/rounds/${id}`, { method: "GET" });
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/tournament/rounds/${id}`, { method: "GET" });
       if (!response.ok) throw new Error("Failed to fetch rounds");
       const data = await response.json();
       console.log("Fetched rounds:", JSON.stringify(data));
@@ -57,7 +57,7 @@ const TournamentBracket: React.FC = () => {
 
     const intervalId = setInterval(async () => {
       try {
-        const response = await fetch(`https://localhost:5000/tournament/start_games/${id}`);
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/tournament/start_games/${id}`);
         if (response.ok) {
           const tournament = await response.json();
           if (tournament.status === "ongoing") {
@@ -89,7 +89,7 @@ const TournamentBracket: React.FC = () => {
   useEffect(() => {
     const fetchTournament = async () => {
       try {
-        const res = await fetch(`https://localhost:5000/tournament/${id}`);
+        const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/tournament/${id}`);
         if (!res.ok) throw new Error(`Error ${res.status}: ${res.statusText}`);
 
         const data: Tournament = await res.json();
@@ -106,7 +106,7 @@ const TournamentBracket: React.FC = () => {
 
     const fetchFinalRound = async () => {
       try {
-        const response = await fetch(`https://localhost:5000/tournament/final_round/${id}`);
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/tournament/final_round/${id}`);
         if (response.ok) {
           const finalRound = await response.json();
           console.log("Final Round fetched:", finalRound);

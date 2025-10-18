@@ -29,12 +29,17 @@ RUN  git clone https://github.com/owasp-modsecurity/ModSecurity-nginx && \
 FROM debian:stable-slim
 
 RUN apt-get update -y && \
-    apt-get install -y nginx openssl bash netcat-openbsd git libcurl4 \
+    apt-get install -y gettext-base nginx openssl bash netcat-openbsd git libcurl4 \
     libxml2 libyajl2 libgeoip1 liblmdb0 libpcre2-8-0 && \
     rm -rf /var/lib/apt/lists/* && \
     mkdir -p /etc/nginx/modules/ /etc/nginx/modsec/
 
-COPY conf/nginx.conf /etc/nginx/nginx.conf
+
+# COPY conf/nginx.conf /etc/nginx/nginx.conf
+COPY ./tools/entry.sh /usr/local/bin/entry.sh
+COPY ./conf/nginx.conf.template /etc/nginx/nginx.conf.template
+RUN chmod +x /usr/local/bin/entry.sh
+
 COPY --from=main /opt/nginx-1.26.3/objs/ngx_http_modsecurity_module.so /etc/nginx/modules/
 COPY --from=main /ModSecurity/modsecurity.conf-recommended /etc/nginx/modsec/modsec.conf
 COPY --from=main /ModSecurity/unicode.mapping /etc/nginx/modsec/
@@ -71,4 +76,4 @@ SecAction \
     setvar:'tx.allowed_methods=GET HEAD POST OPTIONS DELETE'"
 EOF
 
-ENTRYPOINT [ "nginx", "-g" , "daemon off;" ]
+ENTRYPOINT /usr/local/bin/entry.sh
