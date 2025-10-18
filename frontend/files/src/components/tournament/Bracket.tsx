@@ -86,7 +86,7 @@ const TournamentBracket: React.FC = () => {
     if (!round.winner) {
       // notifying
       navigate("/remote_game");
-    } 
+    }
   }, [user, round]);
 
   useEffect(() => {
@@ -134,12 +134,12 @@ const TournamentBracket: React.FC = () => {
   const finalUsers =
     finalPlayers?.map((p, index) => ({
       username: p.username,
-      avatar: p?.avatar ,
+      avatar: p?.avatar,
     })) || [];
 
   if (loading) return <p>Loading tournament...</p>;
   return (
-    <div className="bg-[#0a043c] text-white min-h-screen flex flex-col items-center justify-center gap-10">
+    <div className=" text-white min-h-screen flex flex-col w-full h-full items-center justify-center gap-10">
       <div className="w-full flex justify-end p-4 cursor-pointer">
         <LeaveButton
           setStarted={setStarted}
