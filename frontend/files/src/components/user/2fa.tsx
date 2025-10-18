@@ -29,7 +29,7 @@ function Page2FA() {
     e.preventDefault();
     const otpNbr = numbers.join("");
     axios
-      .post("https://localhost:5000/2fa/verify-token", { token: otpNbr, email: userEmail }, { withCredentials: true })
+      .post(`${import.meta.env.VITE_BACKEND_URL}/2fa/verify-token`, { token: otpNbr, email: userEmail }, { withCredentials: true })
       .then(function (res) {
         console.log(res);
         navigate("/avatar");

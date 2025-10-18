@@ -21,7 +21,7 @@ export default function NewPassword() {
       return;
     }
     axios
-      .post("https://localhost:5000/reset-password/verify", {
+      .post(`${import.meta.env.VITE_BACKEND_URL}/reset-password/verify`, {
         token: token,
         password: newPassword,
         confirmPassword: confirmPassword,
@@ -50,7 +50,7 @@ export default function NewPassword() {
   };
 
   useEffect(() => {
-    axios.post("https://localhost:5000/reset-password/check", { token: token }).catch(function (err) {
+    axios.post(`${import.meta.env.VITE_BACKEND_URL}/reset-password/check`, { token: token }).catch(function (err) {
       if (err.response.data.error === "EXPIRED") setExpired(true);
       else navigate("/login");
       const intervId = setInterval(() => {

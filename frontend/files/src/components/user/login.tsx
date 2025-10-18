@@ -14,9 +14,12 @@ function Login() {
 
   const handleForm = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    console.log(import.meta.env.VITE_BACKEND_URL);
+
     axios
       .post(
-        "https://localhost:5000/login",
+        `${import.meta.env.VITE_BACKEND_URL}/login`,
         {
           email: email,
           password: password,
@@ -32,6 +35,7 @@ function Login() {
         }
       })
       .catch(function (err) {
+        console.log(err);
         setErrorFlag(true);
         setErrorMssg(err.response.data.error);
       });
@@ -121,7 +125,7 @@ function Login() {
               <hr className="xl:w-[35%] lg:w-[30%]"></hr>
             </div>
             <div className="flex justify-center">
-              <a href="https://localhost:5000/intra42/login">
+              <a href={`${import.meta.env.VITE_BACKEND_URL}/intra42/login`}>
                 <img className="w-[32px] h-[32px]" src="/42-icon.png" alt="42 icon" />
               </a>
             </div>

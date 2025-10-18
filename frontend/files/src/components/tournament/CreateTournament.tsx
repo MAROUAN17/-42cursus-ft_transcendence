@@ -16,7 +16,7 @@ export function CreateTournament({ show, onClose, onCreated }: Props) {
     if (!tournamentName.trim()) return;
 
     try {
-      const res = await fetch("https://localhost:5000/tournament/create", {
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/tournament/create`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

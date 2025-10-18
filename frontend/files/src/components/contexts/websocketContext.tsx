@@ -9,7 +9,7 @@ export const WebSocketProvider: React.FC<{ children?: React.ReactNode }> = ({ ch
   const [opponentName, setOpponentName] = useState<string | undefined>("PlayerName");
   const handlersRef = useRef<Map<string, (msg: websocketPacket) => void>>(new Map<string, (msg: websocketPacket) => void>());
   function connectWs() {
-    socketRef.current = new WebSocket("wss://localhost:5000/send-message");
+    socketRef.current = new WebSocket(`${import.meta.env.VITE_SOCKET_BACKEND_URL}/send-message`);
     socketRef.current.onopen = () => {
       console.log("Socket Created!");
     };

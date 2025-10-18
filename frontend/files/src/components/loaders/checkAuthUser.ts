@@ -3,7 +3,7 @@ import axios from "axios";
 
 export async function checkAuthLoader() {
   try {
-    await axios.get("https://localhost:5000/check/login", {
+    await axios.get(`${import.meta.env.VITE_BACKEND_URL}/check/login`, {
       withCredentials: true,
     });
   } catch (error) {
@@ -15,7 +15,7 @@ export async function checkAuthLoader() {
 
 export async function checkLoginPageLoader() {
   try {
-    await axios.get("https://localhost:5000/check/login-page", {
+    await axios.get(`${import.meta.env.VITE_BACKEND_URL}/check/login-page`, {
       withCredentials: true,
     });
   } catch (error) {

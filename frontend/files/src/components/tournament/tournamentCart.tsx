@@ -19,7 +19,7 @@ export function TournamentCard({ id, name, players, createdAt, status }: Tournam
     //     return ;
     console.log("Trying to join ...");
     try {
-      const res = await fetch("https://localhost:5000/tournament/join", {
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/tournament/join`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

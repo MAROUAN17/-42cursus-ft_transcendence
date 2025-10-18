@@ -10,7 +10,7 @@ interface ErrorResponse {
 }
 
 const api = axios.create({
-  baseURL: "https://localhost:5000",
+  baseURL: import.meta.env.VITE_BACKEND_URL,
 });
 
 api.interceptors.response.use(undefined, async (error: AxiosError) => {

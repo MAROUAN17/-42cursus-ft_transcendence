@@ -33,7 +33,7 @@ function Layout() {
         if (prev <= 1) {
           clearInterval(timer);
           api
-            .get(`https://localhost:5000/match/my-game/${user.id.toString()}`)
+            .get(`/match/my-game/${user?.id.toString()}`)
             .then((res) => {
               sessionStorage.setItem("currentGame", JSON.stringify(res.data.game));
               navigate("/remote_game");
