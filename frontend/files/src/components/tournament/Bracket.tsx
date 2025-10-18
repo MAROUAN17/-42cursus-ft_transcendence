@@ -131,50 +131,40 @@ const TournamentBracket: React.FC = () => {
       username: p.username,
       avatar: p?.avatar,
     })) || [];
-  const get_username = (p:any) => {
-    for (let i =0; i < tournament?.players.length ; i++){
-      if (tournament?.players[i].id == p)
-          return tournament?.players[i].username;
+  const get_username = (p: any) => {
+    for (let i = 0; i < tournament?.players.length; i++) {
+      if (tournament?.players[i].id == p) return tournament?.players[i].username;
     }
-  }
-  const get_avatar = (p:any) => {
-    for (let i =0; i < tournament?.players.length ; i++){
-      if (tournament?.players[i].id == p)
-          return tournament?.players[i].avatar;
+  };
+  const get_avatar = (p: any) => {
+    for (let i = 0; i < tournament?.players.length; i++) {
+      if (tournament?.players[i].id == p) return tournament?.players[i].avatar;
     }
-  }
+  };
   const finalUsers =
     finalPlayers?.map((p, index) => ({
       username: get_username(p),
       avatar: get_avatar(p),
     })) || [];
 
-  useEffect (() => {
-    console.log("final Players-- :", finalPlayers)
-    console.log("final Users -- :", finalUsers)
-  }, [finalUsers, finalPlayers])
+  useEffect(() => {
+    console.log("final Players-- :", finalPlayers);
+    console.log("final Users -- :", finalUsers);
+  }, [finalUsers, finalPlayers]);
 
   if (loading) return <p>Loading tournament...</p>;
   return (
-    <div className=" text-white min-h-screen flex flex-col w-full h-full items-center justify-center gap-10">
-      <div className="w-full flex justify-end p-4 cursor-pointer">
-        <LeaveButton
-          setStarted={setStarted}
-          label={tournament?.admin == user?.id ? adminLabel : "leave"}
-          tournamentId={Number(id)}
-          playerId={user?.id || 1}
-          onLeave={() => navigate("/tournaments")}
-        />
-      </div>
-
-      <div className="relative h-40 overflow-hidden cursor-pointer  text-white rounded-lg">
+    <div className="font-poppins text-white min-h-screen flex flex-col w-full h-full items-center justify-center gap-10">
+      <h1 className="flex justify-top text-white font-bold text-2xl">{tournament?.name}</h1>
+      <div className="relative h-full overflow-hidden cursor-pointer  text-white rounded-lg">
         <div className="flex flex-col items-center justify-center h-full">
-          <h1>
+          {/* <h1>
             id is {user?.id} {user?.username}
-          </h1>
+          </h1> */}
+          
           <div className="flex gap-32 items-center">
             <div className="flex gap-12 items-center">
-              <div className="relative flex flex-col gap-10">
+              <div className="relative flex flex-col gap-24">
                 <PlayerBox {...Users[0]} />
                 <PlayerBox {...Users[1]} />
 
@@ -192,7 +182,7 @@ const TournamentBracket: React.FC = () => {
                 <PlayerBox {...finalUsers[1]} />
               </div>
 
-              <div className="relative flex flex-col gap-10">
+              <div className="relative flex flex-col gap-24">
                 <PlayerBox {...Users[2]} />
                 <PlayerBox {...Users[3]} />
 
@@ -201,6 +191,14 @@ const TournamentBracket: React.FC = () => {
               </div>
             </div>
           </div>
+
+          <LeaveButton
+              setStarted={setStarted}
+              label={tournament?.admin == user?.id ? adminLabel : "leave"}
+              tournamentId={Number(id)}
+              playerId={user?.id || 1}
+              onLeave={() => navigate("/tournaments")}
+            />
         </div>
       </div>
     </div>

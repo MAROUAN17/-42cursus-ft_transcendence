@@ -5,14 +5,12 @@ interface UserBoxProps {
 
 const PlayerBox: React.FC<UserBoxProps> = ({ username, avatar }) => {
   return (
-    <div className="flex items-center">
-      <div className="flex items-center gap-2 bg-purple-600 text-white px-4 py-2 rounded-l-lg w-44">
+    <div className="font-poppins flex items-center">
+      <div className="flex items-center gap-2 bg-neon text-white px-4 py-2 rounded-l-lg xl:w-[300px] lg:w-[150px]">
         <img
-          src={avatar}
-          alt={username}
-          width={28}
-          height={28}
-          className="rounded-full object-cover"
+          src={avatar ? avatar : '/9896174.jpg'}
+          alt={username ? username : 'no-pic'}
+          className="w-[42px] h-[42px] rounded-full object-cover"
         />
         <span className="truncate text-sm font-bold uppercase">{username}</span>
       </div>
