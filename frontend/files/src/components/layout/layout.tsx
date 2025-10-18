@@ -63,7 +63,7 @@ function Layout() {
         setPaddleColor(res.data.paddleColor);
         setPaddleBorder(res.data.paddleBorder);
         setPaddleShadow(res.data.paddleShadow);
-        setPaddleSpeed(res.data.paddleSpeed);
+        setPaddleSpeed((res.data.paddleSpeed - 6).toString());
         setSelectedBg(res.data.selectedBg);
       })
       .catch((err) => {

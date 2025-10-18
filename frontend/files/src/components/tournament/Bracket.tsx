@@ -85,6 +85,7 @@ const TournamentBracket: React.FC = () => {
     sessionStorage.setItem("currentRound", JSON.stringify(game));
     if (!round.winner) {
       // notifying
+      console.log("admin sent notif");
       navigate("/remote_game");
     }
   }, [user, round]);

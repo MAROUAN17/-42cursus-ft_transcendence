@@ -136,7 +136,7 @@ export default function RGame() {
   useEffect(() => {
     if (websocket && websocket.readyState == WebSocket.OPEN) {
       websocket.send(JSON.stringify({ type: "updateY", leftY, rightY, roundId: gameInfo?.roundId, gameId: game.id, side: game.side }));
-      console.log(`leftY ${leftY} rightY ${rightY} jj ${gameCutomistion?.paddleSpeed}`);
+      // console.log(`leftY ${leftY} rightY ${rightY} jj ${gameCutomistion?.paddleSpeed}`);
     } else console.log("there is a proble in socket:", websocket);
   }, [leftY, rightY]);
 
@@ -160,7 +160,7 @@ export default function RGame() {
           setWinnerId(message.winner);
           sessionStorage.removeItem("currentGame");
           // sessionStorage.removeItem('currentRound');
-          if (tournamentId) navigate(`/bracket/${tournamentId}`);
+          if (round?.tournament_id) navigate(`/bracket/${round.tournament_id}`);
           if (message.type == "updateY") console.log("updateY");
         }
         setGameInfo(message.game_info);
