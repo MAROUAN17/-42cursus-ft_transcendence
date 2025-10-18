@@ -8,6 +8,7 @@ import type { Round } from "../game/remote/Types";
 import type { ProfileUserInfo } from "../../types/user";
 import { useUserContext } from "../contexts/userContext";
 import type { Game } from "../game/remote/Types";
+import type { EventPacket } from "../../types/websocket";
 
 //todo
 //setup first round betwen player1 and player2
@@ -25,6 +26,7 @@ const TournamentBracket: React.FC = () => {
 
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { send } = useWebSocket();
   const { user } = useUserContext();
 
   useEffect(() => {
@@ -77,6 +79,18 @@ const TournamentBracket: React.FC = () => {
     return () => clearInterval(intervalId);
   }, [started, user, id]);
 
+  function sendAlert() {
+    if (!tournament || user?.id != tournament.admin) return;
+    const packet: EventPacket = {
+      type: "gameEvent",
+      data: {
+        tournamentId: tournament.id,
+        admin: tournament.admin,
+      },
+    };
+    send(JSON.stringify(packet));
+  }
+
   useEffect(() => {
     if (!user || !round) return;
     const game: Game = {
@@ -87,6 +101,8 @@ const TournamentBracket: React.FC = () => {
     if (!round.winner) {
       // notifying
       console.log("admin sent notif");
+      sendAlert();
+      // if (user?.id != tournament?.admin)
       navigate("/remote_game");
     }
   }, [user, round]);
@@ -132,28 +148,26 @@ const TournamentBracket: React.FC = () => {
       username: p.username,
       avatar: p?.avatar,
     })) || [];
-  const get_username = (p:any) => {
-    for (let i =0; i < tournament?.players.length ; i++){
-      if (tournament?.players[i].id == p)
-          return tournament?.players[i].username;
+  const get_username = (p: any) => {
+    for (let i = 0; i < tournament?.players.length; i++) {
+      if (tournament?.players[i].id == p) return tournament?.players[i].username;
     }
-  }
-  const get_avatar = (p:any) => {
-    for (let i =0; i < tournament?.players.length ; i++){
-      if (tournament?.players[i].id == p)
-          return tournament?.players[i].avatar;
+  };
+  const get_avatar = (p: any) => {
+    for (let i = 0; i < tournament?.players.length; i++) {
+      if (tournament?.players[i].id == p) return tournament?.players[i].avatar;
     }
-  }
+  };
   const finalUsers =
     finalPlayers?.map((p, index) => ({
       username: get_username(p),
       avatar: get_avatar(p),
     })) || [];
 
-  useEffect (() => {
-    console.log("final Players-- :", finalPlayers)
-    console.log("final Users -- :", finalUsers)
-  }, [finalUsers, finalPlayers])
+  useEffect(() => {
+    console.log("final Players-- :", finalPlayers);
+    console.log("final Users -- :", finalUsers);
+  }, [finalUsers, finalPlayers]);
 
   if (loading) return <p>Loading tournament...</p>;
   return (
