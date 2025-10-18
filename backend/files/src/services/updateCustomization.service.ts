@@ -42,8 +42,6 @@ export const getCustomization = async (req: FastifyRequest, res: FastifyReply) =
         "SELECT gameBorder, gameShadow, ballColor, ballShadow, paddleColor, paddleBorder, paddleShadow, paddleSpeed, selectedBg FROM settings WHERE userId = ?"
       )
       .get(payload.id);
-    row.paddleSpeed -= 6;
-    console.log("sent -> ", row);
     res.status(200).send(row);
   } catch (err) {
     console.log("error -> ", err);

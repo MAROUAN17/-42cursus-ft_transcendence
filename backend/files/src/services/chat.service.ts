@@ -36,7 +36,13 @@ function createNotification(currPacket: websocketPacket) {
 
   let client = clients.get(currPacket.data.recipient_id);
   if (client) {
-    if (currPacket.data.type != "message" && currPacket.data.type != "markSeen") return;
+    if (
+      currPacket.data.type != "message" &&
+      currPacket.data.type != "markSeen" &&
+      currPacket.data.type != "friendReq" &&
+      currPacket.data.type != "friendAccept"
+    )
+      return;
     const notification: NotificationPacket = {
       type: "notification",
       data: {
@@ -192,7 +198,7 @@ function handleGameInviteRes(packet: ChatPacket) {
   if (client) {
     sendToClient(client, packet);
     if (packet.data.type == "inviteAccepted") {
-      const user = app.db.prepare("SELECT username FROM players WHERE id = ?").get(packet.data.recipient_id)
+      const user = app.db.prepare("SELECT username FROM players WHERE id = ?").get(packet.data.recipient_id);
       if (!user) return;
       const notification: NotificationPacket = {
         type: "notification",

@@ -1,10 +1,4 @@
-import {
-  Routes,
-  Route,
-  BrowserRouter,
-  createBrowserRouter,
-  RouterProvider,
-} from "react-router";
+import { Routes, Route, BrowserRouter, createBrowserRouter, RouterProvider } from "react-router";
 import Game from "./components/game/game";
 import Login from "./components/user/login";
 import Register from "./components/user/register";
@@ -23,10 +17,7 @@ import TournamentBracket from "./components/tournament/Bracket";
 import Profile from "./components/user/profile";
 import notFound from "./components/error/404";
 import checkBlockLoader from "./components/loaders/checkBlock";
-import {
-  checkAuthLoader,
-  checkLoginPageLoader,
-} from "./components/loaders/checkAuthUser";
+import { checkAuthLoader, checkLoginPageLoader } from "./components/loaders/checkAuthUser";
 import checkFirstLoginLoader from "./components/loaders/checkFirstLogin";
 import { check2FALoader } from "./components/loaders/check2fa";
 import AvatarSelection from "./components/user/avatar";
@@ -79,6 +70,10 @@ export default function App() {
           path: "/pairing",
           Component: Pairing,
         },
+        {
+          path: "/bracket/:id",
+          Component: TournamentBracket,
+        },
       ],
     },
     {
@@ -90,12 +85,12 @@ export default function App() {
       Component: Game,
     },
     {
-      path: '/remote_game',
+      path: "/remote_game",
       element: (
         <UserProvider>
           <RGame />
         </UserProvider>
-      )
+      ),
     },
     {
       path: "/login",
@@ -123,14 +118,7 @@ export default function App() {
       path: "/tournament",
       Component: Tournament,
     },
-    {
-      path: "/bracket/:id",
-      element: (
-        <UserProvider>
-          <TournamentBracket />
-        </UserProvider>
-      ),
-    },
+
     {
       path: "/avatar",
       element: (
