@@ -20,6 +20,6 @@ export const oauthPlugin = fp(async function (fastify, opts) {
       },
     },
     startRedirectPath: "/intra42/login",
-    callbackUri: "https://localhost:5000/intra42/login/callback",
+    callbackUri: `https://${process.env.NGINX_HOST}:5000/intra42/login/callback`,
   });
 });

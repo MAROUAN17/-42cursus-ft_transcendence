@@ -49,6 +49,7 @@ const TournamentBracket: React.FC = () => {
       }
 
       const round2 = data.filter((r: Round) => r.round_number === 2);
+      // console.log("round 2 : ", round2)
       const playerIds = round2.flatMap((r: any) => [r.player1, r.player2]);
       setFinalPlayers(playerIds);
     };
@@ -130,12 +131,28 @@ const TournamentBracket: React.FC = () => {
       username: p.username,
       avatar: p?.avatar,
     })) || [];
-
+  const get_username = (p:any) => {
+    for (let i =0; i < tournament?.players.length ; i++){
+      if (tournament?.players[i].id == p)
+          return tournament?.players[i].username;
+    }
+  }
+  const get_avatar = (p:any) => {
+    for (let i =0; i < tournament?.players.length ; i++){
+      if (tournament?.players[i].id == p)
+          return tournament?.players[i].avatar;
+    }
+  }
   const finalUsers =
     finalPlayers?.map((p, index) => ({
-      username: p.username,
-      avatar: p?.avatar,
+      username: get_username(p),
+      avatar: get_avatar(p),
     })) || [];
+
+  useEffect (() => {
+    console.log("final Players-- :", finalPlayers)
+    console.log("final Users -- :", finalUsers)
+  }, [finalUsers, finalPlayers])
 
   if (loading) return <p>Loading tournament...</p>;
   return (
