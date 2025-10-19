@@ -9,6 +9,7 @@ import type { ProfileUserInfo } from "../../types/user";
 import { useUserContext } from "../contexts/userContext";
 import type { Game } from "../game/remote/Types";
 import type { EventPacket } from "../../types/websocket";
+import api from "../../axios";
 
 //todo
 //setup first round betwen player1 and player2
@@ -33,44 +34,48 @@ const TournamentBracket: React.FC = () => {
     if (!user || !user.id) return;
 
     const fetchRounds = async () => {
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/tournament/rounds/${id}`, { method: "GET" });
-      if (!response.ok) throw new Error("Failed to fetch rounds");
-      const data = await response.json();
-      console.log("Fetched rounds:", JSON.stringify(data));
+      let data;
+      var latestRounds;
+      const response = await api(`/tournament/rounds/${id}`, { withCredentials: true }).then(function (res) {
+        data = res.data;
+        const maxRound = Math.max(...data.map((r: Round) => r.round_number));
+        latestRounds = data.filter((r: Round) => r.round_number === maxRound);
+        console.log("Fetched rounds:", JSON.stringify(data));
 
-      const maxRound = Math.max(...data.map((r: Round) => r.round_number));
-      const latestRounds = data.filter((r: Round) => r.round_number === maxRound);
+        const userRound = latestRounds.find((r: Round) => r.player1 === Number(user.id) || r.player2 === Number(user.id));
 
-      const userRound = latestRounds.find((r: Round) => r.player1 === Number(user.id) || r.player2 === Number(user.id));
+        if (userRound) {
+          setRound(userRound);
+          console.log("User Round Found:", userRound);
+        } else {
+          console.warn("User is not part of any round in the latest round.");
+        }
+        const round2 = data.filter((r: Round) => r.round_number === 2);
+        const playerIds = round2.flatMap((r: any) => [r.player1, r.player2]);
+        setFinalPlayers(playerIds);
+      });
+      // if (!response.ok) throw new Error("Failed to fetch rounds");
+      // const data = await response.json();
 
-      if (userRound) {
-        setRound(userRound);
-        console.log("User Round Found:", userRound);
-      } else {
-        console.warn("User is not part of any round in the latest round.");
-      }
-
-      const round2 = data.filter((r: Round) => r.round_number === 2);
       // console.log("round 2 : ", round2)
-      const playerIds = round2.flatMap((r: any) => [r.player1, r.player2]);
-      setFinalPlayers(playerIds);
     };
 
     fetchRounds();
 
     const intervalId = setInterval(async () => {
       try {
-        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/tournament/start_games/${id}`);
-        if (response.ok) {
-          const tournament = await response.json();
-          if (tournament.status === "ongoing") {
-            clearInterval(intervalId);
-            // setStarted(true);
-            // navigate("/remote_game");
-          }
-        } else {
-          console.log("Still waiting for players...");
-        }
+        await api(`/tournament/start_games/${id}`, { withCredentials: true })
+          .then(function (res) {
+            const tournament = res.data;
+            if (tournament.status === "ongoing") {
+              clearInterval(intervalId);
+              // setStarted(true);
+              // navigate("/remote_game");
+            }
+          })
+          .catch(function (err) {
+            console.log("Still waiting for players...");
+          });
       } catch (error) {
         console.error("Error fetching tournament:", error);
       }
@@ -102,22 +107,23 @@ const TournamentBracket: React.FC = () => {
       // notifying
       console.log("admin sent notif");
       sendAlert();
-      if (user?.id != tournament?.admin)
-        navigate("/remote_game");
+      if (user?.id != tournament?.admin) navigate("/remote_game");
     }
   }, [user, round]);
 
   useEffect(() => {
     const fetchTournament = async () => {
       try {
-        const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/tournament/${id}`);
-        if (!res.ok) throw new Error(`Error ${res.status}: ${res.statusText}`);
+        api(`/tournament/${id}`)
+          .then(function (res) {
+            setTournament(res.data);
 
-        const data: Tournament = await res.json();
-        setTournament(data);
-
-        if (data.players.length === 4) setAdminLabel("start");
-        console.log("-- fetched tournament:", data);
+            if (res.data.players.length === 4) setAdminLabel("start");
+            console.log("-- fetched tournament:", res.data);
+          })
+          .catch(function (err) {
+            throw new Error(`Error ${err.response.status}: ${err.response.statusText}`);
+          });
       } catch (err: any) {
         console.error("Error:", err.message);
       } finally {
@@ -127,13 +133,13 @@ const TournamentBracket: React.FC = () => {
 
     const fetchFinalRound = async () => {
       try {
-        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/tournament/final_round/${id}`);
-        if (response.ok) {
-          const finalRound = await response.json();
-          console.log("Final Round fetched:", finalRound);
-        } else {
-          console.log("Still waiting for players...");
-        }
+        const response = await api(`/tournament/final_round/${id}`, { withCredentials: true })
+          .then(function (res) {
+            console.log("Final Round fetched:", res.data);
+          })
+          .catch(function (err) {
+            console.log("Still waiting for players...");
+          });
       } catch (error) {
         console.error("Error fetching final round:", error);
       }
@@ -178,7 +184,7 @@ const TournamentBracket: React.FC = () => {
           {/* <h1>
             id is {user?.id} {user?.username}
           </h1> */}
-          
+
           <div className="flex gap-32 items-center">
             <div className="flex gap-12 items-center">
               <div className="relative flex flex-col gap-24">
@@ -210,12 +216,12 @@ const TournamentBracket: React.FC = () => {
           </div>
 
           <LeaveButton
-              setStarted={setStarted}
-              label={tournament?.admin == user?.id ? adminLabel : "leave"}
-              tournamentId={Number(id)}
-              playerId={user?.id || 1}
-              onLeave={() => navigate("/tournaments")}
-            />
+            setStarted={setStarted}
+            label={tournament?.admin == user?.id ? adminLabel : "leave"}
+            tournamentId={Number(id)}
+            playerId={user?.id || 1}
+            onLeave={() => navigate("/tournaments")}
+          />
         </div>
       </div>
     </div>

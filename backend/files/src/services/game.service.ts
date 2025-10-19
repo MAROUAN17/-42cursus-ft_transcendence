@@ -138,9 +138,9 @@ function gameLoop (room:Room)
     game.ball.x = nx;
     game.ball.y = ny;
     room.gameInfo = game;
-    if (game.scoreLeft > 1)
+    if (game.scoreLeft > 10)
       room.winner = room.player1;
-    else if (game.scoreRight > 1)
+    else if (game.scoreRight > 10)
       room.winner = room.player2;
     if (room.winner) {
       broadcastToRoom(room, { type: "end", winner:room.winner });
@@ -218,7 +218,7 @@ export function handleGameConnection(connection: any, req: any) {
             room.gameInfo.paddleLeft.y = msg.leftY;
           if (msg.side == "right")
             room.gameInfo.paddleRight.y = msg.rightY;
-          console.log("Broadcasting to room:", room.gameId, "Players:", room.leftPlayer, room.rightPlayer, "type: ", room.type);
+          console.log("Broadcasting to room:", room.gameId, "Players:", room.player1, room.player2, "type: ", room.type);
           
           broadcastToRoom(room, { type: "updateY", game_info: room.gameInfo });
         }
@@ -235,7 +235,9 @@ export function handleGameConnection(connection: any, req: any) {
   });
 }
 function getRoom(gameId: string, roundId:number): Room {
-  let room = rooms.find(r => r.roundId === roundId);
+  var room;
+  if (roundId)
+    room = rooms.find(r => r.roundId === roundId);
   if (!room)
     room = rooms.find(r => r.gameId === gameId);
   const id = gameId ? gameId : uuidv4();
@@ -293,6 +295,7 @@ function addPlayerToRound(tournamentId: number, playerId: string, rn: number, si
   console.log("Round found:", lastRound);
 
   const room = getRoom("", lastRound.id);
+  console.log("round Id found : ", room.roundId)
   room.tournamentId = tournamentId;
   room.type = "tournament";
 

@@ -10,7 +10,6 @@ import Page2FA from "./components/user/2fa";
 import NewPassword from "./components/user/newPassword";
 import ResetPasswordForm from "./components/user/passwordResetForm";
 import Layout from "./components/layout/layout";
-import Tournament from "./components/tournament/tournament";
 import Pairing from "./components/match/Match";
 import { Tournaments } from "./components/tournament/tournaments";
 import TournamentBracket from "./components/tournament/Bracket";
@@ -113,10 +112,6 @@ export default function App() {
     {
       path: "/reset-password/new",
       Component: NewPassword,
-    },
-    {
-      path: "/tournament",
-      Component: Tournament,
     },
 
     {

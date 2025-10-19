@@ -112,10 +112,10 @@ export default function RGame() {
     let raf = 0;
     const step = () => {
       if (!gameCutomistion) return;
-      if (game?.side == "right" || Number(id) == round?.player1) {
+      if (game?.side == "right" ) {
         if (down.has("ArrowUp")) setRightY((y) => Math.max(0, y - gameCutomistion?.paddleSpeed));
         if (down.has("ArrowDown")) setRightY((y) => Math.min((gameInfo?.bounds.height ?? 0) - 120, y + gameCutomistion?.paddleSpeed));
-      } else if (game?.side == "left" || Number(id) == round?.player2) {
+      } else if (game?.side == "left") {
         if (down.has("ArrowUp")) setLeftY((y) => Math.max(0, y - gameCutomistion?.paddleSpeed));
         if (down.has("ArrowDown")) setLeftY((y) => Math.min((gameInfo?.bounds.height ?? 0) - 120, y + gameCutomistion?.paddleSpeed));
       }
@@ -136,7 +136,7 @@ export default function RGame() {
   useEffect(() => {
     if (websocket && websocket.readyState == WebSocket.OPEN) {
       websocket.send(JSON.stringify({ type: "updateY", leftY, rightY, roundId: gameInfo?.roundId, gameId: game.id, side: game.side }));
-      // console.log(`leftY ${leftY} rightY ${rightY} jj ${gameCutomistion?.paddleSpeed}`);
+      console.log(`leftY ${leftY} rightY ${rightY} jj ${game.side}`);
     } else console.log("there is a proble in socket:", websocket);
   }, [leftY, rightY]);
 

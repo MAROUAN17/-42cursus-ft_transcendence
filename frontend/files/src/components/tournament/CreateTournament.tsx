@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useWebSocket } from "../contexts/websocketContext";
 import { useUserContext } from "../contexts/userContext";
+import api from "../../axios";
 
 interface Props {
   show: boolean;
@@ -16,21 +17,13 @@ export function CreateTournament({ show, onClose, onCreated }: Props) {
     if (!tournamentName.trim()) return;
 
     try {
-      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/tournament/create`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "player-id": user?.id ? user.id.toString() : "",
-        },
-        body: JSON.stringify({ name: tournamentName }),
+      api.post(
+        `/tournament/create`,
+        { name: tournamentName, playerId: user?.id ? user.id.toString() : "" },
+        { withCredentials: true }
+      ).then(function(res) {
+        onCreated(res.data.tournament);
       });
-
-      const data = await res.json();
-      console.log("data: ", data);
-      console.log("Created:", data.tournament);
-
-      onCreated(data.tournament);
-
       setTournamentName("");
       onClose();
     } catch (err) {
