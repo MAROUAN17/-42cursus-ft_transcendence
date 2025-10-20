@@ -18,6 +18,14 @@ export interface OnlineStatusPacket {
     online: boolean;
   };
 }
+export interface EventPacket {
+  type: "gameEvent";
+  data: {
+    tournamentId: number;
+    tournamentName?: string;
+    admin: number;
+  };
+}
 export interface LogPacket {
   type: "logNotif";
   data: {
@@ -56,7 +64,7 @@ export interface notificationPacketDB {
   unreadCount: number;
   updatedAt: string;
 }
-export type websocketPacket = NotificationPacket | ChatPacket | OnlineStatusPacket | LogPacket;
+export type websocketPacket = NotificationPacket | ChatPacket | OnlineStatusPacket | LogPacket | EventPacket;
 
 export interface websocketContextType {
   send: (msg: string) => void;

@@ -36,7 +36,7 @@ export const gameRoutes: FastifyPluginAsync = async (fastify) => {
   fastify.post("/tournament/join", join_tournament)
   fastify.get("/tournament/all", get_tournaments);
   fastify.delete("/tournament/delete", delete_tournament);
-  fastify.delete("/tournament/leave", leave_tournament);
+  fastify.post("/tournament/leave", leave_tournament);
   fastify.get("/tournament/:tournamentId", get_tournament_by_id);
   fastify.get("/tournament/rounds/:tournamentId", get_rounds);
   fastify.post("/tournament/start/:tournamentId", start_tournament);

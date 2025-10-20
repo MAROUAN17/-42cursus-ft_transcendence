@@ -11,6 +11,15 @@ export interface messagePacket {
   isRead: boolean;
 }
 
+export interface EventPacket {
+  type: "gameEvent";
+  data: {
+    tournamentId: number;
+    tournamentName?: string;
+    admin: number;
+  };
+}
+
 export interface LogPacket {
   type: "logNotif";
   data: {
@@ -69,13 +78,13 @@ export interface notificationPacketDB {
   unreadCount: number;
   updatedAt: string;
 }
-export type websocketPacket = NotificationPacket | ChatPacket | OnlineStatusPacket | LogPacket;
+export type websocketPacket = NotificationPacket | ChatPacket | OnlineStatusPacket | LogPacket | EventPacket;
 
 export interface websocketContextType {
   send: (msg: string) => void;
   addHandler: (packetType: string, handler: (data: websocketPacket) => void) => void;
-  gameInvite: "sender" | "recipient" | undefined;
-  setGameInvite: (bool: "sender" | "recipient" | undefined) => void;
+  gameInvite: "sender" | "recipient" | "tournamentStart" | undefined;
+  setGameInvite: (bool: "sender" | "recipient" | "tournamentStart" | undefined) => void;
   opponentName: string | undefined;
   setOpponentName: React.Dispatch<React.SetStateAction<string | undefined>>;
 }

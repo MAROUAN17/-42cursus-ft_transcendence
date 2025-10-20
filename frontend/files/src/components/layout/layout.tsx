@@ -1,11 +1,12 @@
-import React, { useEffect, useState } from "react";
-import { Outlet, useNavigate } from "react-router";
+import React, { useEffect, useRef, useState } from "react";
+import { Outlet, useLocation, useNavigate } from "react-router";
 import Navbar from "./navbar";
 import Sidebar from "./sidebar";
 import api from "../../axios";
 import { useWebSocket } from "../contexts/websocketContext";
 import { FaSpinner } from "react-icons/fa";
 import { useUserContext } from "../contexts/userContext";
+import type { EventPacket, websocketPacket } from "../../types/websocket";
 
 function Layout() {
   const [settingsOpen, setSettingsOpen] = useState<boolean>(false);
@@ -19,29 +20,48 @@ function Layout() {
   const [paddleSpeed, setPaddleSpeed] = useState("2");
   const [selectedBg, setSelectedBg] = useState("/gameBg1.jpg");
 
-  const [countDown, setCountDown] = useState<number>(10);
+  const [countDown, setCountDown] = useState<number>(5);
+  const tournamentId = useRef<number | undefined>(undefined);
+  const tournamentAdmin = useRef<number | undefined>(undefined);
   // delete later
   const { user } = useUserContext();
   //////
-  const { gameInvite, setGameInvite, opponentName, setOpponentName } = useWebSocket();
+  const { gameInvite, setGameInvite, opponentName, setOpponentName, addHandler } = useWebSocket();
 
   const navigate = useNavigate();
+  const location = useLocation();
+  useEffect(() => {
+    const handler = addHandler("gameEvent", eventHandler);
+    return handler;
+  }, []);
+
   useEffect(() => {
     if (!gameInvite) return;
     const timer = setInterval(() => {
       setCountDown((prev) => {
         if (prev <= 1) {
           clearInterval(timer);
-          api
-            .get(`/match/my-game/${user?.id.toString()}`)
-            .then((res) => {
-              sessionStorage.setItem("currentGame", JSON.stringify(res.data.game));
+          if (gameInvite == "tournamentStart" && tournamentId.current && tournamentAdmin.current) {
+            if (!location.pathname.includes("bracket/")) navigate(`bracket/${tournamentId.current}`);
+            else {
               navigate("/remote_game");
-            })
-            .catch((err) => {
-              console.error("err getting game ----------------------> ", err);
-            });
-          setCountDown(10);
+              window.location.reload();
+            }
+
+            // window.location.reload();
+          } else if (gameInvite != "tournamentStart") {
+            api
+              .get(`/match/my-game/${user?.id.toString()}`)
+              .then((res) => {
+                sessionStorage.setItem("currentGame", JSON.stringify(res.data.game));
+                navigate("/remote_game");
+              })
+              .catch((err) => {
+                console.error("err getting game ----------------------> ", err);
+              });
+          }
+          setCountDown(5);
+          tournamentId.current = undefined;
           setGameInvite(undefined);
           setOpponentName(undefined);
           return 0;
@@ -50,7 +70,15 @@ function Layout() {
       });
     }, 1000);
     return () => clearInterval(timer);
-  }, [gameInvite]);
+  }, [gameInvite, user]);
+
+  function eventHandler(packet: websocketPacket) {
+    if (packet.type != "gameEvent") return;
+    setGameInvite("tournamentStart");
+    setOpponentName((prev: string | undefined) => (prev ? prev : packet.data.tournamentName));
+    tournamentId.current = packet.data.tournamentId;
+    tournamentAdmin.current = packet.data.admin;
+  }
 
   function fetchData() {
     api
@@ -63,7 +91,7 @@ function Layout() {
         setPaddleColor(res.data.paddleColor);
         setPaddleBorder(res.data.paddleBorder);
         setPaddleShadow(res.data.paddleShadow);
-        setPaddleSpeed(res.data.paddleSpeed);
+        setPaddleSpeed((res.data.paddleSpeed - 6).toString());
         setSelectedBg(res.data.selectedBg);
       })
       .catch((err) => {
@@ -88,8 +116,20 @@ function Layout() {
             <h1 className="absolute top-1/2 left-1/2 font-bold -translate-x-1/2 -translate-y-1/2 text-[28px]">{countDown}</h1>
             <FaSpinner className="animate-[spin_1.3s_linear_infinite] w-[60px] h-[60px]" />
           </div>
-          <h1 className="font-semibold text-[25px]">
+          <h1 className="font-semibold text-center text-[25px]">
             Your Game with <span className="font-bold text-neon">{opponentName}</span> will Start Soon...
+          </h1>
+        </div>
+      ) : gameInvite == "tournamentStart" ? (
+        <div
+          className={`absolute gap-3 p-6 animate-fadeIn font-poppins flex flex-col justify-center items-center text-white rounded-[20px] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 bg-[#14095c] w-1/4 h-fit`}
+        >
+          <div className="relative w-fit h-fit">
+            <h1 className="absolute top-1/2 left-1/2 font-bold -translate-x-1/2 -translate-y-1/2 text-[28px]">{countDown}</h1>
+            <FaSpinner className="animate-[spin_1.3s_linear_infinite] w-[60px] h-[60px]" />
+          </div>
+          <h1 className="font-semibold text-center text-[25px]">
+            Your Game in The Tournament <span className="font-bold text-neon">{opponentName}</span> will Start Soon...
           </h1>
         </div>
       ) : gameInvite == "sender" ? (
@@ -100,7 +140,7 @@ function Layout() {
             <h1 className="absolute top-1/2 left-1/2 font-bold -translate-x-1/2 -translate-y-1/2 text-[28px]">{countDown}</h1>
             <FaSpinner className="animate-[spin_1.3s_linear_infinite] w-[60px] h-[60px]" />
           </div>
-          <h1 className="font-semibold text-[25px]">
+          <h1 className="font-semibold text-center text-[25px]">
             Waiting for <span className="font-bold text-neon">{opponentName}</span> to join...
           </h1>
         </div>

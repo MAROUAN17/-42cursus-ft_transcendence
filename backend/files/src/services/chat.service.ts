@@ -5,6 +5,7 @@ import type { FastifyReply, FastifyRequest } from "fastify";
 import type { RequestQuery, Payload, messagePacket } from "../models/chat.js";
 import type {
   ChatPacket,
+  EventPacket,
   LogPacket,
   NotificationPacket,
   notificationPacket,
@@ -28,7 +29,7 @@ function sendToClient(clientSockets: Set<WebSocket>, packet: websocketPacket) {
 }
 
 function createNotification(currPacket: websocketPacket) {
-  if (currPacket.type == "onlineStatus" || currPacket.type == "logNotif") return;
+  if (currPacket.type == "onlineStatus" || currPacket.type == "logNotif" || currPacket.type == "gameEvent") return;
   const savedNotification: rowInserted = app.db
     .prepare("INSERT INTO notifications(type, sender_id, recipient_id,message) VALUES (?, ?, ?, ?)")
     .run(currPacket.data.type, currPacket.data.sender_id, currPacket.data.recipient_id, currPacket.data.message);
@@ -62,7 +63,7 @@ function createNotification(currPacket: websocketPacket) {
 }
 
 function sendNotification(currPacket: websocketPacket) {
-  if (currPacket.type == "onlineStatus" || currPacket.type == "logNotif") return;
+  if (currPacket.type == "onlineStatus" || currPacket.type == "logNotif" || currPacket.type == "gameEvent") return;
   const notif: notificationPacketDB = app.db
     .prepare("SELECT * FROM notifications WHERE sender_id = ? AND recipient_id = ? AND type = ?")
     .get(currPacket.data.sender_id, currPacket.data.recipient_id, "message");
@@ -87,7 +88,7 @@ function sendNotification(currPacket: websocketPacket) {
 }
 
 function checkNotificationMssg(currPacket: websocketPacket) {
-  if (currPacket.type == "onlineStatus" || currPacket.type == "logNotif") return;
+  if (currPacket.type == "onlineStatus" || currPacket.type == "logNotif" || currPacket.type == "gameEvent") return;
   const updatedRow: rowInserted = app.db
     .prepare(
       "UPDATE notifications SET isRead = true, unreadCount = unreadCount + 1, updatedAt = (datetime('now')), message = ? WHERE sender_id = ? AND recipient_id = ? AND type = ?"
@@ -101,7 +102,7 @@ function checkNotificationMssg(currPacket: websocketPacket) {
 }
 
 function checkNotificationFriend(currPacket: websocketPacket) {
-  if (currPacket.type == "onlineStatus" || currPacket.type == "logNotif") return;
+  if (currPacket.type == "onlineStatus" || currPacket.type == "logNotif" || currPacket.type == "gameEvent") return;
   const notif = app.db
     .prepare("SELECT * FROM notifications WHERE sender_id = ? AND recipient_id = ? AND type = ?")
     .get(currPacket.data.sender_id, currPacket.data.recipient_id, "friendReq");
@@ -111,7 +112,7 @@ function checkNotificationFriend(currPacket: websocketPacket) {
 }
 
 function handleBlock(currPacket: websocketPacket) {
-  if (currPacket.type == "onlineStatus" || currPacket.type == "logNotif") return;
+  if (currPacket.type == "onlineStatus" || currPacket.type == "logNotif" || currPacket.type == "gameEvent") return;
   let client = clients.get(currPacket.data.recipient_id);
   if (client) {
     sendToClient(client, currPacket);
@@ -223,6 +224,25 @@ function handleGameInviteRes(packet: ChatPacket) {
   checkNotificationMssg(packet);
 }
 
+function notifyTournament(packet: EventPacket) {
+  const tournament = app.db.prepare("SELECT players, name FROM tournament WHERE id = ?").get(packet.data.tournamentId);
+  const players: number[] = JSON.parse(tournament.players);
+  const alert: EventPacket = {
+    type: "gameEvent",
+    data: {
+      tournamentId: packet.data.tournamentId,
+      admin: packet.data.admin,
+      tournamentName: tournament.name,
+    },
+  };
+  for (const playerId of players) {
+    let client = clients.get(playerId);
+    if (client) {
+      sendToClient(client, alert);
+    }
+  }
+}
+
 async function processMessages() {
   if (isProcessingQueue || messageQueue.length == 0) return;
   isProcessingQueue = true;
@@ -242,6 +262,7 @@ async function processMessages() {
         else if (currPacket.data.type == "friendReq") checkNotificationFriend(currPacket);
         else if (currPacket.data.type == "friendAccept") createNotification(currPacket);
       } else if (currPacket.type == "logNotif") handleLogNotif(currPacket);
+      else if (currPacket.type == "gameEvent") notifyTournament(currPacket);
     } catch (error) {
       console.error("error writing in db -> ", error);
     }
@@ -252,6 +273,11 @@ async function processMessages() {
 function checkValidPacket(packet: websocketPacket, userId: number): boolean {
   if (packet.type == "onlineStatus") return false;
   else if (packet.type == "logNotif") return true;
+  else if (packet.type == "gameEvent") {
+    const checkAdmin = app.db.prepare("SELECT admin, players FROM tournament WHERE id = ?").get(packet.data.tournamentId);
+    if (!checkAdmin || checkAdmin.admin != userId || JSON.parse(checkAdmin.players).length != 4) return false;
+    return true;
+  }
   if (packet.data.sender_id != userId || packet.data.sender_id == packet.data.recipient_id) return false;
   const checkFriend = app.db
     .prepare("SELECT key FROM json_each((SELECT friends FROM players WHERE id = ?)) WHERE value = ?")

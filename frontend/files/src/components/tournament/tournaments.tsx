@@ -3,6 +3,7 @@ import { TournamentCard } from "./tournamentCart";
 import { FaSearch, FaPlus } from "react-icons/fa";
 import { CreateTournament } from "./CreateTournament";
 import type { PublicUserInfos } from "../../types/user";
+import api from "../../axios";
 
 export interface Tournament {
   id: number;
@@ -24,11 +25,12 @@ export function Tournaments() {
   useEffect(() => {
     const fetchTournaments = async () => {
       try {
-        const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/tournament/all`);
-        if (!res.ok) throw new Error("Failed to fetch tournaments");
-        const data: Tournament[] = await res.json();
-        console.log("tournament :  ", data);
-        setTournaments(data);
+        api(`/tournament/all`, { withCredentials: true }).then(function(res) {
+          console.log(res);
+          setTournaments(res.data);
+        }).catch(function(err) {
+          console.log(err)
+        });
       } catch (err) {
         console.error(err);
       } finally {

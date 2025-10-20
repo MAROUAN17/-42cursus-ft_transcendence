@@ -26,7 +26,7 @@ const httpsOptions = {
 export const pump = util.promisify(pipeline);
 
 const app: FastifyInstance = Fastify({
-  logger: true,
+  logger: false,
   https: httpsOptions,
 });
 
@@ -41,8 +41,6 @@ export const vaultClient = vault({
 });
 
 async function start(): Promise<void> {
-  console.log(process.env.BACKEND_HOST);
-
   const jwtSecrets = await vaultClient.read("secret/jwt");
   await app.register(cors, {
     origin: [`${process.env.VITE_FRONTEND_URL}`, `https://localhost:${process.env.VITE_PORT}`],
