@@ -191,11 +191,11 @@ export const start_tournament = async (req: FastifyRequest, res: FastifyReply) =
   const tournament = app.db.prepare("SELECT * FROM Tournament WHERE id = ?").get(tournamentId);
 
   if (!tournament) return res.status(404).send({ error: "Tournament not found" });
-  console.log("tournament status: ", tournament.status);
+  console.log("tournament status: ", tournament.status, tournament.players);
   if (tournament.status == "ongoing") return res.status(404).send({ error: "Tournament already started" });
   const players: number[] = JSON.parse(tournament.players);
 
-  if (tournament.admin !== playerId) return res.status(403).send({ error: "Only admin can start the tournament" });
+  if (tournament.admin != playerId) return res.status(403).send({ error: "Only admin can start the tournament" });
 
   if (players.length < 4) return res.status(400).send({ error: "Not enough players to start the tournament" });
 
