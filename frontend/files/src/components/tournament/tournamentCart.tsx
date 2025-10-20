@@ -3,6 +3,7 @@ import type { Tournament } from "./tournaments";
 import { useNavigate } from "react-router";
 import { useUserContext } from "../contexts/userContext";
 import { useState, useEffect } from "react";
+import api from "../../axios";
 
 export function TournamentCard({ id, name, players, createdAt, status }: Tournament) {
   const { user } = useUserContext();
@@ -19,17 +20,12 @@ export function TournamentCard({ id, name, players, createdAt, status }: Tournam
     //     return ;
     console.log("Trying to join ...");
     try {
-      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/tournament/join`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "player-id": user?.id.toString() || "1",
-        },
-        body: JSON.stringify({ tournamentId: id }),
+      api.post(`/tournament/join`, { playerId: user?.id.toString(), tournamentId: id }, { withCredentials: true })
+      .then(function(res) {
+        console.log("Joined:", res.data);
       });
 
-      const data = await res.json();
-      console.log("Joined:", data);
+      // const data = await res.json();
     } catch (err) {
       console.error("Error joining tournament", err);
     }

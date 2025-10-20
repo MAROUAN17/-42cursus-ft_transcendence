@@ -48,10 +48,12 @@ export const resetPassword = async (req: FastifyRequest<{ Body: LoginBody }>, re
       return res.status(401).send({ error: "Email is not linked to any account" });
     }
 
+    if (user && user.intra_id)  return res.status(401).send({ error: "Email is linked to intra42 account" });
+
     const resetToken = crypto.randomBytes(32).toString("base64url");
     const hashedToken: string = crypto.createHash("sha256").update(resetToken).digest("hex");
 
-    const urlReset = `https://localhost:3000/reset-password/new?token=${resetToken}`;
+    const urlReset = `https://${process.env.VITE_HOST}:${process.env.VITE_PORT}/reset-password/new?token=${resetToken}`;
 
     app.db.prepare("UPDATE players SET reset_flag = ?, reset_time = ?, reset_token = ? WHERE id = ?").run(1, Date.now(), hashedToken, user?.id);
 
