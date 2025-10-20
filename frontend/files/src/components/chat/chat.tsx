@@ -16,6 +16,7 @@ import api from "../../axios";
 import type { messagePacket, websocketPacket } from "../../types/websocket";
 import type { UsersLastMessage } from "../../types/chat";
 import { GiPingPongBat } from "react-icons/gi";
+import { toast, ToastContainer } from "react-toastify";
 // import { PiPingPongFill } from "react-icons/pi";
 
 const Chat = () => {
@@ -166,7 +167,11 @@ const Chat = () => {
     const newMsg: messagePacket = packet.data;
     if (newMsg.type === "message" || newMsg.type == "gameInvite") {
       if (newMsg.recipient_id == currUserRef.current?.id && newMsg.sender_id == targetUserRef.current?.id) {
-        setMessages((prev) => [newMsg, ...prev]);
+        setMessages((prev) => {
+          const index = prev.findIndex((u) => u.id == newMsg.id);
+          if (index != -1) return prev;
+          return [newMsg, ...prev];
+        });
       }
       setUsers((prev: UsersLastMessage[]) => {
         const index = prev.findIndex((u) => u.user.id === newMsg.sender_id);
@@ -196,6 +201,12 @@ const Chat = () => {
       });
     } else if (newMsg.type == "markDelivered") {
       setMessages((prev) => {
+        const index = prev.findIndex((u) => u.tempId == newMsg.tempId);
+        if (index == -1) {
+          console.log("msg -> ", newMsg);
+          newMsg.type = "message";
+          return [newMsg, ...prev];
+        }
         return prev.map((msg: messagePacket) => {
           return msg.tempId == newMsg.tempId ? { ...msg, id: newMsg.id, isDelivered: true } : msg;
         });
@@ -252,6 +263,7 @@ const Chat = () => {
 
   function sendGameInvite() {
     if (!currUser || !targetUser) return;
+    console.log("inside game invite");
     const msgPacket: messagePacket = {
       tempId: uuidv4(),
       type: "gameInvite",
@@ -322,8 +334,15 @@ const Chat = () => {
     if (!currUser) return;
     if (event.key == "Enter") {
       const input = document.getElementById("msg") as HTMLInputElement | null;
-      if (input && input.value != "" && targetUser) {
+      if (input && input.value.trim() != "" && targetUser) {
         const message: string = input.value;
+        if (message.length > 1000) {
+          toast("Message is too long!", {
+            closeButton: false,
+            className: "font-poppins border-3 border-neon bg-red-500/70 text-white font-bold text-md",
+          });
+          return;
+        }
         const msgPacket: messagePacket = {
           tempId: uuidv4(),
           type: "message",
@@ -358,10 +377,11 @@ const Chat = () => {
   }
   return (
     <div
-      className={`flex flex-row h-full max-h-full w-full bg-darkBg p-5 gap-x-4 font-poppins transition-all duration-700 ease-in-out ${
+      className={`flex flex-row h-full max-h-full w-full bg-darkBg p-5 pl-2 gap-x-4 font-poppins transition-all duration-700 ease-in-out ${
         show ? "opacity-100" : "opacity-0"
       }`}
     >
+      <ToastContainer closeOnClick={true} className="bg-green text-green-600" />
       <div className="flex flex-col h-full bg-compBg/20 basis-1/3 rounded-xl p-3 gap-5">
         <div className="flex flex-row justify-between items-center p-3">
           <div className="flex flex-row gap-1">
