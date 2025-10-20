@@ -30,6 +30,7 @@ export default function RGame() {
   const PADDLE_HEIGHT = 120;
   const paddleLeft = { x: 24, y: leftY, width: PADDLE_WIDTH, height: PADDLE_HEIGHT };
   const paddleRight = { x: 600 - 24 - PADDLE_WIDTH, y: rightY, width: PADDLE_WIDTH, height: PADDLE_HEIGHT };
+  const [started, setStarted] = useState(false);
 
   const { user } = useUserContext();
   const id = user?.id ? user.id.toString() : "";
@@ -158,11 +159,16 @@ export default function RGame() {
           console.log("--- game eneded");
           setGameEnded(true);
           setWinnerId(message.winner);
-          sessionStorage.removeItem("currentGame");
+          // sessionStorage.removeItem("currentGame");
           // sessionStorage.removeItem('currentRound');
           if (round?.tournament_id) navigate(`/bracket/${round.tournament_id}`);
           if (message.type == "updateY") console.log("updateY");
         }
+        if (message.type == "game_end"){
+          console.log("opponent didnt join");
+        }
+        if (message.type == "start")
+            setStarted(true);
         setGameInfo(message.game_info);
       } catch (err) {
         console.error("Invalid message from server:", event.data);
@@ -175,14 +181,21 @@ export default function RGame() {
   }, [gameType]);
 
 
-
+  
   useEffect(() => {
     if (!game && !round)
-        return ;
+      return ;
     console.log("-- game : ", game);
     console.log("-- round : ", round);
   }, [game, round]);
-
+  useEffect (() => {
+    if (!started)
+        console.log(" -- waiting for opponent");
+    else
+      console.log("-- game started ");
+  })
+  if (!started)
+    return <div>waiting for opponent ... </div>
   return (
     <>
       {gameEnded ? (

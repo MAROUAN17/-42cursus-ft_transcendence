@@ -138,9 +138,9 @@ function gameLoop (room:Room)
     game.ball.x = nx;
     game.ball.y = ny;
     room.gameInfo = game;
-    if (game.scoreLeft > 10)
+    if (game.scoreLeft > 1)
       room.winner = room.player1;
-    else if (game.scoreRight > 10)
+    else if (game.scoreRight > 1)
       room.winner = room.player2;
     if (room.winner) {
       broadcastToRoom(room, { type: "end", winner:room.winner });
@@ -234,6 +234,7 @@ export function handleGameConnection(connection: any, req: any) {
     if (userId) clients.delete(userId);
   });
 }
+
 function getRoom(gameId: string, roundId:number): Room {
   var room;
   if (roundId)
@@ -274,11 +275,11 @@ function addPlayerToRoom(gameId: string, playerId: number, side:string) {
   }
 }
 
-function addPlayerToRound(tournamentId: number, playerId: string, rn: number, side:string) {
-  //assign left and rightPlayers 
-  console.log(`looking for userId: ${playerId} in tid: ${tournamentId} rn : ${rn} `);
+function addPlayerToRound(tournamentId: number, playerId: string, rn: number, side: string) {
+  console.log(`looking for userId: ${playerId} in tid: ${tournamentId} rn : ${rn}`);
+  
   const lastRound = app.db
-  .prepare(`
+    .prepare(`
       SELECT * FROM Round
       WHERE tournament_id = ?
       AND (player1 = ? OR player2 = ?)
@@ -291,33 +292,42 @@ function addPlayerToRound(tournamentId: number, playerId: string, rn: number, si
     return;
   }
 
-  console.log("UserId:", playerId);
-  console.log("Round found:", lastRound);
-
   const room = getRoom("", lastRound.id);
-  console.log("round Id found : ", room.roundId)
+  console.log("round Id found:", room.roundId);
   room.tournamentId = tournamentId;
   room.type = "tournament";
 
   if (playerId != lastRound.player1 && playerId != lastRound.player2) {
-    console.log("--- This is not your round:", playerId != lastRound.player1);
+    console.log("--- This is not your round:", playerId);
     return;
   }
-  // console.log(`rp ${room.rightPlayer}, lp ${room.leftPlayer}, pid ${playerId},  side ${side}`)
-  // if (!room.leftPlayer && side == "left")
-  //   room.leftPlayer = Number (playerId);
-  // else if (!room.rightPlayer && room.rightPlayer != Number(playerId) && side == "right")
-  //   room.rightPlayer = Number (playerId);
-  // else {
-  //   console.log("Player already in room or room full:", playerId);
-  // }
 
-  if (!room.player1 && side == "left") {
+  if (!room.player1 && side === "left") {
     room.player1 = playerId;
-    // console.log("Assigned as player1:", playerId);
-  } else if (!room.player2 && room.player1 !== playerId && side == "right") {
+    console.log("Assigned as player1:", playerId);
+
+    if (!room.waitTimer) {
+      console.log("-- Starting 10s wait timer for opponent...");
+      room.waitTimer = setTimeout(() => {
+        if (!room.player2) {
+          console.log("-- Opponent did not join in time, ending game.");
+          broadcastToRoom(room, {
+            type: "game_end",
+          });
+          deleteRound(room.roundId)
+        }
+      }, 10000);
+    }
+
+  } else if (!room.player2 && room.player1 !== playerId && side === "right") {
     room.player2 = playerId;
     console.log("Assigned as player2:", playerId);
+
+    if (room.waitTimer) {
+      clearTimeout(room.waitTimer);
+      room.waitTimer = null;
+      console.log("-- Opponent joined in time, timer cleared.");
+    }
   } else {
     console.log("Player already in room or room full:", playerId);
   }
@@ -325,12 +335,34 @@ function addPlayerToRound(tournamentId: number, playerId: string, rn: number, si
   if (room.player1 && room.player2 && !room.ready) {
     room.ready = true;
     room.winner = undefined;
-    // room.player1 = String(room.leftPlayer);
-    // room.player2 = String(room.rightPlayer);
     room.startedAt = new Date();
-    console.log(`-- Round ${tournamentId} ready! Players: ${room.player1}, ${room.player2} at time ${room.startedAt}`);
+    console.log(`-- Round ${tournamentId} ready! Players: ${room.player1}, ${room.player2}`);
+    broadcastToRoom(room, {
+            type: "start",
+
+            message: "Opponent did not join in time. The game has ended.",
+    });
     startGame(room);
   } else {
-    console.log(`-- Waiting for another player in room  tourId: ${tournamentId}`);
+    console.log(`-- Waiting for another player in room tourId: ${tournamentId}`);
   }
+}
+
+
+function deleteRound(roundId: number): void {
+  const index = rooms.findIndex((room) => room.roundId === roundId);
+
+  if (index === -1) {
+    console.log(`No room found with roundId: ${roundId}`);
+    return;
+  }
+
+  const room = rooms[index];
+
+  if (room.waitTimer) {
+    clearTimeout(room.waitTimer);
+  }
+
+  rooms.splice(index, 1);
+  console.log(` Room with roundId ${roundId} deleted successfully.`);
 }

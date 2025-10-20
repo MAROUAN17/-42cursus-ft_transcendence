@@ -96,7 +96,6 @@ sqlite3 "$DB_NAME" <<EOF
     INSERT INTO Settings(userId) VALUES (3);
     INSERT INTO Settings(userId) VALUES (4);
 
-    # Random match history data
     INSERT INTO Room(player1, player2, scoreLeft, scoreRight, winner) VALUES (1, 2, 30, 11, 1);
     INSERT INTO Room(player1, player2, scoreLeft, scoreRight, winner) VALUES (1, 3, 20, 11, 3);
     INSERT INTO Room(player1, player2, scoreLeft, scoreRight, winner) VALUES (2, 1, 25, 11, 2);

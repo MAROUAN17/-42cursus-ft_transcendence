@@ -271,7 +271,7 @@ async function processMessages() {
 }
 
 function checkValidPacket(packet: websocketPacket, userId: number): boolean {
-  if (packet.type == "onlineStatus") return false;
+  if (packet.type == "onlineStatus" || (packet.type == "chat" && packet.data.message.length > 1000)) return false;
   else if (packet.type == "logNotif") return true;
   else if (packet.type == "gameEvent") {
     const checkAdmin = app.db.prepare("SELECT admin, players FROM tournament WHERE id = ?").get(packet.data.tournamentId);
