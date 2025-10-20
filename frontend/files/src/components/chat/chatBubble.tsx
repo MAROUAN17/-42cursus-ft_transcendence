@@ -25,7 +25,7 @@ const ChatBubble = ({ avatar, username, message, type, sendRes }: props) => {
 
   return message.type == "message" ? (
     <>
-      <p className="max-w-xs">{message.message}</p>
+      <p className="max-w-xs break-words">{message.message}</p>
       <p className="text-[#fff]/[40%] text-[12px] self-end">
         {!isToday(date) ? (isYesterday(date) ? "yesterday at " : date.getFullYear() + "/" + date.getMonth() + "/" + date.getDate() + ", ") : null}
         {String(date.getHours()).padStart(2, "0")}:{String(date.getMinutes()).padStart(2, "0")}
