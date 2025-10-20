@@ -4,7 +4,7 @@ import LeaveButton from "./ui/leaveBtn";
 import type { Tournament } from "./tournaments";
 import { useEffect, useState } from "react";
 import { useWebSocket } from "../contexts/websocketContext";
-import type { Round } from "../game/remote/Types";
+import type { Player, Round } from "../game/remote/Types";
 import type { ProfileUserInfo } from "../../types/user";
 import { useUserContext } from "../contexts/userContext";
 import type { Game } from "../game/remote/Types";
@@ -19,7 +19,6 @@ import api from "../../axios";
 const TournamentBracket: React.FC = () => {
   const [tournament, setTournament] = useState<Tournament | null>(null);
   const [started, setStarted] = useState(false);
-  const [rounds, setRounds] = useState<Round[] | null>(null);
   const [finalPlayers, setFinalPlayers] = useState<Player[]>([]); // now contains full player objects
   const [loading, setLoading] = useState(true);
   const [adminLabel, setAdminLabel] = useState("waiting ...");
@@ -100,10 +99,22 @@ const TournamentBracket: React.FC = () => {
 
   useEffect(() => {
     if (!user || !round) return;
+    const player1:Player = {
+      username: get_username(round.player1),
+      avatar: get_avatar(round.player1)
+    }
+    const player2:Player = {
+      username: get_username(round.player2),
+      avatar: get_avatar(round.player2)
+    }
+    console.log("player1 : ", player1, "player2: ", player2)
     const game: Game = {
       side: round.player1 == user.id ? "left" : "right",
       round: round,
+      you: user.id == round.player1 ? player1: player2,
+      opponent: user.id == round.player2 ? player1 : player2
     };
+    console.log("game :", game);
     sessionStorage.setItem("currentRound", JSON.stringify(game));
     if (!round.winner) {
       // notifying

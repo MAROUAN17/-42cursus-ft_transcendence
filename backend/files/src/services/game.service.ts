@@ -138,7 +138,11 @@ function gameLoop (room:Room)
     game.ball.x = nx;
     game.ball.y = ny;
     room.gameInfo = game;
+<<<<<<< HEAD
+    if (game.scoreLeft > 1 )
+=======
     if (game.scoreLeft > 1)
+>>>>>>> 7b5d498cfb2561ad858136940f5ea40703a6137f
       room.winner = room.player1;
     else if (game.scoreRight > 1)
       room.winner = room.player2;
