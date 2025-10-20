@@ -50,7 +50,7 @@ export const oauthCallback = async (req: FastifyRequest, res: FastifyReply) => {
         sameSite: "lax",
         maxAge: 60,
       });
-      return res.redirect("https://localhost:3000/verify?email=" + user?.email);
+      return res.redirect(`https://${process.env.VITE_HOST}:${process.env.VITE_PORT}/verify?email=` + user?.email);
     }
 
     //sign new JWT tokens
@@ -74,7 +74,7 @@ export const oauthCallback = async (req: FastifyRequest, res: FastifyReply) => {
       maxAge: 86400,
     });
 
-    return res.redirect("https://localhost:3000/avatar");
+    return res.redirect(`https://${process.env.VITE_HOST}:${process.env.VITE_PORT}/avatar`);
   } catch (err) {
     console.log(err);
     res.status(500).send({ error: "Failed to register using intra42" });
