@@ -167,7 +167,11 @@ const Chat = () => {
     const newMsg: messagePacket = packet.data;
     if (newMsg.type === "message" || newMsg.type == "gameInvite") {
       if (newMsg.recipient_id == currUserRef.current?.id && newMsg.sender_id == targetUserRef.current?.id) {
-        setMessages((prev) => [newMsg, ...prev]);
+        setMessages((prev) => {
+          const index = prev.findIndex((u) => u.id == newMsg.id);
+          if (index != -1) return prev;
+          return [newMsg, ...prev];
+        });
       }
       setUsers((prev: UsersLastMessage[]) => {
         const index = prev.findIndex((u) => u.user.id === newMsg.sender_id);
@@ -330,7 +334,7 @@ const Chat = () => {
     if (!currUser) return;
     if (event.key == "Enter") {
       const input = document.getElementById("msg") as HTMLInputElement | null;
-      if (input && input.value != "" && targetUser) {
+      if (input && input.value.trim() != "" && targetUser) {
         const message: string = input.value;
         if (message.length > 1000) {
           toast("Message is too long!", {
@@ -339,7 +343,6 @@ const Chat = () => {
           });
           return;
         }
-        console.log("msg length -> ", message.length);
         const msgPacket: messagePacket = {
           tempId: uuidv4(),
           type: "message",

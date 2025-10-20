@@ -107,7 +107,8 @@ const TournamentBracket: React.FC = () => {
       // notifying
       console.log("admin sent notif");
       sendAlert();
-      if (user?.id != tournament?.admin) navigate("/remote_game");
+      console.log("round number - > ", round.round_number);
+      if (user?.id != tournament?.admin || round.round_number == 2) navigate("/remote_game");
     }
   }, [user, round]);
 
