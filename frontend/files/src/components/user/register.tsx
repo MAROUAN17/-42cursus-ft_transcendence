@@ -29,27 +29,15 @@ function Register() {
       return;
     }
 
-    api
-      .post("/register/verify", {
+    axios
+      .post(`${import.meta.env.VITE_BACKEND_URL}/register`, {
         username: username,
         email: email,
         password: password,
         terms: termsRef.current?.checked,
       })
       .then(function () {
-        axios
-          .post(`${import.meta.env.VITE_BACKEND_URL}/register`, {
-            username: username,
-            email: email,
-            password: password,
-            terms: termsRef.current?.checked,
-          })
-          .then(function (res) {
-            navigate("/login");
-          })
-          .catch(function (err) {
-            console.log(err);
-          });
+        navigate("/login");
       })
       .catch(function (err) {
         if (err.response.data.error.includes("Username")) {

@@ -6,39 +6,10 @@ import bcrypt from "bcrypt";
 export const registerUser = async (req: FastifyRequest<{ Body: LoginBody }>, res: FastifyReply) => {
   try {
     let user = {} as UserInfos | undefined;
-    let { username, email, password } = req.body;
-
-    email = email.toLowerCase();
-    //check if username user exists
-    user = app.db.prepare("SELECT * from players WHERE username = ?").get(username) as UserInfos | undefined;
-    if (user) return res.status(401).send({ error: "Username already exists" });
-
-    //check if user email already exists
-    user = app.db.prepare("SELECT * from players WHERE email = ?").get(email) as UserInfos | undefined;
-    if (user) {
-      return res.status(401).send({ error: "Email already exist!" });
-    }
-
-    //hashing the password
-    const hash: string = await bcrypt.hash(password, 10);
-
-    const row = app.db.prepare("INSERT INTO players(username, email, password) VALUES (?, ?, ?)").run(username, email, hash);
-    app.db.prepare("INSERT INTO Settings(userId) VALUES (?)").run(row.lastInsertRowid);
-
-    res.status(200).send({ message: "Registered successfully" });
-  } catch (error) {
-    console.log(error);
-    res.status(401).send({ error });
-  }
-};
-
-export const verifyRegisterUser = async (req: FastifyRequest<{ Body: LoginBody }>, res: FastifyReply) => {
-  try {
-    let user = {} as UserInfos | undefined;
     let { username, email, password, terms } = req.body;
 
     if (!terms) return res.status(401).send({ error: "Please accept terms and conditions" });
-    
+
     //regex check
     const usernamePattern = new RegExp("^[a-zA-Z0-9_-]+$");
     const passwordPattern = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).+$");
@@ -73,8 +44,15 @@ export const verifyRegisterUser = async (req: FastifyRequest<{ Body: LoginBody }
       return res.status(401).send({ error: "Email already exist!" });
     }
 
-    res.status(200).send({ message: "Credentials correct!" });
+    //hashing the password
+    const hash: string = await bcrypt.hash(password, 10);
+
+    const row = app.db.prepare("INSERT INTO players(username, email, password) VALUES (?, ?, ?)").run(username, email, hash);
+    app.db.prepare("INSERT INTO Settings(userId) VALUES (?)").run(row.lastInsertRowid);
+
+    res.status(200).send({ message: "Registered successfully" });
   } catch (error) {
+    console.log(error);
     res.status(401).send({ error });
   }
 };
