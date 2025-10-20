@@ -226,17 +226,44 @@ function handleGameInviteRes(packet: ChatPacket) {
 
 function notifyTournament(packet: EventPacket) {
   const tournament = app.db.prepare("SELECT players, name FROM tournament WHERE id = ?").get(packet.data.tournamentId);
-  const players: number[] = JSON.parse(tournament.players);
-  const alert: EventPacket = {
-    type: "gameEvent",
-    data: {
-      tournamentId: packet.data.tournamentId,
-      admin: packet.data.admin,
-      tournamentName: tournament.name,
-    },
-  };
-  for (const playerId of players) {
-    let client = clients.get(playerId);
+  if (packet.data.round == 1) {
+    const players: number[] = JSON.parse(tournament.players);
+    const alert: EventPacket = {
+      type: "gameEvent",
+      data: {
+        tournamentId: packet.data.tournamentId,
+        admin: packet.data.admin,
+        round: 1,
+        tournamentName: tournament.name,
+      },
+    };
+    for (const playerId of players) {
+      let client = clients.get(playerId);
+      if (client) {
+        sendToClient(client, alert);
+      }
+    }
+  } else {
+    const round = app.db
+      .prepare("SELECT player1, player2 FROM round WHERE tournament_id = ? AND round_number = ? AND winner = ?")
+      .get(packet.data.tournamentId, 2, 0);
+    console.log("final round -> ", round);
+    if (!round) return;
+    // const players: number[] = JSON.parse(tournament.players);
+    const alert: EventPacket = {
+      type: "gameEvent",
+      data: {
+        tournamentId: packet.data.tournamentId,
+        admin: packet.data.admin,
+        round: 2,
+        tournamentName: tournament.name,
+      },
+    };
+    let client = clients.get(round.player1);
+    if (client) {
+      sendToClient(client, alert);
+    }
+    client = clients.get(round.player2);
     if (client) {
       sendToClient(client, alert);
     }

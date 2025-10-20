@@ -5,6 +5,7 @@ const WebsocketContext = createContext<websocketContextType | undefined>(undefin
 
 export const WebSocketProvider: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
   const socketRef = useRef<WebSocket | null>(null);
+  const queueRef = useRef<string[]>([]);
   const [gameInvite, setGameInvite] = useState<"sender" | "recipient" | "tournamentStart" | undefined>(undefined);
   const [opponentName, setOpponentName] = useState<string | undefined>(undefined);
   const handlersRef = useRef<Map<string, (msg: websocketPacket) => void>>(new Map<string, (msg: websocketPacket) => void>());
@@ -12,6 +13,12 @@ export const WebSocketProvider: React.FC<{ children?: React.ReactNode }> = ({ ch
     socketRef.current = new WebSocket(`${import.meta.env.VITE_SOCKET_BACKEND_URL}/send-message`);
     socketRef.current.onopen = () => {
       console.log("Socket Created!");
+      while (queueRef.current.length > 0) {
+        if (queueRef.current && socketRef.current && socketRef.current.readyState == WebSocket.OPEN) {
+          let msg = queueRef.current.shift();
+          if (msg) socketRef.current?.send(msg);
+        }
+      }
     };
 
     socketRef.current.onclose = () => {
@@ -40,6 +47,8 @@ export const WebSocketProvider: React.FC<{ children?: React.ReactNode }> = ({ ch
   function send(msg: string) {
     console.log("sent to server");
     if (socketRef.current && socketRef.current.readyState == WebSocket.OPEN) socketRef.current.send(msg);
+    else queueRef.current.push(msg);
+    console.log("queue -> ", queueRef.current);
   }
   function addHandler(packetType: string, handler: (data: websocketPacket) => void) {
     if (!handlersRef.current.get(packetType)) handlersRef.current.set(packetType, handler);

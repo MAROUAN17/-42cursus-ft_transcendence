@@ -16,8 +16,8 @@ export interface EventPacket {
   data: {
     tournamentId: number;
     tournamentName?: string;
-    senderId: number;
-    receipientId: number;
+    senderId?: number;
+    round: number;
     admin: number;
   };
 }

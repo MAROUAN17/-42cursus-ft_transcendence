@@ -84,12 +84,14 @@ const TournamentBracket: React.FC = () => {
     return () => clearInterval(intervalId);
   }, [started, user, id]);
 
-  function sendAlert() {
+  function sendAlert(roundNum: number) {
     if (!tournament || user?.id != tournament.admin) return;
     const packet: EventPacket = {
       type: "gameEvent",
       data: {
         tournamentId: tournament.id,
+        senderId: user.id,
+        round: roundNum,
         admin: tournament.admin,
       },
     };
@@ -106,9 +108,9 @@ const TournamentBracket: React.FC = () => {
     if (!round.winner) {
       // notifying
       console.log("admin sent notif");
-      sendAlert();
+      sendAlert(round.round_number);
       console.log("round number - > ", round.round_number);
-      if (user?.id != tournament?.admin || round.round_number == 2) navigate("/remote_game");
+      if (user?.id != tournament?.admin) navigate("/remote_game");
     }
   }, [user, round]);
 
@@ -118,7 +120,6 @@ const TournamentBracket: React.FC = () => {
         api(`/tournament/${id}`)
           .then(function (res) {
             setTournament(res.data);
-
             if (res.data.players.length === 4) setAdminLabel("start");
             console.log("-- fetched tournament:", res.data);
           })
