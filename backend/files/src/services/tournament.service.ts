@@ -194,12 +194,9 @@ export const start_tournament = async (req: FastifyRequest<{ Body: { playerId: n
   if (tournament.status == "ongoing") return res.status(404).send({ error: "Tournament already started" });
   const players: number[] = JSON.parse(tournament.players);
 
-<<<<<<< HEAD
   if (tournament.admin != playerId) return res.status(403).send({ error: "Only admin can start the tournament" });
-=======
   console.log("playerId -> ", playerId, " | admin -> ", tournament.admin);
   if (Number(tournament.admin) != playerId) return res.status(403).send({ error: "Only admin can start the tournament" });
->>>>>>> 7b5d498cfb2561ad858136940f5ea40703a6137f
 
   if (players.length < 4) return res.status(400).send({ error: "Not enough players to start the tournament" });
 

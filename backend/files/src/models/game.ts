@@ -44,6 +44,7 @@ export interface Room {
   scoreRight?: number;
   winner?: string | undefined;
   round?: number;
+  waitTimer?: NodeJS.Timeout | null;
 }
 
 export interface Player {
