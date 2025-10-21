@@ -24,6 +24,7 @@ const TournamentBracket: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [adminLabel, setAdminLabel] = useState("waiting ...");
   const [round, setRound] = useState<Round | null>(null);
+  const [finalRound, setFinalRound] = useState<Round | null>(null);
   const [finished, setFinished] = useState<boolean>(false);
 
   const { id } = useParams<{ id: string }>();
@@ -48,8 +49,10 @@ const TournamentBracket: React.FC = () => {
         if (userRound) {
           setRound(userRound);
           console.log("User Round Found:", userRound);
-          if (userRound.round_number == 2) {
+          if (userRound.round_number == 2 && userRound.winner) {
             setFinished(true);
+            setFinalRound(userRound);
+            console.log('final round -> ', finalRound);
           }
         } else {
           console.warn("User is not part of any round in the latest round.");
@@ -57,7 +60,6 @@ const TournamentBracket: React.FC = () => {
         const round2 = data.filter((r: Round) => r.round_number === 2);
         const playerIds = round2.flatMap((r: any) => [r.player1, r.player2]);
         setFinalPlayers(playerIds);
-        console.log("ffffff -> ", finalPlayers);
       });
       // if (!response.ok) throw new Error("Failed to fetch rounds");
       // const data = await response.json();
@@ -205,14 +207,14 @@ const TournamentBracket: React.FC = () => {
       <h1 className="flex justify-top text-white font-bold text-2xl">{tournament?.name}</h1>
       <div className="relative h-full overflow-hidden cursor-pointer  text-white rounded-lg">
         <div className="flex flex-col items-center justify-center h-full">
-          {finished ? (
+          {finished && finalRound ? (
             <div className="relative flex flex-col justify-center items-center gap-3">
               <div className="flex justify-center space-x-28">
                 <div className="flex flex-col items-center ">
                   <FaCrown className="w-[40px] h-[40px] text-yellow-500" />
                   <img
                     className="w-[120px] h-[120px] rounded-full border-4 border-purple-500 shadow-[0_0_15px_rgba(168,85,247,0.8)]"
-                    src={round?.winner.toString() == finalPlayers[0].id ? finalUsers[0].avatar : finalUsers[1].avatar}
+                    src={finalRound?.winner?.toString() === finalPlayers[0].id ? finalUsers[0].avatar : finalUsers[1].avatar}
                     alt="winner-avatar"
                   />
                 </div>
@@ -220,7 +222,7 @@ const TournamentBracket: React.FC = () => {
               </div>
               <div className="">
                 <h1 className="text-white font-bold text-xl">
-                  {round?.winner.toString() == finalPlayers[0].id ? finalUsers[0].username?.toUpperCase() : finalUsers[1].username.toUpperCase()}
+                  {finalRound?.winner?.toString() === finalPlayers[0].id ? finalUsers[0].username?.toUpperCase() : finalUsers[1].username?.toUpperCase()}
                 </h1>
               </div>
             </div>
