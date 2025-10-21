@@ -35,7 +35,7 @@ const TournamentBracket: React.FC = () => {
     const fetchRounds = async () => {
       let data;
       var latestRounds;
-      const response = await api(`/tournament/rounds/${id}`, { withCredentials: true }).then(function (res) {
+      await api(`/tournament/rounds/${id}`, { withCredentials: true }).then(function (res) {
         data = res.data;
         const maxRound = Math.max(...data.map((r: Round) => r.round_number));
         latestRounds = data.filter((r: Round) => r.round_number === maxRound);
@@ -97,20 +97,20 @@ const TournamentBracket: React.FC = () => {
 
   useEffect(() => {
     if (!user || !round) return;
-    const player1:Player = {
+    const player1: Player = {
       username: get_username(round.player1),
-      avatar: get_avatar(round.player1)
-    }
-    const player2:Player = {
+      avatar: get_avatar(round.player1),
+    };
+    const player2: Player = {
       username: get_username(round.player2),
-      avatar: get_avatar(round.player2)
-    }
-    console.log("player1 : ", player1, "player2: ", player2)
+      avatar: get_avatar(round.player2),
+    };
+    console.log("player1 : ", player1, "player2: ", player2);
     const game: Game = {
       side: round.player1 == user.id ? "left" : "right",
       round: round,
-      you: user.id == round.player1 ? player1: player2,
-      opponent: user.id == round.player2 ? player1 : player2
+      you: user.id == round.player1 ? player1 : player2,
+      opponent: user.id == round.player2 ? player1 : player2,
     };
     console.log("game :", game);
     sessionStorage.setItem("currentRound", JSON.stringify(game));
@@ -126,7 +126,7 @@ const TournamentBracket: React.FC = () => {
   useEffect(() => {
     const fetchTournament = async () => {
       try {
-        api(`/tournament/${id}`)
+        api(`/tournament/${id}`, { withCredentials: true })
           .then(function (res) {
             setTournament(res.data);
 
