@@ -35,7 +35,7 @@ const TournamentBracket: React.FC = () => {
     const fetchRounds = async () => {
       let data;
       var latestRounds;
-      const response = await api(`/tournament/rounds/${id}`, { withCredentials: true }).then(function (res) {
+      await api(`/tournament/rounds/${id}`, { withCredentials: true }).then(function (res) {
         data = res.data;
         const maxRound = Math.max(...data.map((r: Round) => r.round_number));
         latestRounds = data.filter((r: Round) => r.round_number === maxRound);
@@ -133,7 +133,7 @@ const TournamentBracket: React.FC = () => {
   useEffect(() => {
     const fetchTournament = async () => {
       try {
-        api(`/tournament/${id}`)
+        api(`/tournament/${id}`, { withCredentials: true })
           .then(function (res) {
             setTournament(res.data);
             if (res.data.players.length === 4) setAdminLabel("start");

@@ -51,7 +51,7 @@ function Layout() {
             // window.location.reload();
           } else if (gameInvite != "tournamentStart") {
             api
-              .get(`/match/my-game/${user?.id.toString()}`)
+              .get(`/match/my-game/${user?.id.toString()}`, { withCredentials: true })
               .then((res) => {
                 sessionStorage.setItem("currentGame", JSON.stringify(res.data.game));
                 navigate("/remote_game");

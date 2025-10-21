@@ -54,25 +54,44 @@ export default function Pairing() {
     const interval = setInterval(async () => {
       if (loading) {
         try {
-          const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/match/my-game/${id}`);
+          axios
+            .get(`${import.meta.env.VITE_BACKEND_URL}/match/my-game/${id}`, { withCredentials: true })
+            .then(function (response) {
+              console.log("------", response.data.game);
+              setGameInfo(response.data.game);
+              setLoading(false);
 
-          if (response.data.game) {
-            console.log("------", response.data.game);
-            setGameInfo(response.data.game);
-            setLoading(false);
+              sessionStorage.setItem("currentGame", JSON.stringify(response.data.game));
+              setPaired(true);
+              clearInterval(interval);
+            })
+            .catch(function (err) {
+              if (err.response) {
+                console.error("Error data:", err.response.data);
+                console.error("Error status:", err.response.status);
+                console.error("Error headers:", err.response.headers);
+              } else {
+                console.error("Error message:", err.message);
+              }
+            });
 
-            sessionStorage.setItem("currentGame", JSON.stringify(response.data.game));
-            setPaired(true);
-            clearInterval(interval);
-          }
+          // if (response.data.game) {
+          //   console.log("------", response.data.game);
+          //   setGameInfo(response.data.game);
+          //   setLoading(false);
+
+          //   sessionStorage.setItem("currentGame", JSON.stringify(response.data.game));
+          //   setPaired(true);
+          //   clearInterval(interval);
+          // }
         } catch (err) {
-          if (err.response) {
-            console.error("Error data:", err.response.data);
-            console.error("Error status:", err.response.status);
-            console.error("Error headers:", err.response.headers);
-          } else {
-            console.error("Error message:", err.message);
-          }
+          // if (err.response) {
+          //   console.error("Error data:", err.response.data);
+          //   console.error("Error status:", err.response.status);
+          //   console.error("Error headers:", err.response.headers);
+          // } else {
+          //   console.error("Error message:", err.message);
+          // }
         }
       }
     }, 1000);
@@ -98,7 +117,8 @@ export default function Pairing() {
             "Content-Type": "application/json",
             "player-id": id,
           },
-        }
+          withCredentials: true
+        },
       );
 
       console.log(response.data);

@@ -4,7 +4,6 @@ import { loginUser } from "../services/login.service.js";
 import { logoutUser } from "../services/logout.service.js";
 import {
   registerUser,
-  verifyRegisterUser,
 } from "../services/register.service.js";
 import { getUsers } from "../services/getUsers.service.js";
 import {
@@ -37,9 +36,8 @@ import { editUserInfos, setAvatar } from "../services/edit.service.js";
 export const authRoutes: FastifyPluginAsync = async () => {
   app.post("/login", loginUser);
   app.get("/login/verify", checkAuth);
-  app.post("/logout", { onRequest: [app.jwtAuth] }, logoutUser);
-  app.post("/register/verify", verifyRegisterUser);
   app.post("/register", registerUser);
+  app.post("/logout", { onRequest: [app.jwtAuth] }, logoutUser);
 
   //user features
   app.post("/add-friend/:id", { onRequest: [app.jwtAuth] }, addFriend);
