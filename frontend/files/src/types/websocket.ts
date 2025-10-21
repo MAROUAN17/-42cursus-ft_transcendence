@@ -1,3 +1,5 @@
+import type { RefObject } from "react";
+
 export interface messagePacket {
   id?: number;
   tempId?: string;
@@ -84,6 +86,7 @@ export type websocketPacket = NotificationPacket | ChatPacket | OnlineStatusPack
 
 export interface websocketContextType {
   send: (msg: string) => void;
+  socketRef: RefObject<WebSocket | null>;
   addHandler: (packetType: string, handler: (data: websocketPacket) => void) => void;
   gameInvite: "sender" | "recipient" | "tournamentStart" | undefined;
   setGameInvite: (bool: "sender" | "recipient" | "tournamentStart" | undefined) => void;

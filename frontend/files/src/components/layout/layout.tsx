@@ -44,7 +44,7 @@ function Layout() {
           if (gameInvite == "tournamentStart" && tournamentId.current && tournamentAdmin.current) {
             if (!location.pathname.includes("bracket/")) navigate(`bracket/${tournamentId.current}`);
             else {
-              navigate("/remote_game");
+              // navigate("/remote_game");
               window.location.reload();
             }
 
@@ -74,6 +74,7 @@ function Layout() {
 
   function eventHandler(packet: websocketPacket) {
     if (packet.type != "gameEvent") return;
+    console.log("got packt -> ", packet);
     setGameInvite("tournamentStart");
     setOpponentName((prev: string | undefined) => (prev ? prev : packet.data.tournamentName));
     tournamentId.current = packet.data.tournamentId;

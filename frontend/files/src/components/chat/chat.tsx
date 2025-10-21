@@ -439,6 +439,7 @@ const Chat = () => {
         </div>
       </div>
       <div className="bg-compBg/20 rounded-xl h-full basis-2/3 flex-1 flex flex-col justify-between min-w-0">
+        <div className="absolute border top-1/2 left-1/2"></div>
         {targetUser ? (
           <>
             <div className="bg-compBg/20 h-[95px] items-center flex px-7 justify-between">

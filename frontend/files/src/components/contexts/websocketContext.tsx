@@ -14,10 +14,11 @@ export const WebSocketProvider: React.FC<{ children?: React.ReactNode }> = ({ ch
     socketRef.current.onopen = () => {
       console.log("Socket Created!");
       while (queueRef.current.length > 0) {
-        if (queueRef.current && socketRef.current && socketRef.current.readyState == WebSocket.OPEN) {
+        if (socketRef.current && socketRef.current.readyState == WebSocket.OPEN) {
           let msg = queueRef.current.shift();
+          console.log("sending -> ", msg);
           if (msg) socketRef.current?.send(msg);
-        }
+        } else break;
       }
     };
 
@@ -58,7 +59,7 @@ export const WebSocketProvider: React.FC<{ children?: React.ReactNode }> = ({ ch
     };
   }
   return (
-    <WebsocketContext.Provider value={{ send, addHandler, gameInvite, setGameInvite, opponentName, setOpponentName }}>
+    <WebsocketContext.Provider value={{ socketRef, send, addHandler, gameInvite, setGameInvite, opponentName, setOpponentName }}>
       {children}
     </WebsocketContext.Provider>
   );

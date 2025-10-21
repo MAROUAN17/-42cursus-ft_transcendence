@@ -14,7 +14,11 @@ export const getUsersMessages = async (req: FastifyRequest, res: FastifyReply) =
     }
     const currUserId = payload.id;
     let usersAndMessages: UsersLastMessage[] = [];
-    const users: UserInfos[] = app.db.prepare("SELECT id, username, email, avatar, online FROM players WHERE id != ?").all(currUserId) as UserInfos[];
+    const user = app.db.prepare("SELECT friends FROM players WHERE id = ?").get(currUserId);
+    const list = JSON.parse(user.friends);
+    const holder = list.map((id: string) => "?").join(", ");
+    const users: UserInfos[] = app.db.prepare(`SELECT id, username, avatar, online FROM players WHERE id IN (${holder})`).all(list) as UserInfos[];
+    // const users: UserInfos[] = app.db.prepare("SELECT id, username, avatar, online FROM players WHERE id != ?").all(currUserId) as UserInfos[];
     users.map((user) => {
       const query: messagePacketDB | undefined = app.db
         .prepare(

@@ -238,18 +238,16 @@ function notifyTournament(packet: EventPacket) {
       },
     };
     for (const playerId of players) {
-      let client = clients.get(playerId);
+      console.log("sending to -> ", playerId);
+      let client = clients.get(Number(playerId));
       if (client) {
         sendToClient(client, alert);
       }
     }
   } else {
-    const round = app.db
-      .prepare("SELECT player1, player2 FROM round WHERE tournament_id = ? AND round_number = ? AND winner = ?")
-      .get(packet.data.tournamentId, 2, 0);
+    const round = app.db.prepare("SELECT player1, player2 FROM round WHERE tournament_id = ? AND round_number = ?").get(packet.data.tournamentId, 2);
     console.log("final round -> ", round);
     if (!round) return;
-    // const players: number[] = JSON.parse(tournament.players);
     const alert: EventPacket = {
       type: "gameEvent",
       data: {
@@ -259,13 +257,16 @@ function notifyTournament(packet: EventPacket) {
         tournamentName: tournament.name,
       },
     };
-    let client = clients.get(round.player1);
-    if (client) {
-      sendToClient(client, alert);
-    }
-    client = clients.get(round.player2);
-    if (client) {
-      sendToClient(client, alert);
+    if (packet.data.senderId != round.player1) {
+      let client = clients.get(round.player1);
+      if (client) {
+        sendToClient(client, alert);
+      }
+    } else {
+      let client = clients.get(round.player2);
+      if (client) {
+        sendToClient(client, alert);
+      }
     }
   }
 }
@@ -301,8 +302,8 @@ function checkValidPacket(packet: websocketPacket, userId: number): boolean {
   if (packet.type == "onlineStatus" || (packet.type == "chat" && packet.data.message.length > 1000)) return false;
   else if (packet.type == "logNotif") return true;
   else if (packet.type == "gameEvent") {
-    const checkAdmin = app.db.prepare("SELECT admin, players FROM tournament WHERE id = ?").get(packet.data.tournamentId);
-    if (!checkAdmin || checkAdmin.admin != userId || JSON.parse(checkAdmin.players).length != 4) return false;
+    const checkAdmin = app.db.prepare("SELECT admin, status, players FROM tournament WHERE id = ?").get(packet.data.tournamentId);
+    if (!checkAdmin || checkAdmin.status != "ongoing" || JSON.parse(checkAdmin.players).length != 4) return false;
     return true;
   }
   if (packet.data.sender_id != userId || packet.data.sender_id == packet.data.recipient_id) return false;

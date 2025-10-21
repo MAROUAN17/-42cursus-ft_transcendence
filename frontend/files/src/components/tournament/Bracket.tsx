@@ -82,9 +82,10 @@ const TournamentBracket: React.FC = () => {
 
     return () => clearInterval(intervalId);
   }, [started, user, id]);
-
+  
   function sendAlert(roundNum: number) {
-    if (!tournament || user?.id != tournament.admin) return;
+    console.log("before ----------------")
+    if (!tournament || !user || roundNum != 2 && (!tournament || !user)) return;
     const packet: EventPacket = {
       type: "gameEvent",
       data: {
@@ -94,25 +95,26 @@ const TournamentBracket: React.FC = () => {
         admin: tournament.admin,
       },
     };
+    console.log("sending ----------------")
     send(JSON.stringify(packet));
   }
 
   useEffect(() => {
     if (!user || !round) return;
-    const player1:Player = {
+    const player1: Player = {
       username: get_username(round.player1),
-      avatar: get_avatar(round.player1)
-    }
-    const player2:Player = {
+      avatar: get_avatar(round.player1),
+    };
+    const player2: Player = {
       username: get_username(round.player2),
-      avatar: get_avatar(round.player2)
-    }
-    console.log("player1 : ", player1, "player2: ", player2)
+      avatar: get_avatar(round.player2),
+    };
+    console.log("player1 : ", player1, "player2: ", player2);
     const game: Game = {
       side: round.player1 == user.id ? "left" : "right",
       round: round,
-      you: user.id == round.player1 ? player1: player2,
-      opponent: user.id == round.player2 ? player1 : player2
+      you: user.id == round.player1 ? player1 : player2,
+      opponent: user.id == round.player2 ? player1 : player2,
     };
     console.log("game :", game);
     sessionStorage.setItem("currentRound", JSON.stringify(game));
@@ -121,7 +123,10 @@ const TournamentBracket: React.FC = () => {
       console.log("admin sent notif");
       sendAlert(round.round_number);
       console.log("round number - > ", round.round_number);
-      if (user?.id != tournament?.admin) navigate("/remote_game");
+      setTimeout(() => {
+        navigate("/remote_game");
+      }, 1000);
+      // navigate("/remote_game");
     }
   }, [user, round]);
 

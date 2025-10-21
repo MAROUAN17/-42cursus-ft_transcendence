@@ -40,7 +40,6 @@ export default function RGame() {
     api
       .get("/getCustomization", { withCredentials: true })
       .then((res) => {
-        console.log("data -> ", res.data);
         setGameCustomisation(res.data);
       })
       .catch((err) => console.error(err));
@@ -53,7 +52,7 @@ export default function RGame() {
       // console.log("ddddd");
 
       if (websocket && websocket.readyState === WebSocket.OPEN) {
-        // console.log("eeeee");
+        console.log("eeeee");
         websocket.send(
           JSON.stringify({
             type: gameType,
@@ -190,7 +189,7 @@ export default function RGame() {
   }, [game, round]);
   useEffect (() => {
     if (!started)
-        console.log(" -- waiting for opponent");
+      console.log(" -- waiting for opponent");
     else
       console.log("-- game started ");
   })
