@@ -5,11 +5,11 @@ import type { Tournament } from "./tournaments";
 import { useEffect, useState } from "react";
 import { useWebSocket } from "../contexts/websocketContext";
 import type { Player, Round } from "../game/remote/Types";
-import type { ProfileUserInfo } from "../../types/user";
 import { useUserContext } from "../contexts/userContext";
 import type { Game } from "../game/remote/Types";
 import type { EventPacket } from "../../types/websocket";
 import api from "../../axios";
+import { FaCrown } from "react-icons/fa";
 
 //todo
 //setup first round betwen player1 and player2
@@ -82,10 +82,10 @@ const TournamentBracket: React.FC = () => {
 
     return () => clearInterval(intervalId);
   }, [started, user, id]);
-  
+
   function sendAlert(roundNum: number) {
-    console.log("before ----------------")
-    if (!tournament || !user || roundNum != 2 && (!tournament || !user)) return;
+    console.log("before ----------------");
+    if (!tournament || !user || (roundNum != 2 && (!tournament || !user))) return;
     const packet: EventPacket = {
       type: "gameEvent",
       data: {
@@ -95,7 +95,7 @@ const TournamentBracket: React.FC = () => {
         admin: tournament.admin,
       },
     };
-    console.log("sending ----------------")
+    console.log("sending ----------------");
     send(JSON.stringify(packet));
   }
 
@@ -151,7 +151,7 @@ const TournamentBracket: React.FC = () => {
 
     const fetchFinalRound = async () => {
       try {
-        const response = await api(`/tournament/final_round/${id}`, { withCredentials: true })
+        await api(`/tournament/final_round/${id}`, { withCredentials: true })
           .then(function (res) {
             console.log("Final Round fetched:", res.data);
           })
@@ -188,10 +188,13 @@ const TournamentBracket: React.FC = () => {
       avatar: get_avatar(p),
     })) || [];
 
-  useEffect(() => {
-    console.log("final Players-- :", finalPlayers);
-    console.log("final Users -- :", finalUsers);
-  }, [finalUsers, finalPlayers]);
+  // useEffect(() => {
+  //   console.log("final Players-- :", finalPlayers);
+  //   console.log("final Users -- :", finalUsers);
+  //   console.log("final round winner stirng -- :", finalPlayers[0]);
+  //   console.log("final round winner u -- :", finalUsers[0]?.id);
+  //   console.log("final round winner -- :", round?.winner);
+  // }, [finalUsers, finalPlayers]);
 
   if (loading) return <p>Loading tournament...</p>;
   return (
@@ -199,10 +202,26 @@ const TournamentBracket: React.FC = () => {
       <h1 className="flex justify-top text-white font-bold text-2xl">{tournament?.name}</h1>
       <div className="relative h-full overflow-hidden cursor-pointer  text-white rounded-lg">
         <div className="flex flex-col items-center justify-center h-full">
-          {/* <h1>
-            id is {user?.id} {user?.username}
-          </h1> */}
-
+          {round?.winner && round.round_number === 2 ? (
+            <div className="relative flex flex-col justify-center items-center gap-3">
+              <div className="flex justify-center space-x-28">
+                <div className="flex flex-col items-center ">
+                  <FaCrown className="w-[40px] h-[40px] text-yellow-500" />
+                  <img
+                    className="w-[110px] h-[110px] rounded-full object-cover border-4 border-purple-500 shadow-[0_0_15px_rgba(168,85,247,0.8)]"
+                    src={round?.winner == Number(finalPlayers[0]) ? finalUsers[0].avatar : finalUsers[1].avatar}
+                    alt="winner-avatar"
+                  />
+                </div>
+                <img className="absolute w-[120px] h-[120px] top-9" src="/trophy.png" alt="winner-trophy" />
+              </div>
+              <div className="">
+                <h1 className="text-white font-bold text-xl">
+                  {round?.winner == Number(finalPlayers[0]) ? finalUsers[0].username?.toUpperCase() : finalUsers[1].username?.toUpperCase()}
+                </h1>
+              </div>
+            </div>
+          ) : null}
           <div className="flex gap-32 items-center">
             <div className="flex gap-12 items-center">
               <div className="relative flex flex-col gap-24">
@@ -239,6 +258,7 @@ const TournamentBracket: React.FC = () => {
             tournamentId={Number(id)}
             playerId={user?.id || 1}
             onLeave={() => navigate("/tournaments")}
+            tournamentState={tournament?.status}
           />
         </div>
       </div>

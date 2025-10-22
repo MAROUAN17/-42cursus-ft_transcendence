@@ -10,6 +10,7 @@ import api from "../../../axios";
 import { useWebSocket } from "../../contexts/websocketContext";
 import type { LogPacket } from "../../../types/websocket";
 import { v4 as uuidv4 } from "uuid";
+import { FaSpinner } from "react-icons/fa";
 
 export default function RGame() {
   //   const [i, setI] = useState(0);
@@ -49,7 +50,7 @@ export default function RGame() {
       .catch((err) => console.error(err));
   }, []);
 
-  const start_game = (sessionGame: any) => {
+  const start_game = (sessionGame: Game) => {
     let interval: NodeJS.Timeout;
 
     interval = setInterval(() => {
@@ -79,7 +80,7 @@ export default function RGame() {
 
   useEffect(() => {
     var storedGame = null;
-    // sessionStorage.removeItem("currentGame");
+    sessionStorage.removeItem("currentGame");
     if (sessionStorage.getItem("currentGame")) {
       storedGame = sessionStorage.getItem("currentGame");
       setGameType("casual");
@@ -96,7 +97,7 @@ export default function RGame() {
     }
     // console.log("-- current game", storedGame);
 
-    const sessionGame = JSON.parse(storedGame);
+    const sessionGame: Game = JSON.parse(storedGame);
     // if (sessionGame.round.tournament_id) setTournamentId(sessionGame.tournament_id);
     setGame(sessionGame);
     start_game(sessionGame);
@@ -155,6 +156,7 @@ export default function RGame() {
       // console.log("on Message");
       try {
         const message = JSON.parse(event.data);
+        // console.log("msg -> ",message);
         if (message.type === "end") {
           console.log(message);
           console.log("--- game eneded");
@@ -205,7 +207,9 @@ export default function RGame() {
     if (!started) console.log(" -- waiting for opponent");
     else console.log("-- game started ");
   });
-  if (!started) return <div>waiting for opponent ... </div>;
+
+  // if (!started) return <div>waiting for opponent ... </div>;
+
   return (
     <>
       {gameEnded ? (
@@ -243,11 +247,12 @@ export default function RGame() {
           you={game?.you || round?.player1}
           side={game?.side}
           opponent={game?.opponent || round?.player2}
+          gameState={started}
         />
 
         <div
           ref={containerRef}
-          className={`relative animate-fadeIn [background-image:var(--selected-bg)] border-[var(--borderColor)] shadow-[0_0_10px_var(--shadowColor)] overflow-hidden bg-center bg-cover w-[var(--width)] h-[var(--height)] border-2 rounded-2xl bg-black`}
+          className={`${!started ? 'blur-sm' : null} relative animate-fadeIn [background-image:var(--selected-bg)] border-[var(--borderColor)] shadow-[0_0_10px_var(--shadowColor)] overflow-hidden bg-center bg-cover w-[var(--width)] h-[var(--height)] border-2 rounded-2xl bg-black`}
           style={
             {
               "--selected-bg": `url(${gameCutomistion?.selectedBg})`,

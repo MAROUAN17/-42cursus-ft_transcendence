@@ -101,6 +101,10 @@ sqlite3 "$DB_NAME" <<EOF
     INSERT INTO Room(player1, player2, scoreLeft, scoreRight, winner) VALUES (2, 1, 25, 11, 2);
     INSERT INTO Room(player1, player2, scoreLeft, scoreRight, winner) VALUES (4, 1, 25, 11, 4);
     INSERT INTO Room(player1, player2, scoreLeft, scoreRight, winner) VALUES (3, 1, 22, 15, 1);
+
+    INSERT INTO tournament(name, players, createdAt, status, admin) VALUES ('test', "[1,2,3,4]", datetime('now'), 'open', 1);
+    INSERT INTO round(tournament_id, player1, player2, score1, score2, winner, round_number) VALUES (1, 1, 2, 2, 0, 1, 1);
+    INSERT INTO round(tournament_id, player1, player2, score1, score2, winner, round_number) VALUES (1, 3, 4, 2, 0, 3, 1);
 EOF
 
 
