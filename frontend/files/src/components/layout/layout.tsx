@@ -26,7 +26,7 @@ function Layout() {
   // delete later
   const { user } = useUserContext();
   //////
-  const { gameInvite, setGameInvite, opponentName, setOpponentName, addHandler } = useWebSocket();
+  const { gameInvite, socket, setGameInvite, opponentName, setOpponentName, addHandler } = useWebSocket();
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -109,7 +109,16 @@ function Layout() {
 
   return (
     <>
-      {gameInvite == "recipient" ? (
+      {!socket ? (
+        <div
+          className={`absolute gap-3 p-6 animate-fadeIn font-poppins flex flex-col justify-center items-center text-white rounded-[20px] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 bg-[#14095c] w-fit h-fit`}
+        >
+          <div className="relative w-fit h-fit">
+            <FaSpinner className="animate-[spin_1.3s_linear_infinite] w-[60px] h-[60px]" />
+          </div>
+          <h1 className="font-semibold text-center text-[25px]">Connecting...</h1>
+        </div>
+      ) : gameInvite == "recipient" ? (
         <div
           className={`absolute gap-3 p-6 animate-fadeIn font-poppins flex flex-col justify-center items-center text-white rounded-[20px] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 bg-[#14095c] w-1/4 h-fit`}
         >
@@ -351,7 +360,7 @@ function Layout() {
       ) : null}
       <div
         className={`flex flex-col bg-darkBg h-screen transition-all duration-300 ${
-          settingsOpen || gameInvite ? "blur-sm shadow-[0_0_20px] pointer-events-none" : ""
+          settingsOpen || gameInvite || !socket ? "blur-sm shadow-[0_0_20px] pointer-events-none" : ""
         }`}
       >
         <Navbar />

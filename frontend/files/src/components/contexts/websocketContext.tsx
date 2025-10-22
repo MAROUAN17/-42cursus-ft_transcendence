@@ -5,6 +5,7 @@ const WebsocketContext = createContext<websocketContextType | undefined>(undefin
 
 export const WebSocketProvider: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
   const socketRef = useRef<WebSocket | null>(null);
+  const [socket, setSocket] = useState<WebSocket | null>(null);
   const queueRef = useRef<string[]>([]);
   const [gameInvite, setGameInvite] = useState<"sender" | "recipient" | "tournamentStart" | undefined>(undefined);
   const [opponentName, setOpponentName] = useState<string | undefined>(undefined);
@@ -13,6 +14,7 @@ export const WebSocketProvider: React.FC<{ children?: React.ReactNode }> = ({ ch
     socketRef.current = new WebSocket(`${import.meta.env.VITE_SOCKET_BACKEND_URL}/send-message`);
     socketRef.current.onopen = () => {
       console.log("Socket Created!");
+      setSocket(socketRef.current);
       while (queueRef.current.length > 0) {
         if (socketRef.current && socketRef.current.readyState == WebSocket.OPEN) {
           let msg = queueRef.current.shift();
@@ -53,13 +55,12 @@ export const WebSocketProvider: React.FC<{ children?: React.ReactNode }> = ({ ch
   }
   function addHandler(packetType: string, handler: (data: websocketPacket) => void) {
     if (!handlersRef.current.get(packetType)) handlersRef.current.set(packetType, handler);
-
     return () => {
       handlersRef.current.delete(packetType);
     };
   }
   return (
-    <WebsocketContext.Provider value={{ socketRef, send, addHandler, gameInvite, setGameInvite, opponentName, setOpponentName }}>
+    <WebsocketContext.Provider value={{ socket, send, addHandler, gameInvite, setGameInvite, opponentName, setOpponentName }}>
       {children}
     </WebsocketContext.Provider>
   );

@@ -4,6 +4,7 @@ import axios from "axios";
 import { useNavigate } from "react-router";
 import { type Player, type Game } from "../game/remote/Types";
 import { useUserContext } from "../contexts/userContext";
+import api from "../../axios";
 
 export default function Pairing() {
   const [loading, setLoading] = useState(false);
@@ -54,13 +55,12 @@ export default function Pairing() {
     const interval = setInterval(async () => {
       if (loading) {
         try {
-          axios
-            .get(`${import.meta.env.VITE_BACKEND_URL}/match/my-game/${id}`, { withCredentials: true })
+          api
+            .get(`/match/my-game/${id}`, { withCredentials: true })
             .then(function (response) {
               console.log("------", response.data.game);
               setGameInfo(response.data.game);
               setLoading(false);
-
               sessionStorage.setItem("currentGame", JSON.stringify(response.data.game));
               setPaired(true);
               clearInterval(interval);

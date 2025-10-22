@@ -11,17 +11,19 @@ import ChatBubble from "./chatBubble";
 import { v4 as uuidv4 } from "uuid";
 import { useWebSocket } from "../contexts/websocketContext";
 import { useParams, useNavigate } from "react-router";
-import { MdBlock } from "react-icons/md";
+import { MdBlock, MdOutlineEmojiEmotions } from "react-icons/md";
 import api from "../../axios";
 import type { messagePacket, websocketPacket } from "../../types/websocket";
 import type { UsersLastMessage } from "../../types/chat";
 import { GiPingPongBat } from "react-icons/gi";
 import { toast, ToastContainer } from "react-toastify";
+import EmojiPicker, { type EmojiClickData } from "emoji-picker-react";
 // import { PiPingPongFill } from "react-icons/pi";
 
 const Chat = () => {
   const { username } = useParams<{ username?: string }>();
   const [show, setShow] = useState<boolean>(false);
+  const [emojiOpen, setEmojiOpen] = useState<boolean>(false);
   const [blockedbyUser, setBlockedByUser] = useState<boolean>(false);
   const [blockedbyOther, setBlockedByOther] = useState<boolean>(false);
   const [isOptionsOpen, setIsOptionsOpen] = useState<boolean>(false);
@@ -30,6 +32,7 @@ const Chat = () => {
   const [targetUser, setTargetUser] = useState<UserInfos | null>();
   const [currUser, setCurrUser] = useState<UserInfos>();
   const [searchInput, setSearchInput] = useState<string>("");
+  const [message, setMessage] = useState<string>("");
   const currUserRef = useRef(currUser);
   const blockedbyOtherRef = useRef(blockedbyOther);
   const targetUserRef = useRef(targetUser);
@@ -333,9 +336,7 @@ const Chat = () => {
   function sendMsg(event: React.KeyboardEvent) {
     if (!currUser) return;
     if (event.key == "Enter") {
-      const input = document.getElementById("msg") as HTMLInputElement | null;
-      if (input && input.value.trim() != "" && targetUser) {
-        const message: string = input.value;
+      if (message && message.trim() != "" && targetUser) {
         if (message.length > 1000) {
           toast("Message is too long!", {
             closeButton: false,
@@ -371,7 +372,7 @@ const Chat = () => {
         };
         setMessages((prev) => [msgPacket, ...prev]);
         send(JSON.stringify(socketPacket));
-        input.value = "";
+        setMessage("");
       }
     }
   }
@@ -414,6 +415,7 @@ const Chat = () => {
                   type={user.lastMessage ? (user.lastMessage.sender_id == currUser?.id ? "sender" : "recipient") : "recipient"}
                   onclick={() => {
                     setTargetUser(user.user);
+                    setMessage("");
                     targetUserRef.current = user.user;
                     setBlockedByUser(user.blockedByUser);
                     setBlockedByOther(user.blockedByOther);
@@ -439,7 +441,6 @@ const Chat = () => {
         </div>
       </div>
       <div className="bg-compBg/20 rounded-xl h-full basis-2/3 flex-1 flex flex-col justify-between min-w-0">
-        <div className="absolute border top-1/2 left-1/2"></div>
         {targetUser ? (
           <>
             <div className="bg-compBg/20 h-[95px] items-center flex px-7 justify-between">
@@ -615,16 +616,41 @@ const Chat = () => {
                   <p className="text-white/50 text-[15px]">Messaging is unavailable</p>
                 </div>
               ) : (
-                <div className="w-full gap-3 flex">
+                <div className="w-full relative gap-3 flex">
                   <div className="flex p-1 flex-row bg-neon/[35%] items-center pr-4 w-full rounded-full">
                     <input
                       type="text"
                       id="msg"
+                      value={message}
+                      onChange={(e) => setMessage(e.target.value)}
                       onKeyDown={sendMsg}
                       placeholder="Type your message..."
                       className="w-full p-4 pr-2 h-[45px] focus:outline-none rounded-full bg-transparent text-white placeholder-[#fff]/[40%]"
                     />
-                    <RiSendPlaneFill className="text-white w-[20px] h-[20px]" />
+                    <div className="relative">
+                      <MdOutlineEmojiEmotions onClick={() => setEmojiOpen(!emojiOpen)} className="text-white w-[25px] h-[25px]" />
+                      {emojiOpen ? (
+                        <div className="absolute right-0 bottom-[50px]">
+                          <EmojiPicker
+                            onEmojiClick={(e) => setMessage((prev) => prev + e.emoji)}
+                            style={
+                              {
+                                "--epr-bg-color": "#471396",
+                                "--epr-text-color": "#ffffff",
+                                "--epr-category-label-bg-color": "#471396",
+                                "--epr-hover-bg-color": "#B13BFF",
+                                "--epr-scrollbar-color": "#B13BFF",
+                                "--epr-emoji-variation-picker-bg-color": "#B13BFF",
+                                "--epr-picker-border-color": "#B13BFF",
+                              } as React.CSSProperties
+                            }
+                            previewConfig={{ showPreview: false }}
+                            searchDisabled
+                            className="animate-fadeIn"
+                          />
+                        </div>
+                      ) : null}
+                    </div>
                   </div>
                   <div
                     onClick={sendGameInvite}

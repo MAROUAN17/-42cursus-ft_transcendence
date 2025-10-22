@@ -7,6 +7,9 @@ import { useNavigate } from "react-router";
 import { useUserContext } from "../../contexts/userContext";
 import type { gameCustomization } from "../../../types/user";
 import api from "../../../axios";
+import { useWebSocket } from "../../contexts/websocketContext";
+import type { LogPacket } from "../../../types/websocket";
+import { v4 as uuidv4 } from "uuid";
 
 export default function RGame() {
   //   const [i, setI] = useState(0);
@@ -33,6 +36,7 @@ export default function RGame() {
   const [started, setStarted] = useState(false);
 
   const { user } = useUserContext();
+  const { send } = useWebSocket();
   const id = user?.id ? user.id.toString() : "";
   // console.log("------ ",user)
 
@@ -80,15 +84,13 @@ export default function RGame() {
       storedGame = sessionStorage.getItem("currentGame");
       setGameType("casual");
       console.log("game type seted");
-    }
-    else if (sessionStorage.getItem("currentRound")){
+    } else if (sessionStorage.getItem("currentRound")) {
       // console.log("this game from tournament");
       storedGame = sessionStorage.getItem("currentRound");
       setGameType("tournament");
       const userGame = JSON.parse(storedGame);
       setRound(userGame.round);
-    }
-    else  {
+    } else {
       console.log("No game found in sessionStorage.");
       return;
     }
@@ -112,7 +114,7 @@ export default function RGame() {
     let raf = 0;
     const step = () => {
       if (!gameCutomistion) return;
-      if (game?.side == "right" ) {
+      if (game?.side == "right") {
         if (down.has("ArrowUp")) setRightY((y) => Math.max(0, y - gameCutomistion?.paddleSpeed));
         if (down.has("ArrowDown")) setRightY((y) => Math.min((gameInfo?.bounds.height ?? 0) - 120, y + gameCutomistion?.paddleSpeed));
       } else if (game?.side == "left") {
@@ -141,7 +143,7 @@ export default function RGame() {
   }, [leftY, rightY]);
 
   useEffect(() => {
-    if ( !gameType || (gameType == "tournament" && !round)) return;
+    if (!gameType || (gameType == "tournament" && !round) || !user) return;
     // console.log(`round : ${round}  gameType: ${gameType}`)
 
     const ws = new WebSocket(`${import.meta.env.VITE_SOCKET_BACKEND_URL}/game`);
@@ -158,16 +160,31 @@ export default function RGame() {
           console.log("--- game eneded");
           setGameEnded(true);
           setWinnerId(message.winner);
+          if ((!round || round.round_number == 2) && message.winner == user?.id) {
+            const packet: LogPacket = {
+              type: "logNotif",
+              data: {
+                id: uuidv4(),
+                is_removed: false,
+                winner: user.username,
+                game_type: round ? "tournament" : "1v1",
+                score: 100,
+                avatar: user.avatar,
+                tournament_id: round?.tournament_id,
+                timestamps: "2025-10-09 09:11:55",
+              },
+            };
+            send(JSON.stringify(packet));
+          }
           // sessionStorage.removeItem("currentGame");
           // sessionStorage.removeItem('currentRound');
           if (round?.tournament_id) navigate(`/bracket/${round.tournament_id}`);
           if (message.type == "updateY") console.log("updateY");
         }
-        if (message.type == "game_end"){
+        if (message.type == "game_end") {
           console.log("opponent didnt join");
         }
-        if (message.type == "start")
-            setStarted(true);
+        if (message.type == "start") setStarted(true);
         setGameInfo(message.game_info);
       } catch (err) {
         console.error("Invalid message from server:", event.data);
@@ -177,24 +194,18 @@ export default function RGame() {
       console.log("Closing WebSocket...");
       ws.close();
     };
-  }, [gameType]);
+  }, [gameType, user]);
 
-
-  
   useEffect(() => {
-    if (!game && !round)
-      return ;
+    if (!game && !round) return;
     console.log("-- game : ", game);
     console.log("-- round : ", round);
   }, [game, round]);
-  useEffect (() => {
-    if (!started)
-      console.log(" -- waiting for opponent");
-    else
-      console.log("-- game started ");
-  })
-  if (!started)
-    return <div>waiting for opponent ... </div>
+  useEffect(() => {
+    if (!started) console.log(" -- waiting for opponent");
+    else console.log("-- game started ");
+  });
+  if (!started) return <div>waiting for opponent ... </div>;
   return (
     <>
       {gameEnded ? (

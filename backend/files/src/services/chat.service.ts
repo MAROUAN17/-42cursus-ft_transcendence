@@ -161,6 +161,9 @@ function handleNotifMarkSeen(currPacket: NotificationPacket) {
 // function broadcastToAll(packet: websocketPacket) {}
 
 function handleLogNotif(packet: LogPacket) {
+  const tournament = app.db.prepare("SELECT name FROM tournament WHERE id = ?").get(packet.data.tournament_id);
+  if (!tournament) return;
+  console.log("t -> ", tournament);
   for (const userId of clients) {
     const client = clients.get(Number(userId[0]));
     if (client) sendToClient(client, packet);

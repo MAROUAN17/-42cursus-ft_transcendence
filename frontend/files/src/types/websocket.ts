@@ -35,6 +35,7 @@ export interface LogPacket {
     loser?: string;
     game_type: "1v1" | "tournament";
     score: number;
+    tournament_id?: number;
     tournament_name?: string;
     timestamps: string;
   };
@@ -86,7 +87,7 @@ export type websocketPacket = NotificationPacket | ChatPacket | OnlineStatusPack
 
 export interface websocketContextType {
   send: (msg: string) => void;
-  socketRef: RefObject<WebSocket | null>;
+  socket: WebSocket | null;
   addHandler: (packetType: string, handler: (data: websocketPacket) => void) => void;
   gameInvite: "sender" | "recipient" | "tournamentStart" | undefined;
   setGameInvite: (bool: "sender" | "recipient" | "tournamentStart" | undefined) => void;
