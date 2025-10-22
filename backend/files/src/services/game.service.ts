@@ -171,7 +171,8 @@ export function handleGameConnection(connection: any, req: any) {
   connection.on("message", (message: any) => {
     try {
       const msg = JSON.parse(message.toString());
-      console.log("-- msg: ", msg);
+      if (msg.userId)
+        console.log("-- msg: ", msg);
       if (msg.type === "casual") {
         userId = msg.userId;
         clients.set(userId, connection);
@@ -225,24 +226,74 @@ function getRoom(gameId: string, roundId: number): Room {
   return room;
 }
 
+
+function wait_opponent(room: Room, time: number, opponent: number | undefined) {
+  if (!room.waitTimer) {
+    console.log("-- Starting 10s wait timer for opponent...");
+    room.waitTimer = setTimeout(() => {
+          if (!opponent) {
+            console.log("-- Opponent did not join in time, ending game.");
+            room.player1 = String (room.leftPlayer);
+            room.player2 = String (room.rightPlayer);
+            broadcastToRoom(room, {
+              type: "game_end",
+            });
+            deleteGame(room.gameId);
+          }
+        }, time * 1000);
+  } else {
+    console.log("player already waiting ")
+  }
+}
+
 function addPlayerToRoom(gameId: string, playerId: number, side: string) {
+  if (!playerId)
+      return ;
   const room = getRoom(gameId, 0);
 
-  if (!room.leftPlayer && side == "left") room.leftPlayer = playerId;
-  else if (!room.rightPlayer && room.rightPlayer !== playerId && side == "right") room.rightPlayer = playerId;
+  if (!room.leftPlayer && side === "left") {
+    room.leftPlayer = playerId;
+    console.log(`Assigned ${playerId} as left player`);
+      wait_opponent(room, 10, room.rightPlayer);
+      if (room.waitTimer && room.rightPlayer) {
+        clearTimeout(room.waitTimer);
+        room.waitTimer = null;
+        console.log("-- Opponent joined in time, timer cleared.");
+      }
+  } else if (!room.rightPlayer && room.rightPlayer !== playerId && side === "right") {
+    room.rightPlayer = playerId;
+    console.log(`Assigned ${playerId} as right player`);
+    wait_opponent(room, 10, room.leftPlayer);
+    if (room.waitTimer && room.leftPlayer) {
+      clearTimeout(room.waitTimer);
+      room.waitTimer = null;
+      console.log("-- Opponent joined in time, timer cleared.");
+    }
+  } else {
+    console.log("Player already in room or room full:", playerId);
+  }
+
   if (room.leftPlayer && room.rightPlayer && !room.ready) {
-    (room.player1 = String(room.leftPlayer)), (room.player2 = String(room.rightPlayer)), (room.ready = true);
+    room.player1 = String(room.leftPlayer);
+    room.player2 = String(room.rightPlayer);
+    room.ready = true;
     room.winner = undefined;
     room.startedAt = new Date();
-    room.type = "casaul";
-    console.log(`-- Room ${room.gameId} ready! Players: left : ${room.player1}, right : ${room.player2} `);
+    room.type = "casual";
+    console.log(`-- Room ${room.gameId} ready! Players: left: ${room.player1}, right: ${room.player2}`);
+    broadcastToRoom(room, {
+            type: "start",
+          });
     startGame(room);
   } else {
     console.log(`-- Waiting for another player in room gameId: ${gameId}`);
   }
 }
 
+
 function addPlayerToRound(tournamentId: number, playerId: string, rn: number, side: string) {
+  if (!playerId)
+      return ;
   console.log(`looking for userId: ${playerId} in tid: ${tournamentId} rn : ${rn}`);
 
   const lastRound = app.db
@@ -307,8 +358,6 @@ function addPlayerToRound(tournamentId: number, playerId: string, rn: number, si
     console.log(`-- Round ${tournamentId} ready! Players: ${room.player1}, ${room.player2}`);
     broadcastToRoom(room, {
       type: "start",
-
-      message: "Opponent did not join in time. The game has ended.",
     });
     startGame(room);
   } else {
@@ -326,10 +375,29 @@ function deleteRound(roundId: number): void {
 
   const room = rooms[index];
 
-  if (room.waitTimer) {
+  if (room?.waitTimer) {
     clearTimeout(room.waitTimer);
   }
 
   rooms.splice(index, 1);
   console.log(` Room with roundId ${roundId} deleted successfully.`);
 }
+
+function deleteGame(gameId: string): void {
+  const index = rooms.findIndex((room) => room.gameId === gameId);
+
+  if (index === -1) {
+    console.log(`No room found with gameId: ${gameId}`);
+    return;
+  }
+
+  const room = rooms[index];
+
+  if (room?.waitTimer) {
+    clearTimeout(room.waitTimer);
+  }
+
+  rooms.splice(index, 1);
+  console.log(` Room with gameid${gameId} deleted successfully.`);
+}
+

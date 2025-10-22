@@ -152,6 +152,7 @@ export default function RGame() {
       // console.log("on Message");
       try {
         const message = JSON.parse(event.data);
+        // console.log("msg -> ",message);
         if (message.type === "end") {
           console.log(message);
           console.log("--- game eneded");
