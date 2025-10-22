@@ -3,9 +3,7 @@ import { DefaultGame, type GameInfo, type Room } from "../models/game.js";
 import { clients, checkPaddleCollision } from "./game.utils.js";
 import app from "../server.js";
 import type { FastifyReply, FastifyRequest } from "fastify";
-import type { Round } from "../generated/prisma/index.js";
 import { v4 as uuidv4 } from "uuid";
-import { get_rounds } from "./tournament.service.js";
 
 //todo
 //fix the final score in tournament
@@ -39,7 +37,8 @@ function saveData(room: Room) {
       app.db
         .prepare("UPDATE Round SET score1 = ?, score2 = ?, winner = ? WHERE id = ?")
         .run(room.scoreLeft, room.scoreRight, room.winner, room.roundId);
-
+      // app.db.prepare ("UPDATE TOURNAMNET SET status = ? WhERE id = ?")
+      //   .run ("finished", room.tournamentId);
       console.log("-- Round registred successfully", room.type);
     } catch (err) {
       console.log(err);
@@ -227,34 +226,16 @@ function getRoom(gameId: string, roundId: number): Room {
 }
 
 
-function wait_opponent(room: Room, time: number, opponent: number | undefined) {
-  if (!room.waitTimer) {
-    console.log("-- Starting 10s wait timer for opponent...");
-    room.waitTimer = setTimeout(() => {
-          if (!opponent) {
-            console.log("-- Opponent did not join in time, ending game.");
-            room.player1 = String (room.leftPlayer);
-            room.player2 = String (room.rightPlayer);
-            broadcastToRoom(room, {
-              type: "game_end",
-            });
-            deleteGame(room.gameId);
-          }
-        }, time * 1000);
-  } else {
-    console.log("player already waiting ")
-  }
-}
 
 function addPlayerToRoom(gameId: string, playerId: number, side: string) {
   if (!playerId)
       return ;
-  const room = getRoom(gameId, 0);
+    const room = getRoom(gameId, 0);
 
   if (!room.leftPlayer && side === "left") {
     room.leftPlayer = playerId;
     console.log(`Assigned ${playerId} as left player`);
-      wait_opponent(room, 10, room.rightPlayer);
+    wait_opponent(room, 10, room.rightPlayer);
       if (room.waitTimer && room.rightPlayer) {
         clearTimeout(room.waitTimer);
         room.waitTimer = null;
@@ -272,7 +253,7 @@ function addPlayerToRoom(gameId: string, playerId: number, side: string) {
   } else {
     console.log("Player already in room or room full:", playerId);
   }
-
+  
   if (room.leftPlayer && room.rightPlayer && !room.ready) {
     room.player1 = String(room.leftPlayer);
     room.player2 = String(room.rightPlayer);
@@ -290,6 +271,35 @@ function addPlayerToRoom(gameId: string, playerId: number, side: string) {
   }
 }
 
+function wait_opponent(room: Room, time: number, opponent: number | undefined) {
+  if (!room.waitTimer) {
+    console.log("-- Starting 10s wait timer for opponent...");
+    room.waitTimer = setTimeout(() => {
+          if (!opponent) {
+            console.log("-- Opponent did not join in time, ending game.");
+            if (!room.roundId) {
+              console.log("set players ids")
+              room.player1 = String (room.leftPlayer);
+              room.player2 = String (room.rightPlayer);
+            }
+            broadcastToRoom(room, {
+              type: "game_end",
+            });
+            if (room.roundId)
+            {
+              room.winner = room.player1 ? room.player1 : room.player2;
+              console.log(`player ${room.winner} rb7 b forfait`);
+              saveData(room);
+              deleteRound(room.roundId)
+            }
+            else 
+              deleteGame(room.gameId);
+          }
+        }, time * 1000);
+  } else {
+    console.log("player already waiting ")
+  }
+}
 
 function addPlayerToRound(tournamentId: number, playerId: string, rn: number, side: string) {
   if (!playerId)
@@ -303,7 +313,7 @@ function addPlayerToRound(tournamentId: number, playerId: string, rn: number, si
       WHERE tournament_id = ?
       AND (player1 = ? OR player2 = ?)
       AND round_number = ?
-    `
+      `
     )
     .get(tournamentId, playerId, playerId, rn);
 
@@ -326,23 +336,18 @@ function addPlayerToRound(tournamentId: number, playerId: string, rn: number, si
     room.player1 = playerId;
     console.log("Assigned as player1:", playerId);
 
-    if (!room.waitTimer) {
-      console.log("-- Starting 10s wait timer for opponent...");
-      room.waitTimer = setTimeout(() => {
-        if (!room.player2) {
-          console.log("-- Opponent did not join in time, ending game.");
-          broadcastToRoom(room, {
-            type: "game_end",
-          });
-          deleteRound(room.roundId);
-        }
-      }, 20000);
+    wait_opponent(room, 10, Number (room.player2));
+    if (room.waitTimer && room.player2) {
+      clearTimeout(room.waitTimer);
+      room.waitTimer = null;
+      console.log("-- Opponent joined in time, timer cleared.");
     }
   } else if (!room.player2 && room.player1 !== playerId && side === "right") {
     room.player2 = playerId;
     console.log("Assigned as player2:", playerId);
 
-    if (room.waitTimer) {
+    wait_opponent(room, 10, Number (room.player1));
+    if (room.waitTimer && room.player1) {
       clearTimeout(room.waitTimer);
       room.waitTimer = null;
       console.log("-- Opponent joined in time, timer cleared.");

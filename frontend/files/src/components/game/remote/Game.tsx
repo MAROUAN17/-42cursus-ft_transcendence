@@ -46,7 +46,7 @@ export default function RGame() {
       .catch((err) => console.error(err));
   }, []);
 
-  const start_game = (sessionGame: any) => {
+  const start_game = (sessionGame: Game) => {
     let interval: NodeJS.Timeout;
 
     interval = setInterval(() => {
@@ -76,7 +76,7 @@ export default function RGame() {
 
   useEffect(() => {
     var storedGame = null;
-    // sessionStorage.removeItem("currentGame");
+    sessionStorage.removeItem("currentGame");
     if (sessionStorage.getItem("currentGame")) {
       storedGame = sessionStorage.getItem("currentGame");
       setGameType("casual");
@@ -93,7 +93,7 @@ export default function RGame() {
     }
     // console.log("-- current game", storedGame);
 
-    const sessionGame = JSON.parse(storedGame);
+    const sessionGame: Game = JSON.parse(storedGame);
     // if (sessionGame.round.tournament_id) setTournamentId(sessionGame.tournament_id);
     setGame(sessionGame);
     start_game(sessionGame);
