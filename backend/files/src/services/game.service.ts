@@ -3,9 +3,7 @@ import { DefaultGame, type GameInfo, type Room } from "../models/game.js";
 import { clients, checkPaddleCollision } from "./game.utils.js";
 import app from "../server.js";
 import type { FastifyReply, FastifyRequest } from "fastify";
-import type { Round } from "../generated/prisma/index.js";
 import { v4 as uuidv4 } from "uuid";
-import { get_rounds } from "./tournament.service.js";
 
 //todo
 //fix the final score in tournament
@@ -172,7 +170,8 @@ export function handleGameConnection(connection: any, req: any) {
   connection.on("message", (message: any) => {
     try {
       const msg = JSON.parse(message.toString());
-      console.log("-- msg: ", msg);
+      if (msg.userId)
+        console.log("-- msg: ", msg);
       if (msg.type === "casual") {
         userId = msg.userId;
         clients.set(userId, connection);
@@ -226,24 +225,85 @@ function getRoom(gameId: string, roundId: number): Room {
   return room;
 }
 
-function addPlayerToRoom(gameId: string, playerId: number, side: string) {
-  const room = getRoom(gameId, 0);
 
-  if (!room.leftPlayer && side == "left") room.leftPlayer = playerId;
-  else if (!room.rightPlayer && room.rightPlayer !== playerId && side == "right") room.rightPlayer = playerId;
+
+function addPlayerToRoom(gameId: string, playerId: number, side: string) {
+  if (!playerId)
+      return ;
+    const room = getRoom(gameId, 0);
+
+  if (!room.leftPlayer && side === "left") {
+    room.leftPlayer = playerId;
+    console.log(`Assigned ${playerId} as left player`);
+    wait_opponent(room, 10, room.rightPlayer);
+      if (room.waitTimer && room.rightPlayer) {
+        clearTimeout(room.waitTimer);
+        room.waitTimer = null;
+        console.log("-- Opponent joined in time, timer cleared.");
+      }
+  } else if (!room.rightPlayer && room.rightPlayer !== playerId && side === "right") {
+    room.rightPlayer = playerId;
+    console.log(`Assigned ${playerId} as right player`);
+    wait_opponent(room, 10, room.leftPlayer);
+    if (room.waitTimer && room.leftPlayer) {
+      clearTimeout(room.waitTimer);
+      room.waitTimer = null;
+      console.log("-- Opponent joined in time, timer cleared.");
+    }
+  } else {
+    console.log("Player already in room or room full:", playerId);
+  }
+  
   if (room.leftPlayer && room.rightPlayer && !room.ready) {
-    (room.player1 = String(room.leftPlayer)), (room.player2 = String(room.rightPlayer)), (room.ready = true);
+    room.player1 = String(room.leftPlayer);
+    room.player2 = String(room.rightPlayer);
+    room.ready = true;
     room.winner = undefined;
     room.startedAt = new Date();
-    room.type = "casaul";
-    console.log(`-- Room ${room.gameId} ready! Players: left : ${room.player1}, right : ${room.player2} `);
+    room.type = "casual";
+    console.log(`-- Room ${room.gameId} ready! Players: left: ${room.player1}, right: ${room.player2}`);
+    broadcastToRoom(room, {
+            type: "start",
+          });
     startGame(room);
   } else {
     console.log(`-- Waiting for another player in room gameId: ${gameId}`);
   }
 }
 
+function wait_opponent(room: Room, time: number, opponent: number | undefined) {
+  if (!room.waitTimer) {
+    console.log("-- Starting 10s wait timer for opponent...");
+    room.waitTimer = setTimeout(() => {
+          if (!opponent) {
+            console.log("-- Opponent did not join in time, ending game.");
+            if (!room.roundId) {
+              console.log("set players ids")
+              room.player1 = String (room.leftPlayer);
+              room.player2 = String (room.rightPlayer);
+            }
+            broadcastToRoom(room, {
+              type: "game_end",
+            });
+            if (room.roundId)
+            {
+              room.winner = room.player1 ? room.player1 : room.player2;
+              console.log(`player ${room.winner} rb7 b forfait`);
+              saveData(room);
+              deleteRound(room.roundId)
+            }
+            else 
+              deleteGame(room.gameId);
+          }
+        }, time * 1000);
+  } else {
+    console.log("player already waiting ")
+  }
+}
+
 function addPlayerToRound(tournamentId: number, playerId: string, rn: number, side: string) {
+  if (!playerId)
+      return ;
   console.log(`looking for userId: ${playerId} in tid: ${tournamentId} rn : ${rn}`);
 
   const lastRound = app.db
@@ -253,7 +313,7 @@ function addPlayerToRound(tournamentId: number, playerId: string, rn: number, si
       WHERE tournament_id = ?
       AND (player1 = ? OR player2 = ?)
       AND round_number = ?
-    `
+      `
     )
     .get(tournamentId, playerId, playerId, rn);
 
@@ -276,23 +336,18 @@ function addPlayerToRound(tournamentId: number, playerId: string, rn: number, si
     room.player1 = playerId;
     console.log("Assigned as player1:", playerId);
 
-    if (!room.waitTimer) {
-      console.log("-- Starting 10s wait timer for opponent...");
-      room.waitTimer = setTimeout(() => {
-        if (!room.player2) {
-          console.log("-- Opponent did not join in time, ending game.");
-          broadcastToRoom(room, {
-            type: "game_end",
-          });
-          deleteRound(room.roundId);
-        }
-      }, 20000);
+    wait_opponent(room, 10, Number (room.player2));
+    if (room.waitTimer && room.player2) {
+      clearTimeout(room.waitTimer);
+      room.waitTimer = null;
+      console.log("-- Opponent joined in time, timer cleared.");
     }
   } else if (!room.player2 && room.player1 !== playerId && side === "right") {
     room.player2 = playerId;
     console.log("Assigned as player2:", playerId);
 
-    if (room.waitTimer) {
+    wait_opponent(room, 10, Number (room.player1));
+    if (room.waitTimer && room.player1) {
       clearTimeout(room.waitTimer);
       room.waitTimer = null;
       console.log("-- Opponent joined in time, timer cleared.");
@@ -308,8 +363,6 @@ function addPlayerToRound(tournamentId: number, playerId: string, rn: number, si
     console.log(`-- Round ${tournamentId} ready! Players: ${room.player1}, ${room.player2}`);
     broadcastToRoom(room, {
       type: "start",
-
-      message: "Opponent did not join in time. The game has ended.",
     });
     startGame(room);
   } else {
@@ -327,10 +380,29 @@ function deleteRound(roundId: number): void {
 
   const room = rooms[index];
 
-  if (room.waitTimer) {
+  if (room?.waitTimer) {
     clearTimeout(room.waitTimer);
   }
 
   rooms.splice(index, 1);
   console.log(` Room with roundId ${roundId} deleted successfully.`);
 }
+
+function deleteGame(gameId: string): void {
+  const index = rooms.findIndex((room) => room.gameId === gameId);
+
+  if (index === -1) {
+    console.log(`No room found with gameId: ${gameId}`);
+    return;
+  }
+
+  const room = rooms[index];
+
+  if (room?.waitTimer) {
+    clearTimeout(room.waitTimer);
+  }
+
+  rooms.splice(index, 1);
+  console.log(` Room with gameid${gameId} deleted successfully.`);
+}
+
