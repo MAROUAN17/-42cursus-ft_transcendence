@@ -5,7 +5,6 @@ import type { Tournament } from "./tournaments";
 import { useEffect, useState } from "react";
 import { useWebSocket } from "../contexts/websocketContext";
 import type { Player, Round } from "../game/remote/Types";
-import type { ProfileUserInfo } from "../../types/user";
 import { useUserContext } from "../contexts/userContext";
 import type { Game } from "../game/remote/Types";
 import type { EventPacket } from "../../types/websocket";
@@ -24,7 +23,6 @@ const TournamentBracket: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [adminLabel, setAdminLabel] = useState("waiting ...");
   const [round, setRound] = useState<Round | null>(null);
-  const [finalRound, setFinalRound] = useState<Round | null>(null);
 
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -190,14 +188,13 @@ const TournamentBracket: React.FC = () => {
       avatar: get_avatar(p),
     })) || [];
 
-  useEffect(() => {
-    console.log("final Players-- :", finalPlayers);
-    console.log("final Users -- :", finalUsers);
-    console.log("final round winner stirng -- :", finalPlayers[0]);
-    console.log("final round winner u -- :", finalUsers[0]?.id);
-    console.log("final round winner -- :", round?.winner);
-
-  }, [finalUsers, finalPlayers]);
+  // useEffect(() => {
+  //   console.log("final Players-- :", finalPlayers);
+  //   console.log("final Users -- :", finalUsers);
+  //   console.log("final round winner stirng -- :", finalPlayers[0]);
+  //   console.log("final round winner u -- :", finalUsers[0]?.id);
+  //   console.log("final round winner -- :", round?.winner);
+  // }, [finalUsers, finalPlayers]);
 
   if (loading) return <p>Loading tournament...</p>;
   return (
@@ -261,6 +258,7 @@ const TournamentBracket: React.FC = () => {
             tournamentId={Number(id)}
             playerId={user?.id || 1}
             onLeave={() => navigate("/tournaments")}
+            tournamentState={tournament?.status}
           />
         </div>
       </div>
