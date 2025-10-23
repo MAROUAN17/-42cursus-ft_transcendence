@@ -146,7 +146,7 @@ export const delete_tournament = async (req: FastifyRequest, res: FastifyReply) 
 
 export const leave_tournament = async (req: FastifyRequest, res: FastifyReply) => {
   try {
-    const { playerId } = req.body;
+    const playerId: number = (req.body as any).playerId;
     const tournamentId = Number((req.body as any)?.tournamentId);
 
     if (!playerId || !tournamentId) return res.status(400).send({ error: "Missing player info" });

@@ -28,7 +28,12 @@ const TournamentBracket: React.FC = () => {
   const navigate = useNavigate();
   const { send } = useWebSocket();
   const { user } = useUserContext();
-
+  const [finalWinner, setFinalWinner] =  useState(null);
+  useEffect(() => {
+    if (!finalWinner)
+        return ;
+      console.log( "final Winner ----------------------------------------- : ", finalWinner)
+  })
   useEffect(() => {
     if (!user || !user.id) return;
 
@@ -39,10 +44,11 @@ const TournamentBracket: React.FC = () => {
         data = res.data;
         const maxRound = Math.max(...data.map((r: Round) => r.round_number));
         latestRounds = data.filter((r: Round) => r.round_number === maxRound);
-        console.log("Fetched rounds:", JSON.stringify(data));
-
+        console.log("Fetched rounds:", latestRounds[0]);
+        if (maxRound == 2)
+            setFinalWinner(latestRounds[0].winner);
         const userRound = latestRounds.find((r: Round) => r.player1 === Number(user.id) || r.player2 === Number(user.id));
-
+        
         if (userRound) {
           setRound(userRound);
           console.log("User Round Found:", userRound);
@@ -188,13 +194,13 @@ const TournamentBracket: React.FC = () => {
       avatar: get_avatar(p),
     })) || [];
 
-  // useEffect(() => {
-  //   console.log("final Players-- :", finalPlayers);
-  //   console.log("final Users -- :", finalUsers);
-  //   console.log("final round winner stirng -- :", finalPlayers[0]);
-  //   console.log("final round winner u -- :", finalUsers[0]?.id);
-  //   console.log("final round winner -- :", round?.winner);
-  // }, [finalUsers, finalPlayers]);
+  useEffect(() => {
+    console.log("final Players-- :", finalPlayers);
+    console.log("final Users -- :", finalUsers);
+    console.log("final round winner stirng -- :", finalPlayers[0]);
+    console.log("final round winner u -- :", finalUsers[0]?.id);
+    console.log("final round winner -- :", round);
+  }, [finalUsers, finalPlayers]);
 
   if (loading) return <p>Loading tournament...</p>;
   return (
@@ -202,14 +208,14 @@ const TournamentBracket: React.FC = () => {
       <h1 className="flex justify-top text-white font-bold text-2xl">{tournament?.name}</h1>
       <div className="relative h-full overflow-hidden cursor-pointer  text-white rounded-lg">
         <div className="flex flex-col items-center justify-center h-full">
-          {round?.winner && round.round_number === 2 ? (
+          {finalWinner  ? (
             <div className="relative flex flex-col justify-center items-center gap-3">
               <div className="flex justify-center space-x-28">
                 <div className="flex flex-col items-center ">
                   <FaCrown className="w-[40px] h-[40px] text-yellow-500" />
                   <img
                     className="w-[110px] h-[110px] rounded-full object-cover border-4 border-purple-500 shadow-[0_0_15px_rgba(168,85,247,0.8)]"
-                    src={round?.winner == Number(finalPlayers[0]) ? finalUsers[0].avatar : finalUsers[1].avatar}
+                    src={finalWinner == Number(finalPlayers[0]) ? finalUsers[0].avatar : finalUsers[1].avatar}
                     alt="winner-avatar"
                   />
                 </div>
@@ -217,7 +223,7 @@ const TournamentBracket: React.FC = () => {
               </div>
               <div className="">
                 <h1 className="text-white font-bold text-xl">
-                  {round?.winner == Number(finalPlayers[0]) ? finalUsers[0].username?.toUpperCase() : finalUsers[1].username?.toUpperCase()}
+                  {finalWinner == Number(finalPlayers[0]) ? finalUsers[0].username?.toUpperCase() : finalUsers[1].username?.toUpperCase()}
                 </h1>
               </div>
             </div>
