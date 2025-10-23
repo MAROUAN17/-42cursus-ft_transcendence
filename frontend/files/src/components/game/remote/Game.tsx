@@ -80,7 +80,7 @@ export default function RGame() {
 
   useEffect(() => {
     var storedGame = null;
-    // sessionStorage.removeItem("currentGame");
+    sessionStorage.removeItem("currentGame");
     if (sessionStorage.getItem("currentGame")) {
       storedGame = sessionStorage.getItem("currentGame");
       setGameType("casual");
@@ -159,7 +159,7 @@ export default function RGame() {
         // console.log("msg -> ",message);
         if (message.type === "end") {
           console.log(message);
-          console.log("--- game eneded");
+          console.log("--- game eneded-------------------------------------------");
           setGameEnded(true);
           setWinnerId(message.winner);
           if ((!round || round.round_number == 2) && message.winner == user?.id) {

@@ -251,7 +251,9 @@ function notifyTournament(packet: EventPacket) {
       }
     }
   } else {
-    const round = app.db.prepare("SELECT player1, player2 FROM round WHERE tournament_id = ? AND round_number = ?").get(packet.data.tournamentId, 2);
+    const round = app.db
+      .prepare("SELECT player1, player2 FROM round WHERE tournament_id = ? AND round_number = ?")
+      .get(packet.data.tournamentId, 2);
     console.log("final round -> ", round);
     if (!round) return;
     const alert: EventPacket = {
@@ -264,11 +266,13 @@ function notifyTournament(packet: EventPacket) {
       },
     };
     if (packet.data.senderId != round.player1) {
+      console.log("sending to -> ", round.player1);
       let client = clients.get(round.player1);
       if (client) {
         sendToClient(client, alert);
       }
-    } else {
+    } else if (packet.data.senderId == round.player1) {
+      console.log("sending to -> ", round.player2);
       let client = clients.get(round.player2);
       if (client) {
         sendToClient(client, alert);
