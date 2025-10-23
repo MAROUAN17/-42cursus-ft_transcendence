@@ -185,6 +185,8 @@ export default function RGame() {
         }
         if (message.type == "game_end") {
           console.log("opponent didnt join");
+          setWinnerId(user?.id.toString());
+          setGameEnded(true);
           if (round?.tournament_id) navigate(`/bracket/${round?.tournament_id}`);
         }
         if (message.type == "start") setStarted(true);
@@ -205,6 +207,7 @@ export default function RGame() {
     console.log("-- round : ", round);
   }, [game, round]);
   useEffect(() => {
+    console.log('winner -> ', winnerId);
     if (!started) console.log(" -- waiting for opponent");
     else console.log("-- game started ");
   });
