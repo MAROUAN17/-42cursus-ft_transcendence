@@ -64,7 +64,7 @@ const LeaveButton: React.FC<LeaveButtonProps> = ({ setStarted, label, tournament
 
   return (
     <div className="flex flex-col space-y-8 items-center mt-24">
-      {tournamentState === "open" && label === "waiting ..." ? (
+      {tournamentState === "open" && (label === "waiting ..." || label === "leave") ? (
         <p className="font-bold text-xl">Waiting for other players to join ...</p>
       ) : tournamentState === "open" && label === "start" ? (
         <p className="font-bold text-xl">Ready to play, Click 'Start Tournament' to start the tournament games</p>
@@ -74,7 +74,7 @@ const LeaveButton: React.FC<LeaveButtonProps> = ({ setStarted, label, tournament
         <p className="font-bold text-xl">The tournament already finished</p>
       ) : null}
 
-      {(tournamentState == "open" || "full") && tournamentState != "finished" ? (
+      {tournamentState === "open" || tournamentState === "full" ? (
         <button
           onClick={handelAction}
           disabled={loading}
@@ -82,7 +82,7 @@ const LeaveButton: React.FC<LeaveButtonProps> = ({ setStarted, label, tournament
             label === "start" ? "bg-green-700 hover:bg-neon hover:scale-110" : "bg-gray-600"
           }`}
         >
-          {label === "start" ? "Start Tournament" : "Leave"}
+          {label}
         </button>
       ) : null}
     </div>
