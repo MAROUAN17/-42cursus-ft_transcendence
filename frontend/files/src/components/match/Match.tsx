@@ -61,7 +61,6 @@ export default function Pairing() {
               console.log("------", response.data.game);
               setGameInfo(response.data.game);
               setLoading(false);
-
               sessionStorage.setItem("currentGame", JSON.stringify(response.data.game));
               setPaired(true);
               clearInterval(interval);

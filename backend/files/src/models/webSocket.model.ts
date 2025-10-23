@@ -38,6 +38,7 @@ export interface LogPacket {
     loser?: string;
     game_type: "1v1" | "tournament";
     score: number;
+    tournament_id?: number;
     tournament_name?: string;
     timestamps: string;
   };

@@ -86,9 +86,11 @@ export default function App() {
     {
       path: "/remote_game",
       element: (
-        <UserProvider>
-          <RGame />
-        </UserProvider>
+        <WebSocketProvider>
+          <UserProvider>
+            <RGame />
+          </UserProvider>
+        </WebSocketProvider>
       ),
     },
     {

@@ -49,7 +49,7 @@ export default function RHeader({ scoreLeft, scoreRight, you, opponent, side, ga
           <span className="text-5xl text-white py-3 [-webkit-text-stroke:2px_theme(colors.neon)]">S</span>
         </div>
 
-        <div className="flex flex items-center gap-4">
+        <div className="flex items-center gap-4">
           <span className="text-3xl mt-2">{scoreRight}</span>
           {!gameState ? (
             <div className="relative w-[90px] h-[90px]">

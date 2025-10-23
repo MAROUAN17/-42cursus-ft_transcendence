@@ -7,6 +7,9 @@ import { useNavigate } from "react-router";
 import { useUserContext } from "../../contexts/userContext";
 import type { gameCustomization } from "../../../types/user";
 import api from "../../../axios";
+import { useWebSocket } from "../../contexts/websocketContext";
+import type { LogPacket } from "../../../types/websocket";
+import { v4 as uuidv4 } from "uuid";
 import { FaSpinner } from "react-icons/fa";
 
 export default function RGame() {
@@ -34,6 +37,7 @@ export default function RGame() {
   const [started, setStarted] = useState(false);
 
   const { user } = useUserContext();
+  const { send } = useWebSocket();
   const id = user?.id ? user.id.toString() : "";
   // console.log("------ ",user)
 
@@ -140,7 +144,7 @@ export default function RGame() {
   }, [leftY, rightY]);
 
   useEffect(() => {
-    if (!gameType || (gameType == "tournament" && !round)) return;
+    if (!gameType || (gameType == "tournament" && !round) || !user) return;
     // console.log(`round : ${round}  gameType: ${gameType}`)
 
     const ws = new WebSocket(`${import.meta.env.VITE_SOCKET_BACKEND_URL}/game`);
@@ -158,6 +162,22 @@ export default function RGame() {
           console.log("--- game eneded");
           setGameEnded(true);
           setWinnerId(message.winner);
+          if ((!round || round.round_number == 2) && message.winner == user?.id) {
+            const packet: LogPacket = {
+              type: "logNotif",
+              data: {
+                id: uuidv4(),
+                is_removed: false,
+                winner: user.username,
+                game_type: round ? "tournament" : "1v1",
+                score: 100,
+                avatar: user.avatar,
+                tournament_id: round?.tournament_id,
+                timestamps: "2025-10-09 09:11:55",
+              },
+            };
+            send(JSON.stringify(packet));
+          }
           // sessionStorage.removeItem("currentGame");
           // sessionStorage.removeItem('currentRound');
           if (round?.tournament_id) navigate(`/bracket/${round.tournament_id}`);
@@ -177,7 +197,7 @@ export default function RGame() {
       console.log("Closing WebSocket...");
       ws.close();
     };
-  }, [gameType]);
+  }, [gameType, user]);
 
   useEffect(() => {
     if (!game && !round) return;
