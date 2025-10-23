@@ -165,6 +165,7 @@ export default function RGame() {
         }
         if (message.type == "game_end") {
           console.log("opponent didnt join");
+          if (round?.tournament_id) navigate(`/bracket/${round?.tournament_id}`);
         }
         if (message.type == "start") setStarted(true);
         setGameInfo(message.game_info);
