@@ -28,12 +28,11 @@ const TournamentBracket: React.FC = () => {
   const navigate = useNavigate();
   const { send } = useWebSocket();
   const { user } = useUserContext();
-  const [finalWinner, setFinalWinner] =  useState(null);
+  const [finalWinner, setFinalWinner] = useState(null);
   useEffect(() => {
-    if (!finalWinner)
-        return ;
-      console.log( "final Winner ----------------------------------------- : ", finalWinner)
-  })
+    if (!finalWinner) return;
+    console.log("final Winner ----------------------------------------- : ", finalWinner);
+  });
   useEffect(() => {
     if (!user || !user.id) return;
 
@@ -45,10 +44,9 @@ const TournamentBracket: React.FC = () => {
         const maxRound = Math.max(...data.map((r: Round) => r.round_number));
         latestRounds = data.filter((r: Round) => r.round_number === maxRound);
         console.log("Fetched rounds:", latestRounds[0]);
-        if (maxRound == 2)
-            setFinalWinner(latestRounds[0].winner);
+        if (maxRound == 2) setFinalWinner(latestRounds[0].winner);
         const userRound = latestRounds.find((r: Round) => r.player1 === Number(user.id) || r.player2 === Number(user.id));
-        
+
         if (userRound) {
           setRound(userRound);
           console.log("User Round Found:", userRound);
@@ -127,7 +125,7 @@ const TournamentBracket: React.FC = () => {
     if (!round.winner) {
       // notifying
       console.log("admin sent notif");
-      sendAlert(round.round_number);
+      if ((round.round_number == 1 && user.id == tournament?.admin) || round.round_number == 2) sendAlert(round.round_number);
       console.log("round number - > ", round.round_number);
       setTimeout(() => {
         navigate("/remote_game");
@@ -208,7 +206,7 @@ const TournamentBracket: React.FC = () => {
       <h1 className="flex justify-top text-white font-bold text-2xl">{tournament?.name}</h1>
       <div className="relative h-full overflow-hidden cursor-pointer  text-white rounded-lg">
         <div className="flex flex-col items-center justify-center h-full">
-          {finalWinner  ? (
+          {finalWinner ? (
             <div className="relative flex flex-col justify-center items-center gap-3">
               <div className="flex justify-center space-x-28">
                 <div className="flex flex-col items-center ">

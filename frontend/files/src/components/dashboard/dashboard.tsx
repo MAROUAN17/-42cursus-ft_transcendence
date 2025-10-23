@@ -84,25 +84,6 @@ export default function Dashboard() {
     const addedHandled = addHandler("chat", handleChat);
     return addedHandled;
   }, []);
-  // console.log("showFriends -> ", showFriends);
-  // console.log("friends -> ", friends);
-
-  function sendLogNotif() {
-    const packet: LogPacket = {
-      type: "logNotif",
-      data: {
-        id: uuidv4(),
-        is_removed: false,
-        winner: "user1",
-        game_type: "tournament",
-        score: 100,
-        avatar: "/profile1.jpg",
-        tournament_name: "1337",
-        timestamps: "2025-10-09 09:11:55",
-      },
-    };
-    send(JSON.stringify(packet));
-  }
 
   function handleChat(packet: websocketPacket) {
     if (packet.type != "chat") return;
@@ -164,33 +145,10 @@ export default function Dashboard() {
   }, []);
 
   useEffect(() => {
-    const packet: LogPacket = {
-      type: "logNotif",
-      data: {
-        id: uuidv4(),
-        is_removed: false,
-        winner: "user1",
-        game_type: "tournament",
-        score: 100,
-        avatar: "/profile1.jpg",
-        tournament_name: "1337",
-        timestamps: "2025-10-09 09:11:55",
-      },
-    };
-    const packet2: LogPacket = {
-      type: "logNotif",
-      data: {
-        id: uuidv4(),
-        is_removed: false,
-        winner: "user1",
-        loser: "user2",
-        game_type: "1v1",
-        score: 100,
-        avatar: "/profile1.jpg",
-        timestamps: "2025-10-09 09:11:55",
-      },
-    };
-    setLogNotif([packet, packet2, packet, packet2]);
+    api.get("/getLogs", { withCredentials: true }).then((res) => {
+      console.log("game -> ", res.data);
+      setLogNotif(res.data);
+    });
     const addedHandler = addHandler("logNotif", handleLogNotif);
     return addedHandler;
   }, []);
@@ -315,9 +273,7 @@ export default function Dashboard() {
           <div className="flex basis-3/5 h-fit">
             <div className="h-full w-full">
               <div className="text-white flex justify-between items-center">
-                <h3 className="font-bold text-[35px]" onClick={sendLogNotif}>
-                  Tournaments
-                </h3>
+                <h3 className="font-bold text-[35px]">Tournaments</h3>
                 <div className="flex items-center gap-1" onClick={() => navigate("/tournaments")}>
                   <h4>View All</h4>
                   <GrFormNextLink />
