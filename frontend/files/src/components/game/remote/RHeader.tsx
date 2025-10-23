@@ -20,7 +20,7 @@ export default function RHeader({ scoreLeft, scoreRight, you, opponent, side, ga
   });
   const navigate = useNavigate();
   function leave_game() {
-    navigate("/pairing");
+    navigate(-1);
   }
   //console.log(you?.username)
   return (
