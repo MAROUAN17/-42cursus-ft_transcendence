@@ -251,9 +251,7 @@ function notifyTournament(packet: EventPacket) {
       }
     }
   } else {
-    const round = app.db
-      .prepare("SELECT player1, player2 FROM round WHERE tournament_id = ? AND round_number = ?")
-      .get(packet.data.tournamentId, 2);
+    const round = app.db.prepare("SELECT player1, player2 FROM round WHERE tournament_id = ? AND round_number = ?").get(packet.data.tournamentId, 2);
     console.log("final round -> ", round);
     if (!round) return;
     const alert: EventPacket = {

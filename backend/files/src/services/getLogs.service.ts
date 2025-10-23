@@ -5,7 +5,7 @@ import type { LogPacket } from "../models/webSocket.model.js";
 
 function fetchLoser(id: number) {
   const loser = app.db.prepare("SELECT username FROM players WHERE id = ?").get(id);
-  return loser.username;
+  return loser.username ?? "undefined";
 }
 
 function fetchTournament(id: number) {
