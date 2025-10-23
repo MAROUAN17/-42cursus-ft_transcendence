@@ -161,10 +161,13 @@ function handleNotifMarkSeen(currPacket: NotificationPacket) {
 // function broadcastToAll(packet: websocketPacket) {}
 
 function handleLogNotif(packet: LogPacket) {
-  const tournament = app.db.prepare("SELECT name FROM tournament WHERE id = ?").get(packet.data.tournament_id);
-  if (!tournament) return;
-  console.log("t -> ", tournament);
+  if (packet.data.game_type == "tournament") {
+    const tournament = app.db.prepare("SELECT name FROM tournament WHERE id = ?").get(packet.data.tournament_id);
+    if (!tournament) return;
+    packet.data.tournament_name = tournament.name;
+  }
   for (const userId of clients) {
+    console.log("sending to -> ", userId[0]);
     const client = clients.get(Number(userId[0]));
     if (client) sendToClient(client, packet);
   }

@@ -57,7 +57,7 @@ export default function RGame() {
       // console.log("ddddd");
 
       if (websocket && websocket.readyState === WebSocket.OPEN) {
-        console.log("eeeee");
+        // console.log("eeeee");
         websocket.send(
           JSON.stringify({
             type: gameType,
@@ -80,7 +80,7 @@ export default function RGame() {
 
   useEffect(() => {
     var storedGame = null;
-    sessionStorage.removeItem("currentGame");
+    // sessionStorage.removeItem("currentGame");
     if (sessionStorage.getItem("currentGame")) {
       storedGame = sessionStorage.getItem("currentGame");
       setGameType("casual");
@@ -172,10 +172,12 @@ export default function RGame() {
                 game_type: round ? "tournament" : "1v1",
                 score: 100,
                 avatar: user.avatar,
+                loser: game?.opponent?.username,
                 tournament_id: round?.tournament_id,
                 timestamps: "2025-10-09 09:11:55",
               },
             };
+            console.log("sending -> ", packet);
             send(JSON.stringify(packet));
           }
           // sessionStorage.removeItem("currentGame");
@@ -252,7 +254,9 @@ export default function RGame() {
 
         <div
           ref={containerRef}
-          className={`${!started ? 'blur-sm' : null} relative animate-fadeIn [background-image:var(--selected-bg)] border-[var(--borderColor)] shadow-[0_0_10px_var(--shadowColor)] overflow-hidden bg-center bg-cover w-[var(--width)] h-[var(--height)] border-2 rounded-2xl bg-black`}
+          className={`${
+            !started ? "blur-sm" : null
+          } relative animate-fadeIn [background-image:var(--selected-bg)] border-[var(--borderColor)] shadow-[0_0_10px_var(--shadowColor)] overflow-hidden bg-center bg-cover w-[var(--width)] h-[var(--height)] border-2 rounded-2xl bg-black`}
           style={
             {
               "--selected-bg": `url(${gameCutomistion?.selectedBg})`,
