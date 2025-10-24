@@ -42,7 +42,6 @@ export const vaultClient = vault({
 
 async function start(): Promise<void> {
   const jwtSecrets = await vaultClient.read("secret/jwt");
-  console.log(process.env.VITE_FRONTEND_URL);
   await app.register(cors, {
     origin: [`${process.env.VITE_FRONTEND_URL}`, `https://localhost:${process.env.VITE_PORT}`],
     methods: ["GET", "POST", "OPTIONS", "DELETE"],

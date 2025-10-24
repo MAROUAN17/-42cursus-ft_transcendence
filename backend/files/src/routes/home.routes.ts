@@ -9,6 +9,7 @@ import { searchUsers } from "../services/searchUsers.service.js";
 import { getUserInfo } from "../services/user.service.js";
 import { getPersonalData } from "../services/getPersonalData.service.js";
 import { getCustomization, updateCustomization } from "../services/updateCustomization.service.js";
+import { getLogs } from "../services/getLogs.service.js";
 
 export const homeRoutes: FastifyPluginAsync = async (fastify) => {
   app.get("/notifications", { onRequest: [app.jwtAuth] }, getNotifications);
@@ -21,4 +22,5 @@ export const homeRoutes: FastifyPluginAsync = async (fastify) => {
   app.get("/user/:id", {  }, getUserInfo);
   app.post("/updateCustomization", { onRequest: [app.jwtAuth] }, updateCustomization);
   app.get("/getCustomization", { onRequest: [app.jwtAuth] }, getCustomization);
+  app.get("/getLogs", { onRequest: [app.jwtAuth] }, getLogs);
 };

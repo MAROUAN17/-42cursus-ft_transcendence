@@ -57,7 +57,7 @@ export default function RGame() {
       // console.log("ddddd");
 
       if (websocket && websocket.readyState === WebSocket.OPEN) {
-        console.log("eeeee");
+        // console.log("eeeee");
         websocket.send(
           JSON.stringify({
             type: gameType,
@@ -159,7 +159,7 @@ export default function RGame() {
         // console.log("msg -> ",message);
         if (message.type === "end") {
           console.log(message);
-          console.log("--- game eneded");
+          console.log("--- game eneded-------------------------------------------");
           setGameEnded(true);
           setWinnerId(message.winner);
           if ((!round || round.round_number == 2) && message.winner == user?.id) {
@@ -172,10 +172,12 @@ export default function RGame() {
                 game_type: round ? "tournament" : "1v1",
                 score: 100,
                 avatar: user.avatar,
+                loser: game?.opponent?.username,
                 tournament_id: round?.tournament_id,
                 timestamps: "2025-10-09 09:11:55",
               },
             };
+            console.log("sending -> ", packet);
             send(JSON.stringify(packet));
           }
           // sessionStorage.removeItem("currentGame");
@@ -185,6 +187,8 @@ export default function RGame() {
         }
         if (message.type == "game_end") {
           console.log("opponent didnt join");
+          setWinnerId(user?.id.toString());
+          setGameEnded(true);
           if (round?.tournament_id) navigate(`/bracket/${round?.tournament_id}`);
         }
         if (message.type == "start") setStarted(true);
@@ -205,6 +209,7 @@ export default function RGame() {
     console.log("-- round : ", round);
   }, [game, round]);
   useEffect(() => {
+    console.log('winner -> ', winnerId);
     if (!started) console.log(" -- waiting for opponent");
     else console.log("-- game started ");
   });
@@ -253,7 +258,9 @@ export default function RGame() {
 
         <div
           ref={containerRef}
-          className={`${!started ? 'blur-sm' : null} relative animate-fadeIn [background-image:var(--selected-bg)] border-[var(--borderColor)] shadow-[0_0_10px_var(--shadowColor)] overflow-hidden bg-center bg-cover w-[var(--width)] h-[var(--height)] border-2 rounded-2xl bg-black`}
+          className={`${
+            !started ? "blur-sm" : null
+          } relative animate-fadeIn [background-image:var(--selected-bg)] border-[var(--borderColor)] shadow-[0_0_10px_var(--shadowColor)] overflow-hidden bg-center bg-cover w-[var(--width)] h-[var(--height)] border-2 rounded-2xl bg-black`}
           style={
             {
               "--selected-bg": `url(${gameCutomistion?.selectedBg})`,
