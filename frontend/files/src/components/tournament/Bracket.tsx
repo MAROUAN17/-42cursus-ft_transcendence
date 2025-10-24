@@ -7,7 +7,7 @@ import { useWebSocket } from "../contexts/websocketContext";
 import type { Player, Round } from "../game/remote/Types";
 import { useUserContext } from "../contexts/userContext";
 import type { Game } from "../game/remote/Types";
-import type { EventPacket } from "../../types/websocket";
+import type { EventPacket, NotifyPacket, websocketPacket } from "../../types/websocket";
 import api from "../../axios";
 import { FaCrown } from "react-icons/fa";
 
@@ -26,9 +26,16 @@ const TournamentBracket: React.FC = () => {
 
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { send } = useWebSocket();
+  const { send, addHandler } = useWebSocket();
   const { user } = useUserContext();
   const [finalWinner, setFinalWinner] = useState(null);
+  useEffect(() => {
+    const addedHanlder = addHandler("NotifyChange", refreshHandler);
+    return addedHanlder;
+  }, []);
+
+  useEffect(() => {}, []);
+
   useEffect(() => {
     if (!finalWinner) return;
     console.log("final Winner ----------------------------------------- : ", finalWinner);
@@ -87,6 +94,12 @@ const TournamentBracket: React.FC = () => {
     return () => clearInterval(intervalId);
   }, [started, user, id]);
 
+  function refreshHandler(packet: websocketPacket) {
+    if (packet.type != "NotifyChange") return;
+    console.log("got packet: ", packet);
+    fetchTournament();
+  }
+
   function sendAlert(roundNum: number) {
     console.log("before ----------------");
     if (!tournament || !user || (roundNum != 2 && (!tournament || !user))) return;
@@ -134,25 +147,24 @@ const TournamentBracket: React.FC = () => {
     }
   }, [user, round]);
 
+  const fetchTournament = async () => {
+    try {
+      api(`/tournament/${id}`, { withCredentials: true })
+        .then(function (res) {
+          setTournament(res.data);
+          if (res.data.players.length === 4) setAdminLabel("start");
+          console.log("-- fetched tournament:", res.data);
+        })
+        .catch(function (err) {
+          throw new Error(`Error ${err.response.status}: ${err.response.statusText}`);
+        });
+    } catch (err: any) {
+      console.error("Error:", err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
   useEffect(() => {
-    const fetchTournament = async () => {
-      try {
-        api(`/tournament/${id}`, { withCredentials: true })
-          .then(function (res) {
-            setTournament(res.data);
-            if (res.data.players.length === 4) setAdminLabel("start");
-            console.log("-- fetched tournament:", res.data);
-          })
-          .catch(function (err) {
-            throw new Error(`Error ${err.response.status}: ${err.response.statusText}`);
-          });
-      } catch (err: any) {
-        console.error("Error:", err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     const fetchFinalRound = async () => {
       try {
         await api(`/tournament/final_round/${id}`, { withCredentials: true })
@@ -261,7 +273,16 @@ const TournamentBracket: React.FC = () => {
             label={tournament?.admin == user?.id ? adminLabel : "leave"}
             tournamentId={Number(id)}
             playerId={user?.id || 1}
-            onLeave={() => navigate("/tournaments")}
+            onLeave={() => {
+              const packet: NotifyPacket = {
+                type: "NotifyChange",
+                data: {
+                  tournamentId: Number(id),
+                },
+              };
+              send(JSON.stringify(packet));
+              navigate("/tournaments");
+            }}
             tournamentState={tournament?.status}
           />
         </div>

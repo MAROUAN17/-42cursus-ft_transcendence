@@ -19,7 +19,7 @@ export const getLogs = async (req: FastifyRequest, res: FastifyReply) => {
       .prepare(
         "SELECT * from (SELECT tournament_id , startedAt, players.avatar, round.winner, round.player1, round.player2, players.username, 'Round' AS source FROM round JOIN players ON players.id = round.winner WHERE winner != '0' \
         AND round_number = 2 UNION ALL SELECT 'room' AS tournament_id ,startedAt, players.avatar, room.winner, room.player1, room.player2, players.username,'room' AS source FROM room JOIN players ON players.id = room.winner WHERE winner != '0') \
-        ORDER BY startedAt LIMIT 5"
+        ORDER BY startedAt LIMIT 6"
       )
       .all();
     // console.log("games -> ", history);

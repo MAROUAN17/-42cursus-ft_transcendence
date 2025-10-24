@@ -83,7 +83,13 @@ export interface notificationPacketDB {
   unreadCount: number;
   updatedAt: string;
 }
-export type websocketPacket = NotificationPacket | ChatPacket | OnlineStatusPacket | LogPacket | EventPacket;
+export interface NotifyPacket {
+  type: "NotifyChange";
+  data: {
+    tournamentId: number;
+  };
+}
+export type websocketPacket = NotificationPacket | ChatPacket | OnlineStatusPacket | LogPacket | EventPacket | NotifyPacket;
 
 export interface websocketContextType {
   send: (msg: string) => void;

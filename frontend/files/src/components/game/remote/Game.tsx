@@ -174,7 +174,7 @@ export default function RGame() {
                 avatar: user.avatar,
                 loser: game?.opponent?.username,
                 tournament_id: round?.tournament_id,
-                timestamps: "2025-10-09 09:11:55",
+                timestamps: new Date().toISOString().replace("T", " ").split(".")[0],
               },
             };
             console.log("sending -> ", packet);
