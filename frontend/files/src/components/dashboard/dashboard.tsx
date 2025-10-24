@@ -282,12 +282,12 @@ export default function Dashboard() {
               <div className="flex w-full gap-2">
                 <div className="flex w-2/5 flex-wrap justify-between h-full">
                   {tournaments?.slice(0, 4).map((tournament) => (
-                    <TournamentCard tournament={tournament} />
+                    <TournamentCard key={tournament.id} tournament={tournament} />
                   ))}
                 </div>
                 <ul className="flex flex-col gap-[20px] overflow-hidden w-3/5 pl-5 ">
-                  {logNotif.map((log: LogPacket) => (
-                    <LogCard log={log} />
+                  {logNotif.map((log: LogPacket, i) => (
+                    <LogCard key={i} log={log} />
                   ))}
                 </ul>
               </div>
@@ -302,8 +302,8 @@ export default function Dashboard() {
               </div>
             </div>
             <div className="flex pb-8 flex-wrap w-full justify-between h-full">
-              {leaders.slice(0, 3).map((leader) => (
-                <LeadersCard rank={leader.rank} username={leader.username} score={leader.score} avatar={leader.avatar} />
+              {leaders.slice(0, 3).map((leader, i) => (
+                <LeadersCard key={i} rank={leader.rank} username={leader.username} score={leader.score} avatar={leader.avatar} />
               ))}
             </div>
           </div>
@@ -322,8 +322,9 @@ export default function Dashboard() {
             {friends
               .filter((friend) => friend.user.username != "Deleted User")
               .slice(0, 7)
-              .map((friend) => (
+              .map((friend, i) => (
                 <FriendBubble
+                  key={i}
                   friendOpt={friendOpt}
                   setFriendOpt={() => {
                     friendOpt == friend.user.id ? setFriendOpt(0) : setFriendOpt(friend.user.id);
@@ -341,8 +342,9 @@ export default function Dashboard() {
             {friendsMessages
               .filter((friend) => friend.user.username != "Deleted User" && friend.unreadCount > 0)
               .slice(0, 8)
-              .map((friend) => (
+              .map((friend, i) => (
                 <MessageBubble
+                  key={i}
                   onclick={() => {
                     navigate("/chat/" + friend.user.username);
                   }}

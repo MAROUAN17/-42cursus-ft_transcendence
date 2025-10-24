@@ -97,6 +97,7 @@ const Setup2FA: React.FC<props> = (props) => {
                 .fill(null)
                 .map((_, i) => (
                   <input
+                    key={i}
                     maxLength={1}
                     onChange={(e) => {
                       handleChange(i, e.target.value);

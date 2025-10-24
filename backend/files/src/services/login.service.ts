@@ -64,8 +64,8 @@ export const loginUser = async (req: FastifyRequest<{ Body: LoginBody }>, res: F
       }
 
       //sign new JWT tokens
-      const accessToken = app.jwt.jwt1.sign({ id: user.id, email: user.email, username: user.username }, { expiresIn: "900s" });
-      const refreshToken = app.jwt.jwt2.sign({ id: user.id, email: user.email, username: user.username }, { expiresIn: "1d" });
+      const accessToken = app.jwt.jwt1.sign({ id: user.id, email: user.email, username: user.username, rememberMe: rememberMe }, { expiresIn: "900s" });
+      const refreshToken = app.jwt.jwt2.sign({ id: user.id, email: user.email, username: user.username, rememberMe: rememberMe }, { expiresIn: "1d" });
 
       //clear login token
       res.clearCookie("loginToken", {
@@ -76,8 +76,8 @@ export const loginUser = async (req: FastifyRequest<{ Body: LoginBody }>, res: F
       });
 
       //set JWT token as cookie
-      res.setCookie("accessToken", accessToken, accessOptions);
       res.setCookie("refreshToken", refreshToken, refreshOptions);
+      res.setCookie("accessToken", accessToken, accessOptions);
     }
   } catch (err) {
     console.log(err);

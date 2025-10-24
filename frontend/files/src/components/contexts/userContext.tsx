@@ -19,13 +19,13 @@ export const UserProvider: React.FC<{ children?: React.ReactNode }> = ({
       .then(function (res) {
         setUser(res.data.infos);
       })
-      .catch(function (err) {
-        if (
-          err.response.status == 401 &&
-          err.response.data.error == "Unauthorized"
-        )
-          navigate("/login");
-      });
+      // .catch(function (err) {
+      //   if (
+      //     err.response?.status == 401 &&
+      //     err.response?.data.error == "Unauthorized"
+      //   )
+      //     navigate("/login");
+      // });
   }, []);
 
   return (
