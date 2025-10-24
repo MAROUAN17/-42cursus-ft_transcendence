@@ -4,6 +4,8 @@ import { FaSearch, FaPlus } from "react-icons/fa";
 import { CreateTournament } from "./CreateTournament";
 import type { PublicUserInfos } from "../../types/user";
 import api from "../../axios";
+import { useWebSocket } from "../contexts/websocketContext";
+import type { websocketPacket } from "../../types/websocket";
 
 export interface Tournament {
   id: number;
@@ -18,26 +20,38 @@ export function Tournaments() {
   const [showModal, setShowModal] = useState(false);
   const [tournaments, setTournaments] = useState<Tournament[]>([]);
   const [loading, setLoading] = useState(true);
+  const { addHandler } = useWebSocket();
+
+  useEffect(() => {
+    const addedHanlder = addHandler("NotifyChange", refreshHandler);
+    return addedHanlder;
+  }, []);
 
   const handleCreated = (newTournament: any) => {
     setTournaments((prev) => [...prev, { ...newTournament }]);
   };
-  useEffect(() => {
-    const fetchTournaments = async () => {
-      try {
-        api(`/tournament/all`, { withCredentials: true }).then(function(res) {
+
+  function refreshHandler(packet: websocketPacket) {
+    if (packet.type != "NotifyChange") return;
+    fetchTournaments();
+  }
+  const fetchTournaments = async () => {
+    try {
+      api(`/tournament/all`, { withCredentials: true })
+        .then(function (res) {
           console.log(res);
           setTournaments(res.data);
-        }).catch(function(err) {
-          console.log(err)
+        })
+        .catch(function (err) {
+          console.log(err);
         });
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
     fetchTournaments();
   }, []);
   if (loading) return <p>Loading tournaments...</p>;

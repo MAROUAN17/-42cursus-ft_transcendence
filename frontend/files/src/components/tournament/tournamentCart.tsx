@@ -4,9 +4,12 @@ import { useNavigate } from "react-router";
 import { useUserContext } from "../contexts/userContext";
 import { useState, useEffect } from "react";
 import api from "../../axios";
+import { useWebSocket } from "../contexts/websocketContext";
+import type { NotifyPacket } from "../../types/websocket";
 
 export function TournamentCard({ id, name, players, createdAt, status }: Tournament) {
   const { user } = useUserContext();
+  const { send } = useWebSocket();
   const [label, setLabel] = useState("JOIN");
   const maxParticipants = 4;
   const navigate = useNavigate();
@@ -20,9 +23,15 @@ export function TournamentCard({ id, name, players, createdAt, status }: Tournam
     //     return ;
     console.log("Trying to join ...");
     try {
-      api.post(`/tournament/join`, { playerId: user?.id.toString(), tournamentId: id }, { withCredentials: true })
-      .then(function(res) {
+      api.post(`/tournament/join`, { playerId: user?.id.toString(), tournamentId: id }, { withCredentials: true }).then(function (res) {
         console.log("Joined:", res.data);
+        const packet: NotifyPacket = {
+          type: "NotifyChange",
+          data: {
+            tournamentId: id,
+          },
+        };
+        send(JSON.stringify(packet));
       });
 
       // const data = await res.json();

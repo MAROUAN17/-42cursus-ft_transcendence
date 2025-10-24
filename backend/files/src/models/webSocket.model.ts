@@ -28,6 +28,12 @@ export interface EventPacket {
     admin: number;
   };
 }
+export interface NotifyPacket {
+  type: "NotifyChange";
+  data: {
+    tournamentId: number;
+  };
+}
 export interface LogPacket {
   type: "logNotif";
   data: {
@@ -67,7 +73,7 @@ export interface notificationPacketDB {
   unreadCount: number;
   updatedAt: string;
 }
-export type websocketPacket = NotificationPacket | ChatPacket | OnlineStatusPacket | LogPacket | EventPacket;
+export type websocketPacket = NotificationPacket | ChatPacket | OnlineStatusPacket | LogPacket | EventPacket | NotifyPacket;
 
 export interface websocketContextType {
   send: (msg: string) => void;
