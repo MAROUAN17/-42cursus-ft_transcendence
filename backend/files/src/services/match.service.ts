@@ -6,6 +6,7 @@ import app from "../server.js";
 const waitingPlayers: Player[] = [];
 export const activeGames: Game[] = [];
 
+
 export const pair_players = async (req: FastifyRequest, res: FastifyReply) => {
   try {
     const playerId = req.headers["player-id"] as string;

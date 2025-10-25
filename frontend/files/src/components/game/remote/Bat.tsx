@@ -1,4 +1,4 @@
-import React, { MouseEvent, useRef } from "react";
+import React, {  useRef } from "react";
 
 interface BatProps {
   x: number;
@@ -8,11 +8,12 @@ interface BatProps {
   bodyColor: string;
   borderColor: string;
   shadowColor: string;
+  containerTop: number;        // ✅ add this
+  containerHeight: number;
 }
 
-export default function RBat({ x, y, side, height, bodyColor, borderColor, shadowColor }: BatProps) {
+export default function RBat({ y, side, height, bodyColor, borderColor, shadowColor }: BatProps) {
   const ref = useRef<HTMLDivElement | null>(null);
-  const sideStyle = side === "left" ? { "--ball-left": "1.5rem" } : { "--ball-right": "1.5rem" };
 
   return (
     <div
