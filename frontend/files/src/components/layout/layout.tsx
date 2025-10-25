@@ -6,7 +6,7 @@ import api from "../../axios";
 import { useWebSocket } from "../contexts/websocketContext";
 import { FaSpinner } from "react-icons/fa";
 import { useUserContext } from "../contexts/userContext";
-import type { EventPacket, websocketPacket } from "../../types/websocket";
+import type { websocketPacket } from "../../types/websocket";
 
 function Layout() {
   const [settingsOpen, setSettingsOpen] = useState<boolean>(false);

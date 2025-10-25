@@ -1,6 +1,5 @@
 import { FaUser } from "react-icons/fa";
 import { GiPingPongBat } from "react-icons/gi";
-import { useState } from "react";
 import { useNavigate } from "react-router";
 import type { UserInfos } from "../../types/user";
 
@@ -26,7 +25,7 @@ const FriendBubble = ({ inGame, isOnline, user, friendOpt, setFriendOpt }: props
       ></div>
       <img title={user.username} src={user.avatar} className="rounded-full w-[40px] h-[40px] object-cover" />
       {friendOpt == user.id ? (
-        <div className="absolute overflow-hidden right-20 top-[-20px] mt-2 w-[180px] z-10  bg-[#390a85] bg-compBg rounded-lg shadow-[0_0px_20px_rgba(0,0,0,0.25)]">
+        <div className="absolute overflow-hidden right-20 top-[-20px] mt-2 w-[180px] z-10  bg-compBg rounded-lg shadow-[0_0px_20px_rgba(0,0,0,0.25)]">
           <ul>
             <li
               onClick={() => navigate("/profile/" + user.username)}

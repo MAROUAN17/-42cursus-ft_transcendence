@@ -18,7 +18,6 @@ import type { UsersLastMessage } from "../../types/chat";
 import type { LogPacket, messagePacket, websocketPacket } from "../../types/websocket";
 import type { Leader } from "../../types/leader";
 import type { ChartData } from "../../types/profile";
-import { v4 as uuidv4 } from "uuid";
 
 export default function Dashboard() {
   // const [chartData, setChartData] = useState(tmpData);

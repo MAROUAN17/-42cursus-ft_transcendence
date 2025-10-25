@@ -80,7 +80,7 @@ export default function RGame() {
 
   useEffect(() => {
     var storedGame = null;
-    sessionStorage.removeItem("currentGame");
+    // sessionStorage.removeItem("currentGame");
     if (sessionStorage.getItem("currentGame")) {
       storedGame = sessionStorage.getItem("currentGame");
       setGameType("casual");
@@ -136,6 +136,25 @@ export default function RGame() {
     };
   }, [gameInfo?.bounds.height, gameCutomistion]);
 
+  function sendLog() {
+    if (!user) return;
+    const packet: LogPacket = {
+      type: "logNotif",
+      data: {
+        id: uuidv4(),
+        is_removed: false,
+        winner: user.username,
+        game_type: round ? "tournament" : "1v1",
+        avatar: user.avatar,
+        loser: game?.opponent?.username,
+        tournament_id: round?.tournament_id,
+        timestamps: new Date().toISOString().replace("T", " ").split(".")[0],
+      },
+    };
+    console.log("sending -> ", packet);
+    send(JSON.stringify(packet));
+  }
+
   useEffect(() => {
     if (websocket && websocket.readyState == WebSocket.OPEN) {
       websocket.send(JSON.stringify({ type: "updateY", leftY, rightY, roundId: gameInfo?.roundId, gameId: game.id, side: game.side }));
@@ -162,31 +181,15 @@ export default function RGame() {
           console.log("--- game eneded-------------------------------------------");
           setGameEnded(true);
           setWinnerId(message.winner);
-          if ((!round || round.round_number == 2) && message.winner == user?.id) {
-            const packet: LogPacket = {
-              type: "logNotif",
-              data: {
-                id: uuidv4(),
-                is_removed: false,
-                winner: user.username,
-                game_type: round ? "tournament" : "1v1",
-                score: 100,
-                avatar: user.avatar,
-                loser: game?.opponent?.username,
-                tournament_id: round?.tournament_id,
-                timestamps: new Date().toISOString().replace("T", " ").split(".")[0],
-              },
-            };
-            console.log("sending -> ", packet);
-            send(JSON.stringify(packet));
-          }
-          // sessionStorage.removeItem("currentGame");
-          // sessionStorage.removeItem('currentRound');
+          if ((!round || round.round_number == 2) && message.winner == user?.id) sendLog();
+          sessionStorage.removeItem("currentGame");
+          sessionStorage.removeItem("currentRound");
           if (round?.tournament_id) navigate(`/bracket/${round.tournament_id}`);
           if (message.type == "updateY") console.log("updateY");
         }
         if (message.type == "game_end") {
           console.log("opponent didnt join");
+          sendLog()
           setWinnerId(user?.id.toString());
           setGameEnded(true);
           if (round?.tournament_id) navigate(`/bracket/${round?.tournament_id}`);
@@ -209,7 +212,7 @@ export default function RGame() {
     console.log("-- round : ", round);
   }, [game, round]);
   useEffect(() => {
-    console.log('winner -> ', winnerId);
+    console.log("winner -> ", winnerId);
     if (!started) console.log(" -- waiting for opponent");
     else console.log("-- game started ");
   });

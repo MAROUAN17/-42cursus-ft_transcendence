@@ -18,7 +18,7 @@ import { IoMdClose } from "react-icons/io";
 import { LuUpload } from "react-icons/lu";
 import { IoMdAdd } from "react-icons/io";
 
-import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis, type TooltipProps } from "recharts";
 import HistoryCard from "./historyCard";
 import { useEffect, useState, useRef } from "react";
 import { type AxiosResponse } from "axios";
@@ -33,6 +33,8 @@ import Setup2FA from "../user/setup2FA";
 import type { UserInfos } from "../../types/user";
 import { passedTime } from "../chat/UserBubble";
 import { IoGameControllerSharp } from "react-icons/io5";
+import type { ValueType } from "tailwindcss/types/config";
+import type { NameType } from "recharts/types/component/DefaultTooltipContent";
 
 export default function Profile() {
   const navigate = useNavigate();
@@ -92,11 +94,8 @@ export default function Profile() {
       };
     }
     setData(tmpData);
-    // historyData.map((match, index) => {
-
-    // });
   }
-  function CustomTooltip({ payload, label, active }: any) {
+  function CustomTooltip({ payload, label, active }: { payload: { value: number; payload: ChartData }[]; label: number; active: boolean }) {
     if (active) {
       return (
         <div className="bg-white p-3 rounded-md">
@@ -255,8 +254,7 @@ export default function Profile() {
     };
   }, []);
 
-  async function downloadData(e: React.ChangeEvent<HTMLInputElement>) {
-    e.preventDefault();
+  async function downloadData() {
     try {
       const res = await api.get("/getPersonalData", { withCredentials: true, responseType: "blob" });
       const blob = new Blob([res.data], { type: "applcation/json" }); // create blob object // blob = Binary Large Object
@@ -368,7 +366,10 @@ export default function Profile() {
                     Save changes
                   </button>
                   <button
-                    onClick={downloadData}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      downloadData();
+                    }}
                     className="bg-blue-500 py-3 px-36 text-white rounded-lg font-bold hover:scale-[1.05] transition duration-500"
                   >
                     Download Personal Data
@@ -379,7 +380,7 @@ export default function Profile() {
                       api.delete("/deleteAccount", { withCredentials: true }).then(() => {
                         api
                           .post("/logout", {}, { withCredentials: true })
-                          .then(function (res) {
+                          .then(function () {
                             navigate("/login");
                           })
                           .catch(function (err) {
@@ -553,7 +554,7 @@ export default function Profile() {
                       onClick={() => {
                         api
                           .post("/unblock/" + currUser.id, {}, { withCredentials: true })
-                          .then(function (res) {
+                          .then(() => {
                             setblockedUser(false);
                           })
                           .catch(function (err) {

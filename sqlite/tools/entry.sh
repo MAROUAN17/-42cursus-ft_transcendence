@@ -67,8 +67,8 @@ sqlite3 "$DB_NAME" <<EOF
         tournament_id INTEGER NOT NULL,
         player1 INTEGER,
         player2 INTEGER,
-        score1 INTEGER DEFAULT 0,
         startedAt TEXT DEFAULT (datetime('now')),
+        score1 INTEGER DEFAULT 0,
         score2 INTEGER DEFAULT 0,
         winner INTEGER,
         round_number INTEGER NOT NULL

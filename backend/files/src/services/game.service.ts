@@ -38,20 +38,22 @@ function saveData(room: Room) {
         .prepare("UPDATE Round SET score1 = ?, score2 = ?, winner = ? WHERE id = ?")
         .run(room.scoreLeft, room.scoreRight, room.winner, room.roundId);
       if (room.round == 2) app.db.prepare("UPDATE tournament SET status = ? WHERE id = ?").run("finished", room.tournamentId);
-      console.log("-- Round registred successfully", room.type);
+      console.log("-- Round registred successfully", room.roundId);
     } catch (err) {
       console.log(err);
     }
   }
-  try {
-    app.db
-      .prepare("INSERT INTO Room(player1, player2, scoreLeft, scoreRight, winner) VALUES (?, ?, ?, ?, ?)")
-      .run(room.player1, room.player2, room.scoreLeft, room.scoreRight, room.winner);
-
-    app.db.prepare("UPDATE players SET score = score + ? WHERE id = ?").run(100, room.winner);
-    console.log("-- Room registred successfully");
-  } catch (err) {
-    console.log(err);
+  else {
+    try {
+      app.db
+        .prepare("INSERT INTO Room(player1, player2, scoreLeft, scoreRight, winner) VALUES (?, ?, ?, ?, ?)")
+        .run(room.player1, room.player2, room.scoreLeft, room.scoreRight, room.winner);
+  
+      app.db.prepare("UPDATE players SET score = score + ? WHERE id = ?").run(100, room.winner);
+      console.log("-- Room registred successfully");
+    } catch (err) {
+      console.log(err);
+    }
   }
 }
 

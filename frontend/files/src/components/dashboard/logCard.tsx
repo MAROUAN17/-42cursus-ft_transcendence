@@ -7,7 +7,7 @@ interface props {
 
 function passedTime(createdAt: string) {
   if (createdAt) {
-    const date = new Date(createdAt);
+    const date = new Date(createdAt+ "Z");
     const msDiff: number = new Date().getTime() - date.getTime();
     const seconds: number = Math.floor(msDiff / 1000);
     const minutes: number = Math.floor(seconds / 60);
@@ -60,7 +60,7 @@ const LogCard = ({ log }: props) => {
         {/* <BsPersonFillAdd className="text-white h-[25px] w-[25px]" />
          */}
         <div className="w-full border bg-[#05C168]/20 text-[#14CA74] font-medium border-[#14CA74]/50 px-2 py-0.5 rounded-lg">
-          <h1 className="font-bold">+{log.data.score}</h1>
+          <h1 className="font-bold">+{log.data.game_type == "tournament" ? 700 : 500}</h1>
         </div>
       </div>
     </li>
