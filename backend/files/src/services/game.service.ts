@@ -231,8 +231,7 @@ function getRoom(gameId: string, roundId: number): Room {
 function addPlayerToRoom(gameId: string, playerId: number, side: string) {
   if (!playerId)
       return ;
-    const room = getRoom(gameId, 0);
-
+  const room = getRoom(gameId, 0);
   if (!room.leftPlayer && side === "left") {
     room.leftPlayer = playerId;
     console.log(`Assigned ${playerId} as left player`);

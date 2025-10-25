@@ -1,4 +1,3 @@
-import React from "react";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router";
@@ -8,14 +7,14 @@ import api from "../../axios";
 
 export default function Pairing() {
   const [loading, setLoading] = useState(false);
-  const [data, setData] = useState(null);
-  const [error, setError] = useState(null);
   const [dots, setDots] = useState("");
-  const [gameInfo, setGameInfo] = useState<Game>(null);
-  const [opponent, setOpponent] = useState<Player>({
+  const [gameInfo, setGameInfo] = useState<Game>();
+  const defaultPlayer:Player = {
+    id:"0",
     username: "?",
-    avatar: "?",
-  });
+    avatar: "?"
+  }
+  const [opponent, setOpponent] = useState<Player>(defaultPlayer);
   const [paired, setPaired] = useState(false);
   const [countdown, setCountdown] = useState(2);
 
@@ -32,10 +31,11 @@ export default function Pairing() {
   }, []);
 
   useEffect(() => {
-    let timer;
+    let timer: ReturnType<typeof setInterval>;
     if (paired) {
       console.log("players are paired", gameInfo);
-      setOpponent(gameInfo.opponent);
+      if (gameInfo?.opponent)
+        setOpponent(gameInfo.opponent);
       timer = setInterval(() => {
         setCountdown((prev) => {
           if (prev <= 1) {
@@ -123,12 +123,13 @@ export default function Pairing() {
 
       console.log(response.data);
     } catch (err) {
-      if (err.response) {
-        console.error("Error data:", err.response.data);
-        console.error("Error status:", err.response.status);
-        console.error("Error headers:", err.response.headers);
+      if (err) {
+        console.error("Error ");
+        // console.error("Error status:", err.response.status);
+        // console.error("Error headers:", err.response.headers);
       } else {
-        console.error("Error message:", err.message);
+        // console.error("Error message:", err?.message);
+        console.log("another error")
       }
     }
   };
@@ -144,7 +145,7 @@ export default function Pairing() {
       console.log("Left queue:", response.data);
     } catch (err) {
       console.error("Error leaving queue:", err);
-      setError(err.message);
+      // setError(err.message);
     } finally {
       setLoading(false);
     }

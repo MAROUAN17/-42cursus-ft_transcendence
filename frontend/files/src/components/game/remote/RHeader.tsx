@@ -8,10 +8,10 @@ import { useEffect } from "react";
 interface HeaderProps {
   scoreLeft: number;
   scoreRight: number;
-  you: Player | undefined | number;
-  opponent: Player | undefined | number;
+  you: Player | undefined;
+  opponent: Player | undefined;
   side: string | undefined;
-  gameState: string;
+  gameState: boolean;
 }
 
 export default function RHeader({ scoreLeft, scoreRight, you, opponent, side, gameState }: HeaderProps) {

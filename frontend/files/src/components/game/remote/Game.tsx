@@ -10,12 +10,9 @@ import api from "../../../axios";
 import { useWebSocket } from "../../contexts/websocketContext";
 import type { LogPacket } from "../../../types/websocket";
 import { v4 as uuidv4 } from "uuid";
-import { FaSpinner } from "react-icons/fa";
 
 export default function RGame() {
-  //   const [i, setI] = useState(0);
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const [dir, setDir] = useState({ x: 1, y: 1 });
   const [gameInfo, setGameInfo] = useState<GameInfo>();
   const [game, setGame] = useState<Game>();
   const [round, setRound] = useState<Round>();
@@ -23,17 +20,13 @@ export default function RGame() {
 
   const [leftY, setLeftY] = useState(140);
   const [rightY, setRightY] = useState(140);
-  const [tournamentId, setTournamentId] = useState(0);
+  // const [tournamentId, setTournamentId] = useState(0);
   const [gameEnded, setGameEnded] = useState<boolean>(false);
   const [winnerId, setWinnerId] = useState<string>("");
   const navigate = useNavigate();
 
   const [websocket, setWebsocket] = useState<WebSocket | null>(null);
   const [gameType, setGameType] = useState("");
-  const PADDLE_WIDTH = 18;
-  const PADDLE_HEIGHT = 120;
-  const paddleLeft = { x: 24, y: leftY, width: PADDLE_WIDTH, height: PADDLE_HEIGHT };
-  const paddleRight = { x: 600 - 24 - PADDLE_WIDTH, y: rightY, width: PADDLE_WIDTH, height: PADDLE_HEIGHT };
   const [started, setStarted] = useState(false);
 
   const { user } = useUserContext();
@@ -65,7 +58,7 @@ export default function RGame() {
             gameId: sessionGame.id || "",
             tournamentId: round?.tournament_id,
             roundNumber: round?.round_number ?? 0,
-            side: game.side,
+            side: game?.side,
           })
         );
         console.log("Game sent to server ✅: ", user, id);
@@ -89,19 +82,24 @@ export default function RGame() {
       // console.log("this game from tournament");
       storedGame = sessionStorage.getItem("currentRound");
       setGameType("tournament");
-      const userGame = JSON.parse(storedGame);
-      setRound(userGame.round);
+      if (storedGame){
+        const userGame = JSON.parse(storedGame);
+        setRound(userGame.round);
+      }
     } else {
       console.log("No game found in sessionStorage.");
       return;
     }
     // console.log("-- current game", storedGame);
-
+    if (!storedGame){
+      console.log("no game found in sessionStorage.")
+      return ;
+    }
     const sessionGame: Game = JSON.parse(storedGame);
     // if (sessionGame.round.tournament_id) setTournamentId(sessionGame.tournament_id);
     setGame(sessionGame);
     start_game(sessionGame);
-  }, [websocket, user, tournamentId]);
+  }, [websocket, user]);
 
   useEffect(() => {
     const down = new Set<string>();
@@ -157,8 +155,8 @@ export default function RGame() {
 
   useEffect(() => {
     if (websocket && websocket.readyState == WebSocket.OPEN) {
-      websocket.send(JSON.stringify({ type: "updateY", leftY, rightY, roundId: gameInfo?.roundId, gameId: game.id, side: game.side }));
-      console.log(`leftY ${leftY} rightY ${rightY} jj ${game.side}`);
+      websocket.send(JSON.stringify({ type: "updateY", leftY, rightY, roundId: gameInfo?.roundId, gameId: game?.id, side: game?.side }));
+      // console.log(`leftY ${leftY} rightY ${rightY} jj ${game?.side}`);
     } else console.log("there is a proble in socket:", websocket);
   }, [leftY, rightY]);
 
@@ -193,6 +191,9 @@ export default function RGame() {
           setWinnerId(user?.id.toString());
           setGameEnded(true);
           if (round?.tournament_id) navigate(`/bracket/${round?.tournament_id}`);
+        }
+        if (message.type == "already_played"){
+          console.log("-- > this user already playing in other tab")
         }
         if (message.type == "start") setStarted(true);
         setGameInfo(message.game_info);
@@ -253,9 +254,9 @@ export default function RGame() {
         <RHeader
           scoreLeft={gameInfo?.scoreLeft ?? 0}
           scoreRight={gameInfo?.scoreRight ?? 0}
-          you={game?.you || round?.player1}
+          you={game?.you}
           side={game?.side}
-          opponent={game?.opponent || round?.player2}
+          opponent={game?.opponent}
           gameState={started}
         />
 
@@ -300,12 +301,7 @@ export default function RGame() {
           <RBall
             bodyColor={gameCutomistion?.ballColor!}
             shadowColor={gameCutomistion?.ballShadow!}
-            dir={dir}
-            setDir={setDir}
             ball={gameInfo?.ball ?? { x: 300, y: 180 }}
-            paddleLeft={gameInfo?.paddleLeft ?? paddleLeft}
-            paddleRight={gameInfo?.paddleRight ?? paddleRight}
-            bounds={gameInfo?.bounds ?? { width: 600, height: 400 }}
           />
 
           <div className="absolute top-0 left-1/2 transform -translate-x-1/2 h-full flex flex-col justify-center items-center">
