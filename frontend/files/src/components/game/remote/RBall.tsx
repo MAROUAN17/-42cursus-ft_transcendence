@@ -1,7 +1,7 @@
 import type { Ball } from "./Types";
 
 interface BallProps {
-  ball: Ball;
+  ball: Ball | {x:number, y:number};
   bodyColor: string;
   shadowColor: string;
 }

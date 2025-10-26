@@ -1,12 +1,8 @@
-import React from "react";
-import { AiFillInstagram, AiFillTwitterCircle } from "react-icons/ai";
-import { BsFacebook, BsQuestionDiamondFill, BsStars } from "react-icons/bs";
+import { BsQuestionDiamondFill } from "react-icons/bs";
 import {
-  FaFacebook,
   FaFacebookF,
   FaGithub,
   FaHome,
-  FaInfoCircle,
   FaInstagram,
   FaRobot,
   FaTrophy,
@@ -20,8 +16,7 @@ import { IoIosChatboxes, IoIosNotifications } from "react-icons/io";
 import { IoStatsChart } from "react-icons/io5";
 import { LuHistory } from "react-icons/lu";
 import { MdLeaderboard } from "react-icons/md";
-import { RiFacebookCircleFill, RiSwordFill } from "react-icons/ri";
-import { SiFacebook } from "react-icons/si";
+import { RiSwordFill } from "react-icons/ri";
 import { TbLayoutDashboardFilled } from "react-icons/tb";
 import { useNavigate } from "react-router";
 
@@ -31,7 +26,6 @@ const Home = () => {
     <div className="bg-[#14121C] font-poppins w-screen min-h-screen flex flex-col">
       <div id="home" className="relative w-full h-screen flex flex-col items-center overflow-hidden">
         <div className="text-white z-10 w-full h-fit px-10 py-8 flex justify-between items-center">
-          {/* <h1 className="font-bold text-[20px]">Logo</h1> */}
           <img src="/Logo_border_purple.png" className="w-[100px]" />
           <div className="flex font-bebas gap-9">
             <div className="hover:scale-105 transition duration-300 font-medium text-[30px] flex justify-center items-center gap-1">

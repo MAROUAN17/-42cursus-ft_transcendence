@@ -32,10 +32,10 @@ export interface PaddlY {
 export interface Player {
   id: string;
   socketId?: string;
-  joinedAt: Date;
+  joinedAt?: Date;
   username?: string;
   rating?: number;
-  avatar: string;
+  avatar?: string;
 }
 
 export interface Game {

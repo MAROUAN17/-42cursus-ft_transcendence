@@ -16,7 +16,7 @@ import { MdOutlinePersonRemove } from "react-icons/md";
 import { FaHourglassHalf } from "react-icons/fa";
 import { IoMdClose } from "react-icons/io";
 import { LuUpload } from "react-icons/lu";
-import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis, type TooltipProps } from "recharts";
 import HistoryCard from "./historyCard";
 import { useEffect, useState, useRef } from "react";
 import { type AxiosResponse } from "axios";
@@ -90,11 +90,8 @@ export default function Profile() {
       };
     }
     setData(tmpData);
-    // historyData.map((match, index) => {
-
-    // });
   }
-  function CustomTooltip({ payload, label, active }: any) {
+  function CustomTooltip({ payload, label, active }: { payload: { value: number; payload: ChartData }[]; label: number; active: boolean }) {
     if (active) {
       return (
         <div className="bg-white p-3 rounded-md">
@@ -253,8 +250,7 @@ export default function Profile() {
     };
   }, []);
 
-  async function downloadData(e: React.MouseEvent<HTMLButtonElement>) {
-    e.preventDefault();
+  async function downloadData() {
     try {
       const res = await api.get("/getPersonalData", { withCredentials: true, responseType: "blob" });
       const blob = new Blob([res.data], { type: "applcation/json" }); // create blob object // blob = Binary Large Object
@@ -366,7 +362,10 @@ export default function Profile() {
                     Save changes
                   </button>
                   <button
-                    onClick={downloadData}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      downloadData();
+                    }}
                     className="bg-blue-500 py-3 px-36 text-white rounded-lg font-bold hover:scale-[1.05] transition duration-500"
                   >
                     Download Personal Data
@@ -551,7 +550,7 @@ export default function Profile() {
                       onClick={() => {
                         api
                           .post("/unblock/" + currUser.id, {}, { withCredentials: true })
-                          .then(function () {
+                          .then(() => {
                             setblockedUser(false);
                           })
                           .catch(function (err) {

@@ -96,12 +96,10 @@ const TournamentBracket: React.FC = () => {
 
   function refreshHandler(packet: websocketPacket) {
     if (packet.type != "NotifyChange") return;
-    console.log("got packet: ", packet);
     fetchTournament();
   }
 
   function sendAlert(roundNum: number) {
-    console.log("before ----------------");
     if (!tournament || !user || (roundNum != 2 && (!tournament || !user))) return;
     const packet: EventPacket = {
       type: "gameEvent",
@@ -112,7 +110,6 @@ const TournamentBracket: React.FC = () => {
         admin: tournament.admin,
       },
     };
-    console.log("sending ----------------");
     send(JSON.stringify(packet));
   }
 

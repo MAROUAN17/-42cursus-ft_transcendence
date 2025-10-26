@@ -1,8 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { FaSearch } from "react-icons/fa";
 import { IoNotifications } from "react-icons/io5";
-import axios from "axios";
-import { IoIosArrowDropdown } from "react-icons/io";
 import { RiArrowDropDownLine } from "react-icons/ri";
 import { TiDelete } from "react-icons/ti";
 import { useWebSocket } from "../contexts/websocketContext";

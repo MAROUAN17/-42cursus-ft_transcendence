@@ -3,7 +3,7 @@ import { FaGear } from "react-icons/fa6";
 import { IoIosMail } from "react-icons/io";
 import { IoGameController } from "react-icons/io5";
 import { MdHome, MdLeaderboard } from "react-icons/md";
-import { replace, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 
 interface props {
   setSettingsOpen: (param: boolean) => void;

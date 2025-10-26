@@ -1,10 +1,7 @@
 import { IoFilter } from "react-icons/io5";
 import { FaSearch, FaUser } from "react-icons/fa";
-import { IoCheckmarkDoneOutline } from "react-icons/io5";
 import { IoIosMore } from "react-icons/io";
-import { RiSendPlaneFill } from "react-icons/ri";
 import UserBubble from "./UserBubble";
-import { IoCheckmark } from "react-icons/io5";
 import type { UserInfos } from "../../types/user";
 import { useState, useEffect, useRef } from "react";
 import ChatBubble from "./chatBubble";
@@ -17,7 +14,7 @@ import type { messagePacket, websocketPacket } from "../../types/websocket";
 import type { UsersLastMessage } from "../../types/chat";
 import { GiPingPongBat } from "react-icons/gi";
 import { toast, ToastContainer } from "react-toastify";
-import EmojiPicker, { type EmojiClickData } from "emoji-picker-react";
+import EmojiPicker from "emoji-picker-react";
 // import { PiPingPongFill } from "react-icons/pi";
 
 const Chat = () => {

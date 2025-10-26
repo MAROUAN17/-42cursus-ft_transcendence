@@ -5,7 +5,7 @@ import type { LogPacket } from "../models/webSocket.model.js";
 
 function fetchLoser(id: number) {
   const loser = app.db.prepare("SELECT username FROM players WHERE id = ?").get(id);
-  return loser.username ?? "undefined";
+  return loser?.username ?? "undefined";
 }
 
 function fetchTournament(id: number) {
@@ -19,10 +19,10 @@ export const getLogs = async (req: FastifyRequest, res: FastifyReply) => {
       .prepare(
         "SELECT * from (SELECT tournament_id , startedAt, players.avatar, round.winner, round.player1, round.player2, players.username, 'Round' AS source FROM round JOIN players ON players.id = round.winner WHERE winner != '0' \
         AND round_number = 2 UNION ALL SELECT 'room' AS tournament_id ,startedAt, players.avatar, room.winner, room.player1, room.player2, players.username,'room' AS source FROM room JOIN players ON players.id = room.winner WHERE winner != '0') \
-        ORDER BY startedAt LIMIT 6"
+        ORDER BY startedAt DESC LIMIT 6"
       )
       .all();
-    // console.log("games -> ", history);
+    console.log("games -> ", history);
     const logs: LogPacket[] = history.map((row: any) => ({
       type: "logNotif",
       data: {
@@ -32,7 +32,6 @@ export const getLogs = async (req: FastifyRequest, res: FastifyReply) => {
         loser: row.winner == row.player1 ? fetchLoser(row.player2) : fetchLoser(row.player1),
         game_type: row.source == "Round" ? "tournament" : "1v1",
         tournament_name: row.source == "Round" ? fetchTournament(row.tournament_id) : "",
-        score: 100,
         avatar: row.avatar,
         timestamps: row.startedAt,
       },

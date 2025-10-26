@@ -3,7 +3,6 @@ import { useNavigate } from "react-router";
 import { useState } from "react";
 import { FaCheck } from "react-icons/fa";
 import { IoClose } from "react-icons/io5";
-import axios from "axios";
 import api from "../../axios";
 import { useWebSocket } from "../contexts/websocketContext";
 import type { notificationPacket, websocketPacket } from "../../types/websocket";
@@ -28,7 +27,7 @@ const NotificationElement = ({ notification, deleteFunc, markNotifSeen }: props)
   const navigate = useNavigate();
   const [removeNotif, setRemoveNotif] = useState<boolean>(false);
 
-  function sendAcceptFriend(notif: notificationPacket) {
+  function sendAcceptFriend() {
     const packet: websocketPacket = {
       type: "notification",
       data: {
@@ -85,7 +84,7 @@ const NotificationElement = ({ notification, deleteFunc, markNotifSeen }: props)
                   });
                 setRemoveNotif(true);
                 deleteFunc(notification);
-                sendAcceptFriend(notification);
+                sendAcceptFriend();
               }}
             />
             <IoClose
