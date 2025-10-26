@@ -1,5 +1,3 @@
-import type { RefObject } from "react";
-
 export interface messagePacket {
   id?: number;
   tempId?: string;

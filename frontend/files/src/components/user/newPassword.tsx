@@ -1,10 +1,10 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router";
 import axios from "axios";
 
 export default function NewPassword() {
   const navigate = useNavigate();
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const token = searchParams.get("token");
   const [newPassword, setNewPassword] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
@@ -26,7 +26,7 @@ export default function NewPassword() {
         password: newPassword,
         confirmPassword: confirmPassword,
       })
-      .then(function (res) {
+      .then(function () {
         navigate("/login");
       })
       .catch(function (err) {

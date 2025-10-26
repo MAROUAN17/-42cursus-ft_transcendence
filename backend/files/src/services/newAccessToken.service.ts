@@ -39,6 +39,13 @@ export const requestNewToken = async (req: FastifyRequest, res: FastifyReply): P
 
     res.setCookie("accessToken", newAccessToken, accessOptions);
   } catch (error) {
+    res.clearCookie("refreshToken", {
+      path: "/",
+      secure: true,
+      httpOnly: true,
+      sameSite: "lax",
+    });
+    
     res.status(401).send({ error: "REFRESH_EXPIRED" });
   }
 };

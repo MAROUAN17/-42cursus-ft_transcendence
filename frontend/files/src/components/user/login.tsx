@@ -1,7 +1,6 @@
-import { useEffect, useState, useRef } from "react";
+import { useState, useRef } from "react";
 import { useNavigate } from "react-router";
 import axios from "axios";
-import api from "../../axios";
 
 function Login() {
   const navigate = useNavigate();
@@ -9,7 +8,6 @@ function Login() {
   const [password, setPassword] = useState<string>("");
   const [errorMssg, setErrorMssg] = useState<string>("");
   const [errorFlag, setErrorFlag] = useState<boolean>(false);
-  const [rememberMe, setRememberMe] = useState<boolean>(false);
   const rememberRef = useRef<HTMLInputElement>(null);
 
   const handleForm = (e: React.FormEvent<HTMLFormElement>) => {

@@ -16,8 +16,6 @@ import { MdOutlinePersonRemove } from "react-icons/md";
 import { FaHourglassHalf } from "react-icons/fa";
 import { IoMdClose } from "react-icons/io";
 import { LuUpload } from "react-icons/lu";
-import { IoMdAdd } from "react-icons/io";
-
 import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import HistoryCard from "./historyCard";
 import { useEffect, useState, useRef } from "react";
@@ -70,7 +68,7 @@ export default function Profile() {
     intra_id: 0,
     online: false,
   });
-  const { send, addHandler } = useWebSocket();
+  const { send } = useWebSocket();
   const [data, setData] = useState<ChartData[]>([]);
   const twoFACheckRef = useRef<HTMLInputElement>(null);
   const [setup2FA, setSetup2FA] = useState<boolean>(false);
@@ -255,7 +253,7 @@ export default function Profile() {
     };
   }, []);
 
-  async function downloadData(e: React.ChangeEvent<HTMLInputElement>) {
+  async function downloadData(e: React.MouseEvent<HTMLButtonElement>) {
     e.preventDefault();
     try {
       const res = await api.get("/getPersonalData", { withCredentials: true, responseType: "blob" });
@@ -379,7 +377,7 @@ export default function Profile() {
                       api.delete("/deleteAccount", { withCredentials: true }).then(() => {
                         api
                           .post("/logout", {}, { withCredentials: true })
-                          .then(function (res) {
+                          .then(function () {
                             navigate("/login");
                           })
                           .catch(function (err) {
@@ -553,7 +551,7 @@ export default function Profile() {
                       onClick={() => {
                         api
                           .post("/unblock/" + currUser.id, {}, { withCredentials: true })
-                          .then(function (res) {
+                          .then(function () {
                             setblockedUser(false);
                           })
                           .catch(function (err) {

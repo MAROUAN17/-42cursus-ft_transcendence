@@ -1,7 +1,5 @@
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router";
-import Setup2FA from "./setup2FA";
-import api from "../../axios";
 import axios from "axios";
 
 function Register() {

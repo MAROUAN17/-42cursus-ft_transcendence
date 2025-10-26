@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useRef } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router";
 import api from "../../axios";
 
@@ -54,7 +53,7 @@ const Setup2FA: React.FC<props> = (props) => {
         setQrCode(res.data[0]);
         setQrCodeSecret(res.data[1]);
       })
-      .catch(function (err) {
+      .catch(function () {
         navigate(-1);
       });
   }

@@ -1,5 +1,4 @@
-import { useState, useEffect } from "react";
-import { useSearchParams, useNavigate } from "react-router";
+import { useState } from "react";
 import axios from "axios";
 
 export default function ResetPasswordForm() {
@@ -19,7 +18,7 @@ export default function ResetPasswordForm() {
     e.preventDefault();
     axios
       .post(`${import.meta.env.VITE_BACKEND_URL}/reset-password`, { email: email })
-      .then(function (res) {
+      .then(function () {
         setEmailSent(true);
       })
       .catch(function (err) {

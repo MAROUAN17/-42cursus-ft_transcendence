@@ -3,7 +3,7 @@ import axios from "axios";
 import { useNavigate, useSearchParams } from "react-router";
 
 function Page2FA() {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const userEmail = searchParams.get("email");
   const [errorMssg, setErrorMssg] = useState<string>("");
   const [errorFlag, setErrorFlag] = useState<boolean>(false);
@@ -27,11 +27,10 @@ function Page2FA() {
 
   const formHandler = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const otpNbr = numbers.join("");
+    const otpNbr: string = numbers.join("");
     axios
       .post(`${import.meta.env.VITE_BACKEND_URL}/2fa/verify-token`, { token: otpNbr, email: userEmail }, { withCredentials: true })
-      .then(function (res) {
-        console.log(res);
+      .then(function () {
         navigate("/avatar");
       })
       .catch(function (err) {

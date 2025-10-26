@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useWebSocket } from "../contexts/websocketContext";
 import { useUserContext } from "../contexts/userContext";
 import api from "../../axios";
 

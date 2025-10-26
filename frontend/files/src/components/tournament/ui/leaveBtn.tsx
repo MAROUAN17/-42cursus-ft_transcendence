@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router";
 import api from "../../../axios";
-import { useWebSocket } from "../../contexts/websocketContext";
 
 interface LeaveButtonProps {
   label: string;
@@ -14,7 +12,6 @@ interface LeaveButtonProps {
 
 const LeaveButton: React.FC<LeaveButtonProps> = ({ setStarted, label, tournamentId, playerId, onLeave, tournamentState }) => {
   const [loading, setLoading] = useState(false);
-  const { send } = useWebSocket();
   const handelStart = async () => {
     try {
       setLoading(true);

@@ -1,7 +1,7 @@
 import { redirect } from "react-router";
 import api from "../../axios";
 import type { LoaderFunctionArgs } from "react-router";
-import axios, { type AxiosError } from "axios";
+import axios from "axios";
 
 export default async function checkBlockLoader({ params }: LoaderFunctionArgs) {
   const { username } = params;

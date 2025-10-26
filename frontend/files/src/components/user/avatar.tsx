@@ -1,4 +1,4 @@
-import { useState, useContext, useEffect } from "react";
+import { useState } from "react";
 import api from "../../axios";
 import { useUserContext } from "../contexts/userContext";
 import { useNavigate } from "react-router";
@@ -14,20 +14,14 @@ export default function AvatarSelection() {
     "/profile5.jpg",
     "/profile6.jpg",
     ...(user?.intra_id ? [user?.avatar] : []),
-  ]
+  ];
   const [previewImg, setPreviewImg] = useState<string | undefined>(avatars[0]);
 
   const handleAvatar = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    api
-      .post(
-        "/set/avatar",
-        { id: user?.id, avatar: previewImg },
-        { withCredentials: true }
-      )
-      .then(function () {
-        navigate("/dashboard");
-      });
+    api.post("/set/avatar", { id: user?.id, avatar: previewImg }, { withCredentials: true }).then(function () {
+      navigate("/dashboard");
+    });
   };
 
   return (
@@ -38,11 +32,7 @@ export default function AvatarSelection() {
       <form onSubmit={handleAvatar}>
         <div className="flex justify-center mt-24 space-x-20 items-center">
           <div className="w-[400px] h-[400px] mt-4 outline outline-8 outline-neon rounded-full flex items-center justify-center">
-            <img
-              className="rounded-full w-[380px] h-[380px] object-cover"
-              src={previewImg}
-              alt="preview-img"
-            />
+            <img className="rounded-full w-[380px] h-[380px] object-cover" src={previewImg} alt="preview-img" />
           </div>
           <div className="grid grid-cols-3 gap-12 mt-3">
             {avatars.map((avatar, index) => (
@@ -64,10 +54,7 @@ export default function AvatarSelection() {
           </div>
         </div>
         <div className="flex justify-center mt-32">
-          <button
-            type="submit"
-            className="bg-neon text-white text-xl px-28 py-3 rounded-lg font-bold"
-          >
+          <button type="submit" className="bg-neon text-white text-xl px-28 py-3 rounded-lg font-bold">
             Continue
           </button>
         </div>
@@ -80,13 +67,7 @@ export default function AvatarSelection() {
       >
         <h1 className="font-bold text-xl text-white">Skip for now</h1>
         <a href="">
-          <img
-            className="transform scale-x-[-1]"
-            width="50px"
-            height="50px"
-            src="arrow-icon.png"
-            alt=""
-          />
+          <img className="transform scale-x-[-1]" width="50px" height="50px" src="arrow-icon.png" alt="" />
         </a>
       </div>
     </div>

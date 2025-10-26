@@ -80,7 +80,7 @@ export default function RGame() {
 
   useEffect(() => {
     var storedGame = null;
-    sessionStorage.removeItem("currentGame");
+    // sessionStorage.removeItem("currentGame");
     if (sessionStorage.getItem("currentGame")) {
       storedGame = sessionStorage.getItem("currentGame");
       setGameType("casual");
@@ -180,8 +180,8 @@ export default function RGame() {
             console.log("sending -> ", packet);
             send(JSON.stringify(packet));
           }
-          // sessionStorage.removeItem("currentGame");
-          // sessionStorage.removeItem('currentRound');
+          sessionStorage.removeItem("currentGame");
+          sessionStorage.removeItem('currentRound');
           if (round?.tournament_id) navigate(`/bracket/${round.tournament_id}`);
           if (message.type == "updateY") console.log("updateY");
         }

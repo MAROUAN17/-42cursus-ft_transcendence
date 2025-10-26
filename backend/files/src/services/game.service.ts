@@ -32,7 +32,7 @@ function saveData(room: Room) {
     try {
       // app.db.prepare("INSERT INTO ROUND ( tournament_id, player1, player2, winner) VALUES ( (SELECT id FROM TOURNAMENT WHERE game_id = ?), ?, ?, ?)")
       // .run( room.gameId, room.player1, room.player2, room.winner);
-      const score = room.round == 2 ? 300 : 100;
+      const score = room.round == 2 ? 700 : 500;
       app.db.prepare("UPDATE players SET score = score + ? WHERE id = ?").run(score, room.winner);
       app.db
         .prepare("UPDATE Round SET score1 = ?, score2 = ?, winner = ? WHERE id = ?")
@@ -48,7 +48,7 @@ function saveData(room: Room) {
       .prepare("INSERT INTO Room(player1, player2, scoreLeft, scoreRight, winner) VALUES (?, ?, ?, ?, ?)")
       .run(room.player1, room.player2, room.scoreLeft, room.scoreRight, room.winner);
 
-    app.db.prepare("UPDATE players SET score = score + ? WHERE id = ?").run(100, room.winner);
+    app.db.prepare("UPDATE players SET score = score + ? WHERE id = ?").run(500, room.winner);
     console.log("-- Room registred successfully");
   } catch (err) {
     console.log(err);

@@ -1,4 +1,4 @@
-import type { AxiosError, AxiosRequestConfig, InternalAxiosRequestConfig, AxiosResponse } from "axios";
+import type { AxiosError, InternalAxiosRequestConfig } from "axios";
 import axios from "axios";
 
 interface customAxiosRequestConfig extends InternalAxiosRequestConfig {

@@ -1,4 +1,3 @@
-import axios from "axios";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import { GrFormNextLink } from "react-icons/gr";
@@ -18,12 +17,9 @@ import type { UsersLastMessage } from "../../types/chat";
 import type { LogPacket, messagePacket, websocketPacket } from "../../types/websocket";
 import type { Leader } from "../../types/leader";
 import type { ChartData } from "../../types/profile";
-import { v4 as uuidv4 } from "uuid";
 
 export default function Dashboard() {
-  // const [chartData, setChartData] = useState(tmpData);
-
-  const { send, addHandler } = useWebSocket();
+  const { addHandler } = useWebSocket();
   const navigate = useNavigate();
   const { user } = useUserContext();
   const [show, setShow] = useState<boolean>(false);
@@ -32,7 +28,6 @@ export default function Dashboard() {
   const [tournaments, setTournaments] = useState<Tournament[]>([]);
   const [logNotif, setLogNotif] = useState<LogPacket[]>([]);
   const [leaders, setLeaders] = useState<Leader[]>([]);
-  const [last7daysGames, setLast7daysGames] = useState<gameChart[]>([]);
   const [data, setData] = useState<ChartData[]>([]);
   const [friends, setFriends] = useState<UsersLastMessage[]>([]);
   const friendsRef = useRef(friends);
@@ -178,8 +173,6 @@ export default function Dashboard() {
     api("/states/player-week-activity/" + user?.id, {
       withCredentials: true,
     }).then(function (res) {
-      setLast7daysGames(res.data.last7Days);
-
       const tmpData: ChartData[] = Array(7)
         .fill(null)
         .map((_, i) => ({
@@ -191,7 +184,7 @@ export default function Dashboard() {
     });
   }, [user]);
 
-  function CustomTooltip({ payload, label, active }: any) {
+  function CustomTooltip({ payload, active }: any) {
     if (active) {
       return (
         <div className="bg-white p-3 rounded-md">

@@ -1,4 +1,4 @@
-import { Routes, Route, BrowserRouter, createBrowserRouter, RouterProvider } from "react-router";
+import { createBrowserRouter, RouterProvider } from "react-router";
 import Game from "./components/game/game";
 import Login from "./components/user/login";
 import Register from "./components/user/register";
@@ -20,7 +20,7 @@ import { checkAuthLoader, checkLoginPageLoader } from "./components/loaders/chec
 import checkFirstLoginLoader from "./components/loaders/checkFirstLogin";
 import { check2FALoader } from "./components/loaders/check2fa";
 import AvatarSelection from "./components/user/avatar";
-import { UserContext, UserProvider } from "./components/contexts/userContext";
+import { UserProvider } from "./components/contexts/userContext";
 import Home from "./components/home/home";
 import { Leaderboard } from "./components/game/leaderboard";
 
