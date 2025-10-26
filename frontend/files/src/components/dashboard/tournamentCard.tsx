@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router";
 import api from "../../axios";
-import { UserContext, useUserContext } from "../contexts/userContext";
+import { useUserContext } from "../contexts/userContext";
 import type { Tournament } from "../tournament/tournaments";
 
 interface props {

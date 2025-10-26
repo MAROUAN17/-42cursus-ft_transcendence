@@ -1,6 +1,4 @@
 import { FaArrowLeft, FaCog } from "react-icons/fa";
-import av1 from "./imgs/av1.png";
-import av2 from "./imgs/av2.png";
 
 interface HeaderProps {
   scoreLeft: number;

@@ -1,6 +1,6 @@
 import { redirect } from "react-router";
 import api from "../../axios";
-import axios, { type AxiosError } from "axios";
+import axios  from "axios";
 
 export default async function checkFirstLoginLoader() {
   try {

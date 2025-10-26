@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
-import { useWebSocket } from "../contexts/websocketContext";
-import { useUserContext } from "../contexts/userContext";
+// import { useUserContext } from "../contexts/userContext";
 import { FaCrown } from "react-icons/fa";
 
 interface props {
@@ -13,7 +11,7 @@ interface props {
 
 const LeadersCard = ({ rank, username, score, avatar }: props) => {
   const [show, setShow] = useState<boolean>(false);
-  const { user } = useUserContext();
+  // const { user } = useUserContext();
 
   useEffect(() => {
     setTimeout(() => {

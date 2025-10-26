@@ -16,7 +16,7 @@ import { MdOutlinePersonRemove } from "react-icons/md";
 import { FaHourglassHalf } from "react-icons/fa";
 import { IoMdClose } from "react-icons/io";
 import { LuUpload } from "react-icons/lu";
-import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis, type TooltipProps } from "recharts";
+import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import HistoryCard from "./historyCard";
 import { useEffect, useState, useRef } from "react";
 import { type AxiosResponse } from "axios";

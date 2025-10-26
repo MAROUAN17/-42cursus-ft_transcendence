@@ -92,7 +92,7 @@ export default function Game() {
 
   return (
     <div className="h-screen bg-gameBg flex items-center justify-center">
-      <Header scoreLeft={scoreLeft} scoreRight={scoreRight} leftAvatar="/path/to/player1.png" rightAvatar="/path/to/player2.png" />
+      <Header scoreLeft={scoreLeft} scoreRight={scoreRight} />
 
       <div
         ref={containerRef}

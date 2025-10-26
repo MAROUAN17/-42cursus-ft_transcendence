@@ -1,4 +1,4 @@
-import React, { MouseEvent, useRef } from "react";
+import React, { type MouseEvent, useRef } from "react";
 
 interface BatProps {
   y: number;
@@ -12,7 +12,7 @@ interface BatProps {
   shadowColor: string;
 }
 
-export default function Bat({ y, setY, side, height, containerTop, containerHeight, bodyColor, borderColor, shadowColor }: BatProps) {
+export default function Bat({ y, setY, side, height,  containerHeight, bodyColor, borderColor, shadowColor }: BatProps) {
   const ref = useRef<HTMLDivElement | null>(null);
   const handleMouseDown = (e: MouseEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -34,7 +34,6 @@ export default function Bat({ y, setY, side, height, containerTop, containerHeig
     window.addEventListener("mouseup", onUp);
   };
 
-  const sideStyle = side === "left" ? { "--ball-left": "1.5rem" } : { "--ball-right": "1.5rem" };
 
   return (
     <div
