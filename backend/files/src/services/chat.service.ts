@@ -34,7 +34,7 @@ function createNotification(currPacket: websocketPacket) {
   if (currPacket.type == "onlineStatus" || currPacket.type == "logNotif" || currPacket.type == "gameEvent" || currPacket.type == "NotifyChange")
     return;
   const savedNotification: rowInserted = app.db
-    .prepare("INSERT INTO notifications(type, sender_id, recipient_id,message) VALUES (?, ?, ?, ?)")
+    .prepare("INSERT INTO notifications(type, sender_id, recipient_id,message, unreadCount) VALUES (?, ?, ?, ?, 1)")
     .run(currPacket.data.type, currPacket.data.sender_id, currPacket.data.recipient_id, currPacket.data.message);
   const senderInfo = app.db.prepare("SELECT username, avatar FROM players WHERE id = ?").get(currPacket.data.sender_id);
 
@@ -111,7 +111,7 @@ function checkNotificationFriend(currPacket: websocketPacket) {
     return;
   const notif = app.db
     .prepare("SELECT * FROM notifications WHERE sender_id = ? AND recipient_id = ? AND type = ?")
-    .get(currPacket.data.sender_id, currPacket.data.recipient_id, "friendReq");
+    .get(currPacket.data.sender_id, currPacket.data.recipient_id, currPacket.data.type);
   if (!notif) {
     createNotification(currPacket);
   }
@@ -311,7 +311,7 @@ async function processMessages() {
       } else if (currPacket.type == "notification") {
         if (currPacket.data.type == "markSeen") handleNotifMarkSeen(currPacket);
         else if (currPacket.data.type == "friendReq") checkNotificationFriend(currPacket);
-        else if (currPacket.data.type == "friendAccept") createNotification(currPacket);
+        else if (currPacket.data.type == "friendAccept") checkNotificationFriend(currPacket);
       } else if (currPacket.type == "logNotif") handleLogNotif(currPacket);
       else if (currPacket.type == "gameEvent") notifyTournamentStart(currPacket);
       else if (currPacket.type == "NotifyChange") notifyMembersChange(currPacket);
@@ -411,7 +411,10 @@ export const chatService = {
       if (connection.readyState == connection.OPEN) connection.ping();
     }, 30000);
     if (clients.has(userId)) clients.get(userId)!.add(connection);
-    else clients.set(userId, new Set<WebSocket>());
+    else {
+      clients.set(userId, new Set<WebSocket>());
+      clients.get(userId)?.add(connection);
+    }
     // checkOnlineFriends(userId);
     broadcastToFriends(userId, true);
     console.log("Connection Done with => " + payload.username);

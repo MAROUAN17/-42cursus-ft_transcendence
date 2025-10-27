@@ -3,6 +3,7 @@ import { RiSwordLine } from "react-icons/ri";
 import { FaArrowLeft, FaArrowRight, FaAward } from "react-icons/fa";
 import { MdLeaderboard } from "react-icons/md";
 import { CiSettings } from "react-icons/ci";
+import { v4 as uuidv4 } from "uuid";
 import { MdEmail } from "react-icons/md";
 import { FaHistory } from "react-icons/fa";
 import { BsPersonFill } from "react-icons/bs";
@@ -646,7 +647,7 @@ export default function Profile() {
                 .slice(currPage * 5 - 5, currPage * 5 > history.rooms.length ? history.rooms.length : currPage * 5)
                 .map((match: MatchHistory, index, arr) =>
                   user ? (
-                    <li key={match.id}>
+                    <li key={uuidv4()}>
                       <HistoryCard match={match} userId={currUser.id} />
                       {index + 1 < arr.length ? <hr className="border-1 border-white/20" /> : null}
                     </li>
