@@ -1,4 +1,5 @@
 import { FaArrowLeft, FaCog } from "react-icons/fa";
+import { useNavigate } from "react-router";
 
 interface HeaderProps {
   scoreLeft: number;
@@ -6,12 +7,13 @@ interface HeaderProps {
 }
 
 export default function Header({ scoreLeft, scoreRight }: HeaderProps) {
+  const navigate = useNavigate();
   return (
     <div className="font-poppins absolute top-5 left-0 w-full flex items-center justify-between px-6 py-4 z-50">
       {/* Left controls */}
       <div className="flex items-center space-x-4">
         <button className="bg-black bg-opacity-60 p-3 rounded-full hover:bg-opacity-80 transition">
-          <FaArrowLeft className="text-white text-xl" />
+          <FaArrowLeft className="text-white text-xl" onClick={() => navigate('/dashboard')} />
         </button>
         <button className="bg-black bg-opacity-60 p-3 rounded-full hover:bg-opacity-80 transition">
           <FaCog className="text-white text-xl" />

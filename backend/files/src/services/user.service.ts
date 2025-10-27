@@ -31,12 +31,14 @@ export const fetchProfileUser = async (req: FastifyRequest<{ Params: { username?
   try {
     const { username } = req.params;
 
+    if (username === "Deleted User") return res.status(404).send({ error: "not found" });
+
     const accessToken = req.cookies.accessToken;
     const payload = app.jwt.jwt1.decode(accessToken!) as Payload | null;
 
     const user = app.db.prepare("SELECT * FROM players WHERE id = ?").get(payload?.id) as UserInfos | undefined;
     if (!user) return res.status(404).send({ error: "USER NOT FOUND" });
-
+    
     if (!username || username == user.username) {
       return res.status(200).send({ infos: user, profileType: "me", twoFAVerify: user?.secret_otp ? true : false });
     }
@@ -116,7 +118,7 @@ export const checkBlock = async (req: FastifyRequest<{ Params: { username?: stri
         if (checkBlocked) return res.status(404).send({ error: "User2 Blocked User1" });
 
         res.status(200).send({ message: "you can see user profile" });
-      }
+      } else return res.status(404).send({error: 'User not found'});
     }
     return res.status(200);
   } catch (error) {
@@ -187,6 +189,7 @@ export const uploadProfilePicture = async (req: FastifyRequest, res: FastifyRepl
 
     const options = { limits: { filedSize: 1000000 } } as FastifyMultipartBaseOptions;
     const fileData = await req.file(options);
+    if (!fileData) return res.status(200).send({ message: "no image found" });
 
     fileData?.file.on("limit", () => {
       return res.status(401).send({ error: "File max size reached 1MB" });
