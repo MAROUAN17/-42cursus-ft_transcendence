@@ -4,6 +4,7 @@ import { clients, checkPaddleCollision } from "./game.utils.js";
 import app from "../server.js";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { v4 as uuidv4 } from "uuid";
+import { delete_Match } from "./match.service.js";
 
 //todo
 //fix the final score in tournament
@@ -158,10 +159,12 @@ function broadcastToRoom(room: Room, message: any) {
     if (conn) {
       conn.send(JSON.stringify(message));
     }
-  });
+  });;
 }
 
 function startGame(room: Room) {
+  if (room.gameId)
+    delete_Match(room.gameId);
   if (room.intervalId) return;
   room.intervalId = setInterval(() => gameLoop(room), 1000 / 60);
 }
