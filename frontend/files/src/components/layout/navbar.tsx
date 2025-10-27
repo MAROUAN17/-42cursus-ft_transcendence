@@ -79,6 +79,7 @@ const Navbar = () => {
           ...updated[index],
           message: newNotif.message,
           unreadCount: (updated[index].unreadCount ?? 0) + 1,
+          createdAt: newNotif.createdAt,
         };
         return updated;
       });
