@@ -275,6 +275,31 @@ function wait_opponent(room: Room, time: number, opponent: number | undefined) {
   if (!room.waitTimer) {
     console.log("-- Starting 10s wait timer for opponent...");
     room.waitTimer = setTimeout(() => {
+<<<<<<< HEAD
+          if (!opponent) {
+            console.log("-- Opponent did not join in time, ending game.");
+            if (!room.roundId) {
+              console.log("set players ids")
+              room.player1 = String (room.leftPlayer);
+              room.player2 = String (room.rightPlayer);
+            }
+            broadcastToRoom(room, {
+              type: "game_end",
+            });
+            if (room.roundId)
+            {
+              room.winner = room.player1 ? room.player1 : room.player2;
+              console.log(`player ${room.winner} rb7 b forfait`);
+              saveData(room);
+              deleteRound(room.roundId)
+            }
+            else{
+              delete_Match(room.gameId);
+              deleteGame(room.gameId);
+            }
+          }
+        }, time * 1000);
+=======
       if (!opponent) {
         console.log("-- Opponent did not join in time, ending game.");
         if (!room.roundId) {
@@ -299,6 +324,7 @@ function wait_opponent(room: Room, time: number, opponent: number | undefined) {
         } else deleteGame(room.gameId);
       }
     }, time * 1000);
+>>>>>>> 380caf8d00325a1cf0016b5d542ac2ec7a169743
   } else {
     console.log("player already waiting ");
   }

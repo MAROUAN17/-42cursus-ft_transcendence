@@ -25,6 +25,7 @@ interface rowInserted {
 
 function sendToClient(clientSockets: Set<WebSocket>, packet: websocketPacket) {
   for (const socket of clientSockets) {
+    console.log("sending -------")
     socket.send(JSON.stringify(packet));
   }
 }

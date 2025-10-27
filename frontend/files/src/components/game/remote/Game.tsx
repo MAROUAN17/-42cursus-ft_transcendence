@@ -180,16 +180,17 @@ export default function RGame() {
           setGameEnded(true);
           setWinnerId(message.winner);
           if ((!round || round.round_number == 2) && message.winner == user?.id) sendLog();
-          // sessionStorage.removeItem("currentGame");
-          // sessionStorage.removeItem("currentRound");
+          sessionStorage.removeItem("currentGame");
+          sessionStorage.removeItem("currentRound");
           if (round?.tournament_id) navigate(`/bracket/${round.tournament_id}`);
           if (message.type == "updateY") console.log("updateY");
         }
-        if (message.type == "game_end") {
+        if (message.type == "game_end" ||  message.type == "timeout_tournament") {
           console.log("opponent didnt join");
           sendLog()
           setGameEnded(true);
           setWinnerId(user?.id.toString());
+          console.log('sssssss ', round?.tournament_id)
           if (round?.tournament_id) navigate(`/bracket/${round?.tournament_id}`);
         }
         if (message.type == "already_played"){
