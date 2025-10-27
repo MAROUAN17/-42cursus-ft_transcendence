@@ -260,9 +260,9 @@ export const get_score = async (req: FastifyRequest, res: FastifyReply) => {
     }
 
     const round = app.db
-      .prepare("SELECT * FROM Round WHERE tournament_id = ? AND round_number = ?")
-      .get(tournamentId, roundNb);
-
+      .prepare("SELECT * FROM Round WHERE tournament_id = ? AND round_number = ? AND (player1 = ? or player2 = ?)")
+      .get(tournamentId, roundNb, playerId, playerId);
+    console.log("round", round);
     if (!round) {
       return res.status(404).send({ error: "Round not found" });
     }
