@@ -15,7 +15,8 @@ import { create_tournament, delete_tournament,
             get_tournament_winner, get_rounds,
             start_tournament,
             start_games,
-            get_final_round, } 
+            get_final_round,
+            get_score, } 
             from "../services/tournament.service.js";
 import { get_profile, get_player_rooms, get_player_week_activity, get_leaderboard, get_leaderboard_dashboard } from "../services/states.service.js";
 import app from "../server.js";
@@ -40,6 +41,7 @@ export const gameRoutes: FastifyPluginAsync = async (fastify) => {
   fastify.post("/tournament/leave", { onRequest: [app.jwtAuth] },leave_tournament);
   fastify.get("/tournament/:tournamentId", { onRequest: [app.jwtAuth] },get_tournament_by_id);
   fastify.get("/tournament/rounds/:tournamentId", { onRequest: [app.jwtAuth] },get_rounds);
+  fastify.post("/tournament/score/:playerId", { onRequest: [app.jwtAuth] },get_score);
   fastify.post("/tournament/start/:tournamentId", { onRequest: [app.jwtAuth] },start_tournament);
   fastify.get("/tournament/winner/:tournamentId", { onRequest: [app.jwtAuth] },get_tournament_winner);
   fastify.get("/tournament/start_games/:tournamentId", { onRequest: [app.jwtAuth] },start_games);

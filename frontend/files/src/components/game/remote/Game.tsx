@@ -180,8 +180,8 @@ export default function RGame() {
           setGameEnded(true);
           setWinnerId(message.winner);
           if ((!round || round.round_number == 2) && message.winner == user?.id) sendLog();
-          // sessionStorage.removeItem("currentGame");
-          // sessionStorage.removeItem("currentRound");
+          sessionStorage.removeItem("currentGame");
+          sessionStorage.removeItem("currentRound");
           if (round?.tournament_id) navigate(`/bracket/${round.tournament_id}`);
           if (message.type == "updateY") console.log("updateY");
         }

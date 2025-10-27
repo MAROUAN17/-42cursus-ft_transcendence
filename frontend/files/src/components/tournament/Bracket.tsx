@@ -184,8 +184,11 @@ const TournamentBracket: React.FC = () => {
 
   const Users =
     tournament?.players?.map((p) => ({
+      id: p.id,
       username: p.username,
       avatar: p?.avatar,
+      tournamentId: round?.tournament_id,
+      roundNb: 1,
     })) || [];
   const get_username = (p: any) => {
     if (!tournament?.players)
@@ -201,10 +204,14 @@ const TournamentBracket: React.FC = () => {
       if (tournament?.players[i].id == p) return tournament?.players[i].avatar;
     }
   };
+
   const finalUsers =
     finalPlayers?.map((p) => ({
+      id:p,
       username: get_username(p),
       avatar: get_avatar(p),
+      tournamentId: round?.tournament_id,
+      roundNb: 2,
     })) || [];
 
   useEffect(() => {

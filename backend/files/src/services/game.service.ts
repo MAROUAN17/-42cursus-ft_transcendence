@@ -295,8 +295,10 @@ function wait_opponent(room: Room, time: number, opponent: number | undefined) {
               saveData(room);
               deleteRound(room.roundId)
             }
-            else 
+            else{
+              delete_Match(room.gameId);
               deleteGame(room.gameId);
+            }
           }
         }, time * 1000);
   } else {
