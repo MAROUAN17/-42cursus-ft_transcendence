@@ -3,16 +3,24 @@ import { type UserInfos, type LoginBody } from "../models/user.model.js";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import bcrypt from "bcrypt";
 
-export const registerUser = async (req: FastifyRequest<{ Body: LoginBody }>, res: FastifyReply) => {
+interface registerBody {
+  username: string;
+  email: string;
+  password: string;
+  terms: boolean;
+}
+
+export const registerUser = async (req: FastifyRequest<{ Body: registerBody }>, res: FastifyReply) => {
   try {
     let user = {} as UserInfos | undefined;
     let { username, email, password, terms } = req.body;
 
-    if (!terms) return res.status(401).send({ error: "Please accept terms and conditions" });
+    if (typeof terms !== "boolean") return res.status(401).send({ error: "Terms field is not valid" });
+    if (!terms || typeof terms !== "boolean") return res.status(401).send({ error: "Please accept terms and conditions" });
 
     //regex check
-    const usernamePattern = new RegExp("^[a-zA-Z0-9_-]+$");
-    const passwordPattern = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).+$");
+    const usernamePattern: RegExp = new RegExp("^[a-zA-Z0-9_-]+$");
+    const passwordPattern: RegExp = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).+$");
 
     if (!usernamePattern.test(username)) {
       return res.status(401).send({ error: "Username not valid, try another one!" });
@@ -33,7 +41,6 @@ export const registerUser = async (req: FastifyRequest<{ Body: LoginBody }>, res
     }
 
     email = email.toLowerCase();
-
     //check if username user exists
     user = app.db.prepare("SELECT * from players WHERE username = ?").get(username) as UserInfos | undefined;
     if (user) return res.status(401).send({ error: "Username already exists" });
@@ -53,6 +60,6 @@ export const registerUser = async (req: FastifyRequest<{ Body: LoginBody }>, res
     res.status(200).send({ message: "Registered successfully" });
   } catch (error) {
     console.log(error);
-    res.status(401).send({ error });
+    res.status(401).send({ error: "Unexpected error occurred" });
   }
 };

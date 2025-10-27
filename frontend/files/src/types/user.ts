@@ -6,15 +6,7 @@ export interface UserInfos {
   first_login: boolean;
   intra_id: number;
   online: boolean;
-}
-
-export interface PublicUserInfos {
-  id: number;
-  avatar: string;
-  username: string;
-  email: string;
-  first_login: boolean;
-  online: boolean;
+  score: number;
 }
 
 export interface ProfileUserInfos {

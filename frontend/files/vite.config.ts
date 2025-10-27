@@ -12,7 +12,7 @@ export default defineConfig(({ mode }) => {
         cert: fs.readFileSync("./ssl/server.crt"),
       },
       host: env.VITE_HOST || "0.0.0.0",
-      port: env.VITE_PORT || 3000,
+      port: Number(env.VITE_PORT) || 3000,
     },
   };
 });

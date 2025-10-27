@@ -91,12 +91,13 @@ export default function Profile() {
     }
     setData(tmpData);
   }
-  function CustomTooltip({ payload, label, active }: { payload: { value: number; payload: ChartData }[]; label: number; active: boolean }) {
+
+  function CustomTooltip({ payload, label, active }: { payload?: { value?: number; payload?: ChartData }[]; label?: number; active?: boolean }) {
     if (active) {
       return (
         <div className="bg-white p-3 rounded-md">
           <p>{`Match: ${label}`}</p>
-          <p>{`Win rate: ${payload[0].value}%`}</p>
+          <p>{`Win rate: ${payload?.[0].value}%`}</p>
         </div>
       );
     }
@@ -374,8 +375,7 @@ export default function Profile() {
                     onClick={(e) => {
                       e.preventDefault();
                       api.delete("/deleteAccount", { withCredentials: true }).then(() => {
-                        api
-                          .post("/logout", {}, { withCredentials: true })
+                        api("/logout", { withCredentials: true })
                           .then(function () {
                             navigate("/login");
                           })

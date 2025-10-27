@@ -188,8 +188,8 @@ export default function RGame() {
         if (message.type == "game_end") {
           console.log("opponent didnt join");
           sendLog()
-          setWinnerId(user?.id.toString());
           setGameEnded(true);
+          setWinnerId(user?.id.toString());
           if (round?.tournament_id) navigate(`/bracket/${round?.tournament_id}`);
         }
         if (message.type == "already_played"){
