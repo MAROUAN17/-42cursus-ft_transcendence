@@ -1,15 +1,17 @@
 export interface LoginBody {
-  id: number;
-  username: string;
-  confirmPassword: string;
-  avatar: string;
   email: string;
   password: string;
-  token: string;
-  secret: string;
   rememberMe: boolean;
-  data: string
-  terms: boolean;
+}
+
+export interface editUserInfosBody {
+  username: string;
+  email: string;
+}
+
+export interface setAvatarBody {
+  id: number;
+  avatar: string;
 }
 
 export interface UserInfos {
@@ -17,6 +19,7 @@ export interface UserInfos {
   avatar: string;
   username: string;
   email: string;
+  password: string;
   first_login: boolean;
   intra_id: number;
   online: boolean;

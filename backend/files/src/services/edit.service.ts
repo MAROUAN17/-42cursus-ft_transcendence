@@ -1,9 +1,9 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
 import app from "../server.js";
-import type { LoginBody, UserInfos } from "../models/user.model.js";
+import type { editUserInfosBody, UserInfos, setAvatarBody } from "../models/user.model.js";
 import type { Payload } from "../models/chat.js";
 
-export const editUserInfos = async (req: FastifyRequest<{ Body: LoginBody }>, res: FastifyReply) => {
+export const editUserInfos = async (req: FastifyRequest<{ Body: editUserInfosBody }>, res: FastifyReply) => {
   try {
     let user = {} as UserInfos | undefined;
     const accessToken = req.cookies.accessToken;
@@ -43,7 +43,7 @@ export const editUserInfos = async (req: FastifyRequest<{ Body: LoginBody }>, re
   }
 };
 
-export const setAvatar = async (req: FastifyRequest<{ Body: LoginBody }>, res: FastifyReply) => {
+export const setAvatar = async (req: FastifyRequest<{ Body: setAvatarBody }>, res: FastifyReply) => {
   try {
     const { id, avatar } = req.body;
 

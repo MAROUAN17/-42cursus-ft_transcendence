@@ -374,8 +374,7 @@ export default function Profile() {
                     onClick={(e) => {
                       e.preventDefault();
                       api.delete("/deleteAccount", { withCredentials: true }).then(() => {
-                        api
-                          .post("/logout", {}, { withCredentials: true })
+                        api("/logout", { withCredentials: true })
                           .then(function () {
                             navigate("/login");
                           })

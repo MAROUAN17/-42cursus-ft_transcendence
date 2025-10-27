@@ -1,11 +1,11 @@
 import type { FastifyRequest, FastifyReply } from "fastify";
 import app from "../server.js";
+import type { Payload } from "../models/chat.js";
 
 export const logoutUser = async (req: FastifyRequest, res: FastifyReply) => {
   try {
     const accessToken = req.cookies.accessToken;
-
-    const payload = app.jwt.jwt1.decode(accessToken!);
+    const payload = app.jwt.jwt1.decode(accessToken!) as Payload;
 
     const user = app.db
       .prepare("SELECT * FROM players WHERE id = ?")
@@ -43,7 +43,6 @@ export const logoutUser = async (req: FastifyRequest, res: FastifyReply) => {
         sameSite: "lax",
       });
   } catch (err) {
-    console.log(err);
-    res.status(500).send({ error: err.data.error });
+    res.status(500).send({ error: 'Unexpected error occurred' });
   }
 };

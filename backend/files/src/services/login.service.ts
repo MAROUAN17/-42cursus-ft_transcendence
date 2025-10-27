@@ -9,7 +9,10 @@ export const loginUser = async (req: FastifyRequest<{ Body: LoginBody }>, res: F
     let { email, password, rememberMe } = req.body;
     let user = {} as UserInfos | undefined;
 
+    if (!email || !password) return res.status(401).send({ error: "All the field are required!" });
+
     email = email.toLowerCase();
+
     //check username
     if (email.includes("@")) {
       user = app.db.prepare("SELECT * from players WHERE email = ?").get(email) as UserInfos | undefined;
@@ -64,8 +67,14 @@ export const loginUser = async (req: FastifyRequest<{ Body: LoginBody }>, res: F
       }
 
       //sign new JWT tokens
-      const accessToken = app.jwt.jwt1.sign({ id: user.id, email: user.email, username: user.username, rememberMe: rememberMe }, { expiresIn: "900s" });
-      const refreshToken = app.jwt.jwt2.sign({ id: user.id, email: user.email, username: user.username, rememberMe: rememberMe }, { expiresIn: "1d" });
+      const accessToken = app.jwt.jwt1.sign(
+        { id: user.id, email: user.email, username: user.username, rememberMe: rememberMe },
+        { expiresIn: "900s" }
+      );
+      const refreshToken = app.jwt.jwt2.sign(
+        { id: user.id, email: user.email, username: user.username, rememberMe: rememberMe },
+        { expiresIn: "1d" }
+      );
 
       //clear login token
       res.clearCookie("loginToken", {
@@ -81,6 +90,6 @@ export const loginUser = async (req: FastifyRequest<{ Body: LoginBody }>, res: F
     }
   } catch (err) {
     console.log(err);
-    return res.status(500).send({ err });
+    return res.status(500).send({ error: "Unexpected error occurred" });
   }
 };

@@ -30,8 +30,7 @@ const Navbar = () => {
 
   function handleLogout(e: React.MouseEvent<HTMLLIElement>) {
     e.preventDefault();
-    api
-      .post("/logout", {}, { withCredentials: true })
+    api("/logout", { withCredentials: true })
       .then(function (res) {
         console.log(res);
         navigate("/login");

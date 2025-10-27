@@ -82,6 +82,7 @@ export default function App() {
     {
       path: "/game",
       Component: Game,
+      loader: checkAuthLoader,
     },
     {
       path: "/remote_game",
@@ -92,6 +93,7 @@ export default function App() {
           </UserProvider>
         </WebSocketProvider>
       ),
+      loader: checkAuthLoader,
     },
     {
       path: "/login",
