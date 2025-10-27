@@ -15,10 +15,9 @@ export const oauthCallback = async (req: FastifyRequest, res: FastifyReply) => {
     if (refreshToken || accessToken) return res.status(400).send({ error: "Unauthorized" });
 
     let user = {} as UserInfos | undefined;
+    let newUsername = undefined;
 
     const { token } = await app.intra42Oauth.getAccessTokenFromAuthorizationCodeFlow(req);
-    
-    console.log(token);
 
     const resData = await fetch("https://api.intra.42.fr/v2/me", {
       headers: { Authorization: `Bearer ${token.access_token}` },
@@ -30,32 +29,39 @@ export const oauthCallback = async (req: FastifyRequest, res: FastifyReply) => {
       username = userData.login,
       intraId = userData.id;
 
+    //check if another user has the same email or username
+    user = app.db.prepare("SELECT * FROM players WHERE email = ?").get(email);
+
     //check if user already exists
-    user = app.db.prepare("SELECT * from players WHERE intra_id = ?").get(intraId) as UserInfos | undefined;
+    if (!user) user = app.db.prepare("SELECT * from players WHERE intra_id = ?").get(intraId) as UserInfos | undefined;
 
     if (!user) {
-      app.db.prepare("INSERT INTO players(intra_id, email, username) VALUES (?, ?, ?)").run(intraId, email, username);
+      //check if username already exists
+      user = app.db.prepare("SELECT * FROM players WHERE username = ?").get(username);
+      if (user) newUsername = username + "_" + intraId;
+      //add user to DB
+      app.db.prepare("INSERT INTO players(intra_id, email, username) VALUES (?, ?, ?)").run(intraId, email, newUsername ? newUsername : username);
       app.db.prepare("UPDATE players SET avatar = ? WHERE intra_id = ?").run(userData.image.link, intraId);
       user = app.db.prepare("SELECT * from players WHERE intra_id = ?").get(intraId) as UserInfos | undefined;
       app.db.prepare("INSERT INTO Settings(userId) VALUES (?)").run(user?.id);
     } else {
       //update user data if changed from the already saved
-      user = app.db.prepare("SELECT * FROM players WHERE avatar <> ? AND intra_id = ?").get(userData.image.link, intraId);
-      if (user) {
+      const checkAvatar = app.db.prepare("SELECT * FROM players WHERE avatar <> ? AND intra_id = ?").get(userData.image.link, intraId);
+      if (checkAvatar) {
         app.db.prepare("UPDATE players SET avatar = ? WHERE intra_id = ?").run(userData.image.link, intraId);
       }
-      user = app.db.prepare("SELECT * FROM players WHERE email <> ? AND intra_id = ?").get(email, intraId);
-      if (user) {
+      const checkEmail = app.db.prepare("SELECT * FROM players WHERE email <> ? AND intra_id = ?").get(email, intraId);
+      if (checkEmail) {
         app.db.prepare("UPDATE players SET avatar = ? WHERE intra_id = ?").run(email, intraId);
       }
-      user = app.db.prepare("SELECT * FROM players WHERE username <> ? AND intra_id = ?").get(username, intraId);
-      if (user) {
+      const checkUsername = app.db.prepare("SELECT * FROM players WHERE username <> ? AND intra_id = ?").get(username, intraId);
+      if (checkUsername) {
         app.db.prepare("UPDATE players SET username = ? WHERE intra_id = ?").run(username, intraId);
       }
     }
 
     //fetch the user
-    user = app.db.prepare("SELECT * FROM players WHERE intra_id = ?").get(intraId);
+    // if (!user) user = app.db.prepare("SELECT * FROM players WHERE intra_id = ?").get(intraId);
 
     const twoFA_activated = user?.secret_otp ? true : false;
     if (twoFA_activated) {
@@ -95,7 +101,8 @@ export const oauthCallback = async (req: FastifyRequest, res: FastifyReply) => {
       path: "/intra42",
     });
 
-    return res.redirect(`https://${process.env.VITE_HOST}:${process.env.VITE_PORT}/avatar`);
+    const path = newUsername ? "select-username" : "avatar";
+    return res.redirect(`https://${process.env.VITE_HOST}:${process.env.VITE_PORT}/${path}`);
   } catch (err) {
     console.log(err);
     res.status(500).send({ error: "Failed to register using intra42" });

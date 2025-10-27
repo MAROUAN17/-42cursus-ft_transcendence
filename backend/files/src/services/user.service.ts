@@ -239,3 +239,26 @@ export const getUserInfo = async (req: FastifyRequest<{ Params: { id: string } }
     res.status(500).send({ error: error });
   }
 };
+
+export const selectUsername = async (req: FastifyRequest, res: FastifyReply) => {
+  try {
+    const newUsername = (req.body as any).newUsername as string;
+    if (!newUsername) return res.status(404).send({ error: "username should be provided" });
+
+    console.log('HERE');
+
+    let user = {} as UserInfos;
+    const accessToken = req.cookies.accessToken;
+    const payload = app.jwt.jwt1.decode(accessToken) as Payload;
+
+    user = app.db.prepare("SELECT * FROM players WHERE id = ?").get(payload?.id);
+    if (user) {
+      user = app.db.prepare("SELECT * FROM players WHERE username = ?").get(newUsername);
+      if (user) return res.status(401).send({ error: "Username already exists" });
+      app.db.prepare("UPDATE players SET username = ? WHERE id = ?").run(newUsername, payload?.id);
+      return res.status(200).send({ message: "success", firstLogin: user?.first_login });
+    } else return res.status(404).send({ error: "user not found" });
+  } catch (error) {
+    res.status(500).send({ error: "Unexpected error occurred" });
+  }
+};

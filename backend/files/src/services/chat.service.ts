@@ -373,7 +373,7 @@ function checkValidPacket(packet: websocketPacket, userId: number): boolean {
 //   }
 // }
 function broadcastToFriends(userId: number, status: boolean) {
-  const friendsDB: string = app.db.prepare("SELECT friends FROM players WHERE id = ?").get(userId).friends;
+  const friendsDB: string = app.db.prepare("SELECT friends FROM players WHERE id = ?").get(userId)?.friends;
   if (!friendsDB) return;
   const friends: string[] = JSON.parse(friendsDB);
   const packet: websocketPacket = {

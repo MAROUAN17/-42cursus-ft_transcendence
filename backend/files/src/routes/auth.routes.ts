@@ -13,7 +13,8 @@ import {
   checkUserLoginStatus,
   checkUser2faStatus,
   checkUserLoginPageStatus,
-  uploadProfilePicture
+  uploadProfilePicture,
+  selectUsername
 } from "../services/user.service.js";
 import { oauthCallback } from "../services/oauthCallback.service.js";
 import {
@@ -44,6 +45,7 @@ export const authRoutes: FastifyPluginAsync = async () => {
   app.post("/edit-user/infos", { onRequest: [app.jwtAuth] }, editUserInfos);
   app.post("/edit-user/upload", { onRequest: [app.jwtAuth] }, uploadProfilePicture);
   app.post("/set/avatar", { onRequest: [app.jwtAuth] }, setAvatar);
+  app.post("/set/username-select", { onRequest: [app.jwtAuth] }, selectUsername);
 
   //reset password
   app.post("/reset-password", resetPassword);
@@ -59,6 +61,7 @@ export const authRoutes: FastifyPluginAsync = async () => {
   app.get("/check/login-page", checkUserLoginPageStatus);
   app.get("/check/login", checkUserLoginStatus);
   app.get("/check/2fa", checkUser2faStatus);
+  
 
   //fetch profile data
   app.post("/unfriend/undefined", { onRequest: [app.jwtAuth] }, unfriendUser);
@@ -73,7 +76,7 @@ export const authRoutes: FastifyPluginAsync = async () => {
   app.get("/2fa/delete", { onRequest: [app.jwtAuth] }, deleteSetup2FA);
   app.post("/2fa/setup/verify", { onRequest: [app.jwtAuth] }, verifySetup2FA);
   app.post("/2fa/verify-token", verify2FAToken);
-
+  
   //remote auth with intra42
   app.get("/intra42/login/callback", oauthCallback);
 };

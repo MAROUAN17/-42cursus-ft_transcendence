@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+
 interface UserBoxProps {
   username: string | undefined;
   avatar: string | undefined;
