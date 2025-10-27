@@ -220,6 +220,7 @@ export default function Profile() {
   }, [currUser]);
 
   function fetchUserData() {
+    console.log("username -> ", username);
     api
       .get("/profile/" + username, { withCredentials: true })
       .then(function (res: AxiosResponse) {
@@ -238,6 +239,7 @@ export default function Profile() {
         setCreatedAt(res.data.infos.createdAt);
       })
       .catch(function (err) {
+        if (err.status == 404) navigate("/404");
         console.log(err);
       });
   }

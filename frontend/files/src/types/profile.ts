@@ -10,6 +10,7 @@ export interface MatchHistory {
   scoreRight: number;
   startedAt: string;
   winner: number;
+  type: string;
   winner_name: string;
 }
 export interface ChartData {

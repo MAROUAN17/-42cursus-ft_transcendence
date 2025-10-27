@@ -87,9 +87,9 @@ export const get_player_rooms = async (
     }
 
     const stmt = app.db.prepare(`
+      SELECT * FROM (
       SELECT 
         r.id,
-        r.startedAt,
         r.player1,
         p1.username as player1_name,
         p1.avatar as p1_avatar,
@@ -99,16 +99,39 @@ export const get_player_rooms = async (
         r.scoreLeft,
         r.scoreRight,
         r.winner,
-        pw.username as winner_name
+        r.startedAt as startedAt,
+        pw.username as winner_name,
+        '1v1' as type
       FROM Room r
       LEFT JOIN players p1 ON r.player1 = p1.id
       LEFT JOIN players p2 ON r.player2 = p2.id
       LEFT JOIN players pw ON r.winner = pw.id
       WHERE r.player1 = ? OR r.player2 = ?
-      ORDER BY datetime(r.startedAt) DESC
+      UNION ALL 
+      SELECT 
+        rd.id,
+        rd.player1,
+        p1.username as player1_name,
+        p1.avatar as p1_avatar,
+        rd.player2,
+        p2.username as player2_name,
+        p2.avatar as p2_avatar,
+        rd.score1 as scoreLeft,
+        rd.score2 as scoreRight,
+        rd.winner,
+        rd.startedAt as startedAt,
+        pw.username as winner_name,
+        'tournament' as type
+      FROM round rd
+      LEFT JOIN players p1 ON rd.player1 = p1.id
+      LEFT JOIN players p2 ON rd.player2 = p2.id
+      LEFT JOIN players pw ON rd.winner = pw.id
+      WHERE rd.player1 = ? OR rd.player2 = ?)
+      ORDER BY datetime(startedAt) DESC
     `);
 
-    const rooms = stmt.all(playerId, playerId);
+    const rooms = stmt.all(playerId, playerId, playerId, playerId);
+    console.log("rooms -> ", rooms)
 
     return res.status(200).send({
       playerId,
