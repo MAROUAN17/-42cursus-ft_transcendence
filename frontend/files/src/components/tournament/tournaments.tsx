@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { TournamentCard } from "./tournamentCart";
 import { FaSearch, FaPlus } from "react-icons/fa";
 import { CreateTournament } from "./CreateTournament";
-import type { PublicUserInfos } from "../../types/user";
+import type { UserInfos } from "../../types/user";
 import api from "../../axios";
 import { useWebSocket } from "../contexts/websocketContext";
 import type { websocketPacket } from "../../types/websocket";
@@ -10,7 +10,7 @@ import type { websocketPacket } from "../../types/websocket";
 export interface Tournament {
   id: number;
   name: string;
-  players: PublicUserInfos[];
+  players: UserInfos[];
   createdAt: string;
   status: "open" | "started" | "full";
   admin: number;
