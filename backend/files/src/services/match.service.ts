@@ -14,7 +14,6 @@ export const delete_Match = (gameId:string) => {
   }
 };
 
-
 export const pair_players = async (req: FastifyRequest, res: FastifyReply) => {
   try {
     const playerId = req.headers["player-id"] as string;
