@@ -25,6 +25,7 @@ interface rowInserted {
 
 function sendToClient(clientSockets: Set<WebSocket>, packet: websocketPacket) {
   for (const socket of clientSockets) {
+    console.log("sending -------")
     socket.send(JSON.stringify(packet));
   }
 }
@@ -411,6 +412,7 @@ export const chatService = {
     }, 30000);
     if (clients.has(userId)) clients.get(userId)!.add(connection);
     else clients.set(userId, new Set<WebSocket>());
+    console.log("new user -> ", clients)
     // checkOnlineFriends(userId);
     broadcastToFriends(userId, true);
     console.log("Connection Done with => " + payload.username);

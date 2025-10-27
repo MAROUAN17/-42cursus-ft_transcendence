@@ -14,6 +14,7 @@ export const delete_Match = (gameId:string) => {
   }
 };
 
+
 export const pair_players = async (req: FastifyRequest, res: FastifyReply) => {
   try {
     const playerId = req.headers["player-id"] as string;
@@ -162,8 +163,8 @@ export const get_player_game = async (req: FastifyRequest, res: FastifyReply) =>
   try {
     const playerId = (req.params as any).playerId;
     console.log("inside find game id -> ", playerId);
-    console.log("games -> ", activeGames);
     const game = activeGames.find((g) => g.player1.id == playerId || g.player2.id == playerId);
+    console.log("waiting players ", waitingPlayers);
 
     if (!game) {
       return res.status(404).send({ error: "No active game found for player" });
@@ -189,6 +190,7 @@ export const get_player_game = async (req: FastifyRequest, res: FastifyReply) =>
       },
     });
   } catch (err) {
+    console.log("error", err);
     res.status(500).send({ error: err });
   }
 };
