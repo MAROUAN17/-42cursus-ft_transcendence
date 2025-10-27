@@ -18,8 +18,8 @@ export default function RGame() {
   const [round, setRound] = useState<Round>();
   const [gameCutomistion, setGameCustomisation] = useState<gameCustomization | undefined>(undefined);
 
-  const [leftY, setLeftY] = useState(140);
-  const [rightY, setRightY] = useState(140);
+  const [leftY, setLeftY] = useState(341);
+  const [rightY, setRightY] = useState(341);
   // const [tournamentId, setTournamentId] = useState(0);
   const [gameEnded, setGameEnded] = useState<boolean>(false);
   const [winnerId, setWinnerId] = useState<string>("");
