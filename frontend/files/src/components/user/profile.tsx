@@ -40,7 +40,7 @@ export default function Profile() {
   const [currPage, setCurrPage] = useState<number>(1);
   const [history, setHistory] = useState<UserHistory | undefined>(undefined);
   const [userStats, setUserStats] = useState<UserStats | undefined>(undefined);
-  const [settingsPopup, setSettingsPopup] = useState<boolean>(true);
+  const [settingsPopup, setSettingsPopup] = useState<boolean>(false);
   const [profileStatus, setProfileStatus] = useState<string>();
   const [blockedUser, setblockedUser] = useState<boolean>(false);
   const [isFriend, setIsFriend] = useState<boolean>(false);
@@ -57,7 +57,6 @@ export default function Profile() {
   const [twoFAVerified, setTwoFAVerified] = useState<boolean>(false);
   const [createdAt, setCreatedAt] = useState<string>("");
   const [imgUploadError, setImgUploadError] = useState<string>("");
-
   const { user } = useUserContext();
   const [currUser, setCurrUser] = useState<UserInfos>({
     id: 0,
@@ -67,6 +66,7 @@ export default function Profile() {
     first_login: false,
     intra_id: 0,
     online: false,
+    score: 0,
   });
   const { send } = useWebSocket();
   const [data, setData] = useState<ChartData[]>([]);
@@ -157,44 +157,42 @@ export default function Profile() {
   async function editProfile(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
-    if (pictureInput.current?.files?.length) {
-      const formData = new FormData();
-      formData.append("avatar", pictureInput.current.files[0]);
-      api.post("/edit-user/upload", formData, { withCredentials: true }).catch(function (err) {
-        console.log(err.response.data.error);
-        // setImgUploadError(true);
-        setImgUploadError(err.response.data.error);
-      });
-    }
-
+    const formData = new FormData();
+    if (pictureInput.current?.files?.length) formData.append("avatar", pictureInput.current.files[0]);
     api
-      .post("/edit-user/infos", { username: currUsername, email: currEmail }, { withCredentials: true })
+      .post("/edit-user/upload", formData, { withCredentials: true })
       .then(function () {
-        setSettingsPopup(false);
-        toast("Your data changed successfully", {
-          closeButton: false,
-          className: "font-poppins border-3 border-neon bg-neon/70 text-white font-bold text-md",
-        });
+        api
+          .post("/edit-user/infos", { username: currUsername, email: currEmail }, { withCredentials: true })
+          .then(function () {
+            setSettingsPopup(false);
+            toast("Your data changed successfully", {
+              closeButton: false,
+              className: "font-poppins border-3 border-neon bg-neon/70 text-white font-bold text-md",
+            });
 
-        if (!twoFAVerified) setSetup2FA(twoFACheckRef.current!.checked);
-        else if (twoFAVerified && !twoFACheckRef.current!.checked) {
-          api("/2fa/delete", { withCredentials: true }).then(function () {
-            setTwoFAVerified(false);
+            if (!twoFAVerified) setSetup2FA(twoFACheckRef.current!.checked);
+            else if (twoFAVerified && !twoFACheckRef.current!.checked) {
+              api("/2fa/delete", { withCredentials: true }).then(function () {
+                setTwoFAVerified(false);
+              });
+            }
+
+            fetchUserData();
+          })
+          .catch(function (err) {
+            if (err?.response?.data?.error?.includes("Username")) {
+              setUsernameErrorFlag(true);
+              setUsernameErrorMssg(err.response.data.error);
+            }
+            if (err?.response?.data?.error?.includes("Email")) {
+              setEmailErrorFlag(true);
+              setEmailErrorMssg(err.response.data.error);
+            }
           });
-        }
-
-        fetchUserData();
       })
       .catch(function (err) {
-        console.log(err);
-        if (err.response.data.error.includes("Username")) {
-          setUsernameErrorFlag(true);
-          setUsernameErrorMssg(err.response.data.error);
-        }
-        if (err.response.data.error.includes("Email")) {
-          setEmailErrorFlag(true);
-          setEmailErrorMssg(err.response.data.error);
-        }
+        setImgUploadError(err.response.data.error);
       });
   }
 
@@ -210,6 +208,7 @@ export default function Profile() {
   }, []);
 
   useEffect(() => {
+    if (currUser.id == 0) return;
     api.get("/states/player-rooms/" + currUser.id, { withCredentials: true }).then(function (res: AxiosResponse) {
       setHistory(res.data);
       const tmp = [...res.data.rooms];
@@ -221,6 +220,7 @@ export default function Profile() {
   }, [currUser]);
 
   function fetchUserData() {
+    console.log("username -> ", username);
     api
       .get("/profile/" + username, { withCredentials: true })
       .then(function (res: AxiosResponse) {
@@ -239,7 +239,9 @@ export default function Profile() {
         setCreatedAt(res.data.infos.createdAt);
       })
       .catch(function (err) {
+        if (err.status == 404) navigate("/404");
         console.log(err);
+        if (err.status === 404) navigate("/404");
       });
   }
 
@@ -297,7 +299,7 @@ export default function Profile() {
               <div className="flex flex-col items-center mt-12 space-y-6">
                 <div className="w-[150px] h-[150px] mt-4 outline outline-8 outline-neon rounded-full flex items-center justify-center">
                   <label htmlFor="customFile">
-                    <img className="rounded-full w-[150px] h-[150px] object-cover" src={previewImg} alt="avatar" />
+                    <img className="rounded-full w-[150px] h-[150px] object-cover" src={previewImg ? previewImg : "/9896147.jpg"} alt="avatar" />
                   </label>
                 </div>
                 <div className="absolute left-[480px] top-[250px] flex items-center justify-center flex-col space-y-3 rounded-full">
@@ -460,7 +462,7 @@ export default function Profile() {
         <div className="bg-compBg/20 w-[30%] rounded-[10px] py-10 flex flex-col justify-around items-center">
           <div className="text-center flex flex-col justify-center items-center space-y-9">
             <div className="w-[100px] h-[100px] mt-4 outline outline-8 outline-neon rounded-full flex items-center justify-center">
-              <img className="rounded-full w-[90px] h-[90px] object-cover" src={currAvatar} alt="" />
+              <img className="rounded-full w-[90px] h-[90px] object-cover" src={currAvatar ? currAvatar : "/9896147.jpg"} alt="" />
             </div>
             <div>
               <h1 className="text-white text-2xl font-bold">{currUsername}</h1>

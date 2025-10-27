@@ -18,6 +18,7 @@ export function TournamentCard({ id, name, players, status }: Tournament) {
     if (!players || !user) return;
     setLabel(players?.some(player => player.id === user.id) ? "JOINED" : "JOIN");
   }, [players, user]);
+  
   const handelJoin = async () => {
     // if (status != "open")
     //     return ;
@@ -60,7 +61,7 @@ export function TournamentCard({ id, name, players, status }: Tournament) {
 
         <button
           className={`w-full py-2.5 rounded-full font-semibold transition-all duration-200 
-            ${status === "full"
+            ${status === "full" || label === 'JOINED'
                 ? "bg-gray-600 text-gray-300 cursor-not-allowed"
                 : status === "started"
                 ? "bg-orange-500 text-white cursor-not-allowed"

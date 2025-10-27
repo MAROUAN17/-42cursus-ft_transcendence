@@ -13,7 +13,7 @@ export default function HistoryCard({ match, userId }: props) {
         <h1 className="font-bold">{userId == match.player1 ? match.player2_name : match.player1_name}</h1>
       </div>
       <div className="flex justify-center w-[200px]">
-        <h1 className="font-bold">Player vs Player</h1>
+        <h1 className="font-bold">{match.type == "1v1" ? "Player vs Player" : "Tournament"}</h1>
       </div>
       <div className="flex justify-center w-[200px]">
         {userId == match.winner ? (

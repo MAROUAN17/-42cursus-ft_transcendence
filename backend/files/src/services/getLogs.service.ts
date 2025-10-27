@@ -22,7 +22,6 @@ export const getLogs = async (req: FastifyRequest, res: FastifyReply) => {
         ORDER BY startedAt DESC LIMIT 6"
       )
       .all();
-    console.log("games -> ", history);
     const logs: LogPacket[] = history.map((row: any) => ({
       type: "logNotif",
       data: {
@@ -36,7 +35,6 @@ export const getLogs = async (req: FastifyRequest, res: FastifyReply) => {
         timestamps: row.startedAt,
       },
     }));
-    // console.log(logs)
     res.status(200).send(logs);
   } catch (err) {
     console.log("error -> ", err);

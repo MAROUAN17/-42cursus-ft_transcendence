@@ -54,5 +54,4 @@ export const gameRoutes: FastifyPluginAsync = async (fastify) => {
   fastify.get("/states/player-rooms/:playerId", { onRequest: [app.jwtAuth] }, get_player_rooms);
   fastify.get("/states/player-week-activity/:playerId", { onRequest: [app.jwtAuth] }, get_player_week_activity);
   fastify.get("/states/leaderboard/:playerId", { onRequest: [app.jwtAuth] }, get_leaderboard);
-
 };
