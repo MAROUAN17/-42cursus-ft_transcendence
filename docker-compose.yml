@@ -37,6 +37,7 @@ services:
       - ./.env
     depends_on:
       - backend
+
   vault:
     container_name: vault
     build: vault/.
@@ -54,6 +55,7 @@ services:
       timeout: 2s
       retries: 20
     restart: always
+
   backend:
     container_name: backend
     build: backend/.

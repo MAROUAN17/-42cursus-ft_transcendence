@@ -2,6 +2,7 @@ import { useNavigate } from "react-router";
 import api from "../../axios";
 import { useUserContext } from "../contexts/userContext";
 import type { Tournament } from "../tournament/tournaments";
+import { useState, useEffect } from "react";
 
 interface props {
   tournament: Tournament;
@@ -10,10 +11,14 @@ interface props {
 const TournamentCard = ({ tournament }: props) => {
   const { user } = useUserContext();
   const navigate = useNavigate();
+  const [label, setLabel] = useState<string>("");
+
+  useEffect(() => {
+    if (!tournament?.players || !user) return;
+    setLabel(tournament?.players?.some((player) => player?.id === user?.id) ? "JOINED" : "JOIN");
+  }, [tournament?.players, user]);
 
   const handelJoin = async () => {
-    // if (status != "open")
-    //     return ;
     console.log("Trying to join ...");
     try {
       api.post(`/tournament/join`, { playerId: user?.id.toString(), tournamentId: tournament.id }, { withCredentials: true }).then(function (res) {
@@ -23,6 +28,7 @@ const TournamentCard = ({ tournament }: props) => {
       console.error("Error joining tournament", err);
     }
   };
+
   return (
     <div className="h-1/2 p-2 overflow-hidden box-border">
       <div className="flex text-white  flex-col bg-compBg max-w-[253px] max-h-[264px] rounded-[30px] overflow-hidden">
@@ -34,15 +40,14 @@ const TournamentCard = ({ tournament }: props) => {
         <div className="px-5 py-6 flex flex-col flex-1">
           <div className="flex flex-col gap-1">
             <div className="flex justify-between items-center">
-
               <div className="flex">
                 {tournament?.players.map((player) => (
                   <img key={player.id} className="rounded-full object-cover w-[20px] h-[20px]" src={player?.avatar} alt="" />
                 ))}
               </div>
 
-              <button onClick={handelJoin} className="font-bold bg-neon rounded-full p-1 px-3 text-[12px]">
-                JOIN
+              <button onClick={handelJoin} className={`font-bold rounded-full p-1 px-3 text-[12px] ${label === 'JOINED' ? 'bg-gray-500 cursor-not-allowed' : 'bg-neon hover:scale-[1.12]'}`}>
+                {label}
               </button>
             </div>
           </div>
