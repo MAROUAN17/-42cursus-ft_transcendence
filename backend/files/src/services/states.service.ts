@@ -131,7 +131,6 @@ export const get_player_rooms = async (
     `);
 
     const rooms = stmt.all(playerId, playerId, playerId, playerId);
-    console.log("rooms -> ", rooms)
 
     return res.status(200).send({
       playerId,

@@ -270,7 +270,6 @@ function addPlayerToRoom(gameId: string, playerId: number, side: string) {
     console.log(`-- Waiting for another player in room gameId: ${gameId}`);
   }
 }
-
 function wait_opponent(room: Room, time: number, opponent: number | undefined) {
   if (!room.waitTimer) {
     console.log("-- Starting 10s wait timer for opponent...");
@@ -296,7 +295,10 @@ function wait_opponent(room: Room, time: number, opponent: number | undefined) {
           console.log(`player ${room.winner} rb7 b forfait`);
           saveData(room);
           deleteRound(room.roundId);
-        } else deleteGame(room.gameId);
+        } else{
+          delete_Match(room.gameId);
+          deleteGame(room.gameId);
+        } 
       }
     }, time * 1000);
   } else {

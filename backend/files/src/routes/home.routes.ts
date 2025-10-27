@@ -19,7 +19,7 @@ export const homeRoutes: FastifyPluginAsync = async (fastify) => {
   app.post("/unblock/:id", { onRequest: [app.jwtAuth] }, unblockUser);
   app.get("/getPersonalData", { onRequest: [app.jwtAuth] }, getPersonalData);
   app.delete("/deleteAccount", { onRequest: [app.jwtAuth] }, deleteAccount);
-  app.get("/user/:id", {  }, getUserInfo);
+  app.get("/user/:id", { onRequest: [app.jwtAuth] }, getUserInfo);
   app.post("/updateCustomization", { onRequest: [app.jwtAuth] }, updateCustomization);
   app.get("/getCustomization", { onRequest: [app.jwtAuth] }, getCustomization);
   app.get("/getLogs", { onRequest: [app.jwtAuth] }, getLogs);

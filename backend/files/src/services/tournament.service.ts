@@ -247,6 +247,43 @@ export const get_rounds = async (req: FastifyRequest, res: FastifyReply) => {
   }
 };
 
+export const get_score = async (req: FastifyRequest, res: FastifyReply) => {
+  console.log("--- entered");
+  try {
+    const playerId = Number((req.params as any)?.playerId);
+    const { tournamentId, roundNb } = req.body;
+
+    console.log("infos :", playerId, tournamentId, roundNb)
+
+    if (!tournamentId || !playerId || !roundNb) {
+      return res.status(400).send({ error: "Missing tournamentId, playerId, or roundNb" });
+    }
+
+    const round = app.db
+      .prepare("SELECT * FROM Round WHERE tournament_id = ? AND round_number = ? AND (player1 = ? or player2 = ?)")
+      .get(tournamentId, roundNb, playerId, playerId);
+    console.log("round", round);
+    if (!round) {
+      return res.status(404).send({ error: "Round not found" });
+    }
+
+    let score = null;
+
+    if (round.player1 === playerId) {
+      score = round.score1;
+    } else if (round.player2 === playerId) {
+      score = round.score2;
+    } else {
+      return res.status(400).send({ error: "Player not part of this round" });
+    }
+
+    return res.send({ score });
+  } catch (err) {
+    console.error("Error fetching score:", err);
+    return res.status(500).send({ error: "Failed to fetch score" });
+  }
+};
+
 export const report_match_result = async (req: FastifyRequest, res: FastifyReply) => {
   const { playerId } = req.body;
   const { roundId, score1, score2 } = req.body as {

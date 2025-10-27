@@ -1,11 +1,54 @@
+<<<<<<< HEAD
 import { useEffect } from "react";
+=======
+import { useEffect, useState } from "react";
+import api from "../../axios";
+import axios from "axios";
+>>>>>>> 99669a9c55ca8bc9885c22afcb3ecc4c13d77dc4
 
 interface UserBoxProps {
+  id:number;
   username: string | undefined;
   avatar: string | undefined;
+  tournamentId: number;
+  roundNb: number;
 }
 
-const PlayerBox: React.FC<UserBoxProps> = ({ username, avatar }) => {
+const PlayerBox: React.FC<UserBoxProps> = ({ id, username, avatar, tournamentId,  roundNb }) => {
+
+  const [score, setScore] = useState<number>(0)
+  const fetchData = () => {
+    console.log("entered");
+    
+    console.log("sent");
+    axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/tournament/score/${id}`,
+        {
+          tournamentId: tournamentId,
+          roundNb:roundNb
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true
+        },
+      )
+      .then  (function (res) {
+        console.log("----- scoe",res.data);
+        setScore(res.data.score);
+      }).catch(function (err) {
+        console.log(err);
+      });
+  };
+  useEffect (() => {
+    if (!id || !tournamentId || !roundNb)
+        return ;
+    console.log("ID : ", id, tournamentId, roundNb);
+    fetchData();
+  }, [id, tournamentId, roundNb]);
+  // console.log('helloooooo')
+
   return (
     <div className="font-poppins flex items-center">
       <div className="flex items-center gap-2 bg-neon text-white px-4 py-2 rounded-l-lg xl:w-[300px] lg:w-[150px]">
@@ -18,7 +61,7 @@ const PlayerBox: React.FC<UserBoxProps> = ({ username, avatar }) => {
       </div>
 
       <div className="w-8 h-8 bg-white text-purple-700 font-bold flex items-center justify-center rounded-sm ml-[2px]">
-        -
+        {score}
       </div>
     </div>
   );

@@ -38,7 +38,7 @@ const TournamentBracket: React.FC = () => {
 
   useEffect(() => {
     if (!finalWinner) return;
-    console.log("final Winner ----------------------------------------- : ", finalWinner);
+    // console.log("final Winner ----------------------------------------- : ", finalWinner);
   });
   useEffect(() => {
     if (!user || !user.id) return;
@@ -50,15 +50,15 @@ const TournamentBracket: React.FC = () => {
         data = res.data;
         const maxRound = Math.max(...data.map((r: Round) => r.round_number));
         latestRounds = data.filter((r: Round) => r.round_number === maxRound);
-        console.log("Fetched rounds:", latestRounds[0]);
+        // console.log("Fetched rounds:", latestRounds[0]);
         if (maxRound == 2) setFinalWinner(latestRounds[0].winner);
         const userRound = latestRounds.find((r: Round) => r.player1 === Number(user.id) || r.player2 === Number(user.id));
 
         if (userRound) {
           setRound(userRound);
-          console.log("User Round Found:", userRound);
+          // console.log("User Round Found:", userRound);
         } else {
-          console.warn("User is not part of any round in the latest round.");
+          // console.warn("User is not part of any round in the latest round.");
         }
         const round2 = data.filter((r: Round) => r.round_number === 2);
         const playerIds = round2.flatMap((r: any) => [r.player1, r.player2]);
@@ -73,6 +73,8 @@ const TournamentBracket: React.FC = () => {
     fetchRounds();
 
     const intervalId = setInterval(async () => {
+      if (tournament?.status != "open")
+          return ;
       try {
         await api(`/tournament/start_games/${id}`, { withCredentials: true })
           .then(function (res) {
@@ -84,10 +86,10 @@ const TournamentBracket: React.FC = () => {
             }
           })
           .catch(function () {
-            console.log("Still waiting for players...");
+            // console.log("Still waiting for players...");
           });
       } catch (error) {
-        console.error("Error fetching tournament:", error);
+        // console.error("Error fetching tournament:", error);
       }
     }, 1000);
 
@@ -125,20 +127,20 @@ const TournamentBracket: React.FC = () => {
       username: get_username(round.player2),
       avatar: get_avatar(round.player2),
     };
-    console.log("player1 : ", player1, "player2: ", player2);
+    // console.log("player1 : ", player1, "player2: ", player2);
     const game: Game = {
       side: round.player1 == user.id ? "left" : "right",
       round: round,
       you: user.id == round.player1 ? player1 : player2,
       opponent: user.id == round.player2 ? player1 : player2,
     };
-    console.log("game :", game);
+    // console.log("game :", game);
     sessionStorage.setItem("currentRound", JSON.stringify(game));
     if (!round.winner) {
       // notifying
       console.log("admin sent notif");
       if ((round.round_number == 1 && user.id == tournament?.admin) || round.round_number == 2) sendAlert(round.round_number);
-      console.log("round number - > ", round.round_number);
+      // console.log("round number - > ", round.round_number);
       setTimeout(() => {
         navigate("/remote_game");
       }, 1000);
@@ -152,13 +154,13 @@ const TournamentBracket: React.FC = () => {
         .then(function (res) {
           setTournament(res.data);
           if (res.data.players.length === 4) setAdminLabel("start");
-          console.log("-- fetched tournament:", res.data);
+          // console.log("-- fetched tournament:", res.data);
         })
         .catch(function (err) {
           throw new Error(`Error ${err.response.status}: ${err.response.statusText}`);
         });
     } catch (err: any) {
-      console.error("Error:", err.message);
+      // console.error("Error:", err.message);
     } finally {
       setLoading(false);
     }
@@ -168,13 +170,13 @@ const TournamentBracket: React.FC = () => {
       try {
         await api(`/tournament/final_round/${id}`, { withCredentials: true })
           .then(function (res) {
-            console.log("Final Round fetched:", res.data);
+            // console.log("Final Round fetched:", res.data);
           })
           .catch(function () {
-            console.log("Still waiting for players...");
+            // console.log("Still waiting for players...");
           });
       } catch (error) {
-        console.error("Error fetching final round:", error);
+        // console.error("Error fetching final round:", error);
       }
     };
 
@@ -184,8 +186,11 @@ const TournamentBracket: React.FC = () => {
 
   const Users =
     tournament?.players?.map((p) => ({
+      id: p.id,
       username: p.username,
       avatar: p?.avatar,
+      tournamentId: round?.tournament_id || 0,
+      roundNb: 1,
     })) || [];
   const get_username = (p: any) => {
     if (!tournament?.players)
@@ -201,19 +206,23 @@ const TournamentBracket: React.FC = () => {
       if (tournament?.players[i].id == p) return tournament?.players[i].avatar;
     }
   };
+
   const finalUsers =
     finalPlayers?.map((p) => ({
+      id:Number (p),
       username: get_username(p),
       avatar: get_avatar(p),
+      tournamentId: round?.tournament_id || 0,
+      roundNb: 2,
     })) || [];
 
-  useEffect(() => {
-    console.log("final Players-- :", finalPlayers);
-    console.log("final Users -- :", finalUsers);
-    console.log("final round winner stirng -- :", finalPlayers[0]);
-    // console.log("final round winner u -- :", finalUsers[0]?.id);
-    console.log("final round winner -- :", round);
-  }, [finalUsers, finalPlayers]);
+  // useEffect(() => {
+  //   // console.log("final Players-- :", finalPlayers);
+  //   // console.log("final Users -- :", finalUsers);
+  //   // console.log("final round winner stirng -- :", finalPlayers[0]);
+  //   // console.log("final round winner u -- :", finalUsers[0]?.id);
+  //   // console.log("final round winner -- :", round);
+  // }, [finalUsers, finalPlayers]);
 
   if (loading) return <p>Loading tournament...</p>;
   return (

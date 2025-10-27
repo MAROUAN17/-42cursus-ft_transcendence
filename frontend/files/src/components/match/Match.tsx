@@ -58,7 +58,7 @@ export default function Pairing() {
           api
             .get(`/match/my-game/${id}`, { withCredentials: true })
             .then(function (response) {
-              console.log("------", response.data.game);
+              // console.log("------", response.data.game);
               setGameInfo(response.data.game);
               setLoading(false);
               sessionStorage.setItem("currentGame", JSON.stringify(response.data.game));
@@ -74,24 +74,8 @@ export default function Pairing() {
                 console.error("Error message:", err.message);
               }
             });
-
-          // if (response.data.game) {
-          //   console.log("------", response.data.game);
-          //   setGameInfo(response.data.game);
-          //   setLoading(false);
-
-          //   sessionStorage.setItem("currentGame", JSON.stringify(response.data.game));
-          //   setPaired(true);
-          //   clearInterval(interval);
-          // }
         } catch (err) {
-          // if (err.response) {
-          //   console.error("Error data:", err.response.data);
-          //   console.error("Error status:", err.response.status);
-          //   console.error("Error headers:", err.response.headers);
-          // } else {
-          //   console.error("Error message:", err.message);
-          // }
+          console.log("err");
         }
       }
     }, 1000);
