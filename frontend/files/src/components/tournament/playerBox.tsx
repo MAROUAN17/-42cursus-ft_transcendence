@@ -1,6 +1,6 @@
 interface UserBoxProps {
-  username: string;
-  avatar: string;
+  username: string | undefined;
+  avatar: string | undefined;
 }
 
 const PlayerBox: React.FC<UserBoxProps> = ({ username, avatar }) => {

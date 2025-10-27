@@ -1,5 +1,5 @@
 import PlayerBox from "./playerBox";
-import { redirect, useNavigate, useParams } from "react-router";
+import {  useNavigate, useParams } from "react-router";
 import LeaveButton from "./ui/leaveBtn";
 import type { Tournament } from "./tournaments";
 import { useEffect, useState } from "react";
@@ -83,7 +83,7 @@ const TournamentBracket: React.FC = () => {
               // navigate("/remote_game");
             }
           })
-          .catch(function (err) {
+          .catch(function () {
             console.log("Still waiting for players...");
           });
       } catch (error) {
@@ -116,10 +116,12 @@ const TournamentBracket: React.FC = () => {
   useEffect(() => {
     if (!user || !round) return;
     const player1: Player = {
+      id:String (round.player1),
       username: get_username(round.player1),
       avatar: get_avatar(round.player1),
     };
     const player2: Player = {
+      id:String (round.player1),
       username: get_username(round.player2),
       avatar: get_avatar(round.player2),
     };
@@ -168,7 +170,7 @@ const TournamentBracket: React.FC = () => {
           .then(function (res) {
             console.log("Final Round fetched:", res.data);
           })
-          .catch(function (err) {
+          .catch(function () {
             console.log("Still waiting for players...");
           });
       } catch (error) {
@@ -181,22 +183,26 @@ const TournamentBracket: React.FC = () => {
   }, [id]);
 
   const Users =
-    tournament?.players?.map((p, index) => ({
+    tournament?.players?.map((p) => ({
       username: p.username,
       avatar: p?.avatar,
     })) || [];
   const get_username = (p: any) => {
+    if (!tournament?.players)
+        return ;
     for (let i = 0; i < tournament?.players.length; i++) {
       if (tournament?.players[i].id == p) return tournament?.players[i].username;
     }
   };
   const get_avatar = (p: any) => {
+    if (!tournament?.players)
+        return ;
     for (let i = 0; i < tournament?.players.length; i++) {
       if (tournament?.players[i].id == p) return tournament?.players[i].avatar;
     }
   };
   const finalUsers =
-    finalPlayers?.map((p, index) => ({
+    finalPlayers?.map((p) => ({
       username: get_username(p),
       avatar: get_avatar(p),
     })) || [];
@@ -205,7 +211,7 @@ const TournamentBracket: React.FC = () => {
     console.log("final Players-- :", finalPlayers);
     console.log("final Users -- :", finalUsers);
     console.log("final round winner stirng -- :", finalPlayers[0]);
-    console.log("final round winner u -- :", finalUsers[0]?.id);
+    // console.log("final round winner u -- :", finalUsers[0]?.id);
     console.log("final round winner -- :", round);
   }, [finalUsers, finalPlayers]);
 

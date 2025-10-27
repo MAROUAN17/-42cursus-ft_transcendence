@@ -180,8 +180,8 @@ export default function RGame() {
           setGameEnded(true);
           setWinnerId(message.winner);
           if ((!round || round.round_number == 2) && message.winner == user?.id) sendLog();
-          sessionStorage.removeItem("currentGame");
-          sessionStorage.removeItem("currentRound");
+          // sessionStorage.removeItem("currentGame");
+          // sessionStorage.removeItem("currentRound");
           if (round?.tournament_id) navigate(`/bracket/${round.tournament_id}`);
           if (message.type == "updateY") console.log("updateY");
         }
@@ -195,7 +195,9 @@ export default function RGame() {
         if (message.type == "already_played"){
           console.log("-- > this user already playing in other tab")
         }
-        if (message.type == "start") setStarted(true);
+        if (message.type == "start"){
+          setStarted(true);
+        } 
         setGameInfo(message.game_info);
       } catch (err) {
         console.error("Invalid message from server:", event.data);
@@ -218,7 +220,7 @@ export default function RGame() {
     else console.log("-- game started ");
   });
 
-  // if (!started) return <div>waiting for opponent ... </div>;
+  if ((!sessionStorage.getItem("currentGame") && !sessionStorage.getItem("currentRound")) ) return <div>you r already playing </div>;
 
   return (
     <>

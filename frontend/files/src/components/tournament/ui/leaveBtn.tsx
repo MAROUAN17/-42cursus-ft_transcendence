@@ -7,7 +7,7 @@ interface LeaveButtonProps {
   playerId: number;
   onLeave?: () => void;
   setStarted: (started: boolean) => void;
-  tournamentState: string;
+  tournamentState: string | undefined;
 }
 
 const LeaveButton: React.FC<LeaveButtonProps> = ({ setStarted, label, tournamentId, playerId, onLeave, tournamentState }) => {

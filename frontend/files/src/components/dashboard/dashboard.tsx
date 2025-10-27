@@ -158,7 +158,7 @@ export default function Dashboard() {
       setLogNotif((prev) => prev.map((log) => ({ ...log, data: { ...log.data, is_new: false } })));
     }, 1000);
     setTimeout(() => {
-      setLogNotif((prev) => prev.filter((log, index) => (prev.length >= 6 ? index != prev.length - 1 : true)));
+      setLogNotif((prev) => prev.filter((_, index) => (prev.length >= 6 ? index != prev.length - 1 : true)));
       setLogNotif((prev) => [packet, ...prev]);
     }, 1000);
   }
