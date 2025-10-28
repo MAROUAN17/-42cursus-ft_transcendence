@@ -44,20 +44,6 @@ export const oauthCallback = async (req: FastifyRequest, res: FastifyReply) => {
       app.db.prepare("UPDATE players SET avatar = ? WHERE intra_id = ?").run(userData.image.link, intraId);
       user = app.db.prepare("SELECT * from players WHERE intra_id = ?").get(intraId) as UserInfos | undefined;
       app.db.prepare("INSERT INTO Settings(userId) VALUES (?)").run(user?.id);
-    } else {
-      //update user data if changed from the already saved
-      const checkAvatar = app.db.prepare("SELECT * FROM players WHERE avatar <> ? AND intra_id = ?").get(userData.image.link, intraId);
-      if (checkAvatar) {
-        app.db.prepare("UPDATE players SET avatar = ? WHERE intra_id = ?").run(userData.image.link, intraId);
-      }
-      const checkEmail = app.db.prepare("SELECT * FROM players WHERE email <> ? AND intra_id = ?").get(email, intraId);
-      if (checkEmail) {
-        app.db.prepare("UPDATE players SET avatar = ? WHERE intra_id = ?").run(email, intraId);
-      }
-      const checkUsername = app.db.prepare("SELECT * FROM players WHERE username <> ? AND intra_id = ?").get(username, intraId);
-      if (checkUsername) {
-        app.db.prepare("UPDATE players SET username = ? WHERE intra_id = ?").run(username, intraId);
-      }
     }
 
     //fetch the user
@@ -101,8 +87,8 @@ export const oauthCallback = async (req: FastifyRequest, res: FastifyReply) => {
       path: "/intra42",
     });
 
-    const path = newUsername ? "select-username" : "avatar";
-    return res.redirect(`https://${process.env.VITE_HOST}:${process.env.VITE_PORT}/${path}`);
+    // const path = newUsername ? "select-username" : "avatar";
+    return res.redirect(`https://${process.env.VITE_HOST}:${process.env.VITE_PORT}/avatar`);
   } catch (err) {
     console.log(err);
     res.status(500).send({ error: "Failed to register using intra42" });

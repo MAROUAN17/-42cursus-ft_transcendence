@@ -1,10 +1,6 @@
-<<<<<<< HEAD
-import { useEffect } from "react";
-=======
 import { useEffect, useState } from "react";
 import api from "../../axios";
 import axios from "axios";
->>>>>>> 99669a9c55ca8bc9885c22afcb3ecc4c13d77dc4
 
 interface UserBoxProps {
   id:number;
