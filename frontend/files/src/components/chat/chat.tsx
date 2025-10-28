@@ -131,7 +131,6 @@ const Chat = () => {
   }, [messages]);
 
   function handleOnlineNotif(packet: websocketPacket) {
-    console.log("got packet -> ", packet);
     if (packet.type != "onlineStatus") return;
     if (packet.data.type == "singleFriend") {
       if (targetUserRef.current?.id == packet.data.friend_id) {
@@ -162,7 +161,6 @@ const Chat = () => {
   }
 
   function handleChat(packet: websocketPacket) {
-    console.log("received msg -> ", packet);
     if (packet.type != "chat") return;
     const newMsg: messagePacket = packet.data;
     if (newMsg.type === "message" || newMsg.type == "gameInvite") {
@@ -203,7 +201,6 @@ const Chat = () => {
       setMessages((prev) => {
         const index = prev.findIndex((u) => u.tempId == newMsg.tempId);
         if (index == -1) {
-          console.log("msg -> ", newMsg);
           newMsg.type = "message";
           return [newMsg, ...prev];
         }
@@ -263,7 +260,6 @@ const Chat = () => {
 
   function sendGameInvite() {
     if (!currUser || !targetUser) return;
-    console.log("inside game invite");
     const msgPacket: messagePacket = {
       tempId: uuidv4(),
       type: "gameInvite",

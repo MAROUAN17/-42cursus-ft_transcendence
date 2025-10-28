@@ -20,7 +20,6 @@ export const unblockUser = async (req: FastifyRequest<{ Params: { id: number } }
     if (blockedUser.changes == 0) return res.status(404).send({ error: "Error" });
     res.status(200).send();
   } catch (err) {
-    console.log("error ->", err);
-    res.status(500).send({ error: err });
+    res.status(500).send({ error: "Unkown Error" });
   }
 };

@@ -267,7 +267,6 @@ function notifyTournamentStart(packet: EventPacket) {
   } else {
     const round = app.db.prepare("SELECT player1, player2 FROM round WHERE tournament_id = ? AND round_number = ?").get(packet.data.tournamentId, 2);
     if (!round) {
-      console.log("round not found to notif");
       return;
     }
     const alert: EventPacket = {
@@ -281,13 +280,11 @@ function notifyTournamentStart(packet: EventPacket) {
     };
     if (packet.data.senderId != round.player1) {
       let client = clients.get(round.player1);
-      console.log("sending to --------> ", round.player1);
       if (client) {
         sendToClient(client, alert);
       }
     } else if (packet.data.senderId == round.player1) {
       let client = clients.get(round.player2);
-      console.log("sending to --------> ", round.player2);
       if (client) {
         sendToClient(client, alert);
       }
@@ -302,7 +299,6 @@ async function processMessages() {
     const currPacket: websocketPacket | undefined = messageQueue.shift();
     if (!currPacket) return;
     try {
-      console.log("handling packet -> ", currPacket);
       if (currPacket.type == "chat") {
         if (currPacket.data.type == "message") handleMessage(currPacket);
         else if (currPacket.data.type == "markSeen") handleMsgMarkSeen(currPacket);
@@ -388,7 +384,6 @@ function broadcastToFriends(userId: number, status: boolean) {
   try {
     app.db.prepare("UPDATE players SET online = ? WHERE id = ?").run(status ? 1 : 0, userId);
   } catch (error) {
-    console.log("sql error -> ", error);
   }
   for (const friendId of friends) {
     const client = clients.get(Number(friendId));
@@ -417,12 +412,10 @@ export const chatService = {
       clients.get(userId)?.add(connection);
     }
     broadcastToFriends(userId, true);
-    console.log("Connection Done with => " + payload.username);
     connection.on("message", (message: Buffer) => {
       try {
         const msgPacket: websocketPacket = JSON.parse(message.toString());
         if (checkValidPacket(msgPacket, userId) == false) {
-          console.log("packet dropped -> ", msgPacket);
           return;
         }
         setImmediate(processMessages);
@@ -433,7 +426,6 @@ export const chatService = {
     });
 
     connection.on("close", () => {
-      console.log("Client disconnected -> " + payload.username);
       broadcastToFriends(userId, false);
       clients.get(userId)?.delete(connection);
       clearInterval(pingInterval);

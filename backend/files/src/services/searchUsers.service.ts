@@ -45,7 +45,6 @@ export const searchUsers = async (req: FastifyRequest<{ Querystring: { query: st
     }));
     res.status(200).send({ data: users });
   } catch (err) {
-    console.log("error -> ", err);
-    res.status(500).send({ error: err });
+    res.status(500).send({ error: "Unkown Error" });
   }
 };

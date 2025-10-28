@@ -31,13 +31,10 @@ const Navbar = () => {
   function handleLogout(e: React.MouseEvent<HTMLLIElement>) {
     e.preventDefault();
     api("/logout", { withCredentials: true })
-      .then(function (res) {
-        console.log(res);
+      .then(function () {
         navigate("/login");
       })
-      .catch(function (err) {
-        console.log(err.response);
-      });
+
   }
 
   useEffect(() => {
@@ -92,9 +89,7 @@ const Navbar = () => {
     } else if (newNotif.type == "friendReq" || newNotif.type == "friendAccept") {
       setNotifications((prev) => [...prev, newNotif]);
     } else if ((newNotif.type = "gameAlert")) {
-      api.post("/match/invite", { player1: newNotif.recipient_id, player2: newNotif.sender_id }, { withCredentials: true }).then((res) => {
-        console.log("game -> ", res);
-      });
+      api.post("/match/invite", { player1: newNotif.recipient_id, player2: newNotif.sender_id }, { withCredentials: true })
       setGameInvite("recipient");
       setOpponentName((prev: string | undefined) => (prev ? prev : newNotif.username));
       // setOpponentName(newNotif.username);
@@ -136,7 +131,6 @@ const Navbar = () => {
       api
         .get("/search?query=" + searchInput, { withCredentials: true })
         .then(function (res) {
-          console.log(res.data.data);
           setFoundUsers(res.data.data);
         })
         .finally(() => setLoading(false));

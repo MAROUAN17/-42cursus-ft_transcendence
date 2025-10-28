@@ -48,7 +48,7 @@ export const resetPassword = async (req: FastifyRequest<{ Body: LoginBody }>, re
       return res.status(401).send({ error: "Email is not linked to any account" });
     }
 
-    if (user && user.intra_id)  return res.status(401).send({ error: "Email is linked to intra42 account" });
+    if (user && user.intra_id) return res.status(401).send({ error: "Email is linked to intra42 account" });
 
     const resetToken = crypto.randomBytes(32).toString("base64url");
     const hashedToken: string = crypto.createHash("sha256").update(resetToken).digest("hex");
@@ -74,7 +74,7 @@ export const resetPassword = async (req: FastifyRequest<{ Body: LoginBody }>, re
 
     return res.status(200).send({ message: "Reset link sent to the user email successfully" });
   } catch (error) {
-    return res.status(500).send({ error: error });
+    return res.status(500).send({ error: "Unkown Error" });
   }
 };
 
@@ -131,6 +131,6 @@ export const verifyResetPin = async (req: FastifyRequest<{ Body: LoginBody }>, r
 
     return res.status(200).send({ message: "Reset password success" });
   } catch (error) {
-    return res.status(500).send({ error: error });
+    return res.status(500).send({ error: "Unkown Error" });
   }
 };

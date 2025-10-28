@@ -6,8 +6,8 @@ import app from "../server.js";
 const waitingPlayers: Player[] = [];
 export const activeGames: Game[] = [];
 
-export const delete_Match = (gameId:string) => {
-  const index = activeGames.findIndex(game => game.id === gameId);
+export const delete_Match = (gameId: string) => {
+  const index = activeGames.findIndex((game) => game.id === gameId);
   console.log("active game found :", activeGames[index]);
   if (index !== -1) {
     activeGames.splice(index, 1);
@@ -84,7 +84,7 @@ export const pair_players = async (req: FastifyRequest, res: FastifyReply) => {
     });
   } catch (err) {
     console.error("Pairing error:", err);
-    res.status(500).send({ error: err });
+    res.status(500).send({ error: "Unkown Error" });
   }
 };
 
@@ -99,7 +99,7 @@ export const get_queue_status = async (req: FastifyRequest, res: FastifyReply) =
       })),
     });
   } catch (err) {
-    res.status(500).send({ error: err });
+    res.status(500).send({ error: "Unkown Error" });
   }
 };
 
@@ -114,8 +114,7 @@ export const leave_queue = async (req: FastifyRequest, res: FastifyReply) => {
       waitingPlayers.splice(playerIndex, 1);
       console.log(`Player ${playerId} left the waiting queue`);
       removed = true;
-    }else 
-      console.log("player not found");
+    } else console.log("player not found");
 
     const gameIndex = activeGames.findIndex((g) => g.player1.id === playerId || g.player2.id === playerId);
 
@@ -140,7 +139,7 @@ export const leave_queue = async (req: FastifyRequest, res: FastifyReply) => {
     res.status(404).send({ error: "Player not found in queue or active games" });
   } catch (err) {
     console.error("Error while leaving queue:", err);
-    res.status(500).send({ error: err });
+    res.status(500).send({ error: "Unkown Error" });
   }
 };
 
@@ -155,10 +154,9 @@ export const get_game = async (req: FastifyRequest, res: FastifyReply) => {
 
     res.status(200).send({ game });
   } catch (err) {
-    res.status(500).send({ error: err });
+    res.status(500).send({ error: "Unkown Error" });
   }
 };
-
 
 export const get_player_game = async (req: FastifyRequest, res: FastifyReply) => {
   try {
@@ -188,12 +186,12 @@ export const get_player_game = async (req: FastifyRequest, res: FastifyReply) =>
         side: side,
         gameInfo: game.gameInfo,
         status: game.status,
-        type: game.type
+        type: game.type,
       },
     });
   } catch (err) {
     console.log("error", err);
-    res.status(500).send({ error: err });
+    res.status(500).send({ error: "Unkown Error" });
   }
 };
 
@@ -230,7 +228,7 @@ export const invite_game = async (req: FastifyRequest, res: FastifyReply) => {
       player2: player2Obj,
       status: "active",
       createdAt: new Date(),
-      type:"invite"
+      type: "invite",
     };
 
     activeGames.push(game);

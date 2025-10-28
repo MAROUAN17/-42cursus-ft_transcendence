@@ -31,10 +31,8 @@ export const getNotifications = async (req: FastifyRequest, res: FastifyReply) =
         createdAt: row.updatedAt,
         unreadCount: row.unreadCount,
       }));
-    // console.log("notifications -> ", notifications);
     res.status(200).send({ data: notifications });
   } catch (err) {
-    console.log("FAILED");
-    res.status(500).send({ error: err });
+    res.status(500).send({ error: "Unkown Error" });
   }
 };

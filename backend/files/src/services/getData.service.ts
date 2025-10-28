@@ -20,6 +20,6 @@ export const deleteAccount = async (req: FastifyRequest, res: FastifyReply) => {
     if (updatedRow.changes == 0) return res.status(404).send({ error: "User Not Found!" });
     res.status(200).send();
   } catch (err) {
-    res.status(500).send({ error: err });
+    res.status(500).send({ error: "Unkown Error" });
   }
 };

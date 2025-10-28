@@ -27,6 +27,6 @@ export const getPersonalData = async (req: FastifyRequest, res: FastifyReply) =>
       res.status(200).send(fileData);
     } else res.status(404).send({ error: "User Not Found!" });
   } catch (err) {
-    res.status(500).send({ error: err });
+    res.status(500).send({ error: "Unkown Error" });
   }
 };

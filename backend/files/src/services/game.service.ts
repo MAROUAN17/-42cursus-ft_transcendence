@@ -65,7 +65,7 @@ export const getData = async (req: FastifyRequest, res: FastifyReply) => {
     console.log("-- history rooms :", history_rooms);
     res.status(200).send({ data: history_rooms });
   } catch (err) {
-    res.status(500).send({ error: err });
+    res.status(500).send({ error: "Unkown Error" });
   }
 };
 function gameLoop(room: Room) {

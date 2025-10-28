@@ -23,7 +23,7 @@ export const fetchUser = async (req: FastifyRequest, res: FastifyReply) => {
 
     res.status(200).send({ infos: user });
   } catch (error) {
-    res.status(500).send({ error: error });
+    res.status(500).send({ error: "Unkown Error" });
   }
 };
 
@@ -96,7 +96,7 @@ export const fetchProfileUser = async (req: FastifyRequest<{ Params: { username?
       });
     }
   } catch (error) {
-    res.status(500).send({ error: error });
+    res.status(500).send({ error: "Unkown Error" });
   }
 };
 
@@ -122,7 +122,7 @@ export const checkBlock = async (req: FastifyRequest<{ Params: { username?: stri
     }
     return res.status(200);
   } catch (error) {
-    res.status(500).send({ error: error });
+    res.status(500).send({ error: "Unkown Error" });
   }
 };
 
@@ -136,7 +136,7 @@ export const checkUserLoginPageStatus = async (req: FastifyRequest, res: Fastify
     }
     res.status(200).send({ message: "NOT LOGGED_IN" });
   } catch (error) {
-    res.status(500).send({ error: error });
+    res.status(500).send({ error: "Unkown Error" });
   }
 };
 
@@ -164,7 +164,7 @@ export const checkUserLoginStatus = async (req: FastifyRequest, res: FastifyRepl
 
     res.status(401).send({ error: "NOT LOGGED_IN" });
   } catch (error) {
-    res.status(500).send({ error: error.data.error });
+    res.status(500).send({ error: "Unkown Error".data.error });
   }
 };
 
@@ -178,7 +178,7 @@ export const checkUser2faStatus = async (req: FastifyRequest, res: FastifyReply)
 
     res.status(200).send({ message: "AUTHORIZED" });
   } catch (error) {
-    res.status(500).send({ error: error });
+    res.status(500).send({ error: "Unkown Error" });
   }
 };
 
@@ -202,7 +202,7 @@ export const uploadProfilePicture = async (req: FastifyRequest, res: FastifyRepl
 
     const uploadDir = path.resolve("/app/uploads");
 
-    const fileName = '/' + Date.now().toString() + "." + fileData?.mimetype.split("/")[1];
+    const fileName = "/" + Date.now().toString() + "." + fileData?.mimetype.split("/")[1];
     const filePath = path.join(uploadDir, fileName);
 
     await pump(fileData?.file, fs.createWriteStream(filePath));
@@ -214,7 +214,6 @@ export const uploadProfilePicture = async (req: FastifyRequest, res: FastifyRepl
     if (!defaultPics.includes(oldAvatar)) {
       fs.unlink("/app/uploads/" + oldAvatar, (err) => {
         if (err) {
-          console.log(err);
         }
       });
     }
@@ -236,6 +235,6 @@ export const getUserInfo = async (req: FastifyRequest<{ Params: { id: string } }
 
     res.status(200).send({ infos: user });
   } catch (error) {
-    res.status(500).send({ error: error });
+    res.status(500).send({ error: "Unkown Error" });
   }
 };

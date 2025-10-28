@@ -34,7 +34,6 @@ export default function Dashboard() {
   const [friendsMessages, setFriendsMessages] = useState<UsersLastMessage[]>([]);
 
   function handleOnlineNotif(packet: websocketPacket) {
-    console.log("got packet -> ", packet);
     if (packet.type != "onlineStatus") return;
     if (packet.data.type == "singleFriend") {
       setFriends((prev: UsersLastMessage[]) => {
@@ -114,7 +113,6 @@ export default function Dashboard() {
         );
       })
       .catch(function (err) {
-        console.log(err);
       });
 
     api("/tournament/all", { withCredentials: true }).then(function (res) {
@@ -132,7 +130,6 @@ export default function Dashboard() {
 
   useEffect(() => {
     api.get("/getLogs", { withCredentials: true }).then((res) => {
-      console.log("game -> ", res.data);
       setLogNotif(res.data);
     });
     const addedHandler = addHandler("logNotif", handleLogNotif);
