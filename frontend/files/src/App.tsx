@@ -26,6 +26,7 @@ import { Leaderboard } from "./components/game/leaderboard";
 import SelectUsername from "./components/user/selectUsername";
 import AiGame from "./components/game/ai/game";
 
+
 export default function App() {
   let router = createBrowserRouter([
     {
@@ -75,10 +76,6 @@ export default function App() {
           path: "/bracket/:id",
           Component: TournamentBracket,
         },
-        {
-          path: "/select-username",
-          Component: SelectUsername
-        }
       ],
     },
     {

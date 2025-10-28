@@ -73,8 +73,9 @@ const TournamentBracket: React.FC = () => {
     fetchRounds();
 
     const intervalId = setInterval(async () => {
-      if (tournament?.status != "open")
-          return ;
+      // console.log("status: ", tournament?.status);
+      // if (tournament?.status != "open")
+      //     return ;
       try {
         await api(`/tournament/start_games/${id}`, { withCredentials: true })
           .then(function (res) {
@@ -136,6 +137,9 @@ const TournamentBracket: React.FC = () => {
     };
     // console.log("game :", game);
     sessionStorage.setItem("currentRound", JSON.stringify(game));
+
+    console.log('round winnerrrrrrrrrrr -> ', round.winner);
+
     if (!round.winner) {
       // notifying
       console.log("admin sent notif");

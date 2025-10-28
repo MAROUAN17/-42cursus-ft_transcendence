@@ -18,7 +18,8 @@ export const addFriend = async (
         "SELECT * from notifications WHERE recipient_id = ? AND sender_id = ? AND type = ?"
       )
       .get(payload.id, id, "friendReq");
-      
+
+    console.log(notif);
     if (notif) {
       const checkFriend = app.db
         .prepare(
@@ -42,6 +43,7 @@ export const addFriend = async (
       }
     }
   } catch (error) {
+    console.log(error);
     res.status(500).send({ error: error });
   }
 };

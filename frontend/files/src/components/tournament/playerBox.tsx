@@ -16,8 +16,8 @@ const PlayerBox: React.FC<UserBoxProps> = ({ id, username, avatar, tournamentId,
     console.log("entered");
     
     console.log("sent");
-    axios.post(
-        `${import.meta.env.VITE_BACKEND_URL}/tournament/score/${id}`,
+    api.post(
+        `/tournament/score/${id}`,
         {
           tournamentId: tournamentId,
           roundNb:roundNb
@@ -40,6 +40,7 @@ const PlayerBox: React.FC<UserBoxProps> = ({ id, username, avatar, tournamentId,
     if (!id || !tournamentId || !roundNb)
         return ;
     console.log("ID : ", id, tournamentId, roundNb);
+    console.log("avatar : ", avatar, 'username -> ', username);
     fetchData();
   }, [id, tournamentId, roundNb]);
   // console.log('helloooooo')

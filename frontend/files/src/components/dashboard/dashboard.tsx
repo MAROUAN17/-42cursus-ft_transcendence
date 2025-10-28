@@ -219,7 +219,7 @@ export default function Dashboard() {
               </div>
               <div className="pt-12">
                 <button className="bg-neon shadow-neon shadow-[0_5px_40px_5px_rgba(0,0,0,0.4)] p-2 px-8 flex items-center rounded-full gap-2 w-fit">
-                  <p className="text-white text-xl font-extrabold">Play Now</p>
+                  <p className="text-white text-xl font-extrabold" onClick={() => navigate('/pairing')}>Play Now</p>
                   {/* <div className=" bg-neon rounded-full">
                     <GrFormNextLink className="text-white w-7 h-7" />
                   </div> */}
