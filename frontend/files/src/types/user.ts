@@ -9,15 +9,6 @@ export interface UserInfos {
   score: number;
 }
 
-export interface ProfileUserInfos {
-  id: number;
-  avatar: string;
-  username: string;
-  email: string;
-  first_login: boolean;
-  online: boolean;
-}
-
 export interface userSearch {
   id: number;
   username: string;
