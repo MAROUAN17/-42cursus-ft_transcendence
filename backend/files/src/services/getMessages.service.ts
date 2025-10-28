@@ -15,9 +15,7 @@ export const getMessages = async (req: FastifyRequest<{ Params: { user: number }
     }
     const userId = payload.id;
     const query: messagePacketDB[] = app.db
-      .prepare(
-        "SELECT * FROM messages WHERE (sender_id = ? AND recipient_id = ?) OR (sender_id = ? AND recipient_id = ?) ORDER BY createdAt DESC"
-      )
+      .prepare("SELECT * FROM messages WHERE (sender_id = ? AND recipient_id = ?) OR (sender_id = ? AND recipient_id = ?) ORDER BY createdAt DESC")
       .all(userId, targetUser, targetUser, userId) as messagePacketDB[];
     const messages: messagePacket[] = query.map((row) => ({
       id: row.id,
@@ -32,6 +30,6 @@ export const getMessages = async (req: FastifyRequest<{ Params: { user: number }
     }));
     res.status(200).send({ data: messages });
   } catch (err) {
-    res.status(500).send({ error: err });
+    res.status(500).send({ error: "Unkown Error" });
   }
 };

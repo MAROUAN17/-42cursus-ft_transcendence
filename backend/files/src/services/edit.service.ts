@@ -38,8 +38,7 @@ export const editUserInfos = async (req: FastifyRequest<{ Body: editUserInfosBod
 
     if (updatedUser.changes == 0) return res.status(401).send({ error: "NO UPDATES" });
   } catch (error) {
-    console.log(error);
-    res.status(500).send({ error: error });
+    res.status(500).send({ error: "Unkown Error" });
   }
 };
 
@@ -60,6 +59,6 @@ export const setAvatar = async (req: FastifyRequest<{ Body: setAvatarBody }>, re
 
     res.status(200).send({ message: "success" });
   } catch (error) {
-    res.status(500).send({ error: error });
+    res.status(500).send({ error: "Unkown Error" });
   }
 };

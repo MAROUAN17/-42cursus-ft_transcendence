@@ -12,7 +12,6 @@ export const deleteAccount = async (req: FastifyRequest, res: FastifyReply) => {
     if (!user) return res.status(404).send({ error: "User Not Found!" });
     if (!defaultAvatars.includes(user.avatar)) {
       fs.unlink("/app/uploads/" + user.avatar, (err) => {
-        if (err) console.log(err);
       });
     }
     const tournaments = app.db
@@ -47,7 +46,6 @@ export const deleteAccount = async (req: FastifyRequest, res: FastifyReply) => {
     if (updatedRow.changes == 0) return res.status(404).send({ error: "User Not Found!" });
     res.status(200).send();
   } catch (err) {
-    console.log("error -> ", err);
-    res.status(500).send({ error: err });
+    res.status(500).send({ error: "Unkown Error" });
   }
 };

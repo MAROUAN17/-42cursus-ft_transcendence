@@ -37,7 +37,6 @@ export const getLogs = async (req: FastifyRequest, res: FastifyReply) => {
     }));
     res.status(200).send(logs);
   } catch (err) {
-    console.log("error -> ", err);
-    res.status(500).send({ error: err });
+    res.status(500).send({ error: "Unkown Error" });
   }
 };

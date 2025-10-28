@@ -66,7 +66,6 @@ export const blockUser = async (
 
     res.status(200).send();
   } catch (err) {
-    console.log("error ->", err);
-    res.status(500).send({ error: err });
+    res.status(500).send({ error: "Unkown Error" });
   }
 };

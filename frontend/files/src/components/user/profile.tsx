@@ -221,7 +221,6 @@ export default function Profile() {
   }, [currUser]);
 
   function fetchUserData() {
-    console.log("username -> ", username);
     api
       .get("/profile/" + username, { withCredentials: true })
       .then(function (res: AxiosResponse) {
@@ -241,7 +240,6 @@ export default function Profile() {
       })
       .catch(function (err) {
         if (err.status == 404) navigate("/404");
-        console.log(err);
         if (err.status === 404) navigate("/404");
       });
   }
@@ -260,7 +258,6 @@ export default function Profile() {
       const blob = new Blob([res.data], { type: "applcation/json" }); // create blob object // blob = Binary Large Object
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
-      console.log("here");
       a.href = url;
       a.download = "userdata.json";
       document.body.appendChild(a);
@@ -378,13 +375,9 @@ export default function Profile() {
                     onClick={(e) => {
                       e.preventDefault();
                       api.delete("/deleteAccount", { withCredentials: true }).then(() => {
-                        api("/logout", { withCredentials: true })
-                          .then(function () {
-                            navigate("/login");
-                          })
-                          .catch(function (err) {
-                            console.log(err.response);
-                          });
+                        api("/logout", { withCredentials: true }).then(function () {
+                          navigate("/login");
+                        });
                       });
                     }}
                     className="bg-red-600 py-3 px-36 text-white rounded-lg font-bold hover:scale-[1.05] transition duration-500"
@@ -551,14 +544,9 @@ export default function Profile() {
                       color="white"
                       size={30}
                       onClick={() => {
-                        api
-                          .post("/unblock/" + currUser.id, {}, { withCredentials: true })
-                          .then(() => {
-                            setblockedUser(false);
-                          })
-                          .catch(function (err) {
-                            console.log(err);
-                          });
+                        api.post("/unblock/" + currUser.id, {}, { withCredentials: true }).then(() => {
+                          setblockedUser(false);
+                        });
                       }}
                     />
                   </div>

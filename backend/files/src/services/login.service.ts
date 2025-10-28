@@ -89,7 +89,6 @@ export const loginUser = async (req: FastifyRequest<{ Body: LoginBody }>, res: F
       res.setCookie("accessToken", accessToken, accessOptions);
     }
   } catch (err) {
-    console.log(err);
     return res.status(500).send({ error: "Unexpected error occurred" });
   }
 };

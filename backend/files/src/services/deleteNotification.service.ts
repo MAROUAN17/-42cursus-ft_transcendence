@@ -9,6 +9,6 @@ export const deleteNotification = async (req: FastifyRequest<{ Params: { id: num
     if (deletedRow.changes == 0) return res.status(404).send({ error: "Notification Not Found!" });
     res.status(200).send();
   } catch (err) {
-    res.status(500).send({ error: err });
+    res.status(500).send({ error: "Unkown Error" });
   }
 };

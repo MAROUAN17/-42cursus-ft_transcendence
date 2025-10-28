@@ -15,12 +15,10 @@ export const WebSocketProvider: React.FC<{ children?: React.ReactNode }> = React
   function connectWs() {
     socketRef.current = new WebSocket(`${import.meta.env.VITE_SOCKET_BACKEND_URL}/send-message`);
     socketRef.current.onopen = () => {
-      console.log("Socket Created!");
       setSocket(socketRef.current);
       while (queueRef.current.length > 0) {
         if (socketRef.current && socketRef.current.readyState == WebSocket.OPEN) {
           let msg = queueRef.current.shift();
-          console.log("sending -> ", msg);
           if (msg) socketRef.current?.send(msg);
         } else break;
       }
@@ -52,10 +50,8 @@ export const WebSocketProvider: React.FC<{ children?: React.ReactNode }> = React
   }, []);
 
   function send(msg: string) {
-    console.log("sent to server");
     if (socketRef.current && socketRef.current.readyState == WebSocket.OPEN) socketRef.current.send(msg);
     else queueRef.current.push(msg);
-    console.log("queue -> ", queueRef.current);
   }
   function addHandler(packetType: string, handler: (data: websocketPacket) => void) {
     if (!handlersRef.current.get(packetType)) handlersRef.current.set(packetType, handler);

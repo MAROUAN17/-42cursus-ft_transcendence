@@ -8,7 +8,6 @@ export default async function checkBlockLoader({ params }: LoaderFunctionArgs) {
   try {
     await api.get("/block/check/" + username, { withCredentials: true });
   } catch (error) {
-    console.log(error);
     if (
       axios.isAxiosError(error) &&
       error.response?.status == 404 &&

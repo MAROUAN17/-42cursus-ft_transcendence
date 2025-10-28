@@ -41,9 +41,7 @@ function Layout() {
       setCountDown((prev) => {
         if (prev <= 1) {
           clearInterval(timer);
-          console.log("outside invite -> ", tournamentId.current);
           if (gameInvite == "tournamentStart" && tournamentId.current) {
-            console.log("inside invite");
             setGameInvite(undefined);
             setOpponentName(undefined);
             setCountDown(5);
@@ -79,7 +77,6 @@ function Layout() {
 
   function eventHandler(packet: websocketPacket) {
     if (packet.type != "gameEvent") return;
-    console.log("got packt -> ", packet);
     setGameInvite("tournamentStart");
     setOpponentName((prev: string | undefined) => (prev ? prev : packet.data.tournamentName));
     tournamentId.current = packet.data.tournamentId;
@@ -100,9 +97,6 @@ function Layout() {
         setPaddleSpeed((res.data.paddleSpeed - 6).toString());
         setSelectedBg(res.data.selectedBg);
       })
-      .catch((err) => {
-        console.log("err -> ", err);
-      });
   }
   function updateData() {
     api.post(

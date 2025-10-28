@@ -60,6 +60,6 @@ export const getUsersMessages = async (req: FastifyRequest, res: FastifyReply) =
     });
     res.status(200).send({ data: usersAndMessages });
   } catch (err) {
-    res.status(500).send({ error: err });
+    res.status(500).send({ error: "Unkown Error" });
   }
 };
