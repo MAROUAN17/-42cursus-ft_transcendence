@@ -15,6 +15,7 @@ export const delete_Match = (gameId:string) => {
 };
 
 export const pair_players = async (req: FastifyRequest, res: FastifyReply) => {
+  console.log("waiting players : ", waitingPlayers);
   try {
     const playerId = req.headers["player-id"] as string;
     const player: Player = {
@@ -30,7 +31,6 @@ export const pair_players = async (req: FastifyRequest, res: FastifyReply) => {
         position: existingPlayerIndex + 1,
       });
     }
-
     waitingPlayers.push(player);
     console.log(`Player ${player.id} joined the queue. Queue length: ${waitingPlayers.length}`);
 
@@ -105,7 +105,8 @@ export const get_queue_status = async (req: FastifyRequest, res: FastifyReply) =
 
 export const leave_queue = async (req: FastifyRequest, res: FastifyReply) => {
   try {
-    const playerId = req.headers["player-id"] as string;
+    const playerId = req.params.playerId as string;
+    console.log("playerId :", playerId);
     let removed = false;
 
     const playerIndex = waitingPlayers.findIndex((p) => p.id === playerId);
@@ -113,13 +114,14 @@ export const leave_queue = async (req: FastifyRequest, res: FastifyReply) => {
       waitingPlayers.splice(playerIndex, 1);
       console.log(`Player ${playerId} left the waiting queue`);
       removed = true;
-    }
+    }else 
+      console.log("player not found");
 
     const gameIndex = activeGames.findIndex((g) => g.player1.id === playerId || g.player2.id === playerId);
 
-    if (gameIndex !== -1) {
+    if (gameIndex !== -1 && activeGames[gameIndex]?.type != "invite") {
       const game = activeGames.splice(gameIndex, 1)[0];
-      console.log(`Player ${playerId} left the active game ${game.id}`);
+      console.log(`Player ${playerId} left the active game ${game?.id}`);
 
       return res.status(200).send({
         message: "Left active game successfully",
@@ -186,6 +188,7 @@ export const get_player_game = async (req: FastifyRequest, res: FastifyReply) =>
         side: side,
         gameInfo: game.gameInfo,
         status: game.status,
+        type: game.type
       },
     });
   } catch (err) {
@@ -227,6 +230,7 @@ export const invite_game = async (req: FastifyRequest, res: FastifyReply) => {
       player2: player2Obj,
       status: "active",
       createdAt: new Date(),
+      type:"invite"
     };
 
     activeGames.push(game);

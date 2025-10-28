@@ -63,6 +63,7 @@ export interface Game {
   status: "waiting" | "active" | "finished";
   createdAt: Date;
   gameInfo: GameInfo;
+  type?: string;
 }
 
 export interface Tournament {

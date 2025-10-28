@@ -23,7 +23,6 @@ import AvatarSelection from "./components/user/avatar";
 import { UserProvider } from "./components/contexts/userContext";
 import Home from "./components/home/home";
 import { Leaderboard } from "./components/game/leaderboard";
-import SelectUsername from "./components/user/selectUsername";
 import AiGame from "./components/game/ai/game";
 
 

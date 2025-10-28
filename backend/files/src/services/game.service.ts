@@ -125,8 +125,8 @@ function gameLoop(room: Room) {
   game.ball.x = nx;
   game.ball.y = ny;
   room.gameInfo = game;
-  if (game.scoreLeft > 15) room.winner = room.player1;
-  else if (game.scoreRight > 15) room.winner = room.player2;
+  if (game.scoreLeft > 1) room.winner = room.player1;
+  else if (game.scoreRight > 1) room.winner = room.player2;
   if (room.winner) {
     broadcastToRoom(room, { type: "end", winner: room.winner });
     room.scoreLeft = game.scoreLeft;
