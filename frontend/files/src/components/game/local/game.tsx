@@ -4,10 +4,13 @@ import Ball from "./ball";
 import Header from "./Header";
 import type { gameCustomization } from "../../../types/user";
 import api from "../../../axios";
+import { useNavigate } from "react-router";
 
 export default function Game() {
+  const navigate = useNavigate();
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [bounds, setBounds] = useState({ width: 800, height: 400 });
+  const [start, setStart] = useState<boolean>(false);
 
   const [gameCutomistion, setGameCustomisation] = useState<gameCustomization | undefined>(undefined);
   const PADDLE_WIDTH = 18;
@@ -91,7 +94,7 @@ export default function Game() {
   }, [bounds.width, bounds.height]);
 
   return (
-    <div className="h-screen bg-gameBg flex items-center justify-center">
+    <div className="h-screen bg-gameBg flex items-center justify-center flex-col">
       <Header scoreLeft={scoreLeft} scoreRight={scoreRight} />
 
       <div
@@ -142,6 +145,7 @@ export default function Game() {
               paddleRight={paddleRight}
               bounds={bounds}
               onScore={handleScore}
+              start={start}
             />
 
             <div className="absolute top-0 left-1/2 transform -translate-x-1/2 h-full flex flex-col justify-center items-center">
@@ -152,6 +156,14 @@ export default function Game() {
             </div>
           </div>
         ) : null}
+      </div>
+      <div className="flex flex-col mt-12 gap-3">
+        <button onClick={() => setStart(true)} className="font-poppins px-12 py-4 bg-neon text-white font-bold rounded-full shadow-lg shadow-[#B13BFF]/50">
+          START GAME
+        </button>
+        <button onClick={() => navigate('/ai')} className="font-poppins px-12 py-4 bg-white text-neon font-bold rounded-full shadow-lg shadow-[#B13BFF]/50">
+          AI MODE
+        </button>
       </div>
     </div>
   );

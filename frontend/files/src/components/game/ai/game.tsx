@@ -4,9 +4,11 @@ import Ball from "./ball";
 import Header from "./Header";
 import type { gameCustomization } from "../../../types/user";
 import api from "../../../axios";
+import { useNavigate } from "react-router";
 
 export default function AiGame() {
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const navigate = useNavigate();
   const [bounds, setBounds] = useState({ width: 800, height: 400 });
 
   const [gameCutomistion, setGameCustomisation] = useState<gameCustomization | undefined>(undefined);
@@ -170,9 +172,12 @@ export default function AiGame() {
           </div>
         ) : null}
       </div>
-      <div className="mt-12">
+      <div className="flex flex-col mt-12 gap-3">
         <button onClick={() => setStart(true)} className="font-poppins px-12 py-4 bg-neon text-white font-bold rounded-full shadow-lg shadow-[#B13BFF]/50">
           START GAME
+        </button>
+        <button onClick={() => navigate('/game')} className="font-poppins px-12 py-4 bg-white text-neon font-bold rounded-full shadow-lg shadow-[#B13BFF]/50">
+          LOCAL MODE
         </button>
       </div>
     </div>

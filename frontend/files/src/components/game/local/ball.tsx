@@ -11,6 +11,7 @@ interface BallProps {
   onScore: (who: "left" | "right") => void;
   bodyColor: string;
   shadowColor: string;
+  start: boolean;
 }
 
 export default function Ball({
@@ -24,10 +25,13 @@ export default function Ball({
   paddleRight,
   bounds,
   onScore,
+  start,
 }: BallProps) {
   const ref = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
+    if (!start) return;
+
     let raf = 0;
     let last = performance.now();
 
