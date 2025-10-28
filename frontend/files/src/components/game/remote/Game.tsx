@@ -71,7 +71,9 @@ export default function RGame() {
   };
 
   useEffect(() => {
+    if (!sessionStorage.getItem("currentGame") && !sessionStorage.getItem("currentRound")) navigate("/pairing");
     var storedGame = null;
+
     // sessionStorage.removeItem("currentGame");
     if (sessionStorage.getItem("currentGame")) {
       storedGame = sessionStorage.getItem("currentGame");
@@ -225,8 +227,8 @@ export default function RGame() {
   //   else console.log("-- game started ");
   // });
 
-  if (!sessionStorage.getItem("currentGame") && !sessionStorage.getItem("currentRound"))
-     navigate("/pairing");
+  // if (!sessionStorage.getItem("currentGame") && !sessionStorage.getItem("currentRound"))
+  //    navigate("/pairing");
 
   return (
     <>

@@ -84,7 +84,7 @@ export default function App() {
     {
       path: "/game",
       Component: Game,
-      // loader: checkAuthLoader,
+      loader: checkAuthLoader,
     },
     {
       path: "/ai",
