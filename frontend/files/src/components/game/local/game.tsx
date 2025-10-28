@@ -2,8 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import Bat from "./Bat";
 import Ball from "./ball";
 import Header from "./Header";
-import type { gameCustomization } from "../../types/user";
-import api from "../../axios";
+import type { gameCustomization } from "../../../types/user";
+import api from "../../../axios";
 
 export default function Game() {
   const containerRef = useRef<HTMLDivElement | null>(null);
