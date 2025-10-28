@@ -169,7 +169,7 @@ const TournamentBracket: React.FC = () => {
     const fetchFinalRound = async () => {
       try {
         await api(`/tournament/final_round/${id}`, { withCredentials: true })
-          .then(function (res) {
+          .then(function () {
             // console.log("Final Round fetched:", res.data);
           })
           .catch(function () {

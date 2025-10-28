@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import api from "../../axios";
 import axios from "axios";
 
 interface UserBoxProps {
