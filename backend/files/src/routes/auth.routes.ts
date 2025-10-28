@@ -14,7 +14,6 @@ import {
   checkUser2faStatus,
   checkUserLoginPageStatus,
   uploadProfilePicture,
-  selectUsername
 } from "../services/user.service.js";
 import { oauthCallback } from "../services/oauthCallback.service.js";
 import {
@@ -45,7 +44,6 @@ export const authRoutes: FastifyPluginAsync = async () => {
   app.post("/edit-user/infos", { onRequest: [app.jwtAuth] }, editUserInfos);
   app.post("/edit-user/upload", { onRequest: [app.jwtAuth] }, uploadProfilePicture);
   app.post("/set/avatar", { onRequest: [app.jwtAuth] }, setAvatar);
-  app.post("/set/username-select", { onRequest: [app.jwtAuth] }, selectUsername);
 
   //reset password
   app.post("/reset-password", resetPassword);

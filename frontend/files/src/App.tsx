@@ -23,7 +23,6 @@ import AvatarSelection from "./components/user/avatar";
 import { UserProvider } from "./components/contexts/userContext";
 import Home from "./components/home/home";
 import { Leaderboard } from "./components/game/leaderboard";
-import SelectUsername from "./components/user/selectUsername";
 
 export default function App() {
   let router = createBrowserRouter([
@@ -74,10 +73,6 @@ export default function App() {
           path: "/bracket/:id",
           Component: TournamentBracket,
         },
-        {
-          path: "/select-username",
-          Component: SelectUsername
-        }
       ],
     },
     {

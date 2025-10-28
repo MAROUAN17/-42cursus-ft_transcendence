@@ -12,9 +12,6 @@ function Login() {
 
   const handleForm = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    console.log(import.meta.env.VITE_BACKEND_URL);
-
     axios
       .post(
         `${import.meta.env.VITE_BACKEND_URL}/login`,

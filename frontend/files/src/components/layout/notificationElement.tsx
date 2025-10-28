@@ -76,14 +76,10 @@ const NotificationElement = ({ notification, deleteFunc, markNotifSeen }: props)
               onClick={() => {
                 api
                   .post("/add-friend/" + notification.sender_id, {}, { withCredentials: true })
-                  .then(function (res) {
-                    console.log(res);
+                  .then(function () {
+                    deleteFunc(notification);
                   })
-                  .catch(function (err) {
-                    console.log(err);
-                  });
                 setRemoveNotif(true);
-                deleteFunc(notification);
                 sendAcceptFriend();
               }}
             />
