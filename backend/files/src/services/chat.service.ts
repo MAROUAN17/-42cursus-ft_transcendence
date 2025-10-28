@@ -258,6 +258,7 @@ function notifyTournamentStart(packet: EventPacket) {
       },
     };
     for (const playerId of players) {
+      if (playerId == packet.data.admin) continue;
       let client = clients.get(Number(playerId));
       if (client) {
         sendToClient(client, alert);
@@ -265,7 +266,10 @@ function notifyTournamentStart(packet: EventPacket) {
     }
   } else {
     const round = app.db.prepare("SELECT player1, player2 FROM round WHERE tournament_id = ? AND round_number = ?").get(packet.data.tournamentId, 2);
-    if (!round) return;
+    if (!round) {
+      console.log("round not found to notif");
+      return;
+    }
     const alert: EventPacket = {
       type: "gameEvent",
       data: {
@@ -277,11 +281,13 @@ function notifyTournamentStart(packet: EventPacket) {
     };
     if (packet.data.senderId != round.player1) {
       let client = clients.get(round.player1);
+      console.log("sending to --------> ", round.player1);
       if (client) {
         sendToClient(client, alert);
       }
     } else if (packet.data.senderId == round.player1) {
       let client = clients.get(round.player2);
+      console.log("sending to --------> ", round.player2);
       if (client) {
         sendToClient(client, alert);
       }
@@ -296,6 +302,7 @@ async function processMessages() {
     const currPacket: websocketPacket | undefined = messageQueue.shift();
     if (!currPacket) return;
     try {
+      console.log("handling packet -> ", currPacket);
       if (currPacket.type == "chat") {
         if (currPacket.data.type == "message") handleMessage(currPacket);
         else if (currPacket.data.type == "markSeen") handleMsgMarkSeen(currPacket);

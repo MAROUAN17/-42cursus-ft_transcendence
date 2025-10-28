@@ -13,9 +13,9 @@ interface HeaderProps {
 }
 
 export default function RHeader({ scoreLeft, scoreRight, you, opponent, side, gameState }: HeaderProps) {
-  useEffect(() => {
-    console.log("game -> ", gameState);
-  });
+  // useEffect(() => {
+  //   console.log("game -> ", gameState);
+  // });
   const navigate = useNavigate();
   function leave_game() {
     navigate(-1);

@@ -14,9 +14,9 @@ const PlayerBox: React.FC<UserBoxProps> = ({ id, username, avatar, tournamentId,
 
   const [score, setScore] = useState<number>(0)
   const fetchData = () => {
-    console.log("entered");
+    // console.log("entered");
     
-    console.log("sent");
+    // console.log("sent");
     api.post(
         `/tournament/score/${id}`,
         {
@@ -31,7 +31,7 @@ const PlayerBox: React.FC<UserBoxProps> = ({ id, username, avatar, tournamentId,
         },
       )
       .then  (function (res) {
-        console.log("----- scoe",res.data);
+        // console.log("----- scoe",res.data);
         setScore(res.data.score);
       }).catch(function (err) {
         console.log(err);
@@ -40,8 +40,8 @@ const PlayerBox: React.FC<UserBoxProps> = ({ id, username, avatar, tournamentId,
   useEffect (() => {
     if (!id || !tournamentId || !roundNb)
         return ;
-    console.log("ID : ", id, tournamentId, roundNb);
-    console.log("avatar : ", avatar, 'username -> ', username);
+    // console.log("ID : ", id, tournamentId, roundNb);
+    // console.log("avatar : ", avatar, 'username -> ', username);
     fetchData();
   }, [id, tournamentId, roundNb]);
   // console.log('helloooooo')

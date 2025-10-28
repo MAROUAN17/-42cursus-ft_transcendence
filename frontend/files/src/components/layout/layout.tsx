@@ -41,9 +41,12 @@ function Layout() {
       setCountDown((prev) => {
         if (prev <= 1) {
           clearInterval(timer);
-          console.log("outside invite")
+          console.log("outside invite -> ", tournamentId.current);
           if (gameInvite == "tournamentStart" && tournamentId.current) {
-            console.log("inside invite")
+            console.log("inside invite");
+            setGameInvite(undefined);
+            setOpponentName(undefined);
+            setCountDown(5);
             if (!location.pathname.includes("bracket/")) navigate(`bracket/${tournamentId.current}`);
             else {
               // navigate("/remote_game");
