@@ -137,14 +137,10 @@ const TournamentBracket: React.FC = () => {
     };
     // console.log("game :", game);
     sessionStorage.setItem("currentRound", JSON.stringify(game));
-
-    console.log('round winnerrrrrrrrrrr -> ', round.winner);
-
     if (!round.winner) {
       // notifying
-      console.log("admin sent notif");
       if ((round.round_number == 1 && user.id == tournament?.admin) || round.round_number == 2) sendAlert(round.round_number);
-      // console.log("round number - > ", round.round_number);
+      console.log("round number - > ", round.round_number);
       setTimeout(() => {
         navigate("/remote_game");
       }, 1000);
