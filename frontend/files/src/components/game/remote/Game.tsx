@@ -27,7 +27,6 @@ export default function RGame() {
 
   const [websocket, setWebsocket] = useState<WebSocket | null>(null);
   const [gameType, setGameType] = useState("");
-  const [started, setStarted] = useState(false);
 
   const { user } = useUserContext();
   const { send } = useWebSocket();
@@ -200,9 +199,9 @@ export default function RGame() {
         if (message.type == "already_played") {
           console.log("-- > this user already playing in other tab");
         }
-        if (message.type == "start") {
-          setStarted(true);
-        }
+        // if (message.type == "start") {
+        //   // setStarted(true);
+        // }
         setGameInfo(message.game_info);
       } catch (err) {
         console.error("Invalid message from server:", event.data);
@@ -233,14 +232,16 @@ export default function RGame() {
         winnerId === user?.id.toString() ? (
           <div className="transition flex flex-col justify-center items-center bg-compBg rounded-lg w-[700px] h-[600px] absolute top-[23%] left-[37%] text-white text-6xl z-10">
             <img src="victory.png" alt="victory-popup" className="w-[400px]" />
-            <div className="flex flex-col items-center gap-3 mt-4">
-              <button className="bg-neon text-white text-md text-xl px-12 py-2 rounded-lg font-extrabold" onClick={() => navigate("/pairing")}>
-                NEW GAME
-              </button>
-              <button className="bg-white text-neon text-xl px-12 py-2 rounded-lg font-extrabold" onClick={() => navigate("/dashboard")}>
-                BACK HOME
-              </button>
-            </div>
+            {round?.round_number == 2 ? (
+              <div className="flex flex-col items-center gap-3 mt-4">
+                <button className="bg-neon text-white text-md text-xl px-12 py-2 rounded-lg font-extrabold" onClick={() => navigate("/pairing")}>
+                  NEW GAME
+                </button>
+                <button className="bg-white text-neon text-xl px-12 py-2 rounded-lg font-extrabold" onClick={() => navigate("/dashboard")}>
+                  BACK HOME
+                </button>
+              </div>
+            ) : null}
           </div>
         ) : (
           <div className="transition flex flex-col justify-center items-center bg-compBg rounded-lg w-[700px] h-[600px] absolute top-[23%] left-[37%] text-white text-6xl z-10">
@@ -257,20 +258,20 @@ export default function RGame() {
         )
       ) : null}
 
-      <div className={`font-poppins h-screen bg-gameBg flex items-center justify-center ${gameEnded ? "blur-sm pointer-events-none" : null}`}>
+      <div className={`font-poppins h-screen bg-gameBg flex items-center justify-center ${!gameInfo ? "blur-sm pointer-events-none" : null}`}>
         <RHeader
           scoreLeft={gameInfo?.scoreLeft ?? 0}
           scoreRight={gameInfo?.scoreRight ?? 0}
           you={game?.you}
           side={game?.side}
           opponent={game?.opponent}
-          gameState={started}
+          gameInfo={gameInfo}
         />
 
         <div
           ref={containerRef}
           className={`${
-            !started ? "blur-sm" : null
+            !gameInfo ? "blur-sm" : null
           } relative animate-fadeIn [background-image:var(--selected-bg)] border-[var(--borderColor)] shadow-[0_0_10px_var(--shadowColor)] overflow-hidden bg-center bg-cover w-[var(--width)] h-[var(--height)] border-2 rounded-2xl bg-black`}
           style={
             {

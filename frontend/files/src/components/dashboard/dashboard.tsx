@@ -23,7 +23,6 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const { user } = useUserContext();
   const [show, setShow] = useState<boolean>(false);
-  const [friendOpt, setFriendOpt] = useState<number>(0);
   const [gamesPlayed, setGamesPlayed] = useState<number>(0);
   const [tournaments, setTournaments] = useState<Tournament[]>([]);
   const [logNotif, setLogNotif] = useState<LogPacket[]>([]);
@@ -33,14 +32,6 @@ export default function Dashboard() {
   const friendsRef = useRef(friends);
   const friendOptRef = useRef<HTMLDivElement>(null);
   const [friendsMessages, setFriendsMessages] = useState<UsersLastMessage[]>([]);
-
-  useEffect(() => {
-    function handleClickOutside(e: MouseEvent) {
-      if (friendOptRef.current && !friendOptRef.current.contains(e.target as Node)) setFriendOpt(0);
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
 
   function handleOnlineNotif(packet: websocketPacket) {
     console.log("got packet -> ", packet);

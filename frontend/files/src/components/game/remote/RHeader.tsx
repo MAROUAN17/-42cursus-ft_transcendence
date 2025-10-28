@@ -1,7 +1,6 @@
 import { FaArrowLeft, FaCog, FaSpinner } from "react-icons/fa";
 import { useNavigate } from "react-router";
-import type { Player } from "./Types";
-import { useEffect } from "react";
+import type { GameInfo, Player } from "./Types";
 
 interface HeaderProps {
   scoreLeft: number;
@@ -9,10 +8,10 @@ interface HeaderProps {
   you: Player | undefined;
   opponent: Player | undefined;
   side: string | undefined;
-  gameState: boolean;
+  gameInfo: GameInfo | undefined;
 }
 
-export default function RHeader({ scoreLeft, scoreRight, you, opponent, side, gameState }: HeaderProps) {
+export default function RHeader({ scoreLeft, scoreRight, you, opponent, side, gameInfo }: HeaderProps) {
   // useEffect(() => {
   //   console.log("game -> ", gameState);
   // });
@@ -49,12 +48,12 @@ export default function RHeader({ scoreLeft, scoreRight, you, opponent, side, ga
 
         <div className="flex items-center gap-4">
           <span className="text-3xl mt-2">{scoreRight}</span>
-          {!gameState ? (
+          {!gameInfo ? (
             <div className="relative w-[90px] h-[90px]">
               <img
                 src={side === "right" ? you?.avatar : opponent?.avatar}
                 className={`w-20 h-20 rounded-full ${
-                  gameState ? "border-4 border-yellow-400" : "border-4 border-gray-400 opacity-70"
+                  gameInfo ? "border-4 border-yellow-400" : "border-4 border-gray-400 opacity-70"
                 } shadow-[0_0_15px_rgba(250,204,21,0.8)]`}
               />
               <FaSpinner className="absolute animate-[spin_1.3s_linear_infinite] w-[30px] h-[30px] top-6 left-6" />
@@ -63,7 +62,7 @@ export default function RHeader({ scoreLeft, scoreRight, you, opponent, side, ga
             <img
               src={side === "right" ? you?.avatar : opponent?.avatar}
               className={`w-20 h-20 rounded-full ${
-                gameState ? "border-4 border-yellow-400" : "border-4 border-gray-400 opacity-30"
+                gameInfo ? "border-4 border-yellow-400" : "border-4 border-gray-400 opacity-30"
               } shadow-[0_0_15px_rgba(250,204,21,0.8)]`}
             />
           )}

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import type { Leader } from "../../types/leader";
-import api from "../../axios";
-import { useUserContext } from "../contexts/userContext";
+import type { Leader } from "../../../types/leader";
+import api from "../../../axios";
+import { useUserContext } from "../../contexts/userContext";
 import { FaCrown } from "react-icons/fa";
 import { useNavigate } from "react-router";
 

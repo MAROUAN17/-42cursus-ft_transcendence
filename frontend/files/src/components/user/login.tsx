@@ -30,7 +30,6 @@ function Login() {
         }
       })
       .catch(function (err) {
-        console.log(err);
         setErrorFlag(true);
         setErrorMssg(err.response.data.error);
       });
