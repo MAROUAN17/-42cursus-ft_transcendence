@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import api from "../../axios";
 import axios from "axios";
+import api from "../../axios";
 
 interface UserBoxProps {
   id:number;
