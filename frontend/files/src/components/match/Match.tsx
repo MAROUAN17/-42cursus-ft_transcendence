@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router";
 import { type Player, type Game } from "../game/remote/Types";
 import { useUserContext } from "../contexts/userContext";
@@ -92,7 +91,7 @@ export default function Pairing() {
   const fetchData = async () => {
     console.log("entered");
     try {
-      const response = await axios.post(
+      api.post(
         `${import.meta.env.VITE_BACKEND_URL}/match/pair`,
         {
           username: user?.username,
@@ -104,9 +103,12 @@ export default function Pairing() {
           },
           withCredentials: true
         },
-      );
+      ).then (function () {
+
+      }).catch (function () {
+
+      });
       
-      console.log(response.data);
       setLoading(true);
     } catch (err) {
       if (err) {
@@ -120,6 +122,8 @@ export default function Pairing() {
     }
   };
   const leave_queue = async () => {
+    if (!loading)
+        return ;
     console.log("trying to leave : ", id);
       api.post(`${import.meta.env.VITE_BACKEND_URL}/match/leave-queue/${id}`, {
         headers: {

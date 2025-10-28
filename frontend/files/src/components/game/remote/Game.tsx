@@ -184,7 +184,7 @@ export default function RGame() {
           if (round?.tournament_id) {
             navigate(`/bracket/${round.tournament_id}`);
           }
-          if (message.type == "updateY") console.log("updateY");
+          navigate("/pairing");
         }
         if (message.type == "game_end" || message.type == "timeout_tournament") {
           console.log("opponent didnt join");
@@ -192,9 +192,10 @@ export default function RGame() {
           setGameEnded(true);
           setWinnerId(user?.id.toString());
           console.log("sssssss ", round?.tournament_id);
-          if (round?.tournament_id) navigate(`/bracket/${round?.tournament_id}`);
           sessionStorage.removeItem("currentGame");
           sessionStorage.removeItem("currentRound");
+          if (round?.tournament_id) navigate(`/bracket/${round?.tournament_id}`);
+          navigate("/pairing");
         }
         if (message.type == "already_played") {
           console.log("-- > this user already playing in other tab");
@@ -224,7 +225,8 @@ export default function RGame() {
   //   else console.log("-- game started ");
   // });
 
-  if (!sessionStorage.getItem("currentGame") && !sessionStorage.getItem("currentRound")) return <div>you're already playing </div>;
+  if (!sessionStorage.getItem("currentGame") && !sessionStorage.getItem("currentRound"))
+     navigate("/pairing");
 
   return (
     <>

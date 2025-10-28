@@ -27,14 +27,16 @@ function set_random_Info(game_info: GameInfo) {
 function saveData(room: Room) {
   if (!room.winner) return;
   if (room.tournamentId) {
-    room.round = app.db
-      .prepare("SELECT round_number  FROM ROUND WHERE tournament_id = ? AND round_number =  ?")
-      .get(room.tournamentId, 2)?.round_number;
-  }
-  if (room.tournamentId) {
     try {
-      // app.db.prepare("INSERT INTO ROUND ( tournament_id, player1, player2, winner) VALUES ( (SELECT id FROM TOURNAMENT WHERE game_id = ?), ?, ?, ?)")
-      // .run( room.gameId, room.player1, room.player2, room.winner);
+      const winner = app.db
+        .prepare("SELECT winner  FROM ROUND WHERE id = ?")
+        .get(room.roundId)?.winner;
+        console.log("WInner");
+      if (winner)
+          throw "winner already exist";
+      room.round = app.db
+        .prepare("SELECT round_number  FROM ROUND WHERE tournament_id = ? AND round_number =  ?")
+        .get(room.tournamentId, 2)?.round_number;
       const score = room.round == 2 ? 700 : 500;
       app.db.prepare("UPDATE players SET score = score + ? WHERE id = ?").run(score, room.winner);
       app.db

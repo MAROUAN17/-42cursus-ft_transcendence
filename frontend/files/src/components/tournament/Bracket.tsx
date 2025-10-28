@@ -85,30 +85,6 @@ const TournamentBracket: React.FC = () => {
     };
 
     fetchRounds();
-
-    // const intervalId = setInterval(async () => {
-    //   // console.log("status: ", tournament?.status);
-    //   // if (tournament?.status != "open")
-    //   //     return ;
-    //   try {
-    //     await api(`/tournament/start_games/${id}`, { withCredentials: true })
-    //       .then(function (res) {
-    //         const tournament = res.data;
-    //         if (tournament.status === "ongoing") {
-    //           clearInterval(intervalId);
-    //           // setStarted(true);
-    //           // navigate("/remote_game");
-    //         }
-    //       })
-    //       .catch(function () {
-    //         // console.log("Still waiting for players...");
-    //       });
-    //   } catch (error) {
-    //     // console.error("Error fetching tournament:", error);
-    //   }
-    // }, 1000);
-
-    // return () => clearInterval(intervalId);
   }, [started, user, id]);
 
   function refreshHandler(packet: websocketPacket) {
@@ -196,7 +172,7 @@ const TournamentBracket: React.FC = () => {
       id: p.id,
       username: p.username,
       avatar: p?.avatar,
-      tournamentId: round?.tournament_id || 0,
+      tournamentId: tournament.id || 0,
       roundNb: 1,
     })) || [];
   const get_username = (p: any) => {
@@ -217,7 +193,7 @@ const TournamentBracket: React.FC = () => {
       id: Number(p),
       username: get_username(p),
       avatar: get_avatar(p),
-      tournamentId: round?.tournament_id || 0,
+      tournamentId: tournament?.id || 0,
       roundNb: 2,
     })) || [];
 
