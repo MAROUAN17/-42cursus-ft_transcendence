@@ -58,7 +58,9 @@ export default function Pairing() {
           api
             .get(`/match/my-game/${id}`, { withCredentials: true })
             .then(function (response) {
-              // console.log("------", response.data.game);
+              console.log("------", response.data.game);
+              if (response.data.game.type == "invite")
+                  return ;
               setGameInfo(response.data.game);
               setLoading(false);
               sessionStorage.setItem("currentGame", JSON.stringify(response.data.game));
@@ -90,7 +92,6 @@ export default function Pairing() {
   const fetchData = async () => {
     console.log("entered");
     try {
-      setLoading(true);
       const response = await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/match/pair`,
         {
@@ -104,8 +105,9 @@ export default function Pairing() {
           withCredentials: true
         },
       );
-
+      
       console.log(response.data);
+      setLoading(true);
     } catch (err) {
       if (err) {
         console.error("Error ");
@@ -118,21 +120,18 @@ export default function Pairing() {
     }
   };
   const leave_queue = async () => {
-    try {
-      const response = await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/match/leave-queue`, {
+    console.log("trying to leave : ", id);
+      api.post(`${import.meta.env.VITE_BACKEND_URL}/match/leave-queue/${id}`, {
         headers: {
-          "player-id": id,
           "Content-Type": "application/json",
-        },
+        }
+      }, {withCredentials: true}).then (function (res) {
+        console.log("Left queue:", res.data);
+      }).catch (function (err) {
+        console.error("Error leaving queue:", err);
+        // setError(err.message);
       });
-
-      console.log("Left queue:", response.data);
-    } catch (err) {
-      console.error("Error leaving queue:", err);
-      // setError(err.message);
-    } finally {
       setLoading(false);
-    }
   };
 
   return (

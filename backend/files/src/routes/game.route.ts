@@ -27,7 +27,7 @@ export const gameRoutes: FastifyPluginAsync = async (fastify) => {
   fastify.post("/match/pair", { onRequest: [app.jwtAuth] }, pair_players);
   fastify.post("/match/invite", { onRequest: [app.jwtAuth] },invite_game);
   fastify.get("/match/queue-status",  { onRequest: [app.jwtAuth] },get_queue_status);
-  fastify.delete("/match/leave-queue", { onRequest: [app.jwtAuth] },leave_queue);
+  fastify.post("/match/leave-queue/:playerId", { onRequest: [app.jwtAuth] },leave_queue);
   fastify.get("/match/game/:gameId", { onRequest: [app.jwtAuth] },get_game);
 
   fastify.get("/match/my-game/:playerId", { onRequest: [app.jwtAuth] },get_player_game);
