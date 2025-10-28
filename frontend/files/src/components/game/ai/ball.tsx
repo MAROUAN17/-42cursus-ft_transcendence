@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useSearchParams } from "react-router";
 
 export interface Cords {
   x: number;

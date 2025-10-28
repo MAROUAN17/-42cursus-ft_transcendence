@@ -1,4 +1,4 @@
-import React, { useState, createContext, useContext, useEffect, useRef, useCallback } from "react";
+import React, { useState, createContext, useContext, useEffect, useRef } from "react";
 import type { websocketContextType, websocketPacket } from "../../types/websocket";
 
 const WebsocketContext = createContext<websocketContextType | undefined>(undefined);

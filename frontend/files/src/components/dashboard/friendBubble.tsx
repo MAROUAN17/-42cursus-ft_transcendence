@@ -1,5 +1,3 @@
-import { FaUser } from "react-icons/fa";
-import { GiPingPongBat } from "react-icons/gi";
 import { useNavigate } from "react-router";
 import type { UserInfos } from "../../types/user";
 

@@ -375,9 +375,10 @@ export default function Profile() {
                     onClick={(e) => {
                       e.preventDefault();
                       api.delete("/deleteAccount", { withCredentials: true }).then(() => {
-                        api("/logout", { withCredentials: true }).then(function () {
-                          navigate("/login");
-                        });
+                        api("/logout", { withCredentials: true })
+                          .then(function () {
+                            navigate("/login");
+                          })
                       });
                     }}
                     className="bg-red-600 py-3 px-36 text-white rounded-lg font-bold hover:scale-[1.05] transition duration-500"
@@ -544,9 +545,11 @@ export default function Profile() {
                       color="white"
                       size={30}
                       onClick={() => {
-                        api.post("/unblock/" + currUser.id, {}, { withCredentials: true }).then(() => {
-                          setblockedUser(false);
-                        });
+                        api
+                          .post("/unblock/" + currUser.id, {}, { withCredentials: true })
+                          .then(() => {
+                            setblockedUser(false);
+                          })
                       }}
                     />
                   </div>

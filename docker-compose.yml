@@ -1,10 +1,7 @@
 services:
   frontend:
-    image: frontend
     container_name: frontend
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
+    build: frontend/.
     ports:
       - "3000:3000"
     volumes:
@@ -18,9 +15,8 @@ services:
       - nginx
 
   sqlite:
-    image: sqlite
     container_name: sqlite
-    build: ./sqlite/
+    build: sqlite/.
     ports:
       - "8191:8191"
     volumes:
