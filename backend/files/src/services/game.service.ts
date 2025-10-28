@@ -59,8 +59,6 @@ function saveData(room: Room) {
   }
 }
 
-
-
 export const getData = async (req: FastifyRequest, res: FastifyReply) => {
   try {
     const history_rooms: Room[] = app.db.prepare("SELECT * FROM Room").all() as Room[];
@@ -125,8 +123,8 @@ function gameLoop(room: Room) {
   game.ball.x = nx;
   game.ball.y = ny;
   room.gameInfo = game;
-  if (game.scoreLeft > 15) room.winner = room.player1;
-  else if (game.scoreRight > 15) room.winner = room.player2;
+  if (game.scoreLeft > 1) room.winner = room.player1;
+  else if (game.scoreRight > 1) room.winner = room.player2;
   if (room.winner) {
     broadcastToRoom(room, { type: "end", winner: room.winner });
     room.scoreLeft = game.scoreLeft;
@@ -161,12 +159,11 @@ function broadcastToRoom(room: Room, message: any) {
     if (conn) {
       conn.send(JSON.stringify(message));
     }
-  });;
+  });
 }
 
 function startGame(room: Room) {
-  if (room.gameId)
-    delete_Match(room.gameId);
+  if (room.gameId) delete_Match(room.gameId);
   if (room.intervalId) return;
   room.intervalId = setInterval(() => gameLoop(room), 1000 / 60);
 }
@@ -297,10 +294,10 @@ function wait_opponent(room: Room, time: number, opponent: number | undefined) {
           console.log(`player ${room.winner} rb7 b forfait`);
           saveData(room);
           deleteRound(room.roundId);
-        } else{
+        } else {
           delete_Match(room.gameId);
           deleteGame(room.gameId);
-        } 
+        }
       }
     }, time * 1000);
   } else {

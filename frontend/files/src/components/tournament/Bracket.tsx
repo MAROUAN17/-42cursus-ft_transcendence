@@ -26,7 +26,7 @@ const TournamentBracket: React.FC = () => {
 
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { send, addHandler } = useWebSocket();
+  const { send, addHandler, setGameInvite } = useWebSocket();
   const { user } = useUserContext();
   const [finalWinner, setFinalWinner] = useState(null);
   useEffect(() => {
@@ -117,7 +117,11 @@ const TournamentBracket: React.FC = () => {
   }
 
   function sendAlert(roundNum: number) {
-    if (!tournament || !user || (roundNum != 2 && (!tournament || !user))) return;
+    console.log("before send");
+    console.log("tournament - > ", tournament);
+    console.log("user - > ", user);
+    console.log("(roundNum != 2 && (!tournament || !user)) - > ", roundNum != 2 && (!tournament || !user));
+    if (!tournament || !user) return;
     const packet: EventPacket = {
       type: "gameEvent",
       data: {
@@ -165,11 +169,12 @@ const TournamentBracket: React.FC = () => {
       if ((round.round_number == 1 && user.id == tournament?.admin) || round.round_number == 2) sendAlert(round.round_number);
       // console.log("round number - > ", round.round_number);
       setTimeout(() => {
+        setGameInvite(undefined);
         navigate("/remote_game");
       }, 1000);
       // navigate("/remote_game");
     }
-  }, [user, round]);
+  }, [user, round, tournament]);
 
   const fetchTournament = async () => {
     try {
