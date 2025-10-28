@@ -22,7 +22,7 @@ function Layout() {
 
   const [countDown, setCountDown] = useState<number>(5);
   const tournamentId = useRef<number | undefined>(undefined);
-  const tournamentAdmin = useRef<number | undefined>(undefined);
+  // const tournamentAdmin = useRef<number | undefined>(undefined);
   // delete later
   const { user } = useUserContext();
   //////
@@ -41,7 +41,12 @@ function Layout() {
       setCountDown((prev) => {
         if (prev <= 1) {
           clearInterval(timer);
-          if (gameInvite == "tournamentStart" && tournamentId.current && tournamentAdmin.current) {
+          console.log("outside invite -> ", tournamentId.current);
+          if (gameInvite == "tournamentStart" && tournamentId.current) {
+            console.log("inside invite");
+            setGameInvite(undefined);
+            setOpponentName(undefined);
+            setCountDown(5);
             if (!location.pathname.includes("bracket/")) navigate(`bracket/${tournamentId.current}`);
             else {
               // navigate("/remote_game");
@@ -60,10 +65,10 @@ function Layout() {
                 console.error("err getting game ----------------------> ", err);
               });
           }
-          setCountDown(5);
-          tournamentId.current = undefined;
           setGameInvite(undefined);
           setOpponentName(undefined);
+          setCountDown(5);
+          tournamentId.current = undefined;
           return 0;
         }
         return prev - 1;
@@ -78,7 +83,7 @@ function Layout() {
     setGameInvite("tournamentStart");
     setOpponentName((prev: string | undefined) => (prev ? prev : packet.data.tournamentName));
     tournamentId.current = packet.data.tournamentId;
-    tournamentAdmin.current = packet.data.admin;
+    // tournamentAdmin.current = packet.data.admin;
   }
 
   function fetchData() {

@@ -82,7 +82,7 @@ export default function RGame() {
       // console.log("this game from tournament");
       storedGame = sessionStorage.getItem("currentRound");
       setGameType("tournament");
-      if (storedGame){
+      if (storedGame) {
         const userGame = JSON.parse(storedGame);
         setRound(userGame.round);
       }
@@ -91,9 +91,9 @@ export default function RGame() {
       return;
     }
     // console.log("-- current game", storedGame);
-    if (!storedGame){
-      console.log("no game found in sessionStorage.")
-      return ;
+    if (!storedGame) {
+      console.log("no game found in sessionStorage.");
+      return;
     }
     const sessionGame: Game = JSON.parse(storedGame);
     // if (sessionGame.round.tournament_id) setTournamentId(sessionGame.tournament_id);
@@ -182,25 +182,27 @@ export default function RGame() {
           if ((!round || round.round_number == 2) && message.winner == user?.id) sendLog();
           sessionStorage.removeItem("currentGame");
           sessionStorage.removeItem("currentRound");
-          if (round?.tournament_id) navigate(`/bracket/${round.tournament_id}`);
+          if (round?.tournament_id) {
+            navigate(`/bracket/${round.tournament_id}`);
+          }
           if (message.type == "updateY") console.log("updateY");
         }
         if (message.type == "game_end" || message.type == "timeout_tournament") {
           console.log("opponent didnt join");
-          sendLog()
+          sendLog();
           setGameEnded(true);
           setWinnerId(user?.id.toString());
-          console.log('sssssss ', round?.tournament_id);
+          console.log("sssssss ", round?.tournament_id);
           if (round?.tournament_id) navigate(`/bracket/${round?.tournament_id}`);
           sessionStorage.removeItem("currentGame");
           sessionStorage.removeItem("currentRound");
         }
-        if (message.type == "already_played"){
-          console.log("-- > this user already playing in other tab")
+        if (message.type == "already_played") {
+          console.log("-- > this user already playing in other tab");
         }
-        if (message.type == "start"){
+        if (message.type == "start") {
           setStarted(true);
-        } 
+        }
         setGameInfo(message.game_info);
       } catch (err) {
         console.error("Invalid message from server:", event.data);
@@ -217,13 +219,13 @@ export default function RGame() {
     console.log("-- game : ", game);
     console.log("-- round : ", round);
   }, [game, round]);
-  useEffect(() => {
-    console.log("winner -> ", winnerId);
-    if (!started) console.log(" -- waiting for opponent");
-    else console.log("-- game started ");
-  });
+  // useEffect(() => {
+  //   console.log("winner -> ", winnerId);
+  //   if (!started) console.log(" -- waiting for opponent");
+  //   else console.log("-- game started ");
+  // });
 
-  if ((!sessionStorage.getItem("currentGame") && !sessionStorage.getItem("currentRound")) ) return <div>you're already playing </div>;
+  if (!sessionStorage.getItem("currentGame") && !sessionStorage.getItem("currentRound")) return <div>you're already playing </div>;
 
   return (
     <>
@@ -303,11 +305,7 @@ export default function RGame() {
             containerHeight={gameInfo?.bounds.height ?? 400}
           />
 
-          <RBall
-            bodyColor={gameCutomistion?.ballColor!}
-            shadowColor={gameCutomistion?.ballShadow!}
-            ball={gameInfo?.ball ?? { x: 300, y: 180 }}
-          />
+          <RBall bodyColor={gameCutomistion?.ballColor!} shadowColor={gameCutomistion?.ballShadow!} ball={gameInfo?.ball ?? { x: 300, y: 180 }} />
 
           <div className="absolute top-0 left-1/2 transform -translate-x-1/2 h-full flex flex-col justify-center items-center">
             <div className="w-0.5 h-8 bg-white opacity-40 mb-6" />

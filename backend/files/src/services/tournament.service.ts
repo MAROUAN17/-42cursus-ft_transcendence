@@ -248,12 +248,12 @@ export const get_rounds = async (req: FastifyRequest, res: FastifyReply) => {
 };
 
 export const get_score = async (req: FastifyRequest, res: FastifyReply) => {
-  console.log("--- entered");
+  // console.log("--- entered");
   try {
     const playerId = Number((req.params as any)?.playerId);
     const { tournamentId, roundNb } = req.body;
 
-    console.log("infos :", playerId, tournamentId, roundNb)
+    // console.log("infos :", playerId, tournamentId, roundNb);
 
     if (!tournamentId || !playerId || !roundNb) {
       return res.status(400).send({ error: "Missing tournamentId, playerId, or roundNb" });
@@ -262,7 +262,7 @@ export const get_score = async (req: FastifyRequest, res: FastifyReply) => {
     const round = app.db
       .prepare("SELECT * FROM Round WHERE tournament_id = ? AND round_number = ? AND (player1 = ? or player2 = ?)")
       .get(tournamentId, roundNb, playerId, playerId);
-    console.log("round", round);
+    // console.log("round", round);
     if (!round) {
       return res.status(404).send({ error: "Round not found" });
     }

@@ -318,10 +318,6 @@ export default function Dashboard() {
               .map((friend, i) => (
                 <FriendBubble
                   key={i}
-                  friendOpt={friendOpt}
-                  setFriendOpt={() => {
-                    friendOpt == friend.user.id ? setFriendOpt(0) : setFriendOpt(friend.user.id);
-                  }}
                   inGame={false}
                   user={friend.user}
                   isOnline={friend.user.online}

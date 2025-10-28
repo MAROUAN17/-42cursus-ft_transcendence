@@ -18,13 +18,11 @@ export const deleteAccount = async (req: FastifyRequest, res: FastifyReply) => {
     const tournaments = app.db
       .prepare("SELECT id, players, admin, status FROM tournament WHERE players LIKE '%' || ? || '%'")
       .all(payload.id.toString());
-    console.log(tournaments);
     for (const row of tournaments) {
       let players = JSON.parse(row.players);
       let newStatus = row.status;
       if (row.status == "finished") continue;
       if (players.includes(payload.id.toString())) {
-        console.log("playrs -> ", players);
         players = players.filter((id: string) => id != payload.id.toString());
         if (players.length == 0 || row.admin == payload.id) {
           app.db.prepare("DELETE FROM Tournament WHERE id = ?").run(row.id);
