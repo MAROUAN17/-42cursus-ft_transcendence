@@ -39,7 +39,7 @@ export default function RGame() {
       .then((res) => {
         setGameCustomisation(res.data);
       })
-      .catch((err) => console.error(err));
+      .catch(() => console.log("customization fetching error"));
   }, []);
 
   const start_game = (sessionGame: Game) => {
@@ -78,7 +78,7 @@ export default function RGame() {
     if (sessionStorage.getItem("currentGame")) {
       storedGame = sessionStorage.getItem("currentGame");
       setGameType("casual");
-      console.log("game type seted");
+      // console.log("game type seted");
     } else if (sessionStorage.getItem("currentRound")) {
       // console.log("this game from tournament");
       storedGame = sessionStorage.getItem("currentRound");
@@ -150,7 +150,7 @@ export default function RGame() {
         timestamps: new Date().toISOString().replace("T", " ").split(".")[0],
       },
     };
-    console.log("sending -> ", packet);
+    // console.log("sending -> ", packet);
     send(JSON.stringify(packet));
   }
 
@@ -158,7 +158,7 @@ export default function RGame() {
     if (websocket && websocket.readyState == WebSocket.OPEN) {
       websocket.send(JSON.stringify({ type: "updateY", leftY, rightY, roundId: gameInfo?.roundId, gameId: game?.id, side: game?.side }));
       // console.log(`leftY ${leftY} rightY ${rightY} jj ${game?.side}`);
-    } else console.log("there is a proble in socket:", websocket);
+    }
   }, [leftY, rightY]);
 
   useEffect(() => {
@@ -176,8 +176,8 @@ export default function RGame() {
         const message = JSON.parse(event.data);
         // console.log("msg -> ",message);
         if (message.type === "end") {
-          console.log(message);
-          console.log("--- game eneded-------------------------------------------");
+          // console.log(message);
+          // console.log("--- game eneded-------------------------------------------");
           setGameEnded(true);
           setWinnerId(message.winner);
           if ((!round || round.round_number == 2) && message.winner == user?.id) sendLog();
@@ -193,7 +193,7 @@ export default function RGame() {
           sendLog();
           setGameEnded(true);
           setWinnerId(user?.id.toString());
-          console.log("sssssss ", round?.tournament_id);
+          // console.log("sssssss ", round?.tournament_id);
           sessionStorage.removeItem("currentGame");
           sessionStorage.removeItem("currentRound");
           if (round?.tournament_id) navigate(`/bracket/${round?.tournament_id}`);
@@ -211,16 +211,16 @@ export default function RGame() {
       }
     };
     return () => {
-      console.log("Closing WebSocket...");
+      // console.log("Closing WebSocket...");
       ws.close();
     };
   }, [gameType, user]);
 
-  useEffect(() => {
-    if (!game && !round) return;
-    console.log("-- game : ", game);
-    console.log("-- round : ", round);
-  }, [game, round]);
+  // useEffect(() => {
+  //   if (!game && !round) return;
+  //   // console.log("-- game : ", game);
+  //   // console.log("-- round : ", round);
+  // }, [game, round]);
   // useEffect(() => {
   //   console.log("winner -> ", winnerId);
   //   if (!started) console.log(" -- waiting for opponent");

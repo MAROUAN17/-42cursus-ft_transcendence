@@ -68,11 +68,11 @@ export default function Pairing() {
             })
             .catch(function (err) {
               if (err.response) {
-                console.error("Error data:", err.response.data);
-                console.error("Error status:", err.response.status);
-                console.error("Error headers:", err.response.headers);
+                // console.error("Error data:", err.response.data);
+                // console.error("Error status:", err.response.status);
+                // console.error("Error headers:", err.response.headers);
               } else {
-                console.error("Error message:", err.message);
+                console.error("Error message:");
               }
             });
         } catch (err) {
@@ -112,7 +112,7 @@ export default function Pairing() {
       setLoading(true);
     } catch (err) {
       if (err) {
-        console.error("Error ");
+        console.log("Error ");
         // console.error("Error status:", err.response.status);
         // console.error("Error headers:", err.response.headers);
       } else {
@@ -131,8 +131,8 @@ export default function Pairing() {
         }
       }, {withCredentials: true}).then (function (res) {
         console.log("Left queue:", res.data);
-      }).catch (function (err) {
-        console.error("Error leaving queue:", err);
+      }).catch (function () {
+        console.error("Error leaving queue:");
         // setError(err.message);
       });
       setLoading(false);
