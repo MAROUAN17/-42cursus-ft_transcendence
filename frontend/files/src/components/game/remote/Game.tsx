@@ -215,11 +215,11 @@ export default function RGame() {
     console.log("-- game : ", game);
     console.log("-- round : ", round);
   }, [game, round]);
-  useEffect(() => {
-    console.log("winner -> ", winnerId);
-    if (!started) console.log(" -- waiting for opponent");
-    else console.log("-- game started ");
-  });
+  // useEffect(() => {
+  //   console.log("winner -> ", winnerId);
+  //   if (!started) console.log(" -- waiting for opponent");
+  //   else console.log("-- game started ");
+  // });
 
   if ((!sessionStorage.getItem("currentGame") && !sessionStorage.getItem("currentRound")) ) return <div>you r already playing </div>;
 

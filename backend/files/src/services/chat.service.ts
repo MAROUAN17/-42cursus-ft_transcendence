@@ -25,7 +25,6 @@ interface rowInserted {
 
 function sendToClient(clientSockets: Set<WebSocket>, packet: websocketPacket) {
   for (const socket of clientSockets) {
-    console.log("sending -------")
     socket.send(JSON.stringify(packet));
   }
 }
@@ -165,8 +164,6 @@ function handleNotifMarkSeen(currPacket: NotificationPacket) {
   if (client) sendToClient(client, currPacket);
 }
 
-// function broadcastToAll(packet: websocketPacket) {}
-
 function handleLogNotif(packet: LogPacket) {
   if (packet.data.game_type == "tournament") {
     const tournament = app.db.prepare("SELECT name FROM tournament WHERE id = ?").get(packet.data.tournament_id);
@@ -174,7 +171,6 @@ function handleLogNotif(packet: LogPacket) {
     packet.data.tournament_name = tournament.name;
   }
   for (const userId of clients) {
-    console.log("sending to -> ", userId[0]);
     const client = clients.get(Number(userId[0]));
     if (client) sendToClient(client, packet);
   }
@@ -269,7 +265,6 @@ function notifyTournamentStart(packet: EventPacket) {
     }
   } else {
     const round = app.db.prepare("SELECT player1, player2 FROM round WHERE tournament_id = ? AND round_number = ?").get(packet.data.tournamentId, 2);
-    console.log("final round -> ", round);
     if (!round) return;
     const alert: EventPacket = {
       type: "gameEvent",
@@ -300,7 +295,6 @@ async function processMessages() {
   while (messageQueue.length > 0) {
     const currPacket: websocketPacket | undefined = messageQueue.shift();
     if (!currPacket) return;
-    console.log("Now handling packet => ", currPacket);
     try {
       if (currPacket.type == "chat") {
         if (currPacket.data.type == "message") handleMessage(currPacket);
@@ -415,7 +409,6 @@ export const chatService = {
       clients.set(userId, new Set<WebSocket>());
       clients.get(userId)?.add(connection);
     }
-    // checkOnlineFriends(userId);
     broadcastToFriends(userId, true);
     console.log("Connection Done with => " + payload.username);
     connection.on("message", (message: Buffer) => {

@@ -134,7 +134,8 @@ const TournamentBracket: React.FC = () => {
       you: user.id == round.player1 ? player1 : player2,
       opponent: user.id == round.player2 ? player1 : player2,
     };
-    // console.log("game :", game);
+    console.log("game :", game);
+    console.log("round -> :", round);
     sessionStorage.setItem("currentRound", JSON.stringify(game));
     if (!round.winner) {
       // notifying
