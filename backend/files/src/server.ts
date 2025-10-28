@@ -19,8 +19,8 @@ import { pipeline } from "stream";
 import vault from "node-vault";
 
 const httpsOptions = {
-  key: fs.readFileSync("./ssl/key.pem"),
-  cert: fs.readFileSync("./ssl/certificate.pem"),
+  key: fs.readFileSync("/ssl/key.pem"),
+  cert: fs.readFileSync("/ssl/certificate.pem"),
 };
 
 export const pump = util.promisify(pipeline);

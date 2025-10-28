@@ -8,8 +8,8 @@ export default defineConfig(({ mode }) => {
     plugins: [react()],
     server: {
       https: {
-        key: fs.readFileSync("./ssl/key.pem"),
-        cert: fs.readFileSync("./ssl/certificate.pem"),
+        key: fs.readFileSync("/ssl/key.pem"),
+        cert: fs.readFileSync("/ssl/certificate.pem"),
       },
       host: env.VITE_HOST || "0.0.0.0",
       port: Number(env.VITE_PORT) || 3000,

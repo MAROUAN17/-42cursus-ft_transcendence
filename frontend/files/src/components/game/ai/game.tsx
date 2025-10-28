@@ -21,8 +21,8 @@ export default function AiGame() {
 
   const [scoreLeft, setScoreLeft] = useState(0);
   const [scoreRight, setScoreRight] = useState(0);
-  
-  const [start, setStart] = useState<boolean> (false);
+
+  const [start, setStart] = useState<boolean>(false);
 
   // useEffect(() => {
   //   const speed = 3;
@@ -91,8 +91,7 @@ export default function AiGame() {
     const dir = who === "left" ? -1 : 1;
     setBallVel({ x: dir * 300 * Math.cos(angle), y: 300 * Math.sin(angle) });
 
-    if (scoreLeft > 1 || scoreRight > 1)
-        setStart(false); 
+    if (scoreLeft > 1 || scoreRight > 1) setStart(false);
   };
 
   const paddleLeft = { x: 24, y: leftY, width: PADDLE_WIDTH, height: PADDLE_HEIGHT };
@@ -102,18 +101,13 @@ export default function AiGame() {
     setBallPos({ x: bounds.width / 2, y: bounds.height / 2 });
     const angle = (Math.random() * Math.PI) / 3 - Math.PI / 6;
     // const dir = Math.random() > 0.5 ? 1 : -1;
-    const dir =  -1;
+    const dir = -1;
     setBallVel({ x: dir * 300 * Math.cos(angle), y: 300 * Math.sin(angle) });
   }, [bounds.width, bounds.height]);
 
   return (
-    <div className="h-screen bg-gameBg flex items-center justify-center">
+    <div className="h-screen bg-gameBg flex flex-col items-center justify-center">
       <Header scoreLeft={scoreLeft} scoreRight={scoreRight} />
-      <div className="relative z-50">
-        <button onClick={() => setStart(true)} className="px-4 py-2 bg-white text-black rounded">
-          Start
-        </button>
-      </div>
 
       <div
         ref={containerRef}
@@ -163,7 +157,7 @@ export default function AiGame() {
               paddleRight={paddleRight}
               bounds={bounds}
               onScore={handleScore}
-              start= {start}
+              start={start}
               setRightY={setRightY}
             />
 
@@ -175,6 +169,11 @@ export default function AiGame() {
             </div>
           </div>
         ) : null}
+      </div>
+      <div className="mt-12">
+        <button onClick={() => setStart(true)} className="font-poppins px-12 py-4 bg-neon text-white font-bold rounded-full shadow-lg shadow-[#B13BFF]/50">
+          START GAME
+        </button>
       </div>
     </div>
   );

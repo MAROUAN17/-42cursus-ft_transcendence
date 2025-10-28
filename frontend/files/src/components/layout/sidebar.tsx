@@ -4,6 +4,7 @@ import { IoIosMail } from "react-icons/io";
 import { IoGameController } from "react-icons/io5";
 import { MdHome, MdLeaderboard } from "react-icons/md";
 import { useNavigate } from "react-router";
+import { FaRobot } from "react-icons/fa";
 
 interface props {
   setSettingsOpen: (param: boolean) => void;
@@ -39,6 +40,10 @@ const Sidebar = ({ setSettingsOpen, fetchData }: props) => {
           />
           <IoGameController
             onClick={() => navigate("/pairing")}
+            className="text-white w-7 h-7 shadow-[0_0px_30px_rgba(0,0,0,0.25)] hover:shadow-neon transform hover:scale-150 hover:bg-neon p-1 rounded-full transition duration-300"
+          />
+          <FaRobot
+            onClick={() => navigate("/ai")}
             className="text-white w-7 h-7 shadow-[0_0px_30px_rgba(0,0,0,0.25)] hover:shadow-neon transform hover:scale-150 hover:bg-neon p-1 rounded-full transition duration-300"
           />
         </div>
