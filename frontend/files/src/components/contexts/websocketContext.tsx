@@ -1,15 +1,17 @@
-import { useState, createContext, useContext, useEffect, useRef } from "react";
+import React, { useState, createContext, useContext, useEffect, useRef, useCallback } from "react";
 import type { websocketContextType, websocketPacket } from "../../types/websocket";
 
 const WebsocketContext = createContext<websocketContextType | undefined>(undefined);
 
-export const WebSocketProvider: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
+export const WebSocketProvider: React.FC<{ children?: React.ReactNode }> = React.memo(({ children }) => {
+  
   const socketRef = useRef<WebSocket | null>(null);
   const [socket, setSocket] = useState<WebSocket | null>(null);
   const queueRef = useRef<string[]>([]);
   const [gameInvite, setGameInvite] = useState<"sender" | "recipient" | "tournamentStart" | undefined>(undefined);
   const [opponentName, setOpponentName] = useState<string | undefined>(undefined);
   const handlersRef = useRef<Map<string, (msg: websocketPacket) => void>>(new Map<string, (msg: websocketPacket) => void>());
+  
   function connectWs() {
     socketRef.current = new WebSocket(`${import.meta.env.VITE_SOCKET_BACKEND_URL}/send-message`);
     socketRef.current.onopen = () => {
@@ -48,6 +50,7 @@ export const WebSocketProvider: React.FC<{ children?: React.ReactNode }> = ({ ch
       socketRef.current?.close();
     };
   }, []);
+
   function send(msg: string) {
     console.log("sent to server");
     if (socketRef.current && socketRef.current.readyState == WebSocket.OPEN) socketRef.current.send(msg);
@@ -65,7 +68,7 @@ export const WebSocketProvider: React.FC<{ children?: React.ReactNode }> = ({ ch
       {children}
     </WebsocketContext.Provider>
   );
-};
+});
 
 export const useWebSocket = () => {
   const context = useContext(WebsocketContext);
