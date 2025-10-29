@@ -60,7 +60,7 @@ export default function RGame() {
             side: game?.side,
           })
         );
-        // console.log("Game sent to server ✅: ", user, id);
+        console.log("Game sent to server ✅: ", user, id);
         clearInterval(interval);
       } else {
         // console.log("⏳ Waiting for socket...");
@@ -168,18 +168,15 @@ export default function RGame() {
     const ws = new WebSocket(`${import.meta.env.VITE_SOCKET_BACKEND_URL}/game`);
     setWebsocket(ws);
     ws.onopen = () => {
-      // console.log("WebSocket Connected!");
+      console.log("WebSocket Connected!");
     };
     ws.onmessage = (event) => {
       // console.log("on Message");
       try {
         const message = JSON.parse(event.data);
         // console.log("msg -> ",message);
-        if (message.type == "already_playing"){
-          sessionStorage.removeItem("currentGame");
-          sessionStorage.removeItem("currentRound");
+        if (message.type == "already_playing")
           navigate ("/pairing");
-        }
         if (message.type === "end") {
           // console.log(message);
           // console.log("--- game eneded-------------------------------------------");

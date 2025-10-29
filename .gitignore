@@ -4,7 +4,7 @@
 .pnp.js
 .vscode
 
-/backend/dist
+/backend/files/dist
 /backend/.env
 /backend/vault/
 
