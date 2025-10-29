@@ -25,7 +25,7 @@ function set_random_Info(game_info: GameInfo) {
 }
 
 function saveData(room: Room) {
-  if (!room.winner) return;
+  if (!room || !room.winner) return;
   if (room.tournamentId) {
     try {
       const winner = app.db.prepare("SELECT winner  FROM ROUND WHERE id = ?").get(room.roundId)?.winner;
@@ -149,9 +149,16 @@ function gameLoop(room: Room) {
     }
   }
   broadcastToRoom(room, { type: "update", game_info: room.gameInfo });
+  if (room.winner){
+    clearInterval(room.intervalId);
+    room.intervalId = undefined;
+    return;
+  }
 }
 
 function broadcastToRoom(room: Room, message: any) {
+  if (!room)
+      return ;
   [room.player1, room.player2].forEach((pid) => {
     if (!pid) return;
     const conn = clients.get(pid);
@@ -164,6 +171,11 @@ function broadcastToRoom(room: Room, message: any) {
 
 function startGame(room: Room) {
   if (room.gameId) delete_Match(room.gameId);
+  if (room.winner) {
+    clearInterval(room.intervalId);
+    room.intervalId = undefined;
+    return ;
+  }
   if (room.intervalId) return;
   room.intervalId = setInterval(() => gameLoop(room), 1000 / 60);
 }
@@ -216,8 +228,35 @@ export function handleGameConnection(connection: any, req: any) {
   });
 
   connection.on("close", () => {
-    console.log("Client disconnected ->", userId);
+    console.log("Client disconnected --------->", userId);
     if (userId) clients.delete(userId);
+    // console.log("check existing ", check_existing(userId))
+    if (check_existing(userId)) {
+      console.log("----- user found ")
+      var ind:number = -1;
+      for (let i = 0; i < rooms.length; i++) {
+          if (!rooms[i]?.ready) continue;
+          if (rooms[i]?.player1 == userId || rooms[i]?.player2 == userId){
+            ind = i;
+            break;
+          } 
+        }
+        console.log("ind ", ind);
+        if (ind == -1 || !rooms[ind])
+            return ;
+        if (rooms[ind] && rooms[ind]?.player1  == userId)
+          rooms[ind].winner = rooms[ind]?.player2;
+        }
+        else if (rooms[ind]){
+          rooms[ind].winner = rooms[ind]?.player1;
+        }
+        console.log("user disconnected", rooms[ind]?.winner);
+        broadcastToRoom(rooms[ind], {type:"end", winner: rooms[ind]?.winner});
+        saveData(rooms[ind])
+        if (rooms[ind]?.roundId)
+            deleteRound(rooms[ind]?.roundId)
+        if (rooms[ind]?.gameId)
+            deleteGame(rooms[ind]?.gameId)
   });
 }
 
@@ -420,7 +459,8 @@ function deleteGame(gameId: string): void {
 }
 
 const check_existing = (playerId: string) => {
-  for (let i = 0; i < activeGames.length; i++) {
+  // console.log("rooms", rooms)
+  for (let i = 0; i < rooms.length; i++) {
     console.log("check existing : ", rooms[i]?.player1, rooms[i]?.player2, rooms[i]?.ready, playerId);
     console.log("conditions : ", rooms[i]?.player1 == playerId, rooms[i]?.player2 == playerId);
     if (!rooms[i]?.ready) continue;
