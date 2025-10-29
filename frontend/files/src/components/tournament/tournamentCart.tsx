@@ -10,13 +10,13 @@ import type { NotifyPacket } from "../../types/websocket";
 export function TournamentCard({ id, name, players, status }: Tournament) {
   const { user } = useUserContext();
   const { send } = useWebSocket();
-  const [label, setLabel] = useState("JOIN");
+  const [label, setLabel] = useState("JOINED");
   const maxParticipants = 4;
   const navigate = useNavigate();
 
   useEffect(() => {
     if (!players || !user) return;
-    setLabel(players?.some(player => player.id === user.id) ? "JOINED" : "JOIN");
+    setLabel(players?.some(player => player.id === Number(user.id)) ? "JOINED" : "JOIN");
   }, [players, user]);
   
   const handelJoin = async () => {

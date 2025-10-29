@@ -22,7 +22,7 @@ import { get_profile, get_player_rooms, get_player_week_activity, get_leaderboar
 import app from "../server.js";
 
 export const gameRoutes: FastifyPluginAsync = async (fastify) => {
-  fastify.get("/game", { websocket: true }, handleGameConnection);
+  fastify.get("/game", { websocket: true, onRequest: [app.jwtAuth] }, handleGameConnection);
   
   fastify.post("/match/pair", { onRequest: [app.jwtAuth] }, pair_players);
   fastify.post("/match/invite", { onRequest: [app.jwtAuth] },invite_game);

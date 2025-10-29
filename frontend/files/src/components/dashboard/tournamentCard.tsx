@@ -21,7 +21,7 @@ const TournamentCard = ({ tournament }: props) => {
   const handelJoin = async () => {
     console.log("Trying to join ...");
     try {
-      api.post(`/tournament/join`, { playerId: user?.id.toString(), tournamentId: tournament.id }, { withCredentials: true }).then(function (res) {
+      api.post(`/tournament/join`, { playerId: user?.id.toString(), tournamentId: tournament.id }, { withCredentials: true }).then(function () {
         // console.log("Joined:", res.data);
       });
     } catch (err) {

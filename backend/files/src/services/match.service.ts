@@ -4,17 +4,18 @@ import { DefaultGame, type GameInfo } from "../models/game.js";
 import type { Player, Game } from "../models/game.js";
 import app from "../server.js";
 const waitingPlayers: Player[] = [];
-export const activeGames: Game[] = [];
+export var activeGames: Game[] = [];
 
 export const delete_Match = (gameId: string) => {
   const index = activeGames.findIndex((game) => game.id === gameId);
-  console.log("active game found :", activeGames[index]);
+  console.log("active game found :", activeGames[index], gameId);
   if (index !== -1) {
     activeGames.splice(index, 1);
   }
 };
 
 export const pair_players = async (req: FastifyRequest, res: FastifyReply) => {
+  activeGames = [];
   console.log("waiting players : ", waitingPlayers);
   try {
     const playerId = req.headers["player-id"] as string;

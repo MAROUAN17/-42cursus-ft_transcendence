@@ -5,7 +5,7 @@ RUN apt-get update && apt-get install -y python3 python3-pip python3-setuptools 
 
 WORKDIR /app
 
-COPY ./files/package*.json /app/.
+COPY ./files ./
 
 RUN mkdir /ssl && \
     openssl req -x509 -nodes -newkey rsa:4096 \

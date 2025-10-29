@@ -406,7 +406,8 @@ export const chatService = {
     const pingInterval = setInterval(() => {
       if (connection.readyState == connection.OPEN) connection.ping();
     }, 30000);
-    if (clients.has(userId)) clients.get(userId)!.add(connection);
+    console.log("ẗrying to connect...");
+    if (clients.has(userId)) connection.socket.close();
     else {
       clients.set(userId, new Set<WebSocket>());
       clients.get(userId)?.add(connection);

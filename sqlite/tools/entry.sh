@@ -86,26 +86,6 @@ sqlite3 "$DB_NAME" <<EOF
         paddleShadow TEXT DEFAULT '#B13BFF',
         selectedBg TEXT DEFAULT '/gameBg1.jpg'
     );
-
-    INSERT INTO players(username, email, password) VALUES ("user1", "user1@gmail.com", '\$2b\$10\$rqCwxklFfV6lllny4.6WMOIw2yGUyDXGdc7AD6LzUlh.KDe.UJwlu');
-    INSERT INTO players(username, email, password) VALUES ("user2", "user2@gmail.com", '\$2b\$10\$rqCwxklFfV6lllny4.6WMOIw2yGUyDXGdc7AD6LzUlh.KDe.UJwlu');
-    INSERT INTO players(username, email, password) VALUES ("user3", "user3@gmail.com", '\$2b\$10\$rqCwxklFfV6lllny4.6WMOIw2yGUyDXGdc7AD6LzUlh.KDe.UJwlu');
-    INSERT INTO players(username, email, password) VALUES ("user4", "user4@gmail.com", '\$2b\$10\$rqCwxklFfV6lllny4.6WMOIw2yGUyDXGdc7AD6LzUlh.KDe.UJwlu');
-    
-    INSERT INTO Settings(userId) VALUES (1);
-    INSERT INTO Settings(userId) VALUES (2);
-    INSERT INTO Settings(userId) VALUES (3);
-    INSERT INTO Settings(userId) VALUES (4);
-
-    INSERT INTO Room(player1, player2, scoreLeft, scoreRight, winner) VALUES (1, 2, 30, 11, 1);
-    INSERT INTO Room(player1, player2, scoreLeft, scoreRight, winner) VALUES (1, 3, 20, 11, 3);
-    INSERT INTO Room(player1, player2, scoreLeft, scoreRight, winner) VALUES (2, 1, 25, 11, 2);
-    INSERT INTO Room(player1, player2, scoreLeft, scoreRight, winner) VALUES (4, 1, 25, 11, 4);
-    INSERT INTO Room(player1, player2, scoreLeft, scoreRight, winner) VALUES (3, 1, 22, 15, 1);
-
-    INSERT INTO tournament(name, players, createdAt, status, admin) VALUES ('test', '["1","2","3","4"]', datetime('now'), 'full', 1);
-    INSERT INTO round(tournament_id, player1, player2, score1, score2, winner, round_number) VALUES (1, 1, 2, 2, 0, 1, 1);
-    INSERT INTO round(tournament_id, player1, player2, score1, score2, winner, round_number) VALUES (1, 3, 4, 2, 0, 3, 1);
 EOF
 
 

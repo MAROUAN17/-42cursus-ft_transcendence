@@ -5,6 +5,7 @@ import app from "../server.js";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { v4 as uuidv4 } from "uuid";
 import { activeGames, delete_Match } from "./match.service.js";
+import type { Payload } from "../models/chat.js";
 
 //todo
 //fix the final score in tournament
@@ -59,8 +60,14 @@ function saveData(room: Room) {
       console.log(err);
     }
   }
-  if (room.roundId) deleteRound(room.roundId);
-  else if (room.gameId) deleteGame(room.gameId);
+  if (room.roundId){
+    deleteRound(room.roundId);
+  }
+  
+  else if (room.gameId){
+    delete_Match(room.gameId)
+    deleteGame(room.gameId);
+  } 
 }
 
 export const getData = async (req: FastifyRequest, res: FastifyReply) => {
@@ -178,27 +185,40 @@ function startGame(room: Room) {
   room.intervalId = setInterval(() => gameLoop(room), 1000 / 60);
 }
 
-export function handleGameConnection(connection: any, req: any) {
-  let userId: string;
-
+export function handleGameConnection(connection: any, req: any, res: FastifyReply) {
+  const token = req.cookies.accessToken!;
+  console.log ("---   sssssssssssssssssssssssssssssss ");
+  try {
+    var payload = app.jwt.jwt1.verify(token) as Payload;
+  } catch (error) {
+    res.status(401).send({ error: "JWT_EXPIRED" });
+    connection.close();
+    return;
+  }
+  const userId = payload.id;
+  if (clients.get(String (userId))) {
+    console.log ("---   close called ", userId);
+    clients.get(String (userId)).close ();
+  }
+  clients.set(String(userId), connection);
   connection.on("message", (message: any) => {
     try {
+      let userId: string;
       const msg = JSON.parse(message.toString());
       if (msg.userId) console.log("-- msg: ", msg);
       if (msg.type === "casual") {
         userId = msg.userId;
         if (check_existing(msg.userId)) {
-          console.log("player already playing in other game ");
+          // console.log("player already playing in other game ");
           // connection.send(JSON.stringify({type: "already_playing"}));
           return;
         }
-        clients.set(userId, connection);
         addPlayerToRoom(msg.gameId, Number(userId), msg.side);
-        console.log("-- connectionn established with ", userId);
+        // console.log("-- connectionn established with ", userId);
       } else if (msg.type === "tournament") {
         userId = msg.userId;
         if (check_existing(userId)) {
-          console.log("player already playing in other game ");
+          // console.log("player already playing in other game ");
           // connection.send(JSON.stringify({type: "already_playing"}));
           return;
         }

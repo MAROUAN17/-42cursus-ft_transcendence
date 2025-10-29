@@ -30,6 +30,7 @@ export function Tournaments() {
 
   const handleCreated = (newTournament: any) => {
     setTournaments((prev) => [...prev, { ...newTournament }]);
+    fetchTournaments();
   };
 
   function refreshHandler(packet: websocketPacket) {

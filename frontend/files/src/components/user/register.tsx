@@ -193,6 +193,14 @@ function Register() {
               <span className="font-semibold">Address:</span> 1337, Khouribga
             </p>
 
+            <h2 className="font-bold underline text-[20px]">13. Game</h2>
+            <p>
+              Here is our rules for the gameplay :
+              <p>If you quit or refresh the game page you will automatically lose the game.</p>
+              <p>You can't use the website with the same user from multiple sessions (tabs).</p>
+              <p>The player who wins the game is the first player to reach 3 points.</p>
+            </p>
+
             <p>
               This Privacy Policy is intended as a clear, high-level explanation. It does not create contractual or other legal rights beyond those
               established by applicable privacy laws.
