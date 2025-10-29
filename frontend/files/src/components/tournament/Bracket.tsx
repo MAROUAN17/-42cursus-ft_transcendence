@@ -42,16 +42,8 @@ const TournamentBracket: React.FC = () => {
   });
   const fetchFinalRound = async () => {
     try {
-      await api(`/tournament/final_round/${id}`, { withCredentials: true })
-        .then(function (res) {
-          console.log("Final Round fetched:", res.data);
-        })
-        .catch(function () {
-          // console.log("Still waiting for players...");
-        });
-    } catch (error) {
-      // console.error("Error fetching final round:", error);
-    }
+      await api(`/tournament/final_round/${id}`, { withCredentials: true });
+    } catch (error) {}
   };
   useEffect(() => {
     if (!user || !user.id) return;
@@ -64,15 +56,13 @@ const TournamentBracket: React.FC = () => {
         data = res.data;
         const maxRound = Math.max(...data.map((r: Round) => r.round_number));
         latestRounds = data.filter((r: Round) => r.round_number === maxRound);
-        console.log("Fetched rounds:", latestRounds);
         if (maxRound == 2) setFinalWinner(latestRounds[0].winner);
         const userRound = latestRounds.find((r: Round) => r.player1 === Number(user.id) || r.player2 === Number(user.id));
 
         if (userRound) {
           setRound(userRound);
-          console.log("User Round Found:", userRound);
         } else {
-          console.warn("User is not part of any round in the latest round.");
+          console.log("User is not part of any round in the latest round.");
         }
         const round2 = data.filter((r: Round) => r.round_number === 2);
         const playerIds = round2.flatMap((r: any) => [r.player1, r.player2]);
@@ -93,10 +83,6 @@ const TournamentBracket: React.FC = () => {
   }
 
   function sendAlert(roundNum: number) {
-    console.log("before send");
-    console.log("tournament - > ", tournament);
-    console.log("user - > ", user);
-    console.log("(roundNum != 2 && (!tournament || !user)) - > ", roundNum != 2 && (!tournament || !user));
     if (!tournament || !user) return;
     const packet: EventPacket = {
       type: "gameEvent",
@@ -107,7 +93,6 @@ const TournamentBracket: React.FC = () => {
         admin: tournament.admin,
       },
     };
-    console.log("sending -> ", packet);
     send(JSON.stringify(packet));
   }
 
@@ -130,13 +115,10 @@ const TournamentBracket: React.FC = () => {
       you: user.id == round.player1 ? player1 : player2,
       opponent: user.id == round.player2 ? player1 : player2,
     };
-    console.log("game :", game);
-    console.log("round -> :", round);
     sessionStorage.setItem("currentRound", JSON.stringify(game));
     if (!round.winner) {
       // notifying
       if ((round.round_number == 1 && user.id == tournament?.admin) || round.round_number == 2) sendAlert(round.round_number);
-      console.log("round number - > ", round.round_number);
       setTimeout(() => {
         setGameInvite(undefined);
         navigate("/remote_game");

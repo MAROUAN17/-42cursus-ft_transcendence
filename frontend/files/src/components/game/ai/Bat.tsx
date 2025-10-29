@@ -12,7 +12,7 @@ interface BatProps {
   shadowColor: string;
 }
 
-export default function Bat({ y, setY, side, height,  containerHeight, bodyColor, borderColor, shadowColor }: BatProps) {
+export default function Bat({ y, side, height,  bodyColor, borderColor, shadowColor }: BatProps) {
 
   return (
     <div

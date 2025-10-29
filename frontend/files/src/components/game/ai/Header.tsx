@@ -1,4 +1,4 @@
-import { FaArrowLeft, FaCog } from "react-icons/fa";
+import { FaArrowLeft } from "react-icons/fa";
 import { useNavigate } from "react-router";
 
 interface HeaderProps {
@@ -14,9 +14,6 @@ export default function Header({ scoreLeft, scoreRight }: HeaderProps) {
       <div className="flex items-center space-x-4">
         <button className="bg-black bg-opacity-60 p-3 rounded-full hover:bg-opacity-80 transition">
           <FaArrowLeft className="text-white text-xl" onClick={() => navigate('/dashboard')} />
-        </button>
-        <button className="bg-black bg-opacity-60 p-3 rounded-full hover:bg-opacity-80 transition">
-          <FaCog className="text-white text-xl" />
         </button>
       </div>
 

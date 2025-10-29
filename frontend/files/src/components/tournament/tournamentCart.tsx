@@ -24,8 +24,7 @@ export function TournamentCard({ id, name, players, status }: Tournament) {
     //     return ;
     console.log("Trying to join ...");
     try {
-      api.post(`/tournament/join`, { playerId: user?.id.toString(), tournamentId: id }, { withCredentials: true }).then(function (res) {
-        console.log("Joined:", res.data);
+      api.post(`/tournament/join`, { playerId: user?.id.toString(), tournamentId: id }, { withCredentials: true }).then(function () {
         const packet: NotifyPacket = {
           type: "NotifyChange",
           data: {
@@ -35,7 +34,6 @@ export function TournamentCard({ id, name, players, status }: Tournament) {
         send(JSON.stringify(packet));
       });
 
-      // const data = await res.json();
     } catch (err) {
       console.error("Error joining tournament", err);
     }

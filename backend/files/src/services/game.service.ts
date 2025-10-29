@@ -122,8 +122,8 @@ function gameLoop(room: Room) {
   game.ball.x = nx;
   game.ball.y = ny;
   room.gameInfo = game;
-  if (game.scoreLeft > 8) room.winner = room.player1;
-  else if (game.scoreRight > 8) room.winner = room.player2;
+  if (game.scoreLeft > 2) room.winner = room.player1;
+  else if (game.scoreRight > 2) room.winner = room.player2;
   if (room.winner) {
     broadcastToRoom(room, { type: "end", winner: room.winner });
     room.scoreLeft = game.scoreLeft;
@@ -161,6 +161,7 @@ function broadcastToRoom(room: Room, message: any) {
   });
 }
 
+
 function startGame(room: Room) {
   if (room.gameId) delete_Match(room.gameId);
   if (room.intervalId) return;
@@ -178,18 +179,18 @@ export function handleGameConnection(connection: any, req: any) {
         userId = msg.userId;
         if (check_existing(msg.userId)) {
           console.log("player already playing in other game ");
-          connection.send(JSON.stringify({ type: "already_playing" }));
-          return;
+          // connection.send(JSON.stringify({type: "already_playing"}));
+          return ;
         }
         clients.set(userId, connection);
         addPlayerToRoom(msg.gameId, Number(userId), msg.side);
         console.log("-- connectionn established with ", userId);
       } else if (msg.type === "tournament") {
         userId = msg.userId;
-        if (check_existing(msg.userId)) {
+        if (check_existing(userId)) {
           console.log("player already playing in other game ");
-          connection.send(JSON.stringify({ type: "already_playing" }));
-          return;
+          // connection.send(JSON.stringify({type: "already_playing"}));
+          return ;
         }
         clients.set(userId, connection);
         addPlayerToRound(Number(msg.tournamentId), userId, Number(msg.roundNumber), msg.side);
@@ -204,7 +205,7 @@ export function handleGameConnection(connection: any, req: any) {
         else {
           if (msg.side == "left") room.gameInfo.paddleLeft.y = msg.leftY;
           if (msg.side == "right") room.gameInfo.paddleRight.y = msg.rightY;
-          console.log("Broadcasting to room:", room.gameId, "Players:", room.player1, room.player2, "type: ", room.type);
+          // console.log("Broadcasting to room:", room.gameId, "Players:", room.player1, room.player2, "type: ", room.type);
 
           broadcastToRoom(room, { type: "updateY", game_info: room.gameInfo });
         }

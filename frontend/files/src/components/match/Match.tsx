@@ -8,11 +8,11 @@ export default function Pairing() {
   const [loading, setLoading] = useState(false);
   const [dots, setDots] = useState("");
   const [gameInfo, setGameInfo] = useState<Game>();
-  const defaultPlayer:Player = {
-    id:"0",
+  const defaultPlayer: Player = {
+    id: "0",
     username: "?",
-    avatar: "?"
-  }
+    avatar: "?",
+  };
   const [opponent, setOpponent] = useState<Player>(defaultPlayer);
   const [paired, setPaired] = useState(false);
   const [countdown, setCountdown] = useState(2);
@@ -32,9 +32,7 @@ export default function Pairing() {
   useEffect(() => {
     let timer: ReturnType<typeof setInterval>;
     if (paired) {
-      console.log("players are paired", gameInfo);
-      if (gameInfo?.opponent)
-        setOpponent(gameInfo.opponent);
+      if (gameInfo?.opponent) setOpponent(gameInfo.opponent);
       timer = setInterval(() => {
         setCountdown((prev) => {
           if (prev <= 1) {
@@ -53,31 +51,14 @@ export default function Pairing() {
   useEffect(() => {
     const interval = setInterval(async () => {
       if (loading) {
-        try {
-          api
-            .get(`/match/my-game/${id}`, { withCredentials: true })
-            .then(function (response) {
-              console.log("------", response.data.game);
-              if (response.data.game.type == "invite")
-                  return ;
-              setGameInfo(response.data.game);
-              setLoading(false);
-              sessionStorage.setItem("currentGame", JSON.stringify(response.data.game));
-              setPaired(true);
-              clearInterval(interval);
-            })
-            .catch(function (err) {
-              if (err.response) {
-                // console.error("Error data:", err.response.data);
-                // console.error("Error status:", err.response.status);
-                // console.error("Error headers:", err.response.headers);
-              } else {
-                console.error("Error message:");
-              }
-            });
-        } catch (err) {
-          console.log("err");
-        }
+        api.get(`/match/my-game/${id}`, { withCredentials: true }).then(function (response) {
+          if (response.data.game.type == "invite") return;
+          setGameInfo(response.data.game);
+          setLoading(false);
+          sessionStorage.setItem("currentGame", JSON.stringify(response.data.game));
+          setPaired(true);
+          clearInterval(interval);
+        });
       }
     }, 1000);
 
@@ -89,9 +70,8 @@ export default function Pairing() {
   }, []);
 
   const fetchData = async () => {
-    console.log("entered");
-    try {
-      api.post(
+    api
+      .post(
         `${import.meta.env.VITE_BACKEND_URL}/match/pair`,
         {
           username: user?.username,
@@ -101,41 +81,34 @@ export default function Pairing() {
             "Content-Type": "application/json",
             "player-id": id,
           },
-          withCredentials: true
-        },
-      ).then (function () {
+          withCredentials: true,
+        }
+      )
+      .then(function () {})
+      .catch(function () {});
 
-      }).catch (function () {
-
-      });
-      
-      setLoading(true);
-    } catch (err) {
-      if (err) {
-        console.log("Error ");
-        // console.error("Error status:", err.response.status);
-        // console.error("Error headers:", err.response.headers);
-      } else {
-        // console.error("Error message:", err?.message);
-        console.log("another error")
-      }
-    }
+    setLoading(true);
   };
   const leave_queue = async () => {
-    if (!loading)
-        return ;
-    console.log("trying to leave : ", id);
-      api.post(`${import.meta.env.VITE_BACKEND_URL}/match/leave-queue/${id}`, {
-        headers: {
-          "Content-Type": "application/json",
-        }
-      }, {withCredentials: true}).then (function (res) {
-        console.log("Left queue:", res.data);
-      }).catch (function () {
-        console.error("Error leaving queue:");
+    if (!loading) return;
+    api
+      .post(
+        `${import.meta.env.VITE_BACKEND_URL}/match/leave-queue/${id}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        },
+        { withCredentials: true }
+      )
+      .then(function (res) {
+        console.log("Left queue:", res?.data);
+      })
+      .catch(function () {
+        console.log("Error leaving queue:");
         // setError(err.message);
       });
-      setLoading(false);
+    setLoading(false);
   };
 
   return (

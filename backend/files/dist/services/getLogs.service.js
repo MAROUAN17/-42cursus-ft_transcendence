@@ -1,0 +1,37 @@
+import app from "../server.js";
+import { v4 as uuidv4 } from "uuid";
+function fetchLoser(id) {
+    const loser = app.db.prepare("SELECT username FROM players WHERE id = ?").get(id);
+    return loser?.username ?? "undefined";
+}
+function fetchTournament(id) {
+    const loser = app.db.prepare("SELECT name FROM tournament WHERE id = ?").get(id);
+    return loser.name;
+}
+export const getLogs = async (req, res) => {
+    try {
+        const history = app.db
+            .prepare("SELECT * from (SELECT tournament_id , startedAt, players.avatar, round.winner, round.player1, round.player2, players.username, 'Round' AS source FROM round JOIN players ON players.id = round.winner WHERE winner != '0' \
+        AND round_number = 2 UNION ALL SELECT 'room' AS tournament_id ,startedAt, players.avatar, room.winner, room.player1, room.player2, players.username,'room' AS source FROM room JOIN players ON players.id = room.winner WHERE winner != '0') \
+        ORDER BY startedAt DESC LIMIT 6")
+            .all();
+        const logs = history.map((row) => ({
+            type: "logNotif",
+            data: {
+                id: uuidv4(),
+                is_removed: false,
+                winner: row.username,
+                loser: row.winner == row.player1 ? fetchLoser(row.player2) : fetchLoser(row.player1),
+                game_type: row.source == "Round" ? "tournament" : "1v1",
+                tournament_name: row.source == "Round" ? fetchTournament(row.tournament_id) : "",
+                avatar: row.avatar,
+                timestamps: row.startedAt,
+            },
+        }));
+        res.status(200).send(logs);
+    }
+    catch (err) {
+        res.status(500).send({ error: "Unkown Error" });
+    }
+};
+//# sourceMappingURL=getLogs.service.js.map

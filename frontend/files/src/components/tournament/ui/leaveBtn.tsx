@@ -40,9 +40,8 @@ const LeaveButton: React.FC<LeaveButtonProps> = ({ setStarted, label, tournament
           alert(res.data.msg || "You left the tournament");
           if (onLeave) onLeave();
         })
-        .catch(function (err) {
-          console.log(err);
-          alert(err.response.data.error || "Failed to leave tournament");
+        .catch(function () {
+          alert("Failed to leave tournament");
         });
     } catch (err) {
       console.error(err);
@@ -55,11 +54,6 @@ const LeaveButton: React.FC<LeaveButtonProps> = ({ setStarted, label, tournament
     if (label === "start") handelStart();
     else if (label == "leave") handleLeave();
   };
-
-  useEffect(() => {
-    console.log("label -> ", label);
-    console.log(tournamentState);
-  }, [label]);
 
   return (
     <div className="flex flex-col space-y-8 items-center mt-24">

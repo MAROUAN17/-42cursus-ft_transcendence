@@ -22,10 +22,10 @@ const TournamentCard = ({ tournament }: props) => {
     console.log("Trying to join ...");
     try {
       api.post(`/tournament/join`, { playerId: user?.id.toString(), tournamentId: tournament.id }, { withCredentials: true }).then(function (res) {
-        console.log("Joined:", res.data);
+        // console.log("Joined:", res.data);
       });
     } catch (err) {
-      console.error("Error joining tournament", err);
+      console.log("Error joining tournament");
     }
   };
 

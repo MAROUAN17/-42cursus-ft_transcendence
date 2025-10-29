@@ -112,8 +112,6 @@ export default function Dashboard() {
           })
         );
       })
-      .catch(function (err) {
-      });
 
     api("/tournament/all", { withCredentials: true }).then(function (res) {
       setTournaments(res.data);

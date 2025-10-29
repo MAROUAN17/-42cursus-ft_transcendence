@@ -1,4 +1,4 @@
-import { FaArrowLeft, FaCog, FaSpinner } from "react-icons/fa";
+import { FaArrowLeft, FaSpinner } from "react-icons/fa";
 import { useNavigate } from "react-router";
 import type { GameInfo, Player } from "./Types";
 
@@ -25,9 +25,6 @@ export default function RHeader({ scoreLeft, scoreRight, you, opponent, side, ga
       <div className="flex items-center space-x-4">
         <button onClick={() => leave_game()} className="bg-black bg-opacity-60 p-3 rounded-full hover:bg-opacity-80 transition">
           <FaArrowLeft className="text-white text-xl" />
-        </button>
-        <button className="bg-black bg-opacity-60 p-3 rounded-full hover:bg-opacity-80 transition">
-          <FaCog className="text-white text-xl" />
         </button>
       </div>
 

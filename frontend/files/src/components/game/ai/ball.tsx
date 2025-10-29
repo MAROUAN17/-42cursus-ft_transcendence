@@ -61,7 +61,6 @@ export default function Ball({
     const yx = m <= L ? m : 2 * L - m;
 
     setTargetY(yx - 60);
-    console.log("expected Y:", yx);
   };
 
   

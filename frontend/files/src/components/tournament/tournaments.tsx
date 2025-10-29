@@ -40,12 +40,8 @@ export function Tournaments() {
     try {
       api(`/tournament/all`, { withCredentials: true })
         .then(function (res) {
-          console.log(res);
           setTournaments(res.data);
         })
-        .catch(function (err) {
-          console.log(err);
-        });
     } catch (err) {
       console.error(err);
     } finally {
