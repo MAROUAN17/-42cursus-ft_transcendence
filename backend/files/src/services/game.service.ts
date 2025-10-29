@@ -26,6 +26,9 @@ function set_random_Info(game_info: GameInfo) {
 
 function saveData(room: Room) {
   if (!room || !room.winner) return;
+
+  clearInterval(room.intervalId)
+  room.intervalId = undefined;
   if (room.tournamentId) {
     try {
       const winner = app.db.prepare("SELECT winner  FROM ROUND WHERE id = ?").get(room.roundId)?.winner;
@@ -56,6 +59,10 @@ function saveData(room: Room) {
       console.log(err);
     }
   }
+  if (room.roundId)
+    deleteRound(room.roundId)
+  else if (room.gameId)
+      deleteGame(room.gameId);
 }
 
 export const getData = async (req: FastifyRequest, res: FastifyReply) => {
@@ -149,11 +156,6 @@ function gameLoop(room: Room) {
     }
   }
   broadcastToRoom(room, { type: "update", game_info: room.gameInfo });
-  if (room.winner){
-    clearInterval(room.intervalId);
-    room.intervalId = undefined;
-    return;
-  }
 }
 
 function broadcastToRoom(room: Room, message: any) {
@@ -253,10 +255,6 @@ export function handleGameConnection(connection: any, req: any) {
         console.log("user disconnected", rooms[ind]?.winner);
         broadcastToRoom(rooms[ind], {type:"end", winner: rooms[ind]?.winner});
         saveData(rooms[ind])
-        if (rooms[ind]?.roundId)
-            deleteRound(rooms[ind]?.roundId)
-        if (rooms[ind]?.gameId)
-            deleteGame(rooms[ind]?.gameId)
   });
 }
 
@@ -442,14 +440,16 @@ function deleteRound(roundId: number): void {
 
 function deleteGame(gameId: string): void {
   const index = rooms.findIndex((room) => room.gameId === gameId);
-
+  
   if (index === -1) {
     console.log(`No room found with gameId: ${gameId}`);
     return;
   }
-
+  
   const room = rooms[index];
-
+  if (room)
+    delete_Match(room.gameId);
+  
   if (room?.waitTimer) {
     clearTimeout(room.waitTimer);
   }
