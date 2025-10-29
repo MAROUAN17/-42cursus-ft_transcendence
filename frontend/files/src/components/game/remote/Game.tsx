@@ -183,10 +183,8 @@ export default function RGame() {
           if ((!round || round.round_number == 2) && message.winner == user?.id) sendLog();
           sessionStorage.removeItem("currentGame");
           sessionStorage.removeItem("currentRound");
-          if (round?.tournament_id) {
-            navigate(`/bracket/${round.tournament_id}`);
-          }
-          navigate("/pairing");
+          if (round?.tournament_id) navigate(`/bracket/${round.tournament_id}`);
+          else navigate("/pairing");
         }
         if (message.type == "game_end" || message.type == "timeout_tournament") {
           console.log("opponent didnt join");
@@ -197,7 +195,7 @@ export default function RGame() {
           sessionStorage.removeItem("currentGame");
           sessionStorage.removeItem("currentRound");
           if (round?.tournament_id) navigate(`/bracket/${round?.tournament_id}`);
-          navigate("/pairing");
+          else navigate("/pairing");
         }
         if (message.type == "already_played") {
           console.log("-- > this user already playing in other tab");
@@ -236,7 +234,7 @@ export default function RGame() {
         winnerId === user?.id.toString() ? (
           <div className="transition flex flex-col justify-center items-center bg-compBg rounded-lg w-[700px] h-[600px] absolute top-[23%] left-[37%] text-white text-6xl z-10">
             <img src="victory.png" alt="victory-popup" className="w-[400px]" />
-            {round?.round_number == 2 ? (
+            {round?.round_number == 2 || gameType === "casual" ? (
               <div className="flex flex-col items-center gap-3 mt-4">
                 <button className="bg-neon text-white text-md text-xl px-12 py-2 rounded-lg font-extrabold" onClick={() => navigate("/pairing")}>
                   NEW GAME
@@ -250,7 +248,8 @@ export default function RGame() {
         ) : (
           <div className="transition flex flex-col justify-center items-center bg-compBg rounded-lg w-[700px] h-[600px] absolute top-[23%] left-[37%] text-white text-6xl z-10">
             <img src="lost.png" alt="lost-popup" className="w-[400px]" />
-            <div className="flex flex-col items-center gap-3 mt-4">
+            {round?.round_number == 2 || gameType === "casual" ? (
+              <div className="flex flex-col items-center gap-3 mt-4">
               <button className="bg-neon text-white text-md text-xl px-12 py-2 rounded-lg font-extrabold" onClick={() => navigate("/pairing")}>
                 NEW GAME
               </button>
@@ -258,6 +257,7 @@ export default function RGame() {
                 BACK HOME
               </button>
             </div>
+            ) : null}
           </div>
         )
       ) : null}
