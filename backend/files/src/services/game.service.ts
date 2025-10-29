@@ -4,7 +4,7 @@ import { clients, checkPaddleCollision } from "./game.utils.js";
 import app from "../server.js";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { v4 as uuidv4 } from "uuid";
-import { delete_Match } from "./match.service.js";
+import { activeGames, delete_Match } from "./match.service.js";
 
 //todo
 //fix the final score in tournament
@@ -125,8 +125,8 @@ function gameLoop(room: Room) {
   game.ball.x = nx;
   game.ball.y = ny;
   room.gameInfo = game;
-  if (game.scoreLeft > 1) room.winner = room.player1;
-  else if (game.scoreRight > 1) room.winner = room.player2;
+  if (game.scoreLeft > 15) room.winner = room.player1;
+  else if (game.scoreRight > 15) room.winner = room.player2;
   if (room.winner) {
     broadcastToRoom(room, { type: "end", winner: room.winner });
     room.scoreLeft = game.scoreLeft;
@@ -179,11 +179,21 @@ export function handleGameConnection(connection: any, req: any) {
       if (msg.userId) console.log("-- msg: ", msg);
       if (msg.type === "casual") {
         userId = msg.userId;
+        if (check_existing(msg.userId)) {
+          console.log("player already playing in other game ");
+          connection.send(JSON.stringify({type: "already_playing"}));
+          return ;
+        }
         clients.set(userId, connection);
         addPlayerToRoom(msg.gameId, Number(userId), msg.side);
         console.log("-- connectionn established with ", userId);
       } else if (msg.type === "tournament") {
         userId = msg.userId;
+        if (check_existing(msg.userId)) {
+          console.log("player already playing in other game ");
+          connection.send(JSON.stringify({type: "already_playing"}));
+          return ;
+        }
         clients.set(userId, connection);
         addPlayerToRound(Number(msg.tournamentId), userId, Number(msg.roundNumber), msg.side);
         // console.log("data received", msg);
@@ -409,4 +419,17 @@ function deleteGame(gameId: string): void {
 
   rooms.splice(index, 1);
   console.log(` Room with gameid${gameId} deleted successfully.`);
+}
+
+
+const check_existing = (playerId: string) => {
+  for (let i = 0; i < activeGames.length ; i++) {
+    console.log("check existing : ", rooms[i]?.player1, rooms[i]?.player2, rooms[i]?.ready, playerId);
+    console.log("conditions : ",rooms[i]?.player1 == playerId, rooms[i]?.player2 == playerId)
+    if (!rooms[i]?.ready)
+        continue
+    if (rooms[i]?.player1 == playerId  || rooms[i]?.player2 == playerId)
+        return true
+  }
+  return false
 }

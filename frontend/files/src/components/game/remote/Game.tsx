@@ -175,6 +175,8 @@ export default function RGame() {
       try {
         const message = JSON.parse(event.data);
         // console.log("msg -> ",message);
+        if (message.type == "already_playing")
+          navigate ("/pairing");
         if (message.type === "end") {
           // console.log(message);
           // console.log("--- game eneded-------------------------------------------");
