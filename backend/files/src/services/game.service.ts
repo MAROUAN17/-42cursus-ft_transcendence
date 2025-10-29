@@ -164,6 +164,7 @@ function broadcastToRoom(room: Room, message: any) {
   });
 }
 
+
 function startGame(room: Room) {
   if (room.gameId) delete_Match(room.gameId);
   if (room.intervalId) return;
@@ -181,7 +182,7 @@ export function handleGameConnection(connection: any, req: any) {
         userId = msg.userId;
         if (check_existing(msg.userId)) {
           console.log("player already playing in other game ");
-          connection.send(JSON.stringify({type: "already_playing"}));
+          // connection.send(JSON.stringify({type: "already_playing"}));
           return ;
         }
         clients.set(userId, connection);
@@ -189,9 +190,9 @@ export function handleGameConnection(connection: any, req: any) {
         console.log("-- connectionn established with ", userId);
       } else if (msg.type === "tournament") {
         userId = msg.userId;
-        if (check_existing(msg.userId)) {
+        if (check_existing(userId)) {
           console.log("player already playing in other game ");
-          connection.send(JSON.stringify({type: "already_playing"}));
+          // connection.send(JSON.stringify({type: "already_playing"}));
           return ;
         }
         clients.set(userId, connection);
