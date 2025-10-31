@@ -407,7 +407,10 @@ export const chatService = {
       if (connection.readyState == connection.OPEN) connection.ping();
     }, 30000);
     console.log("ẗrying to connect...");
-    if (clients.has(userId)) connection.socket.close();
+      
+    if (clients.has(userId)){ 
+      clients.get(userId)?.add(connection);
+    }
     else {
       clients.set(userId, new Set<WebSocket>());
       clients.get(userId)?.add(connection);
