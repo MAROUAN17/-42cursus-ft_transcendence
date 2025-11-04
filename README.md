@@ -26,43 +26,43 @@ It’s a modern, multiplayer Pong game with real-time gameplay, secure user auth
 
 🔐 OAuth 2.0 Integration
 
-Login with 42 intra
+- Login with 42 intra
 🧠 Backend
 
-Built with Fastify (Node.js) for high performance
+- Built with Fastify (Node.js) for high performance
 
-RESTful APIs for user, match, and tournament management
+- RESTful APIs for user, match, and tournament management
 
-Database integration (SQLite)
+- Database integration (SQLite)
 
 💻 Frontend
 
-React + Vite for fast development and dynamic UI
+- React + Vite for fast development and dynamic UI
 
-State management with React hooks
+- State management with React hooks
 
 🐳 DevOps
 
-Fully containerized with Docker Compose
+- Fully containerized with Docker Compose
 
-Nginx reverse proxy + SSL/TLS certificates
+- Nginx reverse proxy + SSL/TLS certificates
 
-Hot reload for development
+- Hot reload for development
 
 
 ⚡️ Getting Started
 Prerequisites
 
-Docker & Docker Compose
+- Docker & Docker Compose
 
-Node.js (for local development)
+- Node.js (for local development)
 
 
 🧩 Tech Stack
 
-Frontend: React, Vite, Axios
-Backend: Node.js, Fastify, JWT, WebSockets
-Database: SQLITE
-Proxy: Nginx
-DevOps: Docker, Docker Compose, SSL/TLS
-Other: OAuth 2.0, REST API, Environment-based configs
+- Frontend: React, Vite, Axios
+- Backend: Node.js, Fastify, JWT, WebSockets
+- Database: SQLITE
+- Proxy: Nginx
+- DevOps: Docker, Docker Compose, SSL/TLS
+- Other: OAuth 2.0, REST API, Environment-based configs
