@@ -27,6 +27,7 @@ It’s a modern, multiplayer Pong game with real-time gameplay, secure user auth
 🔐 OAuth 2.0 Integration
 
 - Login with 42 intra
+
 🧠 Backend
 
 - Built with Fastify (Node.js) for high performance
