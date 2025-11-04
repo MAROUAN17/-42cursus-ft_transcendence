@@ -1,4 +1,4 @@
-🏓 ft_transcendence
+🏓 **ft_transcendence**
 
 ft_transcendence is a full-stack web application built as part of the 42 Cursus.
 It’s a modern, multiplayer Pong game with real-time gameplay, secure user authentication, and profile management — all designed from scratch with clean architecture and containerized deployment.
