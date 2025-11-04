@@ -8,21 +8,21 @@ It’s a modern, multiplayer Pong game with real-time gameplay, secure user auth
 
 🎮 Real-Time Pong Game
 
-Multiplayer gameplay using WebSockets
+⚪ Multiplayer gameplay using WebSockets
 
-Matchmaking and player pairing system
+⚪ Matchmaking and player pairing system
 
-Smooth animations and collision detection
+⚪ Smooth animations and collision detection
 
 👥 User Management
 
-Registration, login, and JWT-based authentication
+⚪ Registration, login, and JWT-based authentication
 
-User profiles with avatars, status, and match history
+⚪ User profiles with avatars, status, and match history
 
-Session management and cookies
+⚪ Session management and cookies
 
-Forgot password feature with email verification
+⚪ Forgot password feature with email verification
 
 🔐 OAuth 2.0 Integration
 
@@ -62,8 +62,7 @@ Node.js (for local development)
 
 Frontend: React, Vite, Axios
 Backend: Node.js, Fastify, JWT, WebSockets
-Database: PostgreSQL
+Database: SQLITE
 Proxy: Nginx
 DevOps: Docker, Docker Compose, SSL/TLS
-Language (Core Server): C++
 Other: OAuth 2.0, REST API, Environment-based configs
