@@ -8,21 +8,21 @@ It’s a modern, multiplayer Pong game with real-time gameplay, secure user auth
 
 🎮 Real-Time Pong Game
 
-⚪ Multiplayer gameplay using WebSockets
+- Multiplayer gameplay using WebSockets
 
-⚪ Matchmaking and player pairing system
+- Matchmaking and player pairing system
 
-⚪ Smooth animations and collision detection
+- Smooth animations and collision detection
 
 👥 User Management
 
-⚪ Registration, login, and JWT-based authentication
+- Registration, login, and JWT-based authentication
 
-⚪ User profiles with avatars, status, and match history
+- User profiles with avatars, status, and match history
 
-⚪ Session management and cookies
+- Session management and cookies
 
-⚪ Forgot password feature with email verification
+- Forgot password feature with email verification
 
 🔐 OAuth 2.0 Integration
 
